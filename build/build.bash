@@ -52,6 +52,7 @@ func_clamav () {
 # +---------------------------------------------------+
 # Disable unneeded kernel modules
 # +---------------------------------------------------+
+func_kernmodules () {
     echo "# Begin Disable modules not required for E.F.A">>/etc/modprobe.conf
     echo "alias ipv6 off">>/etc/modprobe.conf
     echo "alias net-pf-10 off">>/etc/modprobe.conf
