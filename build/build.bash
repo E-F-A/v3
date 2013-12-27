@@ -210,12 +210,8 @@ func_spam_clamav () {
     cd /tmp
     rm -rf install-Clam*
         
-    # remove old files 
-    rm /var/clamav/daily.cld
-    rm /var/clamav/main.cld
-        
     #Force an update of ClamAV definitions...
-    service clamd restart
+    # service clamd restart
     # freshclam # this should probably be moved to EFA-Init
         
     # fix socket file in mailscanner.conf
