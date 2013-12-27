@@ -25,17 +25,24 @@
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Update system before we start
+# +---------------------------------------------------+
+func_upgradeOS () {
+    yum -y upgrade
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # add rpmforge/repoforge repositories
 # +---------------------------------------------------+
 func_repoforge () {
     rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
     rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-    yum -y update
 }
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Install and configure ClamAV
+# Install and configure ClamAV from Repoforge
 # +---------------------------------------------------+
 func_clamav () {
     yum -y install clamav
@@ -43,8 +50,21 @@ func_clamav () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Disable unneeded kernel modules
+# +---------------------------------------------------+
+    echo "# Begin Disable modules not required for E.F.A">>/etc/modprobe.conf
+    echo "alias ipv6 off">>/etc/modprobe.conf
+    echo "alias net-pf-10 off">>/etc/modprobe.conf
+    echo "alias pcspkr off">>/etc/modprobe.conf
+    echo "# End Disable modules not required for E.F.A.">>/etc/modprobe.conf
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Main logic (this is where we start calling out functions)
 # +---------------------------------------------------+
+func_upgradeOS
 func_repoforge
 func_clamav
+func_kernmodules
 # +---------------------------------------------------+
