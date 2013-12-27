@@ -165,7 +165,7 @@ func_cron () {
 # +---------------------------------------------------+
 func_cleanup () {
     
-    # DISABLED FOR NOW UNTIL TESTING IS OVER...
+    echo "DISABLED FOR NOW UNTIL TESTING IS OVER..."
     # Clean SSH keys (generate at first boot)
     #/bin/rm /etc/ssh/ssh_host_*
     
