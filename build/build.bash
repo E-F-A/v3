@@ -31,7 +31,7 @@ gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 # +---------------------------------------------------+
 func_upgradeOS () {
     yum -y upgrade
-    rpm -e wireless-tools
+    #rpm -e wireless-tools # (gives dependency error's when removed, so keep..)
 }
 # +---------------------------------------------------+
 
@@ -50,7 +50,155 @@ func_repoforge () {
 # +---------------------------------------------------+
 func_clamav () {
     yum -y install clamav
-    freshclam
+    # freshclam # this should probably be moved to EFA-Init
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure postfix
+# +---------------------------------------------------+
+func_postfix () {
+    mkdir /etc/postfix/ssl
+    echo /^Received:/ HOLD>>/etc/postfix/header_checks
+    postconf -e "inet_interfaces = all"
+    postconf -e "mynetworks_style = subnet"
+    postconf -e "header_checks = regexp:/etc/postfix/header_checks"
+    postconf -e "myorigin = \$mydomain"
+    postconf -e "mydestination = \$myhostname, localhost.\$mydomain, localhost"
+    postconf -e "relay_domains = hash:/etc/postfix/transport"
+    postconf -e "transport_maps = hash:/etc/postfix/transport"
+    postconf -e "local_recipient_maps = "
+    postconf -e "smtpd_helo_required = yes"
+    postconf -e "smtpd_delay_reject = yes"
+    postconf -e "disable_vrfy_command = yes"
+    postconf -e "virtual_alias_maps = hash:/etc/postfix/virtual"
+    postconf -e "alias_maps = hash:/etc/aliases"
+    postconf -e "alias_database = hash:/etc/aliases"
+    postconf -e "default_destination_recipient_limit = 1"
+    # SASL config
+    postconf -e "broken_sasl_auth_clients = yes"
+    postconf -e "smtpd_sasl_auth_enable = yes"
+    postconf -e "smtpd_sasl_local_domain = "
+    postconf -e "smtpd_sasl_path = smtpd"
+    postconf -e "smtpd_sasl_local_domain = $myhostname"
+    postconf -e "smtpd_sasl_security_options = noanonymous"
+    postconf -e "smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd"
+    postconf -e "smtp_sasl_type = cyrus"
+    # tls config
+    postconf -e "smtp_use_tls = yes"
+    postconf -e "smtpd_use_tls = yes"
+    postconf -e "smtp_tls_CAfile = /etc/postfix/ssl/smtpd.pem"
+    postconf -e "smtp_tls_session_cache_database = btree:/var/spool/postfix/smtp_tls_session_cache"
+    postconf -e "smtp_tls_note_starttls_offer = yes"
+    postconf -e "smtpd_tls_key_file = /etc/postfix/ssl/smtpd.pem"
+    postconf -e "smtpd_tls_cert_file = /etc/postfix/ssl/smtpd.pem"
+    postconf -e "smtpd_tls_CAfile = /etc/postfix/ssl/smtpd.pem"
+    postconf -e "smtpd_tls_loglevel = 1"
+    postconf -e "smtpd_tls_received_header = yes"
+    postconf -e "smtpd_tls_session_cache_timeout = 3600s"
+    postconf -e "tls_random_source = dev:/dev/urandom"
+    postconf -e "smtpd_tls_session_cache_database = btree:/var/spool/postfix/smtpd_tls_session_cache"
+    postconf -e "smtpd_tls_security_level = may"
+    # restrictions
+    postconf -e "smtpd_helo_restrictions =  check_helo_access hash:/etc/postfix/helo_access, reject_invalid_hostname"
+    postconf -e "smtpd_sender_restrictions = permit_sasl_authenticated, check_sender_access hash:/etc/postfix/sender_access, reject_non_fqdn_sender, reject_unknown_sender_domain"
+    postconf -e "smtpd_data_restrictions =  reject_unauth_pipelining"
+    postconf -e "smtpd_client_restrictions = permit_sasl_authenticated, reject_rbl_client zen.spamhaus.org"
+    postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_non_fqdn_recipient, reject_unknown_recipient_domain, check_recipient_access hash:/etc/postfix/recipient_access, check_policy_service inet:127.0.0.1:2501"
+    postconf -e "masquerade_domains = \$mydomain"
+    #other configuration files
+    newaliases
+    touch /etc/postfix/transport
+    touch /etc/postfix/virtual
+    touch /etc/postfix/helo_access
+    touch /etc/postfix/sender_access
+    touch /etc/postfix/recipient_access
+    touch /etc/postfix/sasl_passwd
+    postmap /etc/postfix/transport
+    postmap /etc/postfix/virtual
+    postmap /etc/postfix/helo_access
+    postmap /etc/postfix/sender_access
+    postmap /etc/postfix/recipient_access
+    postmap /etc/postfix/sasl_passwd
+    echo "pwcheck_method: auxprop">/usr/lib64/sasl2/smtpd.conf
+    echo "auxprop_plugin: sasldb">>/usr/lib64/sasl2/smtpd.conf
+    echo "mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5">>/usr/lib64/sasl2/smtpd.conf
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# install and configure MailScanner
+# +---------------------------------------------------+
+func_mailscanner () {
+    cd /tmp
+    wget http://mailscanner.info/files/4/rpm/MailScanner-4.84.6-1.rpm.tar.gz
+    tar -xvzf MailScanner-4.84.6-1.rpm.tar.gz
+    cd MailScanner-4.84.6-1
+    ./install.sh
+    rm -f /root/.rpmmacros
+    chown postfix:postfix /var/spool/MailScanner/incoming
+    chown postfix:postfix /var/spool/MailScanner/quarantine
+    mkdir /var/spool/MailScanner/spamassassin
+    chown postfix:postfix /var/spool/MailScanner/spamassassin
+    mkdir /var/spool/mqueue
+    chown postfix:postfix /var/spool/mqueue
+    touch /var/lock/subsys/MailScanner.off
+    touch /etc/MailScanner/rules/spam.blacklist.rules
+    rm -f /var/spool/MailScanner/incoming/SpamAssassin.cache.db
+
+    # Configure MailScanner
+    sed -i '/^Max Children =/ c\Max Children = 2' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Run As User =/ c\Run As User = postfix' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Run As Group =/ c\Run As Group = postfix' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Incoming Queue Dir =/ c\%Incoming Queue Dir = \/var\/spool\/postfix\/hold' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Outgoing Queue Dir =/ c\Outgoing Queue Dir = \/var\/spool\/postfix\/incoming' /etc/MailScanner/MailScanner.conf
+    sed -i '/^MTA =/ c\MTA = postfix' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Incoming Work Group =/ c\Incoming Work Group = clamav' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Incoming Work Permissions =/ c\Incoming Work Permissions = 0644' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Quarantine User =/ c\Quarantine User = postfix' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Quarantine Group =/ c\Quarantine Group = apache' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Quarantine Permissions =/ c\Quarantine Permissions = 0660' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Deliver Unparsable TNEF =/ c\Deliver Unparsable TNEF = yes' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Maximum Archive Depth =/ c\Maximum Archive Depth = 0' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Virus Scanners =/ c\Virus Scanners = clamd' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Non-Forging Viruses =/ c\Non-Forging Viruses = Joke\/ OF97\/ WM97\/ W97M\/ eicar Zip-Password' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Web Bug Replacement =/ c\Web Bug Replacement = http:\/\/dl.efa-project.org\/static\/1x1spacer.gif' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Quarantine Whole Message =/ c\Quarantine Whole Message = yes' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Quarantine Infections =/ c\Quarantine Infections = no' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Keep Spam And MCP Archive Clean =/ c\Keep Spam And MCP Archive Clean = yes' /etc/MailScanner/MailScanner.conf
+    sed -i 's/X-%org-name%-MailScanner/X-%org-name%-MailScanner-EFA/g' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Remove These Headers =/ c\Remove These Headers = X-Mozilla-Status: X-Mozilla-Status2: Disposition-Notification-To: Return-Receipt-To:' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Disarmed Modify Subject =/ c\Disarmed Modify Subject = no' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Send Notices =/ c\Send Notices = no' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Notice Signature =/ c\Notice Signature = -- \\nEFA\\nEmail Filter Appliance\\nwww.efa-project.org' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Notices From =/ c\Notices From = EFA' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Inline HTML Signature =/ c\Inline HTML Signature = %rules-dir%\/sig.html.rules' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Inline Text Signature =/ c\Inline Text Signature = %rules-dir%\/sig.text.rules' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Is Definitely Not Spam =/ c\Is Definitely Not Spam = &SQLWhitelist' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Is Definitely Spam =/ c\Is Definitely Spam = &SQLBlacklist' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Definite Spam Is High Scoring =/ c\Definite Spam Is High Scoring = yes' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Treat Invalid Watermarks With No Sender as Spam =/ c\Treat Invalid Watermarks With No Sender as Spam = high-scoring spam' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Max SpamAssassin Size =/ c\Max SpamAssassin Size = 100k continue 150k' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = 4' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Spam Actions =/ c\Spam Actions = store deliver header "X-Spam-Status: Yes"' /etc/MailScanner/MailScanner.conf
+    sed -i '/^High Scoring Spam Actions =/ c\High Scoring Spam Actions = store' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status: No"' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Log Spam =/ c\Log Spam = yes' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Log Silent Viruses =/ c\Log Silent Viruses = yes' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Log Dangerous HTML Tags =/ c\Log Dangerous HTML Tags = yes' /etc/MailScanner/MailScanner.conf
+    sed -i '/^SpamAssassin Local State Dir =/ c\SpamAssassin Local State Dir = /var/lib/spamassassin' /etc/MailScanner/MailScanner.conf
+    sed -i '/^SpamAssassin User State Dir =/ c\SpamAssassin User State Dir = /var/spool/MailScanner/spamassassin' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Detailed Spam Report =/ c\Detailed Spam Report = yes' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Include Scores In SpamAssassin Report =/ c\Include Scores In SpamAssassin Report = yes' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Always Looked Up Last =/ c\Always Looked Up Last = &MailWatchLogging' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Clamd Socket =/ c\Clamd Socket = /tmp/clamd.socket' /etc/MailScanner/MailScanner.conf
+
+    touch /etc/MailScanner/rules/sig.html.rules
+    touch /etc/MailScanner/rules/sig.text.rules
+    rm -rf /var/spool/MailScanner/incoming
+    mkdir /var/spool/MailScanner/incoming
+    echo "none /var/spool/MailScanner/incoming tmpfs defaults 0 0">>/etc/fstab
+    mount -a
 }
 # +---------------------------------------------------+
 
@@ -59,6 +207,14 @@ func_clamav () {
 # +---------------------------------------------------+
 func_apache () {
     echo "apache configuration"
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure MySQL
+# +---------------------------------------------------+
+func_mysql () {
+    echo "Mysql configuration"
 }
 # +---------------------------------------------------+
 
@@ -83,9 +239,11 @@ func_services () {
     chkconfig lvm2-monitor off
     chkconfig mdmonitor off
     chkconfig netfs off
-    # disable postfix for now and enable after efa-init
-    chkconfig postfix off 
     chkconfig smartd off
+    
+    # disable for now and enable after efa-init
+    chkconfig postfix off 
+    chkconfig MailScanner off
 }
 # +---------------------------------------------------+
 
@@ -123,8 +281,8 @@ func_efarequirements () {
     chmod 700 /usr/local/sbin/EFA-SA-Update
     
     # Write SSH banner
-  sed -i "/^#Banner / c\#Banner" /etc/ssh/sshd_config
-  cat > /etc/banner << 'EOF'
+    sed -i "/^#Banner / c\#Banner" /etc/ssh/sshd_config
+    cat > /etc/banner << 'EOF'
        Welcome to E.F.A. (http://www.efa-project.org)
 
  Warning!
@@ -147,6 +305,10 @@ func_efarequirements () {
  consent to these terms and conditions of use.   LOG OFF IMMEDIATELY
  if you do not agree to the conditions stated in this warning.  
 EOF
+
+
+    # Compress logs from logrotate
+    sed -i "s/#compress/compress/g" /etc/logrotate.conf
 }
 # +---------------------------------------------------+
 
@@ -180,7 +342,10 @@ func_cleanup () {
 func_upgradeOS
 func_repoforge
 func_clamav
+func_postfix
+func_mailscanner
 func_apache
+func_mysql
 func_kernmodules
 func_services
 func_efarequirements
