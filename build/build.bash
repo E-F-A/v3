@@ -112,13 +112,13 @@ func_efarequirements () {
     echo "First time login: root/EfaPr0j3ct" >> /etc/issue
     
     # Grab EFA specific scripts/programs
-    /usr/bin/wget -q -O /usr/local/sbin/EFA-Init -o /var/log/efa/wget.log $gitdlurl/EFA/EFA-Init
+    /usr/bin/wget -q -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
     chmod 700 /usr/local/sbin/EFA-Init
-    /usr/bin/wget -q -O /usr/local/sbin/EFA-Configure -o /var/log/efa/wget.log $gitdlurl/EFA/EFA-Configure
+    /usr/bin/wget -q -O /usr/local/sbin/EFA-Configure $gitdlurl/EFA/EFA-Configure
     chmod 700 /usr/local/sbin/EFA-Configure
-    /usr/bin/wget -q -O /usr/local/sbin/EFA-Update -o /var/log/efa/wget.log $gitdlurl/EFA/EFA-Update
+    /usr/bin/wget -q -O /usr/local/sbin/EFA-Update $gitdlurl/EFA/EFA-Update
     chmod 700 /usr/local/sbin/EFA-Update
-    /usr/bin/wget -q -O /usr/local/sbin/EFA-SA-Update -o /var/log/efa/wget.log $gitdlurl/EFA/EFA-SA-Update
+    /usr/bin/wget -q -O /usr/local/sbin/EFA-SA-Update $gitdlurl/EFA/EFA-SA-Update
     chmod 700 /usr/local/sbin/EFA-SA-Update
     
     # Write SSH banner
@@ -153,9 +153,9 @@ EOF
 # Cron settings
 # +---------------------------------------------------+
 func_cron () {
-    /usr/bin/wget -q -O /etc/cron.daily/EFA-Daily-cron -o /var/log/efa/wget.log $gitdlurl/EFA/EFA-Daily-cron
+    /usr/bin/wget -q -O /etc/cron.daily/EFA-Daily-cron $gitdlurl/EFA/EFA-Daily-cron
     chmod 700 /etc/cron.daily/EFA-Daily-cron
-    /usr/bin/wget -q -O /etc/cron.monthly/EFA-Monthly-cron -o /var/log/efa/wget.log $gitdlurl/EFA/EFA-Monthly-cron
+    /usr/bin/wget -q -O /etc/cron.monthly/EFA-Monthly-cron  $gitdlurl/EFA/EFA-Monthly-cron
     chmod 700 /etc/cron.monthly/EFA-Monthly-cron
 }
 # +---------------------------------------------------+
