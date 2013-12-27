@@ -46,15 +46,6 @@ func_repoforge () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Install and configure ClamAV from Repoforge
-# +---------------------------------------------------+
-func_clamav () {
-    yum -y install clamav
-    # freshclam # this should probably be moved to EFA-Init
-}
-# +---------------------------------------------------+
-
-# +---------------------------------------------------+
 # configure postfix
 # +---------------------------------------------------+
 func_postfix () {
@@ -203,6 +194,36 @@ func_mailscanner () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Install and configure spamassassin & clamav
+# +---------------------------------------------------+
+func_spam_clamav () {
+
+    yum -y install clamav
+
+    cd /tmp
+    wget http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
+    tar -xvzf install-Clam-SA-latest.tar.gz
+    cd install-Clam*
+    echo 'n'>answers.txt
+    echo ''>>answers.txt
+    cat answers.txt|./install.sh
+    cd /tmp
+    rm -rf install-Clam*
+        
+    # remove old files 
+    rm /var/clamav/daily.cld
+    rm /var/clamav/main.cld
+        
+    #Force an update of ClamAV definitions...
+    service clamd restart
+    # freshclam # this should probably be moved to EFA-Init
+        
+    # fix socket file in mailscanner.conf
+    sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # configure apache
 # +---------------------------------------------------+
 func_apache () {
@@ -341,9 +362,9 @@ func_cleanup () {
 # +---------------------------------------------------+
 func_upgradeOS
 func_repoforge
-func_clamav
 func_postfix
 func_mailscanner
+func_spam_clamav
 func_apache
 func_mysql
 func_kernmodules
