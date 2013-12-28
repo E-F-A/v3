@@ -127,7 +127,7 @@ func_mailscanner () {
     cd MailScanner-4.84.6-1
     ./install.sh
     rm -f /root/.rpmmacros
-    chown postfix:postfix /var/spool/MailScanner/incoming
+    #chown postfix:postfix /var/spool/MailScanner/incoming
     chown postfix:postfix /var/spool/MailScanner/quarantine
     mkdir /var/spool/MailScanner/spamassassin
     chown postfix:postfix /var/spool/MailScanner/spamassassin
@@ -135,7 +135,7 @@ func_mailscanner () {
     chown postfix:postfix /var/spool/mqueue
     touch /var/lock/subsys/MailScanner.off
     touch /etc/MailScanner/rules/spam.blacklist.rules
-    rm -f /var/spool/MailScanner/incoming/SpamAssassin.cache.db
+    #rm -f /var/spool/MailScanner/incoming/SpamAssassin.cache.db
 
     # Configure MailScanner
     sed -i '/^Max Children =/ c\Max Children = 2' /etc/MailScanner/MailScanner.conf
@@ -171,6 +171,7 @@ func_mailscanner () {
     sed -i '/^Treat Invalid Watermarks With No Sender as Spam =/ c\Treat Invalid Watermarks With No Sender as Spam = high-scoring spam' /etc/MailScanner/MailScanner.conf
     sed -i '/^Max SpamAssassin Size =/ c\Max SpamAssassin Size = 100k continue 150k' /etc/MailScanner/MailScanner.conf
     sed -i '/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = 4' /etc/MailScanner/MailScanner.conf
+    # Check (ESVA defines Spam Actions = store notify)
     sed -i '/^Spam Actions =/ c\Spam Actions = store deliver header "X-Spam-Status: Yes"' /etc/MailScanner/MailScanner.conf
     sed -i '/^High Scoring Spam Actions =/ c\High Scoring Spam Actions = store' /etc/MailScanner/MailScanner.conf
     sed -i '/^Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status: No"' /etc/MailScanner/MailScanner.conf
@@ -183,6 +184,8 @@ func_mailscanner () {
     sed -i '/^Include Scores In SpamAssassin Report =/ c\Include Scores In SpamAssassin Report = yes' /etc/MailScanner/MailScanner.conf
     sed -i '/^Always Looked Up Last =/ c\Always Looked Up Last = &MailWatchLogging' /etc/MailScanner/MailScanner.conf
     sed -i '/^Clamd Socket =/ c\Clamd Socket = /tmp/clamd.socket' /etc/MailScanner/MailScanner.conf
+    # Check (ESVA Log SpamAssassin Rule Actions = no)
+    # Default settting Log SpamAssassin Rule Actions = yes
 
     touch /etc/MailScanner/rules/sig.html.rules
     touch /etc/MailScanner/rules/sig.text.rules
