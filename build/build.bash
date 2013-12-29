@@ -235,6 +235,9 @@ func_spam_clamav () {
     
     # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
     /usr/bin/wget -q -O //etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
+    
+    # and in the end we run sa-update just for the fun of it..
+    sa-update
 }
 # +---------------------------------------------------+
 
