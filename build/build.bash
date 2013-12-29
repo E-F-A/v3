@@ -197,8 +197,9 @@ func_mailscanner () {
 # +---------------------------------------------------+
 func_spam_clamav () {
 
-    yum -y install clamav
+    yum -y install clamav clamd
 
+    #Use the MailScanner packaged version. Answer no to install clam.
     cd /tmp
     wget http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
     tar -xvzf install-Clam-SA-latest.tar.gz
@@ -211,10 +212,22 @@ func_spam_clamav () {
         
     #Force an update of ClamAV definitions...
     # service clamd restart
-    # freshclam # this should probably be moved to EFA-Init
+    # freshclam # todo this should probably be moved to EFA-Init
         
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
+    
+    # todo: botnet.tar
+    # ESVA uses botnet.tar, this old package is in my opinion not needed as spamhaus relay blocklist already 
+    # adds botnet's by default.. also the botnet.tar is not maintained anymore...
+    
+    # todo: PDFinfo.pm
+    # official website is nowhere to be found, is this tool still usefull?
+    # should research this of still usefull we can probably use the .pm and .cf file from an esva system.
+    
+    # todo: ImageInfo
+    # well not really a todo, ImageInfo is already packaged and enabled by default in spamassassin.
+    # nothing to do here, just adding the remark so we don't spend any extra time on it :-).
 }
 # +---------------------------------------------------+
 
@@ -250,6 +263,7 @@ func_kernmodules () {
 # enable and disable services
 # +---------------------------------------------------+
 func_services () {
+    # These services we really don't need.
     chkconfig ip6tables off
     chkconfig cpuspeed off
     chkconfig lvm2-monitor off
@@ -257,9 +271,16 @@ func_services () {
     chkconfig netfs off
     chkconfig smartd off
     
-    # disable for now and enable after efa-init
+    # These services we disable for now and enable them after EFA-Init.
+    # Most of these are not enabled by default but add them here just to
+    # make sure we don't forget them at EFA-Init.
     chkconfig postfix off 
     chkconfig MailScanner off
+    chkconfig httpd off
+    chkconfig mysqld off
+    chkconfig named off
+    chkconfig saslauthd off
+    # todo clamd?
 }
 # +---------------------------------------------------+
 
@@ -350,6 +371,11 @@ func_cleanup () {
     
     # Secure SSH
     #sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
+    
+    # todo:
+    # clear/set dns
+    # clear logfiles
+    # clear bash history
 }
 
 # +---------------------------------------------------+

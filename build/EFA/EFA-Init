@@ -18,3 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
+
+# todo:
+# ip configuration
+# hostname configuration
+# detect host type, if vmware install vmware tools, hyper-v is already build in default centos kernel.
+# enable services
