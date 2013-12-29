@@ -264,6 +264,23 @@ func_mysql () {
     /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='';"
     /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
     /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
+    
+    # Create the databases 
+    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE FuzzyOcr"
+    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE mailscanner"
+    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sa_bayes"
+    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sqlgrey"
+    
+    # populate the sa_bayes DB
+    cd /tmp
+    /usr/bin/wget -q $gitdlurl/MYSQL/bayes_mysql.sql
+    /usr/bin/mysql -u root -p"$password" sa_bayes < /tmp/bayes_mysql.sql
+    
+    # add the AWL table to sa_bayes
+    cd /tmp
+    /usr/bin/wget -q $gitdlurl/MYSQL/awl_mysql.sql
+    /usr/bin/mysql -u root -p"$password" sa_bayes < /tmp/awl_mysql.sql
+
 }
 # +---------------------------------------------------+
 
