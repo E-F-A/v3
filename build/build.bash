@@ -59,7 +59,6 @@ func_mysql () {
     echo y | /usr/bin/mysqladmin -u root -p"$password" drop 'test'
     /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='';"
     /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-    /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
     
     # Create the databases 
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE FuzzyOcr"
@@ -67,6 +66,13 @@ func_mysql () {
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sa_bayes"
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sqlgrey"
     
+    # Create the users
+    /usr/bin/mysql -u root -p"$password" -e "GRANT SELECT,INSERT,UPDATE,DELETE on sa_bayes.* to 'sa_user'@'localhost' identified by '$password'"
+    # todo: mailwatch user
+    # todo: sqlgrey user
+    # todo: fuzzyocr user
+    /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
+ 
     # populate the sa_bayes DB
     # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/bayes_mysql.sql
     cd /tmp
@@ -270,7 +276,26 @@ func_spam_clamav () {
     # openprotect seems to have an alternative ^^ see link, need to check if that works.
     
     # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
-    /usr/bin/wget -q -O //etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
+    /usr/bin/wget -q -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
+    
+    # Configure spamassassin bayes and awl DB settings
+    echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_store_module              Mail::SpamAssassin::BayesStore::SQL">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_sql_dsn                   DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_sql_username              sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_sql_password              $password">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "auto_whitelist_factory          Mail::SpamAssassin::SQLBasedAddrList">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "user_awl_dsn                    DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "user_awl_sql_username           sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "user_awl_sql_password           $password">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_sql_override_username     mailwatch">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "#End E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
+    
+    # Add example spam to db
+    # source: http://spamassassin.apache.org/gtube/gtube.txt
+    cd /tmp
+    /usr/bin/wget -q $gitdlurl/EFA/gtube.txt
+    sa-learn --spam /tmp/gtube.txt
     
     # and in the end we run sa-update just for the fun of it..
     sa-update
