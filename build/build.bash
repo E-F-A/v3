@@ -24,6 +24,7 @@
 version="3.0.0.0 beta"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
+password="EfaPr0j3ct"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -254,6 +255,31 @@ func_apache () {
 # +---------------------------------------------------+
 func_mysql () {
     echo "Mysql configuration"
+    service mysqld start
+    
+    # remove default security flaws from MySQL.
+    /usr/bin/mysqladmin -u root password "$password"
+    /usr/bin/mysqladmin -u root -p"$password" -h localhost.localdomain password "$password"
+    echo y | /usr/bin/mysqladmin -u root -p"$password" drop 'test'
+    /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='';"
+    /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+    /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure SQLgrey
+# +---------------------------------------------------+
+func_sqlgrey () {
+    echo "SQLgrey configuration"
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure MailWatch
+# +---------------------------------------------------+
+func_mailwatch () {
+    echo "Mailwatch configuration"
 }
 # +---------------------------------------------------+
 
@@ -398,6 +424,8 @@ func_mailscanner
 func_spam_clamav
 func_apache
 func_mysql
+func_sqlgrey
+func_mailwatch
 func_kernmodules
 func_services
 func_efarequirements
