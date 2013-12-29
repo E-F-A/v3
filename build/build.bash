@@ -228,6 +228,13 @@ func_spam_clamav () {
     # todo: ImageInfo
     # well not really a todo, ImageInfo is already packaged and enabled by default in spamassassin.
     # nothing to do here, just adding the remark so we don't spend any extra time on it :-).
+    
+    # todo: sare
+    # sare channels are dead: http://wiki.apache.org/spamassassin/SareChannels
+    # openprotect seems to have an alternative ^^ see link, need to check if that works.
+    
+    # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
+    /usr/bin/wget -q -O //etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
 }
 # +---------------------------------------------------+
 

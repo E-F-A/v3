@@ -63,7 +63,7 @@ function update_kam()
         echo It completed okay.
         if [ -r KAM.cf.backup ]; then
                 if [ KAM.cf -nt KAM.cf.backup ]; then
-                        if ( tail -10 KAM.cf | grep -q '^#.*END' ); then
+                        if ( tail -10 KAM.cf | grep -q '^#.*EOF' ); then
                                 # echo It succeeded, so make a backup
                                 cp -f KAM.cf KAM.cf.backup
                          else
@@ -76,7 +76,7 @@ function update_kam()
                 fi
         else
                 # No backup file present, so delete file if it is bad
-                if ( tail -10 KAM.cf | grep -q '^#.*END' ); then
+                if ( tail -10 KAM.cf | grep -q '^#.*EOF' ); then
                         #      echo Success, make a backup
                         cp -f KAM.cf KAM.cf.backup
                  else
