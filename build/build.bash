@@ -339,7 +339,6 @@ func_mailwatch () {
     
     echo "MailWatch configuration"
 
-
     # Fetch MailWatch
     cd /tmp
     wget http://sourceforge.net/projects/mailwatch/files/mailwatch/$mailwatchver/mailwatch-$mailwatchver.tar.gz
@@ -351,17 +350,35 @@ func_mailwatch () {
 
     # Set up connection for MailWatch    
     cd ./MailScanner_perl_scripts
-    sed -i '/^my($db_user) =/ c\my($db_user) = \'mailwatch\'' MailWatch.pm
-    sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password'" MailWatch.pm
+    sed -i '/^my($db_user) =/ c\my($db_user) = \'mailwatch\';' MailWatch.pm
+    sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" MailWatch.pm
     mv MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+    
+    # Set up SQLBlackWhiteList
+    sed -i '/^ my($db_user) =/ c\ my($db_user) = \'mailwatch\';' SQLBlackWhiteList.pm
+    sed -i "/^ my(\$db_pass) =/ c\ my(\$db_pass) = '$password';" SQLBlackWhiteList.pm
+    mv SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
+
+    # Set up SQLSpamSettings
+    sed -i '/^my($db_user) =/ c\my($db_user) = \'mailwatch\';' SQLSpamSettings.pm
+    sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" SQLSpamSettings.pm
+    mv SQLSpamSettings.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
+
+    # Set up MailWatch tools
+    cd ..
+    mkdir /usr/local/bin/mailwatch
+    mv tools /usr/local/bin/mailwatch
+    touch /etc/cron.daily/mailwatch.sh
+    echo "#!/bin/bash" > /etc/cron.daily/mailwatch.sh
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php" >> /etc/cron.daily/mailwatch.sh
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean" >> /etc/cron.daily/mailwatch.sh
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php" >> /etc/cron.daily/mailwatch.sh
+    chmod 755 /etc/cron.daily/mailwatch.sh
 
     # Move MailWatch into web root and configure
     # ESVA MailWatch is directly in /var/www/html
     # Going to move into its own directory and maybe set up a redirect
-    # to keep the web root clean, match up with conf.php defaults, and
-    # define its own vhost
-
-    # Todo: Set Up MailWatch Tools
+    # to keep the web root clean and match up with conf.php defaults
     
     cd ..
     mv ./mailscanner /var/www/html
@@ -374,12 +391,26 @@ func_mailwatch () {
     cp conf.php.example conf.php
     sed -i '/^define(\'DB_USER\',/ c\define(\'DB_USER\', \'mailwatch\');' conf.php
     sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
-    # Note...Set Time Zone in EFA_Init for conf.php   
+    sed -i '/^define(\'TIME_ZONE\'),/ c\define(\'TIME_ZONE\', \'Etc/UTC\');' conf.php
     sed -i '/^define(\'QUARANTINE_USE_FLAG\',/ c\define(\'QUARANTINE_USE_FLAG\', true);' conf.php
     # Note...Set QUARANTINE_FROM_ADDR in EFA_Init for conf.php
     sed -i '/^define(\'QUARANTINE_REPORT_FROM_NAME\',/ c\define(\'QUARANTINE_REPORT_FROM_NAME\', \'EFA - Email Filter Appliance\');' conf.php
     sed -i '/^define(\'QUARANTINE_USE_SENDMAIL\',/ c\define(\'QUARANTINE_USE_SENDMAIL\', true);' conf.php
     sed -i '/^define(\'AUDIT\',/ c\define(\'AUDIT\', true);' conf.php
+
+
+    # Set up a redirect in web root to MailWatch for now
+    touch /var/www/html/index.html
+    echo "<!DOCTYPE html>" > index.html
+    echo "<html>" >> index.html
+    echo " <head>" >> index.html
+    echo "  <title>MailWatch</title>" >> index.html
+    echo "  <meta http-equiv=\"refresh\" content=\"0; url=/mailscanner/\" />" >> index.html
+    echo " </head>" >> index.html
+    echo " <body>" >> index.html
+    echo "   <a href=\"/mailscanner/\">Click Here for MailWatch</a>"
+    echo " </body>" >> index.html
+    echo "</html>" >> index.html
 
 }
 # +---------------------------------------------------+
@@ -417,6 +448,7 @@ func_services () {
     chkconfig mysqld off
     chkconfig named off
     chkconfig saslauthd off
+    chkconfig crond off
     # todo clamd?
 }
 # +---------------------------------------------------+
