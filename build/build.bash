@@ -343,6 +343,7 @@ func_mailwatch () {
     cd /tmp
     wget http://sourceforge.net/projects/mailwatch/files/mailwatch/$mailwatchver/mailwatch-$mailwatchver.tar.gz
     tar -xzvf mailwatch-$mailwatchver.tar.gz
+    cd ./mailwatch-$mailwatchver
 
     # Set php parameters needed
     sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini
@@ -381,7 +382,6 @@ func_mailwatch () {
     # Going to move into its own directory and maybe set up a redirect
     # to keep the web root clean and match up with conf.php defaults
     
-    cd ..
     mv ./mailscanner /var/www/html
     cd /var/www/html/mailscanner
     chown root:apache images
