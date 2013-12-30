@@ -797,7 +797,7 @@ func_cleanup () {
     # cd /tmp
     # rm -rf *
 
-    # TEST:  mysqld may be causing kickstart reboot process to hang...
+    # mysqld causes kickstart reboot process to hang...stop now
     service mysqld stop
     
     # clean yum cache
