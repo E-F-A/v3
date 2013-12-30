@@ -737,9 +737,27 @@ func_cleanup () {
     # clear/set dns
     # clear logfiles
     # clear bash history
+    # rm -f /var/log/clamav/freshclam.log
+    # cd /tmp
+    # rm -rf *
+
 
     # TEST:  mysqld may be causing kickstart reboot process to hang...
     service mysqld stop
+    
+    # clean yum cache
+    yum clean all
+    
+    # zero disks for better compression (when creating VM images)
+    # this can take a while so disabled for now until we start creating images.
+    #dd if=/dev/zero of=/filler bs=1000
+    #rm -f /filler
+    #dd if=/dev/zero of=/tmp/filler bs=1000
+    #rm -f /tmp/filler
+    #dd if=/dev/zero of=/boot/filler bs=1000
+    #rm -f /boot/filler
+    #dd if=/dev/zero of=/var/filler bs=1000
+    #rm -f /var/filler
 }
 
 # +---------------------------------------------------+
