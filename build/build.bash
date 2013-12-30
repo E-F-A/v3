@@ -378,8 +378,8 @@ func_mailwatch () {
     mv MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
     
     # Set up SQLBlackWhiteList
-    sed -i "/^ my(\$db_user) =/ c\ my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
-    sed -i "/^ my(\$db_pass) =/ c\ my(\$db_pass) = '$password';" SQLBlackWhiteList.pm
+    sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
+    sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$password';" SQLBlackWhiteList.pm
     mv SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
 
     # Set up SQLSpamSettings
@@ -391,13 +391,14 @@ func_mailwatch () {
     cd ..
     mkdir /usr/local/bin/mailwatch
     mv tools /usr/local/bin/mailwatch
+    rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
     chmod 755 /usr/local/bin/mailwatch/tools/Cron_jobs/*
-    touch /etc/cron.daily/mailwatch.sh
-    echo "#!/bin/bash" > /etc/cron.daily/mailwatch.sh
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php" >> /etc/cron.daily/mailwatch.sh
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean" >> /etc/cron.daily/mailwatch.sh
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php" >> /etc/cron.daily/mailwatch.sh
-    chmod 755 /etc/cron.daily/mailwatch.sh
+    touch /etc/cron.daily/mailwatch
+    echo "#!/bin/bash" > /etc/cron.daily/mailwatch
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php" >> /etc/cron.daily/mailwatch
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean" >> /etc/cron.daily/mailwatch
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php" >> /etc/cron.daily/mailwatch
+    chmod 755 /etc/cron.daily/mailwatch
 
     # Move MailWatch into web root and configure
     # ESVA MailWatch is directly in /var/www/html
@@ -414,7 +415,7 @@ func_mailwatch () {
     cp conf.php.example conf.php
     sed -i "/^define('DB_USER',/ c\define('DB_USER', 'mailwatch');" conf.php
     sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
-    sed -i "/^define('TIME_ZONE'),/ c\define('TIME_ZONE', 'Etc/UTC');" conf.php
+    sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', 'Etc/UTC');" conf.php
     sed -i "/^define('QUARANTINE_USE_FLAG',/ c\define('QUARANTINE_USE_FLAG', true);" conf.php
     # Note...Set QUARANTINE_FROM_ADDR in EFA_Init for conf.php
     sed -i "/^define('QUARANTINE_REPORT_FROM_NAME',/ c\define('QUARANTINE_REPORT_FROM_NAME', 'EFA - Email Filter Appliance');" conf.php
