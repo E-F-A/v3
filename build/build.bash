@@ -82,6 +82,8 @@ func_mysql () {
     /usr/bin/mysql -u root -p"$password" -e "GRANT FILE ON *.* to mailwatch@localhost IDENTIFIED BY '$password';" 
     /usr/bin/mysql -u root -p"$password" mailscanner -e "INSERT INTO users SET username = 'admin', password = md5('$password'), fullname = 'Administrator', type ='A'" 
     # todo: sqlgrey user
+    /usr/bin/mysql -u root -p"$password" -e "GRANT ALL on sqlgrey.* to 'sqlgrey'@'localhost' identified by '$password'"
+
     # todo: fuzzyocr user
     /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
  
@@ -350,11 +352,47 @@ func_apache () {
 # configure SQLgrey
 # +---------------------------------------------------+
 func_sqlgrey () {
-    useradd sqlgrey -s /sbin/nologin
+    useradd sqlgrey -m -d /home/sqlgrey -s /sbin/nologin
     wget http://downloads.sourceforge.net/project/sqlgrey/sqlgrey-1.8%20%28stable%29/sqlgrey-1.8.0.tar.gz
     tar -xvzf sqlgrey-1.8.0.tar.gz
     cd sqlgrey-1.8.0
-     make rh-install
+    make rh-install
+    
+    # pre-create the local files so users won't be confused if the file is not there.
+    touch /etc/sqlgrey/clients_ip_whitelist.local
+    touch /etc/sqlgrey/clients_fqdn_whitelist.local
+    
+    # Make the changes to the config file...
+    sed -i '/conf_dir =/ c\conf_dir = /etc/sqlgrey' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/user =/ c\user = sqlgrey' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/group =/ c\group = sqlgrey' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/confdir =/ c\confdir = /etc/sqlgrey' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/connect_src_throttle =/ c\connect_src_throttle = 5' /etc/sqlgrey/sqlgrey.conf
+    sed -i "/awl_age = 32/d" /etc/sqlgrey/sqlgrey.conf
+    sed -i "/group_domain_level = 10/d" /etc/sqlgrey/sqlgrey.conf
+    sed -i '/awl_age =/ c\awl_age = 60' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/group_domain_level =/ c\group_domain_level = 2' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/db_type =/ c\db_type = mysql' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/db_name =/ c\db_name = sqlgrey' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/db_host =/ c\db_host = localhost' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/db_port =/ c\db_port = default' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/db_user =/ c\db_user = sqlgrey' /etc/sqlgrey/sqlgrey.conf
+    sed -i "/db_pass =/ c\db_pass = $password" /etc/sqlgrey/sqlgrey.conf
+    sed -i '/db_cleandelay =/ c\db_cleandelay = 1800' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/clean_method =/ c\clean_method = sync' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/prepend =/ c\prepend = 1' /etc/sqlgrey/sqlgrey.conf
+    sed -i "/reject_first_attempt\/reject_early_reconnect/d" /etc/sqlgrey/sqlgrey.conf
+    sed -i '/reject_first_attempt =/ c\reject_first_attempt = immed' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/reject_early_reconnect =/ c\reject_early_reconnect = immed' /etc/sqlgrey/sqlgrey.conf
+    sed -i "/reject_code = dunno/d" /etc/sqlgrey/sqlgrey.conf
+    sed -i '/reject_code =/ c\reject_code = 451' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/whitelists_host =/ c\whitelists_host = sqlgrey.bouton.name' /etc/sqlgrey/sqlgrey.conf
+    
+    # start and stop sqlgrey (first launch will create all database tables)
+    # We give it 15 seconds to populate the database and then stop it again.
+    service sqlgrey start
+    sleep 15
+    service sqlgrey stop
 }
 # +---------------------------------------------------+
 
@@ -479,6 +517,7 @@ func_services () {
     chkconfig saslauthd off
     chkconfig crond off
     chkconfig clamd off
+    chkconfig sqlgrey off
 }
 # +---------------------------------------------------+
 
