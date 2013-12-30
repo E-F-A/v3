@@ -464,7 +464,6 @@ func_mailwatch () {
     sed -i "/^define('QUARANTINE_USE_SENDMAIL',/ c\define('QUARANTINE_USE_SENDMAIL', true);" conf.php
     sed -i "/^define('AUDIT',/ c\define('AUDIT', true);" conf.php
 
-
     # Set up a redirect in web root to MailWatch for now
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
@@ -477,7 +476,10 @@ func_mailwatch () {
     echo "   <a href=\"/mailscanner/\">Click Here for MailWatch</a>" >> /var/www/html/index.html
     echo " </body>" >> /var/www/html/index.html
     echo "</html>" >> /var/www/html/index.html
-
+    
+    # Grabbing an favicon to complete the look 
+    cd /var/www/html
+    wget http://www.efa-project.org/favicon.ico
 }
 # +---------------------------------------------------+
 
