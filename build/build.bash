@@ -18,6 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------
 
+
+# Todo:
+# grabb all installation files and place them on dl.efa-project.org
+#   some servers are very slow (dcc for example) causing installations
+#   to fail, having it all on dl.efa-project.org will be faster and
+#   will save us the trouble if files become unavailable from the official
+#   website (version change for example, which might cause problems)
+#       This is something we can do as an final stage.
+
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
