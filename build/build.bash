@@ -350,7 +350,11 @@ func_apache () {
 # configure SQLgrey
 # +---------------------------------------------------+
 func_sqlgrey () {
-    echo "SQLgrey configuration"
+    useradd sqlgrey -s /sbin/nologin
+    wget http://downloads.sourceforge.net/project/sqlgrey/sqlgrey-1.8%20%28stable%29/sqlgrey-1.8.0.tar.gz
+    tar -xvzf sqlgrey-1.8.0.tar.gz
+    cd sqlgrey-1.8.0
+     make rh-install
 }
 # +---------------------------------------------------+
 
@@ -358,9 +362,6 @@ func_sqlgrey () {
 # configure MailWatch
 # +---------------------------------------------------+
 func_mailwatch () {
-    
-    echo "MailWatch configuration"
-
     # Fetch MailWatch
     cd /tmp
     wget http://sourceforge.net/projects/mailwatch/files/mailwatch/$mailwatchver/mailwatch-$mailwatchver.tar.gz
