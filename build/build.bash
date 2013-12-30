@@ -349,18 +349,18 @@ func_mailwatch () {
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
 
     # Set up connection for MailWatch    
-    cd ./MailScanner_perl_scripts
-    sed -i '/^my($db_user) =/ c\my($db_user) = \'mailwatch\';' MailWatch.pm
+    cd ./MailScanner_perl_script
+    sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
     sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" MailWatch.pm
     mv MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
     
     # Set up SQLBlackWhiteList
-    sed -i '/^ my($db_user) =/ c\ my($db_user) = \'mailwatch\';' SQLBlackWhiteList.pm
+    sed -i "/^ my(\$db_user) =/ c\ my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
     sed -i "/^ my(\$db_pass) =/ c\ my(\$db_pass) = '$password';" SQLBlackWhiteList.pm
     mv SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
 
     # Set up SQLSpamSettings
-    sed -i '/^my($db_user) =/ c\my($db_user) = \'mailwatch\';' SQLSpamSettings.pm
+    sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" SQLSpamSettings.pm
     sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" SQLSpamSettings.pm
     mv SQLSpamSettings.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
 
@@ -390,14 +390,14 @@ func_mailwatch () {
     chmod ug+rwx images/cache
 
     cp conf.php.example conf.php
-    sed -i '/^define(\'DB_USER\',/ c\define(\'DB_USER\', \'mailwatch\');' conf.php
+    sed -i "/^define('DB_USER',/ c\define('DB_USER', 'mailwatch');" conf.php
     sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
-    sed -i '/^define(\'TIME_ZONE\'),/ c\define(\'TIME_ZONE\', \'Etc/UTC\');' conf.php
-    sed -i '/^define(\'QUARANTINE_USE_FLAG\',/ c\define(\'QUARANTINE_USE_FLAG\', true);' conf.php
+    sed -i "/^define('TIME_ZONE'),/ c\define('TIME_ZONE', 'Etc/UTC');" conf.php
+    sed -i "/^define('QUARANTINE_USE_FLAG',/ c\define('QUARANTINE_USE_FLAG', true);" conf.php
     # Note...Set QUARANTINE_FROM_ADDR in EFA_Init for conf.php
-    sed -i '/^define(\'QUARANTINE_REPORT_FROM_NAME\',/ c\define(\'QUARANTINE_REPORT_FROM_NAME\', \'EFA - Email Filter Appliance\');' conf.php
-    sed -i '/^define(\'QUARANTINE_USE_SENDMAIL\',/ c\define(\'QUARANTINE_USE_SENDMAIL\', true);' conf.php
-    sed -i '/^define(\'AUDIT\',/ c\define(\'AUDIT\', true);' conf.php
+    sed -i "/^define('QUARANTINE_REPORT_FROM_NAME',/ c\define('QUARANTINE_REPORT_FROM_NAME', 'EFA - Email Filter Appliance');" conf.php
+    sed -i "/^define('QUARANTINE_USE_SENDMAIL',/ c\define('QUARANTINE_USE_SENDMAIL', true);" conf.php
+    sed -i "/^define('AUDIT',/ c\define('AUDIT', true);" conf.php
 
 
     # Set up a redirect in web root to MailWatch for now
