@@ -573,6 +573,9 @@ func_cleanup () {
     # clear/set dns
     # clear logfiles
     # clear bash history
+
+    # TEST:  mysqld may be causing kickstart reboot process to hang...
+    service mysqld stop
 }
 
 # +---------------------------------------------------+
