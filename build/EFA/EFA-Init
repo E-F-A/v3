@@ -25,3 +25,5 @@
 # detect host type, if vmware install vmware tools, hyper-v is already build in default centos kernel.
 # enable services
 # run sa-update
+# time/timezone selection
+# 
