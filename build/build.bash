@@ -537,6 +537,31 @@ func_pyzor () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Install Razor (http://razor.sourceforge.net/)
+# +---------------------------------------------------+
+func_pyzor () {
+    cd /tmp
+    wget http://downloads.sourceforge.net/project/razor/razor-agents/2.84/razor-agents-2.84.tar.bz2
+    tar xvjf razor-agents-2.84.tar.bz2
+    cd razor-agents-2.84
+    
+    perl Makefile.PL
+    make
+    make test
+    make install
+    
+    mkdir /var/spool/postfix/.razor
+    chown postfix:postfix /var/spool/postfix/.razor
+
+    # todo: this should probably go to EFA-Init.
+    su postfix -s /bin/bash -c 'razor-admin -create'
+    su postfix -s /bin/bash -c 'razor-admin -register'
+    sed -i '/^debuglevel/ c\debuglevel             = 0' /var/spool/postfix/.razor/razor-agent.conf
+}
+# +---------------------------------------------------+
+
+
+# +---------------------------------------------------+
 # Disable unneeded kernel modules
 # +---------------------------------------------------+
 func_kernmodules () {
@@ -691,6 +716,7 @@ func_sqlgrey
 func_mailwatch
 func_mailgraph
 func_pyzor
+func_razor
 func_kernmodules
 func_services
 func_efarequirements
