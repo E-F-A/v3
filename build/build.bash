@@ -402,16 +402,16 @@ func_mailwatch () {
 
     # Set up a redirect in web root to MailWatch for now
     touch /var/www/html/index.html
-    echo "<!DOCTYPE html>" > index.html
-    echo "<html>" >> index.html
-    echo " <head>" >> index.html
-    echo "  <title>MailWatch</title>" >> index.html
-    echo "  <meta http-equiv=\"refresh\" content=\"0; url=/mailscanner/\" />" >> index.html
-    echo " </head>" >> index.html
-    echo " <body>" >> index.html
-    echo "   <a href=\"/mailscanner/\">Click Here for MailWatch</a>"
-    echo " </body>" >> index.html
-    echo "</html>" >> index.html
+    echo "<!DOCTYPE html>" > /var/www/html/index.html
+    echo "<html>" >> /var/www/html/index.html
+    echo " <head>" >> /var/www/html/index.html
+    echo "  <title>MailWatch</title>" >> /var/www/html/index.html
+    echo "  <meta http-equiv=\"refresh\" content=\"0; url=/mailscanner/\" />" >> /var/www/html/index.html
+    echo " </head>" >> /var/www/html/index.html
+    echo " <body>" >> /var/www/html/index.html
+    echo "   <a href=\"/mailscanner/\">Click Here for MailWatch</a>" >> /var/www/html/index.html
+    echo " </body>" >> /var/www/html/index.html
+    echo "</html>" >> /var/www/html/index.html
 
 }
 # +---------------------------------------------------+
