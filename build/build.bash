@@ -18,7 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------
 
-
 # Todo:
 # grabb all installation files and place them on dl.efa-project.org
 #   some servers are very slow (dcc for example) causing installations
@@ -268,7 +267,7 @@ func_mailscanner () {
 # Install and configure spamassassin & clamav
 # +---------------------------------------------------+
 func_spam_clamav () {
-
+    # install clamav and clamd.
     yum -y install clamav clamd
 
     # don't know if we need it so GPG key import is disabled (I remember GPG key was needed in ESVA for something
@@ -365,8 +364,6 @@ func_spam_clamav () {
 # +---------------------------------------------------+
 func_apache () {
     echo "apache configuration"
-
-   # Added mod_ssl package to ks.cfg 
 }
 # +---------------------------------------------------+
 
@@ -736,7 +733,6 @@ func_efarequirements () {
  if you do not agree to the conditions stated in this warning.  
 EOF
 
-
     # Compress logs from logrotate
     sed -i "s/#compress/compress/g" /etc/logrotate.conf
 }
@@ -757,7 +753,6 @@ func_cron () {
 # Clean-up
 # +---------------------------------------------------+
 func_cleanup () {
-    
     echo "DISABLED FOR NOW UNTIL TESTING IS OVER..."
     # Clean SSH keys (generate at first boot)
     #/bin/rm /etc/ssh/ssh_host_*
@@ -772,7 +767,6 @@ func_cleanup () {
     # rm -f /var/log/clamav/freshclam.log
     # cd /tmp
     # rm -rf *
-
 
     # TEST:  mysqld may be causing kickstart reboot process to hang...
     service mysqld stop
@@ -791,6 +785,7 @@ func_cleanup () {
     #dd if=/dev/zero of=/var/filler bs=1000
     #rm -f /var/filler
 }
+# +---------------------------------------------------+
 
 # +---------------------------------------------------+
 # Main logic (this is where we start calling out functions)
