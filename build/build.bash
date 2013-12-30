@@ -560,6 +560,32 @@ func_pyzor () {
 }
 # +---------------------------------------------------+
 
+# +---------------------------------------------------+
+# Install DCC http://www.rhyolite.com/dcc/ 
+# (current version = version 1.3.154, December 03, 2013)
+# +---------------------------------------------------+
+func_dcc () {
+    cd /tmp
+    wget http://www.rhyolite.com/dcc/source/dcc.tar.Z
+    tar xvzf dcc.tar.Z
+    cd dcc-*
+    
+    ./configure --disable-dccm
+    make install
+    
+    ln -s /var/dcc/libexec/cron-dccd /usr/bin/cron-dccd
+    ln -s /var/dcc/libexec/cron-dccd /etc/cron.monthly/cron-dccd
+    echo "dcc_home /var/dcc" >> /etc/MailScanner/spam.assassin.prefs.conf
+    sed -i '/^dcc_path / c\dcc_path /usr/local/bin/dccproc' /etc/MailScanner/spam.assassin.prefs.conf
+    sed -i '/^DCCIFD_ENABLE=/ c\DCCIFD_ENABLE=on' /var/dcc/dcc_conf
+    sed -i '/^DBCLEAN_LOGDAYS=/ c\DBCLEAN_LOGDAYS=1' /var/dcc/dcc_conf
+    sed -i '/^DCCIFD_LOGDIR=/ c\DCCIFD_LOGDIR="/var/dcc/log"' /var/dcc/dcc_conf
+    chown postfix:postfix /var/dcc
+    
+    cp /var/dcc/libexec/rcDCC /etc/init.d/adcc
+    sed -i "s/#loadplugin Mail::SpamAssassin::Plugin::DCC/loadplugin Mail::SpamAssassin::Plugin::DCC/g" /etc/mail/spamassassin/v310.pre
+}
+# +---------------------------------------------------+
 
 # +---------------------------------------------------+
 # Disable unneeded kernel modules
@@ -602,6 +628,7 @@ func_services () {
     chkconfig clamd off
     chkconfig sqlgrey off
     chkconfig mailgraph-init off
+    chkconfig adcc off
 }
 # +---------------------------------------------------+
 
@@ -717,6 +744,7 @@ func_mailwatch
 func_mailgraph
 func_pyzor
 func_razor
+func_dcc
 func_kernmodules
 func_services
 func_efarequirements
