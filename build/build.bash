@@ -525,6 +525,15 @@ func_mailwatch () {
     # Grabbing an favicon to complete the look 
     cd /var/www/html
     wget http://www.efa-project.org/favicon.ico
+
+    # Todo: Add branding to MailWatch, replace images to display EFA
+    # Todo: Confirm mysql bayes database is configured correctly for 
+    #       MailWatch...docs describe file based method only
+    # Todo: Integrate MailGraph
+    #       (See some possible custom edits in MailWatch on ESVA...will check)
+    # Todo: Add Postfix queue monitoring functionality?
+    # 	    (not part of ESVA but easy to add and may be useful info)
+    # Todo: Anything else I am not thinking of, lol! Need to do the dishes...   
 }
 # +---------------------------------------------------+
 
