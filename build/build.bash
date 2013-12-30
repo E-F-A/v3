@@ -27,6 +27,10 @@
 #   website (version change for example, which might cause problems)
 #       This is something we can do as an final stage.
 
+# fuzzyocr project seems to be dead (since 2009)
+# Don't know if it is wise to add it as it has lots of dependancy's.
+# http://wiki.apache.org/spamassassin/FuzzyOcrPlugin
+
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
