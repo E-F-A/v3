@@ -43,7 +43,7 @@ func_upgradeOS () {
 func_repoforge () {
     rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
     rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-    yum install -y tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df Perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-Net-LDAP
+    yum install -y tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df Perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-Net-LDAP perl-File-Tail
 }
 # +---------------------------------------------------+
 
@@ -484,6 +484,30 @@ func_mailwatch () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Mailgraph
+# +---------------------------------------------------+
+func_mailgraph () {
+    cd /tmp 
+    wget -q http://mailgraph.schweikert.ch/pub/mailgraph-1.14.tar.gz
+    tar xvzf mailgraph-1.14.tar.gz
+    cd mailgraph-1.14
+    
+    mv mailgraph.cgi /var/www/cgi-bin/
+    mv mailgraph.pl /usr/local/bin/
+    mv mailgraph-init /etc/init.d/
+    chmod 0755 /etc/init.d/mailgraph-init
+    chmod 0755 /var/www/cgi-bin/mailgraph.cgi
+    
+    sed -i '/^MAIL_LOG=/ c\MAIL_LOG=\/var\/log\/maillog' /etc/init.d/mailgraph-init
+    sed -i "/^my \$rrd =/ c\my \$rrd = \'\/var\/lib\/mailgraph.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
+    sed -i "/^my \$rrd_virus =/ c\my \$rrd_virus = \'\/var\/lib\/mailgraph_virus.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
+
+    # todo:
+    # figure out how this was incorporated in mailwatch..
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Disable unneeded kernel modules
 # +---------------------------------------------------+
 func_kernmodules () {
@@ -523,6 +547,7 @@ func_services () {
     chkconfig crond off
     chkconfig clamd off
     chkconfig sqlgrey off
+    chkconfig mailgraph-init off
 }
 # +---------------------------------------------------+
 
@@ -635,6 +660,7 @@ func_spam_clamav
 func_apache
 func_sqlgrey
 func_mailwatch
+func_mailgraph
 func_kernmodules
 func_services
 func_efarequirements
