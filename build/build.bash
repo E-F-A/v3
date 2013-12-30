@@ -587,7 +587,7 @@ func_pyzor () {
 # +---------------------------------------------------+
 # Install Razor (http://razor.sourceforge.net/)
 # +---------------------------------------------------+
-func_pyzor () {
+func_razor () {
     cd /tmp
     wget http://downloads.sourceforge.net/project/razor/razor-agents/2.84/razor-agents-2.84.tar.bz2
     tar xvjf razor-agents-2.84.tar.bz2
