@@ -67,7 +67,7 @@ func_mysql () {
     service mysqld start
 
     # BDB support is removed from MYSQL 5.1, so those variables are gone
-    # (does anything depend on perl-BerkleyDB or BDB in general?)
+    # (does anything depend on perl-BerkeleyDB or BDB in general?)
     
     # remove default security flaws from MySQL.
     /usr/bin/mysqladmin -u root password "$password"
@@ -85,12 +85,12 @@ func_mysql () {
     # Source:  https://raw.github.com/endelwar/mailwatch/master/create.sql
     cd /tmp
     /usr/bin/wget -q $gitdlurl/MYSQL/create.sql
-    /usr/bin/mysql -u root -p"$password" < create.sql
+    /usr/bin/mysql -u root -p"$password" < /tmp/create.sql
  
     # Create the users
     /usr/bin/mysql -u root -p"$password" -e "GRANT SELECT,INSERT,UPDATE,DELETE on sa_bayes.* to 'sa_user'@'localhost' identified by '$password'"
     
-    # mailwatch user
+    # mailwatch mysql user and login user
     /usr/bin/mysql -u root -p"$password" -e "GRANT ALL ON mailscanner.* TO mailwatch@localhost IDENTIFIED BY '$password';"
     /usr/bin/mysql -u root -p"$password" -e "GRANT FILE ON *.* to mailwatch@localhost IDENTIFIED BY '$password';" 
     /usr/bin/mysql -u root -p"$password" mailscanner -e "INSERT INTO users SET username = 'admin', password = md5('$password'), fullname = 'Administrator', type ='A'" 
@@ -294,14 +294,43 @@ func_spam_clamav () {
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
     
-    # todo: botnet.tar
+    # not todo: botnet.tar
     # ESVA uses botnet.tar, this old package is in my opinion not needed as spamhaus relay blocklist already 
     # adds botnet's by default.. also the botnet.tar is not maintained anymore...
     
     # todo: PDFinfo.pm
     # official website is nowhere to be found, is this tool still usefull?
-    # should research this of still usefull we can probably use the .pm and .cf file from an esva system.
-    
+    # should research this of still usefull we can probably use the .pm and .cf 
+    # file from an esva system.
+    #
+    # Research results...
+    # Purpose is to thwart PDF spam...
+    # Source:  www.techrepublic.com/blog/data-center/putting-a-stop-to-pdf-spam
+    #
+    # Newer versions of Adobe Reader (version X+) may be mostly immune to 
+    # malware produced by this spam; however, this does not block the spam,
+    # of course...
+    # 
+    # This module is not being maintained...code examination...
+    # Last update rolled into ESVA was 2007-08-12
+    #
+    # Dallas Engelken <dallase@uribl.com> was the author
+    # May be worth contacting...if still at above address
+    #
+    # Code examines various characteristics of PDF file...and assigns scores
+    #   Weird image dimensions
+    #   md5 and fuzzy_md5 signatures for 2007 era PDF Spam
+    #   Known spam author names in PDF metadata
+    #   Image to text ratio
+    #   ....
+    #
+    # Bottom line:  imo still useful, if not too cpu intensive.
+    # Malformed/unusual PDFs screams spam, 
+    # and PDFInfo looks simple to maintain with its code and signature 
+    # structure.  We can enable and disable rules as needed going forward, or 
+    # even add new rules.
+
+
     # todo: ImageInfo
     # well not really a todo, ImageInfo is already packaged and enabled by default in spamassassin.
     # nothing to do here, just adding the remark so we don't spend any extra time on it :-).
