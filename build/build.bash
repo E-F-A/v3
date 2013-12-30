@@ -368,7 +368,7 @@ func_mailwatch () {
     cd ..
     mkdir /usr/local/bin/mailwatch
     mv tools /usr/local/bin/mailwatch
-    chmod 755 /usr/loca/bin/mailwatch/tools/Cron_jobs/*
+    chmod 755 /usr/local/bin/mailwatch/tools/Cron_jobs/*
     touch /etc/cron.daily/mailwatch.sh
     echo "#!/bin/bash" > /etc/cron.daily/mailwatch.sh
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php" >> /etc/cron.daily/mailwatch.sh
