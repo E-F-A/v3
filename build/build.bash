@@ -601,6 +601,17 @@ func_dcc () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Webmin
+# +---------------------------------------------------+
+func_webmin () {
+    cd /tmp
+    wget http://downloads.sourceforge.net/project/webadmin/webmin/1.660/webmin-1.660-1.noarch.rpm
+    rpm -i webmin-1.660-1.noarch.rpm
+}
+# +---------------------------------------------------+
+
+
+# +---------------------------------------------------+
 # Disable unneeded kernel modules
 # +---------------------------------------------------+
 func_kernmodules () {
@@ -776,6 +787,7 @@ func_mailgraph
 func_pyzor
 func_razor
 func_dcc
+func_webmin
 func_kernmodules
 func_services
 func_efarequirements
