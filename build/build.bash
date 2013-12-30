@@ -343,14 +343,14 @@ func_mailwatch () {
     cd /tmp
     wget http://sourceforge.net/projects/mailwatch/files/mailwatch/$mailwatchver/mailwatch-$mailwatchver.tar.gz
     tar -xzvf mailwatch-$mailwatchver.tar.gz
-    cd ./mailwatch-$mailwatchver
+    cd mailwatch-$mailwatchver
 
     # Set php parameters needed
     sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
 
     # Set up connection for MailWatch    
-    cd ./MailScanner_perl_script
+    cd MailScanner_perl_scripts
     sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
     sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" MailWatch.pm
     mv MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
@@ -382,7 +382,7 @@ func_mailwatch () {
     # Going to move into its own directory and maybe set up a redirect
     # to keep the web root clean and match up with conf.php defaults
     
-    mv ./mailscanner /var/www/html
+    mv mailscanner /var/www/html
     cd /var/www/html/mailscanner
     chown root:apache images
     chmod ug+rwx images
