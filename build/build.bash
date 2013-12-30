@@ -258,6 +258,12 @@ func_spam_clamav () {
 
     yum -y install clamav clamd
 
+    # don't know if we need it so GPG key import is disabled (I remember GPG key was needed in ESVA for something
+    # just don't know for what anymore)
+    #cd /tmp
+    #wget -q http://spamassassin.apache.org/released/GPG-SIGNING-KEY
+    #su postfix -c 'gpg --import /tmp/GPG-SIGNING-KEY'
+
     #Use the MailScanner packaged version. Answer no to install clam.
     cd /tmp
     wget http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
@@ -508,6 +514,29 @@ func_mailgraph () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Install Pyzor
+# +---------------------------------------------------+
+func_pyzor () {
+    cd /tmp
+    wget http://downloads.sourceforge.net/project/pyzor/pyzor/0.5.0/pyzor-0.5.0.tar.gz
+    tar xvzf pyzor-0.5.0.tar.gz
+    cd pyzor-0.5.0
+    python setup.py build
+    python setup.py install
+
+    # Fix deprecation warning message
+    sed -i '/^#!\/usr\/bin\/python/ c\#!\/usr\/bin\/python -Wignore::DeprecationWarning' /usr/bin/pyzor
+
+    mkdir /var/spool/postfix/.pyzor
+    chown postfix:postfix /var/spool/postfix/.pyzor
+    # Note: ESVA also has an .pyzor directory in /var/www don't know why..
+  
+    # and finally initialize the servers file with an discover.
+    su postfix -s /bin/bash -c 'pyzor discover'
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Disable unneeded kernel modules
 # +---------------------------------------------------+
 func_kernmodules () {
@@ -661,6 +690,7 @@ func_apache
 func_sqlgrey
 func_mailwatch
 func_mailgraph
+func_pyzor
 func_kernmodules
 func_services
 func_efarequirements
