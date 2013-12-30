@@ -439,6 +439,10 @@ func_services () {
     chkconfig mdmonitor off
     chkconfig netfs off
     chkconfig smartd off
+    chkconfig abrtd off
+    chkconfig portreserve off
+    # auditd is something for an future release..
+    chkconfig auditd off 
     
     # These services we disable for now and enable them after EFA-Init.
     # Most of these are not enabled by default but add them here just to
@@ -450,7 +454,7 @@ func_services () {
     chkconfig named off
     chkconfig saslauthd off
     chkconfig crond off
-    # todo clamd?
+    chkconfig clamd off
 }
 # +---------------------------------------------------+
 
