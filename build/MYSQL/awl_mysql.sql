@@ -4,6 +4,6 @@ CREATE TABLE awl (
   ip varchar(40) NOT NULL default '',
   count int(11) NOT NULL default '0',
   totscore float NOT NULL default '0',
-  signedby varchar(255) NOT NULL default '',
-  PRIMARY KEY (username,email,signedby,ip)
+  ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (username,email,ip)
 ) ENGINE=InnoDB;

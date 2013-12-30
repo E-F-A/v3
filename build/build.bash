@@ -312,6 +312,25 @@ func_spam_clamav () {
     # Enable Auto White Listing
     sed -i '/^#loadplugin Mail::SpamAssassin::Plugin::AWL/ c\loadplugin Mail::SpamAssassin::Plugin::AWL' /etc/mail/spamassassin/v310.pre
     
+    # AWL cleanup tools (just a bit different then esva)
+    # http://notes.sagredo.eu/node/86
+    echo '#!/bin/sh'>/usr/sbin/trim-awl
+    echo "/usr/bin/mysql -usa_user -p$password < /etc/trim-awl.sql">>/usr/sbin/trim-awl
+    echo 'exit 0 '>>/usr/sbin/trim-awl
+    chmod +x /usr/sbin/trim-awl
+
+    echo "USE sa_bayes;">/etc/trim-awl.sql
+    echo "DELETE FROM awl WHERE ts < (NOW() - INTERVAL 28 DAY);">>/etc/trim-awl.sql
+
+    cd /etc/cron.weekly
+    echo '#!/bin/sh'>trim-sql-awl-weekly
+    echo '#'>>trim-sql-awl-weekly
+    echo '#  Weekly maintenance of auto-whitelist for'>>trim-sql-awl-weekly
+    echo '#  SpamAssassin using MySQL'>>trim-sql-awl-weekly
+    echo '/usr/sbin/trim-awl'>>trim-sql-awl-weekly
+    echo 'exit 0'>>trim-sql-awl-weekly
+    chmod +x trim-sql-awl-weekly
+    
     # and in the end we run sa-update just for the fun of it..
     sa-update
 }
