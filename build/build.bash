@@ -24,6 +24,7 @@
 version="3.0.0.0 beta"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
+password="EfaPr0j3ct"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -42,6 +43,47 @@ func_repoforge () {
     rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
     rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
     yum install -y tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df Perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-Net-LDAP
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure MySQL
+# +---------------------------------------------------+
+func_mysql () {
+    echo "Mysql configuration"
+    service mysqld start
+    
+    # remove default security flaws from MySQL.
+    /usr/bin/mysqladmin -u root password "$password"
+    /usr/bin/mysqladmin -u root -p"$password" -h localhost.localdomain password "$password"
+    echo y | /usr/bin/mysqladmin -u root -p"$password" drop 'test'
+    /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='';"
+    /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+    
+    # Create the databases 
+    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE FuzzyOcr"
+    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE mailscanner"
+    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sa_bayes"
+    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sqlgrey"
+    
+    # Create the users
+    /usr/bin/mysql -u root -p"$password" -e "GRANT SELECT,INSERT,UPDATE,DELETE on sa_bayes.* to 'sa_user'@'localhost' identified by '$password'"
+    # todo: mailwatch user
+    # todo: sqlgrey user
+    # todo: fuzzyocr user
+    /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
+ 
+    # populate the sa_bayes DB
+    # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/bayes_mysql.sql
+    cd /tmp
+    /usr/bin/wget -q $gitdlurl/MYSQL/bayes_mysql.sql
+    /usr/bin/mysql -u root -p"$password" sa_bayes < /tmp/bayes_mysql.sql
+    
+    # add the AWL table to sa_bayes
+    # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/awl_mysql.sql
+    cd /tmp
+    /usr/bin/wget -q $gitdlurl/MYSQL/awl_mysql.sql
+    /usr/bin/mysql -u root -p"$password" sa_bayes < /tmp/awl_mysql.sql
 }
 # +---------------------------------------------------+
 
@@ -127,7 +169,6 @@ func_mailscanner () {
     cd MailScanner-4.84.6-1
     ./install.sh
     rm -f /root/.rpmmacros
-    #chown postfix:postfix /var/spool/MailScanner/incoming
     chown postfix:postfix /var/spool/MailScanner/quarantine
     mkdir /var/spool/MailScanner/spamassassin
     chown postfix:postfix /var/spool/MailScanner/spamassassin
@@ -135,7 +176,6 @@ func_mailscanner () {
     chown postfix:postfix /var/spool/mqueue
     touch /var/lock/subsys/MailScanner.off
     touch /etc/MailScanner/rules/spam.blacklist.rules
-    #rm -f /var/spool/MailScanner/incoming/SpamAssassin.cache.db
 
     # Configure MailScanner
     sed -i '/^Max Children =/ c\Max Children = 2' /etc/MailScanner/MailScanner.conf
@@ -171,8 +211,7 @@ func_mailscanner () {
     sed -i '/^Treat Invalid Watermarks With No Sender as Spam =/ c\Treat Invalid Watermarks With No Sender as Spam = high-scoring spam' /etc/MailScanner/MailScanner.conf
     sed -i '/^Max SpamAssassin Size =/ c\Max SpamAssassin Size = 100k continue 150k' /etc/MailScanner/MailScanner.conf
     sed -i '/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = 4' /etc/MailScanner/MailScanner.conf
-    # Check (ESVA defines Spam Actions = store notify)
-    sed -i '/^Spam Actions =/ c\Spam Actions = store deliver header "X-Spam-Status: Yes"' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Spam Actions =/ c\Spam Actions = store notify' /etc/MailScanner/MailScanner.conf
     sed -i '/^High Scoring Spam Actions =/ c\High Scoring Spam Actions = store' /etc/MailScanner/MailScanner.conf
     sed -i '/^Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status: No"' /etc/MailScanner/MailScanner.conf
     sed -i '/^Log Spam =/ c\Log Spam = yes' /etc/MailScanner/MailScanner.conf
@@ -184,10 +223,14 @@ func_mailscanner () {
     sed -i '/^Include Scores In SpamAssassin Report =/ c\Include Scores In SpamAssassin Report = yes' /etc/MailScanner/MailScanner.conf
     sed -i '/^Always Looked Up Last =/ c\Always Looked Up Last = &MailWatchLogging' /etc/MailScanner/MailScanner.conf
     sed -i '/^Clamd Socket =/ c\Clamd Socket = /tmp/clamd.socket' /etc/MailScanner/MailScanner.conf
+<<<<<<< HEAD
     # Check (ESVA Log SpamAssassin Rule Actions = no)
     # Default setting Log SpamAssassin Rule Actions = yes
     # 
     # Check (Watermark Secret is "Secret" is this ok?)    
+=======
+    sed -i '/^Log SpamAssassin Rule Actions =/ c\Log SpamAssassin Rule Actions = no' /etc/MailScanner/MailScanner.conf
+>>>>>>> cffb1a18bbaaa698b944800eec6c220e891e318e
 
     touch /etc/MailScanner/rules/sig.html.rules
     touch /etc/MailScanner/rules/sig.text.rules
@@ -206,8 +249,9 @@ func_mailscanner () {
 # +---------------------------------------------------+
 func_spam_clamav () {
 
-    yum -y install clamav
+    yum -y install clamav clamd
 
+    #Use the MailScanner packaged version. Answer no to install clam.
     cd /tmp
     wget http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
     tar -xvzf install-Clam-SA-latest.tar.gz
@@ -220,10 +264,51 @@ func_spam_clamav () {
         
     #Force an update of ClamAV definitions...
     # service clamd restart
-    # freshclam # this should probably be moved to EFA-Init
+    # freshclam # todo this should probably be moved to EFA-Init
         
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
+    
+    # todo: botnet.tar
+    # ESVA uses botnet.tar, this old package is in my opinion not needed as spamhaus relay blocklist already 
+    # adds botnet's by default.. also the botnet.tar is not maintained anymore...
+    
+    # todo: PDFinfo.pm
+    # official website is nowhere to be found, is this tool still usefull?
+    # should research this of still usefull we can probably use the .pm and .cf file from an esva system.
+    
+    # todo: ImageInfo
+    # well not really a todo, ImageInfo is already packaged and enabled by default in spamassassin.
+    # nothing to do here, just adding the remark so we don't spend any extra time on it :-).
+    
+    # todo: sare
+    # sare channels are dead: http://wiki.apache.org/spamassassin/SareChannels
+    # openprotect seems to have an alternative ^^ see link, need to check if that works.
+    
+    # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
+    /usr/bin/wget -q -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
+    
+    # Configure spamassassin bayes and awl DB settings
+    echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_store_module              Mail::SpamAssassin::BayesStore::SQL">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_sql_dsn                   DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_sql_username              sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_sql_password              $password">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "auto_whitelist_factory          Mail::SpamAssassin::SQLBasedAddrList">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "user_awl_dsn                    DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "user_awl_sql_username           sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "user_awl_sql_password           $password">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "bayes_sql_override_username     mailwatch">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "#End E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
+    
+    # Add example spam to db
+    # source: http://spamassassin.apache.org/gtube/gtube.txt
+    cd /tmp
+    /usr/bin/wget -q $gitdlurl/EFA/gtube.txt
+    sa-learn --spam /tmp/gtube.txt
+    
+    # and in the end we run sa-update just for the fun of it..
+    sa-update
 }
 # +---------------------------------------------------+
 
@@ -318,8 +403,9 @@ func_apache () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# configure MySQL
+# configure SQLgrey
 # +---------------------------------------------------+
+<<<<<<< HEAD
 func_mysql () {
     echo "Mysql configuration"
 
@@ -350,6 +436,18 @@ func_mysql () {
     # system_time_zone EST
     # tmp_table_size 33354432
 
+=======
+func_sqlgrey () {
+    echo "SQLgrey configuration"
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure MailWatch
+# +---------------------------------------------------+
+func_mailwatch () {
+    echo "Mailwatch configuration"
+>>>>>>> cffb1a18bbaaa698b944800eec6c220e891e318e
 }
 # +---------------------------------------------------+
 
@@ -369,6 +467,7 @@ func_kernmodules () {
 # enable and disable services
 # +---------------------------------------------------+
 func_services () {
+    # These services we really don't need.
     chkconfig ip6tables off
     chkconfig cpuspeed off
     chkconfig lvm2-monitor off
@@ -376,11 +475,21 @@ func_services () {
     chkconfig netfs off
     chkconfig smartd off
     
-    # disable for now and enable after efa-init
+    # These services we disable for now and enable them after EFA-Init.
+    # Most of these are not enabled by default but add them here just to
+    # make sure we don't forget them at EFA-Init.
     chkconfig postfix off 
     chkconfig MailScanner off
+<<<<<<< HEAD
     chkconfig mysqld off
     chkconfig httpd off
+=======
+    chkconfig httpd off
+    chkconfig mysqld off
+    chkconfig named off
+    chkconfig saslauthd off
+    # todo clamd?
+>>>>>>> cffb1a18bbaaa698b944800eec6c220e891e318e
 }
 # +---------------------------------------------------+
 
@@ -471,6 +580,11 @@ func_cleanup () {
     
     # Secure SSH
     #sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
+    
+    # todo:
+    # clear/set dns
+    # clear logfiles
+    # clear bash history
 }
 
 # +---------------------------------------------------+
@@ -478,11 +592,16 @@ func_cleanup () {
 # +---------------------------------------------------+
 func_upgradeOS
 func_repoforge
+func_mysql
 func_postfix
 func_mailscanner
 func_spam_clamav
 func_apache
+<<<<<<< HEAD
 func_mysql
+=======
+func_sqlgrey
+>>>>>>> cffb1a18bbaaa698b944800eec6c220e891e318e
 func_mailwatch
 func_kernmodules
 func_services
