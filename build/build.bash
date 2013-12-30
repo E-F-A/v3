@@ -25,6 +25,7 @@ version="3.0.0.0 beta"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
+mailwatchver="1.2.0-beta-4"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -52,6 +53,9 @@ func_repoforge () {
 func_mysql () {
     echo "Mysql configuration"
     service mysqld start
+
+    # BDB support is removed from MYSQL 5.1, so those variables are gone
+    # (does anything depend on perl-BerkleyDB or BDB in general?)
     
     # remove default security flaws from MySQL.
     /usr/bin/mysqladmin -u root password "$password"
@@ -62,13 +66,21 @@ func_mysql () {
     
     # Create the databases 
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE FuzzyOcr"
-    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE mailscanner"
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sa_bayes"
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sqlgrey"
-    
+   
+    # Create and populate the mailscanner db
+    # Source:  https://raw.github.com/endelwar/mailwatch/master/create.sql
+    cd /tmp
+    /usr/bin/wget -q $gitdlurl/MYSQL/create.sql
+    /usr/bin/mysql -u root -p"$password" < create.sql
+ 
     # Create the users
     /usr/bin/mysql -u root -p"$password" -e "GRANT SELECT,INSERT,UPDATE,DELETE on sa_bayes.* to 'sa_user'@'localhost' identified by '$password'"
-    # todo: mailwatch user
+    # mailwatch user
+    /usr/bin/mysql -u root -p"$password" -e "GRANT ALL ON mailscanner.* TO mailwatch@localhost IDENTIFIED BY '$password';"
+    /usr/bin/mysql -u root -p"$password" -e "GRANT FILE ON *.* to mailwatch@localhost IDENTIFIED BY '$password';" 
+    /usr/bin/mysql -u root -p"$password" mailscanner -e "INSERT INTO users SET username = 'admin', password = md5('$password'), fullname = 'Administrator', type ='A'" 
     # todo: sqlgrey user
     # todo: fuzzyocr user
     /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
@@ -223,14 +235,7 @@ func_mailscanner () {
     sed -i '/^Include Scores In SpamAssassin Report =/ c\Include Scores In SpamAssassin Report = yes' /etc/MailScanner/MailScanner.conf
     sed -i '/^Always Looked Up Last =/ c\Always Looked Up Last = &MailWatchLogging' /etc/MailScanner/MailScanner.conf
     sed -i '/^Clamd Socket =/ c\Clamd Socket = /tmp/clamd.socket' /etc/MailScanner/MailScanner.conf
-<<<<<<< HEAD
-    # Check (ESVA Log SpamAssassin Rule Actions = no)
-    # Default setting Log SpamAssassin Rule Actions = yes
-    # 
-    # Check (Watermark Secret is "Secret" is this ok?)    
-=======
     sed -i '/^Log SpamAssassin Rule Actions =/ c\Log SpamAssassin Rule Actions = no' /etc/MailScanner/MailScanner.conf
->>>>>>> cffb1a18bbaaa698b944800eec6c220e891e318e
 
     touch /etc/MailScanner/rules/sig.html.rules
     touch /etc/MailScanner/rules/sig.text.rules
@@ -238,9 +243,6 @@ func_mailscanner () {
     mkdir /var/spool/MailScanner/incoming
     echo "none /var/spool/MailScanner/incoming tmpfs defaults 0 0">>/etc/fstab
     mount -a
-
-    # Cleanup
-    rm -rf /tmp/MailScanner*
 }
 # +---------------------------------------------------+
 
@@ -313,13 +315,30 @@ func_spam_clamav () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# install and configure MailWatch
+# configure apache
+# +---------------------------------------------------+
+func_apache () {
+    echo "apache configuration"
+
+   # Added mod_ssl package to ks.cfg 
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure SQLgrey
+# +---------------------------------------------------+
+func_sqlgrey () {
+    echo "SQLgrey configuration"
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure MailWatch
 # +---------------------------------------------------+
 func_mailwatch () {
     
-    echo "install and configure MailWatch"
+    echo "MailWatch configuration"
 
-    mailwatchver = "1.2.0-beta-4"
 
     # Fetch MailWatch
     cd /tmp
@@ -330,29 +349,10 @@ func_mailwatch () {
     sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
 
-    # Set up db
-    cd ./mailwatch-$mailwatchver
-    mysql < create.sql
-
-    # MailWatch DB password...probably should change based on user input 
-    # during EFA_Init for a more secure setup. 
-    # MailWatch admin user...same scenario. 
-
-    # Can be set later during EFA-Init
-    #echo "GRANT ALL ON mailscanner.* TO mailwatch@localhost IDENTIFIED BY 'mailwatch';" > mailwatch.sql
-    #echo "GRANT FILE ON *.* to mailwatch@localhost IDENTIFIED BY 'mailwatch';" >> mailwatch.sql
-    #echo "FLUSH PRIVILEGES;" >> mailwatch.sql
-    #echo "SELECT DATABASE mailscanner;" >> mailwatch.sql
-    #echo "INSERT INTO users SET username = 'admin', password = md5('mailwatch'), fullname = 'Administrator', type ='A'" >> mailwatch.sql
-     
-    #mysql < mailwatch.sql
-    #rm -f mailwatch.sql
-    
     # Set up connection for MailWatch    
     cd ./MailScanner_perl_scripts
-    # Move to EFA-Init
-    #sed -i '/^my($db_user) =/ c\my($db_user) = \'mailwatch\'' MailWatch.pm
-    #sed -i '/^my($db_pass) =/ c\my($db_pass) = \'mailwatch\'' MailWatch.pm
+    sed -i '/^my($db_user) =/ c\my($db_user) = \'mailwatch\'' MailWatch.pm
+    sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password'" MailWatch.pm
     mv MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
 
     # Move MailWatch into web root and configure
@@ -361,10 +361,7 @@ func_mailwatch () {
     # to keep the web root clean, match up with conf.php defaults, and
     # define its own vhost
 
-    # Set Up MailWatch Tools
-    cd ..
-    mkdir /usr/local/bin/mailwatch
-    mv 
+    # Todo: Set Up MailWatch Tools
     
     cd ..
     mv ./mailscanner /var/www/html
@@ -375,9 +372,8 @@ func_mailwatch () {
     chmod ug+rwx images/cache
 
     cp conf.php.example conf.php
-    # Move to EFA-Init
-    #sed -i '/^define(\'DB_USER\',/ c\define(\'DB_USER\', \'mailwatch\');' conf.php
-    #sed -i '/^define(\'DB_PASS\',/ c\define(\'DB_PASS\', \'mailwatch\');' conf.php
+    sed -i '/^define(\'DB_USER\',/ c\define(\'DB_USER\', \'mailwatch\');' conf.php
+    sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
     # Note...Set Time Zone in EFA_Init for conf.php   
     sed -i '/^define(\'QUARANTINE_USE_FLAG\',/ c\define(\'QUARANTINE_USE_FLAG\', true);' conf.php
     # Note...Set QUARANTINE_FROM_ADDR in EFA_Init for conf.php
@@ -385,69 +381,6 @@ func_mailwatch () {
     sed -i '/^define(\'QUARANTINE_USE_SENDMAIL\',/ c\define(\'QUARANTINE_USE_SENDMAIL\', true);' conf.php
     sed -i '/^define(\'AUDIT\',/ c\define(\'AUDIT\', true);' conf.php
 
-    
-    
-}
-# +---------------------------------------------------+
-
-# +---------------------------------------------------+
-# configure apache
-# +---------------------------------------------------+
-func_apache () {
-    echo "apache configuration"
-
-   # Default apache config is good for now
-   # No functional differences with ESVA
-   # Added mod_ssl package to ks.cfg 
-}
-# +---------------------------------------------------+
-
-# +---------------------------------------------------+
-# configure SQLgrey
-# +---------------------------------------------------+
-<<<<<<< HEAD
-func_mysql () {
-    echo "Mysql configuration"
-
-    # initialize and start mysqld for later databases creation
-    service mysqld start
-
-    # mysql root user password is unset
-    # consider prompting during EFA_Init to harden mysql
-
-    # Some mysql variables differ in ESVA <--> EFA
-    # Quick reference in case adjustments are needed later
-    # BDB support is removed from MYSQL 5.1, so those variables are gone
-    # (does anything depend on perl-BerkleyDB or BDB in general?)
-    # Some ESVA/mysql variables that are different and/or unique...
-    # engine_condition_pushdown OFF
-    # have_archive NO
-    # have_blackhole_engine NO
-    # have_profiling YES
-    # have_example_engine NO
-    # have_federated_engine NO
-    # have_isam NO
-    # have_merge_engine YES
-    # have_raid NO
-    # have_symlink YES  (Disabled in MYSQL 5.1 due to security risks)
-    # innodb_buffer_pool_awe_mem_mb 0
-    # innodb_log_archive OFF
-    # old_passwords ON  (Disabled in MYSQL 5.1)
-    # system_time_zone EST
-    # tmp_table_size 33354432
-
-=======
-func_sqlgrey () {
-    echo "SQLgrey configuration"
-}
-# +---------------------------------------------------+
-
-# +---------------------------------------------------+
-# configure MailWatch
-# +---------------------------------------------------+
-func_mailwatch () {
-    echo "Mailwatch configuration"
->>>>>>> cffb1a18bbaaa698b944800eec6c220e891e318e
 }
 # +---------------------------------------------------+
 
@@ -480,16 +413,11 @@ func_services () {
     # make sure we don't forget them at EFA-Init.
     chkconfig postfix off 
     chkconfig MailScanner off
-<<<<<<< HEAD
-    chkconfig mysqld off
-    chkconfig httpd off
-=======
     chkconfig httpd off
     chkconfig mysqld off
     chkconfig named off
     chkconfig saslauthd off
     # todo clamd?
->>>>>>> cffb1a18bbaaa698b944800eec6c220e891e318e
 }
 # +---------------------------------------------------+
 
@@ -597,11 +525,7 @@ func_postfix
 func_mailscanner
 func_spam_clamav
 func_apache
-<<<<<<< HEAD
-func_mysql
-=======
 func_sqlgrey
->>>>>>> cffb1a18bbaaa698b944800eec6c220e891e318e
 func_mailwatch
 func_kernmodules
 func_services
