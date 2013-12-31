@@ -10,4 +10,4 @@ We try to create a complete package using existing open-source anti-spam project
 
 For more information go to http://www.efa-project.org & http://www.esva-community.com
 
-E.F.A V3 is an rebuild of the previous ESVA, the same components are used but are all updated to the latest version.
+E.F.A V3 is a rebuild of the previous ESVA; the same components are used whenever possible but are all updated to the latest version.
