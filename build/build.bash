@@ -806,8 +806,9 @@ func_cleanup () {
     # cd /tmp
     # rm -rf *
 
-    # mysqld causes kickstart reboot process to hang...stop now
+    # Stop running services to allow kickstart to reboot
     service mysqld stop
+    service webmin stop
     
     # clean yum cache
     yum clean all
