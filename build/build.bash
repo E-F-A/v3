@@ -29,6 +29,11 @@
 # fuzzyocr project seems to be dead (since 2009)
 # Don't know if it is wise to add it as it has lots of dependancy's.
 # http://wiki.apache.org/spamassassin/FuzzyOcrPlugin
+# 
+# Would Bayes OCR and Image Cerberus Plugin be a good substitute?
+# http://pralab.diee.unica.it/en/BayesOCR
+# http://pralab.diee.unica.it/imageCerberus
+
 
 # +---------------------------------------------------+
 # Variables
@@ -287,7 +292,7 @@ func_spam_clamav () {
     cd /tmp
     rm -rf install-Clam*
         
-    #Force an update of ClamAV definitions...
+    # Force an update of ClamAV definitions...
     # service clamd restart
     # freshclam # todo this should probably be moved to EFA-Init
         
@@ -335,10 +340,15 @@ func_spam_clamav () {
     # well not really a todo, ImageInfo is already packaged and enabled by default in spamassassin.
     # nothing to do here, just adding the remark so we don't spend any extra time on it :-).
     
-    # todo: sare
+    # not todo: sare
     # sare channels are dead: http://wiki.apache.org/spamassassin/SareChannels
     # openprotect seems to have an alternative ^^ see link, need to check if that works.
-    
+    #
+    # Nope, no good.
+    # http://saupdates.opernprotect.com
+    # "OpenProtect SpamAssassin sa-update channel is obsolete since SARE
+    # "stopped updating their rulesets. Please stop using this channel."
+
     # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
     /usr/bin/wget -q -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
     
