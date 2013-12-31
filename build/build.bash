@@ -719,6 +719,7 @@ func_services () {
     chkconfig sqlgrey off
     chkconfig mailgraph-init off
     chkconfig adcc off
+    chkconfig webmin off
 }
 # +---------------------------------------------------+
 
