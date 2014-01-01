@@ -345,7 +345,7 @@ func_spam_clamav () {
     # openprotect seems to have an alternative ^^ see link, need to check if that works.
     #
     # Nope, no good.
-    # http://saupdates.opernprotect.com
+    # http://saupdates.openprotect.com
     # "OpenProtect SpamAssassin sa-update channel is obsolete since SARE
     # "stopped updating their rulesets. Please stop using this channel."
 
@@ -536,8 +536,19 @@ func_mailwatch () {
     cd /var/www/html
     wget http://www.efa-project.org/favicon.ico
 
-    # Todo: Add branding to MailWatch, replace images to display EFA
-    
+    # EFA Branding
+    cd /var/www/html/mailscanner/images
+    wget $gitdlurl/EFA/EFAlogo-47px.gif
+    wget $gitdlurl/EFA/EFAlogo-79px.gif
+    wget $gitdlurl/EFA/EFAlogo-79px.png
+    mv mailwatch-logo.gif mailwatch-logo.gif.orig
+    mv mailwatch-logo-png mailwatch-logo.png.orig
+    mv mailscannerlogo.gif mailscannerlogo.gif.orig
+    ln -s mailwatch-logo.gif EFAlogo-79px.gif
+    ln -s mailwatch-logo.png EFAlogo-79px.png
+    ln -s mailscannerlogo.gif EFAlogo-47px.gif    
+
+ 
     # Todo: Confirm mysql bayes database is configured correctly for 
     #       MailWatch...docs describe file based method only
     
