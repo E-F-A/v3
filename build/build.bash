@@ -537,13 +537,31 @@ func_mailwatch () {
     wget http://www.efa-project.org/favicon.ico
 
     # Todo: Add branding to MailWatch, replace images to display EFA
+    
     # Todo: Confirm mysql bayes database is configured correctly for 
     #       MailWatch...docs describe file based method only
+    
     # Todo: Integrate MailGraph
-    #       (See some possible custom edits in MailWatch on ESVA...will check)
+    #       No integration in ESVA.  Suggest adding a link to MailWatch Tools
+    #       tab in EFA
+    
     # Todo: Add Postfix queue monitoring functionality?
     # 	    (not part of ESVA but easy to add and may be useful info)
-    # Todo: Anything else I am not thinking of, lol! Need to do the dishes...   
+    
+    # Todo: greylisting tools for MailWatch
+    #       Andy wrote the greylist interface for Mailwatch in a series of 
+    #       php files
+    #       Should we reuse and adapt?  It is marked GNU GPLv2.   
+
+    # Todo: spam submission and release cgi scripts
+    #       I am guessing Andy also wrote these
+    #       No license or owner is mentioned
+    #       learn-msg.cgi is vulnerable to command injection...
+    #       http://www.exploit-db.com/exploits/20712
+    #       if we reuse or recreate, we need to harden it
+    #       you can pass anything to the learn-msg.cgi and 
+    #       no validation checks are performed
+
 }
 # +---------------------------------------------------+
 
@@ -568,6 +586,8 @@ func_mailgraph () {
 
     # todo:
     # figure out how this was incorporated in mailwatch..
+    # it appears that it wasn't.  ESVA used to have an index.html
+    # that linked to it, but it is renamed index.html.old
 }
 # +---------------------------------------------------+
 
