@@ -642,11 +642,11 @@ func_sgwi () {
     # iframe "works" but the vertical concerns me with a growing list...
     # may end up doing something else...
     echo "<iframe src=\"../sgwi/index.php\" width=\"960px\" height=\"1024px\">" >> /var/www/html/mailscanner/grey.php
-    echo " <br />" >> /var/www/html/mailscanner/grey.php
     echo " <a href=\"..\sgwi/index.php\">Click here for SQLGrey Web Interface</a>" >> /var/www/html/mailscanner/grey.php
     echo "</iframe>" >> /var/www/html/mailscanner/grey.php
     echo "<?php" >> /var/www/html/mailscanner/grey.php
     echo "html_end();" >> /var/www/html/mailscanner/grey.php
+    echo "db_close();" >> /var/www/html/mailscanner/grey.php
 
     # Secure sgwi from direct access
     cd /var/www/html/sgwi
