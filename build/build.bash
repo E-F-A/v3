@@ -542,7 +542,7 @@ func_mailwatch () {
     #wget $gitdlurl/EFA/EFAlogo-79px.gif
     wget $gitdlurl/EFA/EFAlogo-79px.png
     mv mailwatch-logo.gif mailwatch-logo.gif.orig
-    mv mailwatch-logo-png mailwatch-logo.png.orig
+    mv mailwatch-logo.png mailwatch-logo.png.orig
     mv mailscannerlogo.gif mailscannerlogo.gif.orig
     # png image looks much better -- linking to png instead
     ln -s EFAlogo-79px.png mailwatch-logo.gif
