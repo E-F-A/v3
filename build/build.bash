@@ -280,6 +280,9 @@ func_spam_clamav () {
     # install clamav and clamd.
     yum -y install clamav clamd
 
+    # todo:
+    # http://sanesecurity.co.uk/usage/linux-scripts/
+    
     # don't know if we need it so GPG key import is disabled (I remember GPG key was needed in ESVA for something
     # just don't know for what anymore)
     #cd /tmp
