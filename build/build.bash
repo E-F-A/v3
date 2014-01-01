@@ -565,8 +565,8 @@ func_mailwatch () {
     rm -f /usr/local/bin/mailwatch/tools/Postfix_relay/INSTALL
     chmod +x /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
     touch /etc/cron.hourly/mailwatch_update_relay
-    echo "#!/bin/sh" > mailwatch_update_relay
-    echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> mailwatch_update_relay
+    echo "#!/bin/sh" > /etc/cron.hourly/mailwatch_update_relay
+    echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
     chmod +x /etc/cron.hourly/mailwatch_update_relay
  
     # Todo: greylisting tools for MailWatch
