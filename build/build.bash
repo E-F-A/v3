@@ -73,6 +73,8 @@ func_mysql () {
 
     # BDB support is removed from MYSQL 5.1, so those variables are gone
     # (does anything depend on perl-BerkeleyDB or BDB in general?)
+    # Guess you are right, don't see any reason for BDB to be there
+    # AWL used BDB in a previous version but that is moved to MySQL.
     
     # remove default security flaws from MySQL.
     /usr/bin/mysqladmin -u root password "$password"
