@@ -539,12 +539,13 @@ func_mailwatch () {
     # EFA Branding
     cd /var/www/html/mailscanner/images
     wget $gitdlurl/EFA/EFAlogo-47px.gif
-    wget $gitdlurl/EFA/EFAlogo-79px.gif
+    #wget $gitdlurl/EFA/EFAlogo-79px.gif
     wget $gitdlurl/EFA/EFAlogo-79px.png
     mv mailwatch-logo.gif mailwatch-logo.gif.orig
     mv mailwatch-logo-png mailwatch-logo.png.orig
     mv mailscannerlogo.gif mailscannerlogo.gif.orig
-    ln -s EFAlogo-79px.gif mailwatch-logo.gif
+    # png image looks much better -- linking to png instead
+    ln -s EFAlogo-79px.png mailwatch-logo.gif
     ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif   
  
