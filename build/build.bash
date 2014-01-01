@@ -88,10 +88,13 @@ func_mysql () {
    
     # Create and populate the mailscanner db
     # Source:  https://raw.github.com/endelwar/mailwatch/master/create.sql
+    # https://raw.github.com/endelwar/mailwatch/master/tools/create_relay_postfix.sql
     cd /tmp
     /usr/bin/wget -q $gitdlurl/MYSQL/create.sql
     /usr/bin/mysql -u root -p"$password" < /tmp/create.sql
- 
+    /usr/bin/wget -q $gitdlurl/MYSQL/create_relay_postfix.sql
+    /usr/bin/mysql -u root -p"$password" mailscanner < /tmp/create_relay_postfix.sql
+
     # Create the users
     /usr/bin/mysql -u root -p"$password" -e "GRANT SELECT,INSERT,UPDATE,DELETE on sa_bayes.* to 'sa_user'@'localhost' identified by '$password'"
     
@@ -558,9 +561,14 @@ func_mailwatch () {
     sed -i '/^ MailWatch for MailScanner/a\ Modified for Use With EFA -- Email Filter Appliance -- 1/1/2014'
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA Mailgraph Link*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    /*End EFA Mailgraph Link*/" other.php
  
-    # Todo: Add Postfix queue monitoring functionality?
-    # 	    (not part of ESVA but easy to add and may be useful info)
-    
+    # Postfix Relay Info
+    rm -f /usr/local/bin/mailwatch/tools/Postfix_relay/INSTALL
+    chmod +x /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    touch /etc/cron.hourly/mailwatch_update_relay
+    echo "#!/bin/sh" > mailwatch_update_relay
+    echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> mailwatch_update_relay
+    chmod +x /etc/cron.hourly/mailwatch_update_relay
+ 
     # Todo: greylisting tools for MailWatch
     #       Andy wrote the greylist interface for Mailwatch in a series of 
     #       php files
