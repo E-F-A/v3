@@ -862,6 +862,10 @@ func_cleanup () {
     # Fix SE-Linux security issues
     restorecon -r /var/www
     chcon -v --type=httpd_sys_content_t /var/lib/mailgraph*
+    # todo: figure out which se-linux items needs to be changed to allow clamd access to /var/spool/MailScanner/incoming/*..
+    #       Currently se-linux blocks clamd. 
+    #       (denied  { read } for  pid=4083 comm="clamd" name="3899" dev=tmpfs ino=23882 scontext=unconfined_u:system_r:antivirus_t:s0 tcontext=unconfined_u:object_r:var_spool_t:s0 tclass=dir
+
     
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
