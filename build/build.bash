@@ -544,18 +544,19 @@ func_mailwatch () {
     mv mailwatch-logo.gif mailwatch-logo.gif.orig
     mv mailwatch-logo-png mailwatch-logo.png.orig
     mv mailscannerlogo.gif mailscannerlogo.gif.orig
-    ln -s mailwatch-logo.gif EFAlogo-79px.gif
-    ln -s mailwatch-logo.png EFAlogo-79px.png
-    ln -s mailscannerlogo.gif EFAlogo-47px.gif    
-
+    ln -s EFAlogo-79px.gif mailwatch-logo.gif
+    ln -s EFAlogo-79px.png mailwatch-logo.png
+    ln -s EFAlogo-47px.gif mailscannerlogo.gif   
  
-    # Todo: Confirm mysql bayes database is configured correctly for 
-    #       MailWatch...docs describe file based method only
-    
-    # Todo: Integrate MailGraph
-    #       No integration in ESVA.  Suggest adding a link to MailWatch Tools
-    #       tab in EFA
-    
+    # mailscanner bayes configuration should be ok
+    # nothing to do
+
+    # Add Mailgraph link
+    cd /var/www/html/mailscanner
+    cp other.php other.php.orig
+    sed -i '/^ MailWatch for MailScanner/a\ Modified for Use With EFA -- Email Filter Appliance -- 1/1/2014'
+    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA Mailgraph Link*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    /*End EFA Mailgraph Link*/" other.php
+ 
     # Todo: Add Postfix queue monitoring functionality?
     # 	    (not part of ESVA but easy to add and may be useful info)
     
