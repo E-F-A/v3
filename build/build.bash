@@ -764,9 +764,6 @@ func_services () {
 func_efarequirements () {
     # Write version file
     echo "EFA-$version" > /etc/EFA-Version
-
-    # create EFA config file
-    touch /etc/EFA-Config
     
     # pre-create the EFA update directory
     mkdir -p /var/EFA/update
@@ -792,7 +789,7 @@ func_efarequirements () {
     chmod 700 /usr/local/sbin/EFA-SA-Update
     
     # Write SSH banner
-    sed -i "/^#Banner / c\#Banner" /etc/ssh/sshd_config
+    sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config
     cat > /etc/banner << 'EOF'
        Welcome to E.F.A. (http://www.efa-project.org)
 

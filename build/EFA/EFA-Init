@@ -27,3 +27,496 @@
 # run sa-update
 # time/timezone selection
 # 
+# +---------------------------------------------------+
+# Lets start asking questions.
+# +---------------------------------------------------+
+function func_ask-hostname() {
+  func_echo-header
+  echo -e "$green[EFA]$clean What is the hostname of this machine? $cyan(Single Word)$clean"
+  echo -e -n "$green[EFA]$clean : "
+  read HOSTNAME
+  hncheck=1
+  while [ $hncheck != 0 ]
+   do
+     if [[ $HOSTNAME =~ ^[-a-zA-Z0-9]{2,256}+$ ]]
+      then
+        hncheck=0
+      else
+        echo -e "       $red ERROR: The hostname $HOSTNAME seems to be invalid"
+        echo -e "        ERROR: please re-enter the hostname$clean"
+        echo -e "$green[EFA]$clean What is the hostname of this machine: $cyan(single Word)$clean"
+        echo -e -n "$green[EFA]$clean : "
+        read HOSTNAME
+     fi
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-domainname() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the domain name for this machine"
+  echo -e -n "$green[EFA]$clean : "
+  read DOMAINNAME
+  dncheck=1
+  while [ $dncheck != 0 ]
+   do
+     if [[ $DOMAINNAME =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        dncheck=0
+      else
+        echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
+        echo -e "        ERROR: please re-enter the domain$clean"
+        echo -e "$green[EFA]$clean Please enter the domain name for this machine"
+        echo -e -n "$green[EFA]$clean : "
+        read DOMAINNAME
+     fi
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-adminemail() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the email address of an admin "
+  echo -e "$green[EFA]$clean This user will receive E.F.A. related notifications"
+  echo -e -n "$green[EFA]$clean : "
+  read ADMINEMAIL
+  adminemailcheck=1
+  while [ $adminemailcheck != 0 ]
+   do
+     if [[ $ADMINEMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        adminemailcheck=0
+      else
+        echo -e "       $red ERROR: The address $ADMINEMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the admin email address$clean"
+        echo -e "$green[EFA]$clean Please enter the email address of an admin "
+        echo -e "$green[EFA]$clean This user will receive EFA related notifications"
+        echo -e -n "$green[EFA]$clean : "
+        read ADMINEMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-ipaddress() {
+  func_echo-header
+  # Get the primary interface
+  func_interfaces
+  
+  # Get the IP and validate it
+  echo -e ""
+  echo -e "$green[EFA]$clean Please enter the IP address"
+  echo -e -n "$green[EFA]$clean : "
+  read IPADDRESS
+  ipcheck=1
+  while [ $ipcheck != 0 ]
+   do
+    if checkip $IPADDRESS
+     then
+       ipcheck=0
+     else
+       echo -e "       $red ERROR: The IP $IPADDRESS seems to be invalid"
+       echo -e "        ERROR: Please re-enter the IP$clean"
+       echo -e "$green[EFA]$clean Please enter the IP address"
+       echo -e -n "$green[EFA]$clean : "
+       read IPADDRESS
+    fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-netmask() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the NETMASK"
+  echo -e -n "$green[EFA]$clean : "
+  read NETMASK
+  nmcheck=1
+  while [ $nmcheck != 0 ]
+   do
+    if checkip $NETMASK
+     then
+       nmcheck=0
+     else
+       echo -e "       $red ERROR: The NETMASK $NETMASK seems to be invalid"
+       echo -e "        ERROR: Please re-enter the NETMASK$clean"
+       echo -e "$green[EFA]$clean Please enter the NETMASK"
+       echo -e -n "$green[EFA]$clean : "
+       read NETMASK
+    fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-gateway() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the default gateway address"
+  echo -e -n "$green[EFA]$clean : "
+  read GATEWAY
+  gwcheck=1
+  while [ $gwcheck != 0 ]
+   do
+    if checkip $GATEWAY
+     then
+       gwcheck=0
+     else
+       echo -e "       $red ERROR: The GATEWAY $GATEWAY seems to be invalid"
+       echo -e "        ERROR: Please re-enter the GATEWAY$clean"
+       echo -e "$green[EFA]$clean Please enter the default gateway address"
+       echo -e -n "$green[EFA]$clean : "
+       read GATEWAY
+    fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-dns1() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the primary DNS server address"
+  echo -e -n "$green[EFA]$clean : "
+  read DNS1
+  dns1check=1
+  while [ $dns1check != 0 ]
+   do
+    if checkip $DNS1
+     then
+       dns1check=0
+     else
+       echo -e "       $red ERROR: The DNS server $DNS1 seems to be invalid"
+       echo -e "        ERROR: Please re-enter the primary DNS$clean"
+       echo -e "$green[EFA]$clean Please enter the primary DNS server address"
+       echo -e -n "$green[EFA]$clean : "
+       read DNS1
+    fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-dns2() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the secondary DNS server address"
+  echo -e -n "$green[EFA]$clean : "
+  read DNS2
+  dns2check=1
+  while [ $dns2check != 0 ]
+   do
+    if checkip $DNS2
+     then
+       dns2check=0
+     else
+       echo -e "       $red ERROR: The DNS server $DNS2 seems to be invalid"
+       echo -e "        ERROR: Please re-enter the secondary DNS$clean"
+       echo -e "$green[EFA]$clean Please enter the secondary DNS server address"
+       echo -e -n "$green[EFA]$clean : "
+       read DNS2
+    fi
+   done
+}
+# +---------------------------------------------------+
+
+
+# +---------------------------------------------------+
+function func_ask-password() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the password for the root/admin user."
+  echo -e -n "$green[EFA]$clean Password: "
+  read -s efaadminpwd
+  echo -e ""
+  echo -e -n "$green[EFA]$clean Password Again: "
+  read -s efaadminpwd2
+  efaadminpwdcheck=1
+  while [ $efaadminpwdcheck != 0 ]
+   do
+     if [[ $efaadminpwd = "$efaadminpwd2" ]]
+          then
+            efaadminpwdcheck=0
+         else 
+            echo -e ""
+            echo -e "       $red ERROR: The passwords do not seem to match"
+            echo -e "        ERROR: Please try again$clean"
+            echo -e "$green[EFA]$clean Please enter the password for the root/admin user."
+            echo -e -n "$green[EFA]$clean Password: "
+            read -s efaadminpwd
+            echo -e ""
+            echo -e -n "$green[EFA]$clean Password Again: "
+            read -s efaadminpwd2
+     fi
+  done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Verify the settings
+# +---------------------------------------------------+
+function func_verify-settings() {
+  verifymenu=1
+  while [ $verifymenu == "1" ]
+   do
+    func_echo-header
+    echo -e "--------------------------------------------------------------"
+    echo -e "$green[EFA]$clean Thank you, the following settings have been gathered:"
+    echo -e " "
+    echo -e "1)  Hostname       : $HOSTNAME"
+    echo -e "2)  Domainname     : $DOMAINNAME"
+    echo -e "3)  Admin Email    : $ADMINEMAIL"
+    echo -e "4)  Interface      : $INTERFACE"
+    echo -e "5)  IP address     : $IPADDRESS"
+    echo -e "6)  Netmask        : $NETMASK"
+    echo -e "7)  Gateway        : $GATEWAY"
+    echo -e "8)  Primary DNS    : $DNS1"
+    echo -e "9)  Secondary DNS  : $DNS2"
+    echo -e "10) Admin PWD      : <hidden>"
+    echo -e "--------------------------------------------------------------"
+    echo -e ""
+    echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
+    echo -e "$green[EFA]$clean if there is an error enter the number you want to change."
+    echo -e -n "$green[EFA]$clean : "
+    local choice
+    read choice
+    case $choice in
+                1)        func_ask-hostname
+                        ;;
+                2)        func_ask-domainname
+                        ;;
+                3)        func_ask-adminemail
+                        ;;
+                4)        func_ask-ipaddress
+                        ;;
+                5)        func_ask-ipaddress
+                        ;;
+                6)        func_ask-netmask
+                        ;;
+                7)        func_ask-gateway
+                        ;;
+                8)        func_ask-dns1
+                        ;;
+                9)        func_ask-dns2
+                        ;;
+                10)       func_ask-password
+                        ;;
+                OK)        verifymenu=0
+                        ;;
+                ok)        verifymenu=0
+                        ;;
+    esac
+  done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Configure system
+# +---------------------------------------------------+
+function func_configure-system() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Configuring system"
+
+  echo -e "$green[EFA]$clean - Setting new hostname"
+  #echo $HOSTNAME > /etc/hostnames
+  sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
+  echo "$IPADDRESS              $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
+  hostname $HOSTNAME
+
+  echo -e "$green[EFA]$clean - Setting DNS Servers"
+  echo "nameserver $DNS1" >> /etc/resolv.conf
+  echo "nameserver $DNS2" >> /etc/resolv.conf
+
+  echo -e "$green[EFA]$clean - Setting IP settings"
+  
+  echo -e "$green[EFA]$clean - Changing passwords"
+  echo -e "root:$efaadminpwd" | chpasswd --md5 root
+
+  
+  echo -e "$green[EFA]$clean - Configuring razor"
+  razor-admin -d -create >> /var/log/razor-setup.log
+  razor-admin -register >> /var/log/razor-setup.log
+  
+  echo -e "$green[EFA]$clean - Updating Freshclam"
+  freshclam
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# The final settings
+# +---------------------------------------------------+
+function func_end()
+{
+    echo -e "$green[EFA]$clean Generating SSH Host keys"
+    # Todo 
+
+    # Remove the first time login message from console.
+    sed -i "/^First time login: /d" /etc/issue
+  
+    touch /etc/EFA-Config
+    echo "HOSTNAME:$HOSTNAME" >> /etc/EFA-Config
+    echo "DOMAINNAME:$DOMAINNAME" >> /etc/EFA-Config
+    echo "ADMINEMAIL:$ADMINEMAIL" >> /etc/EFA-Config
+    echo "INTERFACE:$INTERFACE" >> /etc/EFA-Config
+    echo "IPADDRESS:$IPADDRESS" >> /etc/EFA-Config
+    echo "NETMASK:$NETMASK" >> /etc/EFA-Config
+    echo "GATEWAY:$GATEWAY" >> /etc/EFA-Config
+    echo "DNS1:$DNS1" >> /etc/EFA-Config
+    echo "DNS2:$DNS2" >> /etc/EFA-Config
+    chmod 600 /etc/EFA-Config
+  
+    func_echo-header
+    echo -e "$green[EFA]$clean All settings applied rebooting when you press enter."
+    pause
+    # todo disabled for testing..
+    # reboot
+}
+# +---------------------------------------------------+
+
+
+# +---------------------------------------------------+
+# Function to determine the available interfaces.
+# +---------------------------------------------------+
+func_interfaces(){
+  nrintf=` cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '} | wc -l`
+  interf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '}`
+
+  if [ $nrintf -gt 1 ]
+        then
+          echo -e "$green[EFA]$clean You seem to have multiple network interfaces"
+          echo -e "$green[EFA]$clean The interface names on your machine are:"
+          for int in $interf
+            do
+                  echo " - $int"
+          done
+
+          local choice
+          echo -e "$green[EFA]$clean Enter the primary interface name"
+          echo -e -n "$green[EFA]$clean : "
+      read choice
+          choice_check=0
+          
+      for int in $interf
+        do
+          if [ $int == $choice ]
+            then
+              choice_check=1
+          fi
+        done
+
+      # Check if the user typed a interface that exists.
+      if [ $choice_check -eq 0 ]
+        then
+          echo -e "$green[EFA]$clean ERROR, That interface does not exist."
+          echo -e "$green[EFA]$clean Staring over."
+          sleep 2
+          func_interfaces
+          return
+      fi
+
+      if [ $choice_check -eq 1 ]
+        then
+          echo -e "$green[EFA]$clean Thank you, using $choice as the primary interface"
+          INTERFACE=$choice
+      fi
+  else
+    echo -e "$green[EFA]$clean Your interface seems to be '$interf', using $interf as primary interface"
+    INTERFACE=$interf
+fi
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to test IP addresses
+# +---------------------------------------------------+
+function checkip()
+{
+  local  ip=$1
+  local  stat=1
+
+  if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+    OIFS=$IFS
+    IFS='.'
+    ip=($ip)
+    IFS=$OIFS
+    [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+    stat=$?
+  fi
+  return $stat
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to create a random password
+# +---------------------------------------------------+
+function randompw()
+{
+    PASSWD=""
+    PASSWD=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Trap CTRL+C, CTRL+Z and quit singles
+# +---------------------------------------------------+
+if [ $debug == "0" ]; then
+    trap '' SIGINT SIGQUIT SIGTSTP
+fi
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Pause
+# +---------------------------------------------------+
+pause(){
+    echo -e "$green[EFA]$clean Press [Enter] key to continue..."
+    read fackEnterKey
+}
+# +---------------------------------------------------+
+
+func_echo-header(){
+    clear
+    echo -e "--------------------------------------------------------------"
+    echo -e "---        Welcome to the EFA Initial Configuration        ---"
+    echo -e "---                http://www.efa-project.org              ---"
+    echo -e "--------------------------------------------------------------"
+    echo ""
+}
+
+# +---------------------------------------------------+
+# Where to start
+# +---------------------------------------------------+
+clear
+red='\E[00;31m'
+green='\E[00;32m'
+yellow='\E[00;33m'
+blue='\E[00;34m'
+magenta='\E[00;35'
+cyan='\E[00;36m'
+clean='\e[00m'
+
+func_echo-header
+if [ ! -e /etc/EFA-Config ]
+ then
+    echo -e "--------------------------------------------------------------"
+    echo -e "$green[EFA]$clean We will ask you a few questions to setup this system."
+    echo -e "$green[EFA]$clean Please make sure the system is connected to the internet."
+    echo -e "--------------------------------------------------------------"
+    pause
+    func_ask-hostname
+    func_ask-domainname
+    func_ask-adminemail
+    func_ask-ipaddress
+    func_ask-netmask
+    func_ask-gateway
+    func_ask-dns1
+    func_ask-dns2
+    func_ask-password
+    func_verify-settings
+    func_configure-system
+    func_end
+ else
+    echo -e "$red         ERROR: EFA is already configured $clean"
+    echo -e "$red         Please use EFA-Configure $clean"
+    echo -e ""
+    exit 0
+fi
+# EOF
