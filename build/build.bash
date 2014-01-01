@@ -215,7 +215,7 @@ func_mailscanner () {
     sed -i '/^Max Children =/ c\Max Children = 2' /etc/MailScanner/MailScanner.conf
     sed -i '/^Run As User =/ c\Run As User = postfix' /etc/MailScanner/MailScanner.conf
     sed -i '/^Run As Group =/ c\Run As Group = postfix' /etc/MailScanner/MailScanner.conf
-    sed -i '/^Incoming Queue Dir =/ c\%Incoming Queue Dir = \/var\/spool\/postfix\/hold' /etc/MailScanner/MailScanner.conf
+    sed -i '/^Incoming Queue Dir =/ c\Incoming Queue Dir = \/var\/spool\/postfix\/hold' /etc/MailScanner/MailScanner.conf
     sed -i '/^Outgoing Queue Dir =/ c\Outgoing Queue Dir = \/var\/spool\/postfix\/incoming' /etc/MailScanner/MailScanner.conf
     sed -i '/^MTA =/ c\MTA = postfix' /etc/MailScanner/MailScanner.conf
     sed -i '/^Incoming Work Group =/ c\Incoming Work Group = clamav' /etc/MailScanner/MailScanner.conf
