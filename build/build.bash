@@ -383,7 +383,23 @@ func_spam_clamav () {
 # configure apache
 # +---------------------------------------------------+
 func_apache () {
-    echo "apache configuration"
+    rm -f /etc/httpd/conf.d/welcome.conf
+    
+    # disable unwanted modules
+    sed -i '/LoadModule ldap_module modules\/mod_ldap.so/ c\#LoadModule ldap_module modules\/mod_ldap.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule authnz_ldap_module modules\/mod_authnz_ldap.so/ c\#LoadModule authnz_ldap_module modules\/mod_authnz_ldap.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule dav_module modules\/mod_dav.so/ c\#LoadModule dav_module modules\/mod_dav.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule autoindex_module modules\/mod_autoindex.so/ c\#LoadModule autoindex_module modules\/mod_autoindex.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule info_module modules\/mod_info.so/ c\#LoadModule info_module modules\/mod_info.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule dav_fs_module modules\/mod_dav_fs.so/ c\#LoadModule dav_fs_module modules\/mod_dav_fs.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule userdir_module modules\/mod_userdir.so/ c\#LoadModule userdir_module modules\/mod_userdir.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_module modules\/mod_proxy.so/ c\#LoadModule proxy_module modules\/mod_proxy.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_balancer_module modules\/mod_proxy_balancer.so/ c\#LoadModule proxy_balancer_module modules\/mod_proxy_balancer.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_ftp_module modules\/mod_proxy_ftp.so/ c\#LoadModule proxy_ftp_module modules\/mod_proxy_ftp.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_http_module modules\/mod_proxy_http.so/ c\#LoadModule proxy_http_module modules\/mod_proxy_http.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_ajp_module modules\/mod_proxy_ajp.so/ c\#LoadModule proxy_ajp_module modules\/mod_proxy_ajp.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_connect_module modules\/mod_proxy_connect.so/ c\#LoadModule proxy_connect_module modules\/mod_proxy_connect.so' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule version_module modules\/mod_version.so/ c\#LoadModule version_module modules\/mod_version.so' /etc/httpd/conf/httpd.conf
 }
 # +---------------------------------------------------+
 
