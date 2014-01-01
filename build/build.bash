@@ -859,6 +859,9 @@ func_cleanup () {
     # clean yum cache
     yum clean all
     
+    # Fix SE-Linux security issues
+    restorecon -r /var/www
+    
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
     #dd if=/dev/zero of=/filler bs=1000
