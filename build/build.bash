@@ -384,22 +384,37 @@ func_spam_clamav () {
 # +---------------------------------------------------+
 func_apache () {
     rm -f /etc/httpd/conf.d/welcome.conf
+    cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.original
     
-    # disable unwanted modules
-    sed -i '/LoadModule ldap_module modules\/mod_ldap.so/ c\#LoadModule ldap_module modules\/mod_ldap.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule authnz_ldap_module modules\/mod_authnz_ldap.so/ c\#LoadModule authnz_ldap_module modules\/mod_authnz_ldap.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule dav_module modules\/mod_dav.so/ c\#LoadModule dav_module modules\/mod_dav.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule autoindex_module modules\/mod_autoindex.so/ c\#LoadModule autoindex_module modules\/mod_autoindex.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule info_module modules\/mod_info.so/ c\#LoadModule info_module modules\/mod_info.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule dav_fs_module modules\/mod_dav_fs.so/ c\#LoadModule dav_fs_module modules\/mod_dav_fs.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule userdir_module modules\/mod_userdir.so/ c\#LoadModule userdir_module modules\/mod_userdir.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule proxy_module modules\/mod_proxy.so/ c\#LoadModule proxy_module modules\/mod_proxy.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule proxy_balancer_module modules\/mod_proxy_balancer.so/ c\#LoadModule proxy_balancer_module modules\/mod_proxy_balancer.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule proxy_ftp_module modules\/mod_proxy_ftp.so/ c\#LoadModule proxy_ftp_module modules\/mod_proxy_ftp.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule proxy_http_module modules\/mod_proxy_http.so/ c\#LoadModule proxy_http_module modules\/mod_proxy_http.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule proxy_ajp_module modules\/mod_proxy_ajp.so/ c\#LoadModule proxy_ajp_module modules\/mod_proxy_ajp.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule proxy_connect_module modules\/mod_proxy_connect.so/ c\#LoadModule proxy_connect_module modules\/mod_proxy_connect.so' /etc/httpd/conf/httpd.conf
-    sed -i '/LoadModule version_module modules\/mod_version.so/ c\#LoadModule version_module modules\/mod_version.so' /etc/httpd/conf/httpd.conf
+    # Remove unwanted modules
+    sed -i '/LoadModule ldap_module modules\/mod_ldap.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule authnz_ldap_module modules\/mod_authnz_ldap.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule dav_module modules\/mod_dav.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule autoindex_module modules\/mod_autoindex.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule info_module modules\/mod_info.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule dav_fs_module modules\/mod_dav_fs.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule userdir_module modules\/mod_userdir.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_module modules\/mod_proxy.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_balancer_module modules\/mod_proxy_balancer.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_ftp_module modules\/mod_proxy_ftp.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_http_module modules\/mod_proxy_http.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_ajp_module modules\/mod_proxy_ajp.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule proxy_connect_module modules\/mod_proxy_connect.so/d' /etc/httpd/conf/httpd.conf
+    sed -i '/LoadModule version_module modules\/mod_version.so/d' /etc/httpd/conf/httpd.conf
+
+    # Remove config for disabled modules
+    sed -i '/IndexOptions FancyIndexing VersionSort NameWidth=* HTMLTable Charset=UTF-8/d' /etc/httpd/conf/httpd.conf
+    sed -i '/AddIconByEncoding /d' /etc/httpd/conf/httpd.conf
+    sed -i '/AddIconByType /d' /etc/httpd/conf/httpd.conf
+    sed -i '/AddIcon /d' /etc/httpd/conf/httpd.conf
+    sed -i '/DefaultIcon /d' /etc/httpd/conf/httpd.conf
+    sed -i '/ReadmeName /d' /etc/httpd/conf/httpd.conf
+    sed -i '/HeaderName /d' /etc/httpd/conf/httpd.conf
+    sed -i '/IndexIgnore /d' /etc/httpd/conf/httpd.conf
+
+    
+    # Secure PHP (this might break some stuff so need to test carefully)
+    sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellarg,escapeshellcmd,eval,exec,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,passthru,php_uname,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,popen,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,shell_exec,syslog,system,xmlrpc_entity_decode,curl_exec,curl_multi_exec' /etc/php.ini
 }
 # +---------------------------------------------------+
 
