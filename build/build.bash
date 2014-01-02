@@ -579,6 +579,10 @@ func_mailwatch () {
     #       if we reuse or recreate, we need to harden it
     #       you can pass anything to the learn-msg.cgi and 
     #       no validation checks are performed
+    #
+    #   See this topic: http://www.esvacommunity.com/forum/viewtopic.php?f=5&t=232
+    #   I already wrote an simple fix for the security issue and user "endreottem"
+    #   added some extra checks.
 
 }
 # +---------------------------------------------------+
