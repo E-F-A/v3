@@ -352,7 +352,14 @@ function func_end() {
 
     # Remove the first time login message from console.
     sed -i "/^First time login: /d" /etc/issue
-  
+
+    func_echo-header
+    echo -e "$green[EFA]$clean We will now generate an new SSL Certificate"
+    echo -e "$green[EFA]$clean for postfix, please answer all answers."
+    pause
+    cd /etc/postfix/ssl
+    openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650 
+    
     touch /etc/EFA-Config
     echo "HOSTNAME:$HOSTNAME" >> /etc/EFA-Config
     echo "DOMAINNAME:$DOMAINNAME" >> /etc/EFA-Config
