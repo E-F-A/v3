@@ -743,7 +743,6 @@ func_webmin () {
 }
 # +---------------------------------------------------+
 
-
 # +---------------------------------------------------+
 # Disable unneeded kernel modules
 # +---------------------------------------------------+
@@ -912,7 +911,7 @@ func_cleanup () {
     
     # SELinux is giving me headaches disabling until everything works correctly
     # When everything works we should enable SELinux and try to fix all permissions..
-    sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/sysconfig/selinux
+    sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/selinux/config
 }
 # +---------------------------------------------------+
 
