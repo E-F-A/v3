@@ -403,7 +403,7 @@ func_apache () {
     sed -i '/LoadModule version_module modules\/mod_version.so/d' /etc/httpd/conf/httpd.conf
 
     # Remove config for disabled modules
-    sed -i '/IndexOptions FancyIndexing VersionSort NameWidth=* HTMLTable Charset=UTF-8/d' /etc/httpd/conf/httpd.conf
+    sed -i '/IndexOptions /d' /etc/httpd/conf/httpd.conf
     sed -i '/AddIconByEncoding /d' /etc/httpd/conf/httpd.conf
     sed -i '/AddIconByType /d' /etc/httpd/conf/httpd.conf
     sed -i '/AddIcon /d' /etc/httpd/conf/httpd.conf
@@ -912,7 +912,7 @@ func_cleanup () {
     
     # SELinux is giving me headaches disabling until everything works correctly
     # When everything works we should enable SELinux and try to fix all permissions..
-    sed -i '/SELINUX=/ c\SELINUX=disabled' /etc/sysconfig/selinux
+    sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/sysconfig/selinux
 }
 # +---------------------------------------------------+
 
