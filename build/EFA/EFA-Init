@@ -345,10 +345,10 @@ function func_configure-system() {
 # +---------------------------------------------------+
 # The final settings
 # +---------------------------------------------------+
-function func_end()
-{
+function func_end() {
     echo -e "$green[EFA]$clean Generating SSH Host keys"
-    # Todo 
+    ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
+    ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
 
     # Remove the first time login message from console.
     sed -i "/^First time login: /d" /etc/issue
@@ -364,6 +364,19 @@ function func_end()
     echo "DNS1:$DNS1" >> /etc/EFA-Config
     echo "DNS2:$DNS2" >> /etc/EFA-Config
     chmod 600 /etc/EFA-Config
+  
+    # Enable services at boot
+    chkconfig MailScanner on
+    chkconfig httpd on
+    chkconfig mysqld on
+    chkconfig named on
+    chkconfig saslauthd on
+    chkconfig crond on
+    chkconfig clamd on
+    chkconfig sqlgrey on
+    chkconfig mailgraph-init on
+    chkconfig adcc on
+    chkconfig webmin on
   
     func_echo-header
     echo -e "$green[EFA]$clean All settings applied rebooting when you press enter."
