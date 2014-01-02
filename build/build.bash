@@ -265,6 +265,9 @@ func_mailscanner () {
     sed -i '/^Clamd Socket =/ c\Clamd Socket = /tmp/clamd.socket' /etc/MailScanner/MailScanner.conf
     sed -i '/^Log SpamAssassin Rule Actions =/ c\Log SpamAssassin Rule Actions = no' /etc/MailScanner/MailScanner.conf
 
+    # Match up envelope header (changed at efa-init but usefull for testing)
+    sed -i '/^envelope_sender_header / c\envelope_sender_header X-yoursite-MailScanner-EFA-From' /etc/MailScanner/spam.assassin.prefs.conf
+    
     touch /etc/MailScanner/rules/sig.html.rules
     touch /etc/MailScanner/rules/sig.text.rules
     rm -rf /var/spool/MailScanner/incoming
@@ -608,6 +611,9 @@ func_mailwatch () {
     chown -R postfix:apache /var/spool/postfix/incoming
     chmod -R 750 /var/spool/postfix/hold
     chmod -R 750 /var/spool/postfix/incoming
+    
+    # Fix MailScanner / MailWatch auto-commit annoyance
+    sed -i '/$dbh->commit/ c\#$dbh->commit' /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
 }
 # +---------------------------------------------------+
 
