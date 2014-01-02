@@ -583,6 +583,10 @@ func_mailwatch () {
     #   See this topic: http://www.esvacommunity.com/forum/viewtopic.php?f=5&t=232
     #   I already wrote an simple fix for the security issue and user "endreottem"
     #   added some extra checks.
+    
+    # Todo:  esva also has an mailwatch local system user.
+    #        don't see why that user exists or what it's used for
+    #        we should also check that out.
 
 }
 # +---------------------------------------------------+
