@@ -682,11 +682,6 @@ func_razor () {
     
     mkdir /var/spool/postfix/.razor
     chown postfix:postfix /var/spool/postfix/.razor
-
-    # todo: this should probably go to EFA-Init.
-    su postfix -s /bin/bash -c 'razor-admin -create'
-    su postfix -s /bin/bash -c 'razor-admin -register'
-    sed -i '/^debuglevel/ c\debuglevel             = 0' /var/spool/postfix/.razor/razor-agent.conf
 }
 # +---------------------------------------------------+
 
@@ -914,6 +909,10 @@ func_cleanup () {
     #rm -f /boot/filler
     #dd if=/dev/zero of=/var/filler bs=1000
     #rm -f /var/filler
+    
+    # SELinux is giving me headaches disabling until everything works correctly
+    # When everything works we should enable SELinux and try to fix all permissions..
+    sed -i '/SELINUX=/ c\SELINUX=disabled' /etc/sysconfig/selinux
 }
 # +---------------------------------------------------+
 
