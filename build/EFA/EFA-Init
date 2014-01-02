@@ -338,6 +338,7 @@ function func_configure-system() {
   
   echo -e "$green[EFA]$clean - Updating Freshclam"
   freshclam
+  sa-update
 }
 # +---------------------------------------------------+
 

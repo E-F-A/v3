@@ -300,10 +300,6 @@ func_spam_clamav () {
     cd /tmp
     rm -rf install-Clam*
         
-    # Force an update of ClamAV definitions...
-    # service clamd restart
-    # freshclam # todo this should probably be moved to EFA-Init
-        
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
     
@@ -412,9 +408,12 @@ func_apache () {
     sed -i '/HeaderName /d' /etc/httpd/conf/httpd.conf
     sed -i '/IndexIgnore /d' /etc/httpd/conf/httpd.conf
 
-    
     # Secure PHP (this might break some stuff so need to test carefully)
     sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellarg,escapeshellcmd,eval,exec,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,passthru,php_uname,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,popen,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,shell_exec,syslog,system,xmlrpc_entity_decode,curl_exec,curl_multi_exec' /etc/php.ini
+    
+    # Todo: Mod_security
+    #       This requires EPEL sources (which have given me lots of dependency issues before
+    #       Not sure if that is something we would like to have :-) )
 }
 # +---------------------------------------------------+
 
@@ -771,7 +770,6 @@ func_services () {
     # These services we disable for now and enable them after EFA-Init.
     # Most of these are not enabled by default but add them here just to
     # make sure we don't forget them at EFA-Init.
-
     chkconfig MailScanner off
     chkconfig httpd off
     chkconfig mysqld off
