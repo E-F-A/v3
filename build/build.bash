@@ -748,11 +748,11 @@ func_webmin () {
 # Disable unneeded kernel modules
 # +---------------------------------------------------+
 func_kernmodules () {
-    echo "# Begin Disable modules not required for E.F.A">>/etc/modprobe.conf
-    echo "alias ipv6 off">>/etc/modprobe.conf
-    echo "alias net-pf-10 off">>/etc/modprobe.conf
-    echo "alias pcspkr off">>/etc/modprobe.conf
-    echo "# End Disable modules not required for E.F.A.">>/etc/modprobe.conf
+    echo "# Begin Disable modules not required for E.F.A">>/etc/modprobe.d/EFA.conf
+    echo "alias ipv6 off">>/etc/modprobe.d/EFA.conf
+    echo "alias net-pf-10 off">>/etc/modprobe.d/EFA.conf
+    echo "alias pcspkr off">>/etc/modprobe.d/EFA.conf
+    echo "# End Disable modules not required for E.F.A.">>/etc/modprobe.d/EFA.conf
 }
 # +---------------------------------------------------+
 
