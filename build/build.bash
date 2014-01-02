@@ -566,7 +566,10 @@ func_mailwatch () {
     # Todo: greylisting tools for MailWatch
     #       Andy wrote the greylist interface for Mailwatch in a series of 
     #       php files
-    #       Should we reuse and adapt?  It is marked GNU GPLv2.   
+    #       Should we reuse and adapt?  It is marked GNU GPLv2. 
+    #
+    #   I would say we reuse them, the code seems pretty simple so bugs we can probably
+    #   Fix ourself (even tough I got limited php knowledge :P)
 
     # Todo: spam submission and release cgi scripts
     #       I am guessing Andy also wrote these
