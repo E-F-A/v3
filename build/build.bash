@@ -34,6 +34,13 @@
 # http://pralab.diee.unica.it/en/BayesOCR
 # http://pralab.diee.unica.it/imageCerberus
 
+# Issue:
+# Mailscanner won't run correctly, when debugging it mentions:
+#
+# 20:35:02 Insecure dependency in open while running with -T switch at /usr/lib64/perl5/IO/File.pm line 185.
+#
+# Looks like some sort of dependency error but can't figure out what is causing this.
+
 
 # +---------------------------------------------------+
 # Variables
