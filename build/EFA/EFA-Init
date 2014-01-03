@@ -365,6 +365,32 @@ function func_ask-keyboard() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+function func_ask-ianacode() {
+  func_echo-header
+  echo -e "$green[EFA]$clean I need your 2 letter IANA country code, this is used to"
+  echo -e "$green[EFA]$clean determine the closest mirror to download software updates from."
+  echo -e "$green[EFA]$clean If you don't know your country code please take a look at: "
+  echo -e "$green[EFA]$clean http://www.iso.org/iso/country_names_and_code_elements "
+  echo ""
+  echo -e -n "$green[EFA]$clean Your IANA code (lowercase): "
+  read IANACODE
+  ianacodecheck=1
+  while [ $ianacodecheck != 0 ]
+   do
+     if [[ $IANACODE =~ ^[a-z]{1,2}$ ]]
+      then
+        ianacodecheck=0
+      else
+        echo -e "       $red ERROR: The code $IANACODE seems to be invalid"
+        echo -e "        ERROR: please re-enter the IANA code$clean"
+        echo -e -n "$green[EFA]$clean Your IANA code (lowercase): "
+        read IANACODE
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Verify the settings
 # +---------------------------------------------------+
 function func_verify-settings() {
@@ -390,6 +416,7 @@ function func_verify-settings() {
     echo -e -n "13) VMware Tools   : "; if [[ "$InstallVmwareTools" -eq 1 ]]; then echo "Install"; else echo "Not needed"; fi
     echo -e -n "14) Time zone      : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
     echo -e "15) Keyboard       : $KEYBOARD"
+    echo -e "16) IANA Code      : $IANACODE"
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -427,6 +454,8 @@ function func_verify-settings() {
                 14)       func_ask-timezone
                         ;;
                 15)       func_ask-keyboard
+                        ;;
+                16)       func_ask-ianacode
                         ;;
                 OK)       verifymenu=0
                         ;;
@@ -494,7 +523,12 @@ function func_configure-system() {
   echo "UTC=$ISUTC">/etc/sysconfig/clock
   echo "ARC=false">>/etc/sysconfig/clock
   echo "ZONE=$TZONE">>/etc/sysconfig/clock
-
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # Write ianacode to freshclam config.
+  sed -i "/^#DatabaseMirror / c\DatabaseMirror db.$IANACODE.clamav.net" /etc/freshclam.conf
+  # +--------------------------------------------------+
   
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring razor"
@@ -557,6 +591,7 @@ function func_end() {
   echo "GATEWAY:$GATEWAY" >> /etc/EFA-Config
   echo "DNS1:$DNS1" >> /etc/EFA-Config
   echo "DNS2:$DNS2" >> /etc/EFA-Config
+  echo "IANA:$IANACODE" >> /etc/EFA-Config
   chmod 600 /etc/EFA-Config
   # +--------------------------------------------------+
   
@@ -728,6 +763,7 @@ if [ ! -e /etc/EFA-Config ]
     func_detect-virtual
     func_ask-timezone
     func_ask-keyboard
+    func_ask-ianacode
     func_verify-settings
     func_configure-system
     if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
