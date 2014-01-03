@@ -592,8 +592,8 @@ function func_configure-system() {
   # Add the domain of this system to transports
   echo -e "$green[EFA]$clean - Allow the current to receive mails"
   echo "" >> /etc/postfix/transport
-  echo "###### START E.F.A ADDED DOMAINS ######" /etc/postfix/transport
-  echo "$DOMAIN  smtp:[$MAILSERVER]" >> /etc/postfix/transport
+  echo "###### START E.F.A ADDED DOMAINS ######" >> /etc/postfix/transport
+  echo "$DOMAINNAME  smtp:[$MAILSERVER]" >> /etc/postfix/transport
   rm -f /etc/postfix/transport.db
   postmap /etc/postfix/transport
   # +--------------------------------------------------+
