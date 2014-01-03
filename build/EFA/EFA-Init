@@ -393,12 +393,37 @@ function func_ask-ianacode() {
 # +---------------------------------------------------+
 function func_ask-mailserver() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the IP or hostname of your local mail server?"
+  echo -e "$green[EFA]$clean Please enter the IP or hostname of your local mail server."
   echo -e "$green[EFA]$clean This will be your server that actually receives the mail."
   echo -e "$green[EFA]$clean For example your local Microsoft Exchange or Zimbra server."
   echo ""
   echo -e -n "$green[EFA]$clean Your mail server: "
   read MAILSERVER
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-orgname() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the name of your organization."
+  echo -e "$green[EFA]$clean This needs to be a single word and is used in your mail headers."
+  echo -e "$green[EFA]$clean (No spaces, dots or underscores allowed)."
+  echo ""
+  echo -e -n "$green[EFA]$clean Your organization's name: "
+  read ORGNAME
+  orgnamecheck=1
+  while [ $orgnamecheck != 0 ]
+   do
+     if [[ $ORGNAME =~ ^[a-zA-Z1-9]{2,253}$ ]]
+      then
+        orgnamecheck=0
+      else
+        echo -e "       $red ERROR: The name $ORGNAME seems to be invalid"
+        echo -e "        ERROR: please re-enter the name.$clean"
+        echo -e -n "$green[EFA]$clean Your organization's name: "
+        read ORGNAME
+     fi
+   done
 }
 # +---------------------------------------------------+
 
@@ -430,6 +455,7 @@ function func_verify-settings() {
     echo -e "15) Keyboard       : $KEYBOARD"
     echo -e "16) IANA Code      : $IANACODE"
     echo -e "17) Mail Server    : $MAILSERVER"
+    echo -e "18) Org. name      : $ORGNAME"
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -471,6 +497,8 @@ function func_verify-settings() {
                 16)       func_ask-ianacode
                         ;;
                 17)       func_ask-mailserver
+                        ;;
+                18)       func_ask-orgname
                         ;;
                 OK)       verifymenu=0
                         ;;
@@ -562,11 +590,42 @@ function func_configure-system() {
   
   # +--------------------------------------------------+
   # Add the domain of this system to transports
+  echo -e "$green[EFA]$clean - Allow the current to receive mails"
   echo "" >> /etc/postfix/transport
   echo "###### START E.F.A ADDED DOMAINS ######" /etc/postfix/transport
   echo "$DOMAIN  smtp:[$MAILSERVER]" >> /etc/postfix/transport
   rm -f /etc/postfix/transport.db
   postmap /etc/postfix/transport
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # Add admin email to receive root mails
+  echo "root: $ADMINEMAIL" >> /etc/aliases
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  echo -e "$green[EFA]$clean - Configuring spamassassin"
+  sed -i '/bayes_ignore_header/d' /etc/MailScanner/spam.assassin.prefs.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA">>/etc/MailScanner/spam.assassin.prefs.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamCheck">>/etc/MailScanner/spam.assassin.prefs.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamScore">>/etc/MailScanner/spam.assassin.prefs.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-Information">>/etc/MailScanner/spam.assassin.prefs.conf
+  sed -i '/^envelope_sender_header / c\envelope_sender_header X-$ORGNAME-MailScanner-EFA-From' /etc/MailScanner/spam.assassin.prefs.conf
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  echo -e "$green[EFA]$clean - Configuring MailScanner"
+  sed -i "/^%org-name% =/ c\%org-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
+  sed -i "/^%org-long-name% =/ c\%org-long-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
+  sed -i "/^%web-site% =/ c\%web-site% = http://www.efa-project.org" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Use Watermarking =/ c\Use Watermarking = yes" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Information Header Value =/ c\Information Header Value = Please contact $ADMINEMAIL for more information" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Unscanned Header Value =/ c\Unscanned Header Value = Please contact $ADMINEMAIL for details" /etc/MailScanner/MailScanner.conf
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  echo -e "$green[EFA]$clean - Configuring MailWatch"
+  sed -i "s/\(^define(QUARANTINE_FROM_ADDR, \)\(..*$\)/\1'postmaster@$DOMAINNAME'\);/g" /var/www/html/mailscanner/conf.php
   # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
@@ -578,6 +637,8 @@ func_Install-VmwareTools(){
   func_echo-header
   echo -e "$green[EFA]$clean Installing vmware tools"
   # TODO TODO TODO
+  echo "This is a todo..."
+  pause
 }
 # +---------------------------------------------------+
 
@@ -617,6 +678,7 @@ function func_end() {
   echo "DNS2:$DNS2" >> /etc/EFA-Config
   echo "IANA:$IANACODE" >> /etc/EFA-Config
   echo "MAILSERVER:$MAILSERVER" >> /etc/EFA-Config
+  echo "ORGNAME:$ORGNAME" >> /etc/EFA-Config
   chmod 600 /etc/EFA-Config
   # +--------------------------------------------------+
   
@@ -790,6 +852,7 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-keyboard
     func_ask-ianacode
     func_ask-mailserver
+    func_ask-orgname
     func_verify-settings
     func_configure-system
     if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
