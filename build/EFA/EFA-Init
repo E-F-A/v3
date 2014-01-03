@@ -313,6 +313,33 @@ function func_ask-rootpassword() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# detect virtual system
+# +---------------------------------------------------+
+function func_detect-virtual() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Checking host type"
+  # This is a bit tricky as there is no uniform way to see what host type is used.
+  # The VGA interface seems to be pretty unique tough so checking that for now.
+  AreWeVMware="`/sbin/lspci | grep VGA | grep VMware`"
+  if [ -n "${AreWeVMware##+([[:space:]])}"  ];then
+    echo -e "$green[EFA]$clean You seem to be running on VMware"
+    echo -e "$green[EFA]$clean would you like me to install VMware tools?"
+    echo -e -n "$green[EFA]$clean [Y/n]:"
+    read VMwareInstallChoice
+    if [[ $VMwareInstallChoice == "" || $VMwareInstallChoice == "Y" || $VMwareInstallChoice == "y" ]]; then
+      InstallVmwareTools="1"
+    else
+      InstallVmwareTools="0"
+    fi
+  else
+    echo -e "$green[EFA]$clean You don't seem to be running VMware"
+    echo -e "$green[EFA]$clean in that case nothing to do, moving on.."
+    pause
+  fi
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Verify the settings
 # +---------------------------------------------------+
 function func_verify-settings() {
@@ -335,6 +362,7 @@ function func_verify-settings() {
     echo -e "10) User           : $USERNAME"
     echo -e "11) User PWD       : <hidden>"
     echo -e "12) Admin PWD      : <hidden>"
+    echo -e -n "13) VMware Tools   : "; if [[ "$InstallVmwareTools" -eq 1 ]]; then echo "Install"; else echo "Not needed"; fi
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -361,7 +389,13 @@ function func_verify-settings() {
                         ;;
                 9)        func_ask-dns2
                         ;;
-                10)       func_ask-rootpassword
+                10)       func_ask-username
+                        ;;
+                11)       func_ask-userpassword
+                        ;;
+                12)       func_ask-rootpassword
+                        ;;
+                13)       func_detect-virtual
                         ;;
                 OK)        verifymenu=0
                         ;;
@@ -438,11 +472,18 @@ function func_configure-system() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Install Vmware Tools if needed
+# +---------------------------------------------------+
+func_Install-VmwareTools(){
+  echo -e "$green[EFA]$clean Installing vmware tools"
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # The final settings
 # +---------------------------------------------------+
 function func_end() {
   
-
   # Remove the first time login message from console.
   sed -i "/^First time login: /d" /etc/issue
 
@@ -493,7 +534,6 @@ function func_end() {
   # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
-
 
 # +---------------------------------------------------+
 # Function to determine the available interfaces.
@@ -634,8 +674,10 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-username
     func_ask-userpassword
     func_ask-rootpassword
+    func_detect-virtual
     func_verify-settings
     func_configure-system
+    if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
     func_end
  else
     echo -e "$red         ERROR: EFA is already configured $clean"
