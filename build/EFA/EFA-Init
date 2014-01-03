@@ -391,6 +391,18 @@ function func_ask-ianacode() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+function func_ask-mailserver() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the IP or hostname of your local mail server?"
+  echo -e "$green[EFA]$clean This will be your server that actually receives the mail."
+  echo -e "$green[EFA]$clean For example your local Microsoft Exchange or Zimbra server."
+  echo ""
+  echo -e -n "$green[EFA]$clean Your mail server: "
+  read MAILSERVER
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Verify the settings
 # +---------------------------------------------------+
 function func_verify-settings() {
@@ -417,6 +429,7 @@ function func_verify-settings() {
     echo -e -n "14) Time zone      : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
     echo -e "15) Keyboard       : $KEYBOARD"
     echo -e "16) IANA Code      : $IANACODE"
+    echo -e "17) Mail Server    : $MAILSERVER"
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -456,6 +469,8 @@ function func_verify-settings() {
                 15)       func_ask-keyboard
                         ;;
                 16)       func_ask-ianacode
+                        ;;
+                17)       func_ask-mailserver
                         ;;
                 OK)       verifymenu=0
                         ;;
@@ -544,6 +559,15 @@ function func_configure-system() {
   freshclam
   sa-update
   # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # Add the domain of this system to transports
+  echo "" >> /etc/postfix/transport
+  echo "###### START E.F.A ADDED DOMAINS ######" /etc/postfix/transport
+  echo "$DOMAIN  smtp:[$MAILSERVER]" >> /etc/postfix/transport
+  rm -f /etc/postfix/transport.db
+  postmap /etc/postfix/transport
+  # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
 
@@ -592,6 +616,7 @@ function func_end() {
   echo "DNS1:$DNS1" >> /etc/EFA-Config
   echo "DNS2:$DNS2" >> /etc/EFA-Config
   echo "IANA:$IANACODE" >> /etc/EFA-Config
+  echo "MAILSERVER:$MAILSERVER" >> /etc/EFA-Config
   chmod 600 /etc/EFA-Config
   # +--------------------------------------------------+
   
@@ -764,6 +789,7 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-timezone
     func_ask-keyboard
     func_ask-ianacode
+    func_ask-mailserver
     func_verify-settings
     func_configure-system
     if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
