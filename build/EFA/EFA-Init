@@ -340,6 +340,21 @@ function func_detect-virtual() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+function func_ask-timezone() {
+  func_echo-header
+  echo -e -n "$green[EFA]$clean Is the host set to UTC time? [Y/n]: "
+  read TMPUTC
+  if [[ "$TMPUTC" == "" || "$TMPUTC" == "Y" || "$TMPUTC" == "y" ]]; then 
+    ISUTC=true
+  else
+    ISUTC=false
+  fi
+  echo -e "$green[EFA]$clean Please select the time zone this system is located in."
+  TZONE=`/usr/bin/tzselect`
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Verify the settings
 # +---------------------------------------------------+
 function func_verify-settings() {
@@ -363,6 +378,7 @@ function func_verify-settings() {
     echo -e "11) User PWD       : <hidden>"
     echo -e "12) Admin PWD      : <hidden>"
     echo -e -n "13) VMware Tools   : "; if [[ "$InstallVmwareTools" -eq 1 ]]; then echo "Install"; else echo "Not needed"; fi
+    echo -e -n "14) Time zone      : $TZONE"; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -396,6 +412,8 @@ function func_verify-settings() {
                 12)       func_ask-rootpassword
                         ;;
                 13)       func_detect-virtual
+                        ;;
+                14)       func_ask-timezone
                         ;;
                 OK)        verifymenu=0
                         ;;
@@ -455,6 +473,15 @@ function func_configure-system() {
   ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
   ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
   # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  echo -e "$green[EFA]$clean - Configure timezone"
+  rm -f /etc/localtime
+  ln -s /usr/share/zoneinfo/$TZONE /etc/localtime
+  echo "UTC=$ISUTC">/etc/sysconfig/clock
+  echo "ARC=false">>/etc/sysconfig/clock
+  echo "ZONE=$TZONE">>/etc/sysconfig/clock
+
   
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring razor"
@@ -686,6 +713,7 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-userpassword
     func_ask-rootpassword
     func_detect-virtual
+    func_ask-timezone
     func_verify-settings
     func_configure-system
     if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
