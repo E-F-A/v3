@@ -20,13 +20,15 @@
 # +--------------------------------------------------------------------+
 
 # todo:
-# ip configuration
-# hostname configuration
-# detect host type, if vmware install vmware tools, hyper-v is already build in default centos kernel.
-# enable services
-# run sa-update
+# Detect host type, if vmware install vmware tools, hyper-v is already build in default centos kernel.
 # time/timezone selection
+# Write auto generated password for mysql root
+# Write auto generated password for mysql sa_user
+# Write auto generated password for mysql mailwatch
+# Write auto generated password for mysql sqlgrey
+# Give user sudo rights
 # 
+debug="1"
 # +---------------------------------------------------+
 # Lets start asking questions.
 # +---------------------------------------------------+
@@ -220,32 +222,91 @@ function func_ask-dns2() {
 }
 # +---------------------------------------------------+
 
+# +---------------------------------------------------+
+function func_ask-username() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the user-name you would like to have."
+  echo -e "$green[EFA]$clean This user will be granted SSH access to the system."
+  echo -e -n "$green[EFA]$clean : "
+  read USERNAME
+  uncheck=1
+  while [ $uncheck != 0 ]
+   do
+     if [[ $USERNAME =~ ^[a-z_][a-z0-9_-]{1,30}+$ ]]
+      then
+        uncheck=0
+      else
+        echo -e "       $red ERROR: The user-name $USERNAME seems to be invalid"
+        echo -e "        ERROR: please re-enter the user-name$clean"
+        echo -e "$green[EFA]$clean Please enter the user-name you would like to have."
+        echo -e -n "$green[EFA]$clean : "
+        read USERNAME
+     fi
+    done
+}
+# +---------------------------------------------------+
 
 # +---------------------------------------------------+
-function func_ask-password() {
+function func_ask-userpassword() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the password for the root/admin user."
+  echo -e "$green[EFA]$clean Please enter the password for the local user."
+  echo -e "$green[EFA]$clean This password will also be used to logon to the webinterface"
   echo -e -n "$green[EFA]$clean Password: "
-  read -s efaadminpwd
+  read -s efauserpwd
   echo -e ""
   echo -e -n "$green[EFA]$clean Password Again: "
-  read -s efaadminpwd2
-  efaadminpwdcheck=1
-  while [ $efaadminpwdcheck != 0 ]
+  read -s efauserpwd2
+  efauserpwdcheck=1
+  while [ $efauserpwdcheck != 0 ]
    do
-     if [[ $efaadminpwd = "$efaadminpwd2" ]]
+     if [[ $efauserpwd = "$efauserpwd2" ]]
           then
-            efaadminpwdcheck=0
+            efauserpwdcheck=0
          else 
             echo -e ""
             echo -e "       $red ERROR: The passwords do not seem to match"
             echo -e "        ERROR: Please try again$clean"
-            echo -e "$green[EFA]$clean Please enter the password for the root/admin user."
+            echo -e "$green[EFA]$clean Please enter the password for the local user."
             echo -e -n "$green[EFA]$clean Password: "
-            read -s efaadminpwd
+            read -s efauserpwd
             echo -e ""
             echo -e -n "$green[EFA]$clean Password Again: "
-            read -s efaadminpwd2
+            read -s efauserpwd2
+     fi
+  done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-rootpassword() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the password for the root user."
+  echo -e "$green[EFA]$clean This password is needed in case something goes"
+  echo -e "$green[EFA]$clean wrong and you need to recover the system."
+  echo -e ""
+  echo -e "$green[EFA]$clean Please make this password long, strong and"
+  echo -e "$green[EFA]$clean different from the user password."
+  echo -e -n "$green[EFA]$clean Password: "
+  read -s efarootpwd
+  echo -e ""
+  echo -e -n "$green[EFA]$clean Password Again: "
+  read -s efarootpwd2
+  efarootpwdcheck=1
+  while [ $efarootpwdcheck != 0 ]
+   do
+     if [[ $efarootpwd = "$efarootpwd2" ]]
+          then
+            efarootpwdcheck=0
+         else 
+            echo -e ""
+            echo -e "       $red ERROR: The passwords do not seem to match"
+            echo -e "        ERROR: Please try again$clean"
+            echo -e "$green[EFA]$clean Please enter the password for the root user."
+            echo -e -n "$green[EFA]$clean Password: "
+            read -s efarootpwd
+            echo -e ""
+            echo -e -n "$green[EFA]$clean Password Again: "
+            read -s efarootpwd2
      fi
   done
 }
@@ -271,7 +332,9 @@ function func_verify-settings() {
     echo -e "7)  Gateway        : $GATEWAY"
     echo -e "8)  Primary DNS    : $DNS1"
     echo -e "9)  Secondary DNS  : $DNS2"
-    echo -e "10) Admin PWD      : <hidden>"
+    echo -e "10) User           : $USERNAME"
+    echo -e "11) User PWD       : <hidden>"
+    echo -e "12) Admin PWD      : <hidden>"
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -298,7 +361,7 @@ function func_verify-settings() {
                         ;;
                 9)        func_ask-dns2
                         ;;
-                10)       func_ask-password
+                10)       func_ask-rootpassword
                         ;;
                 OK)        verifymenu=0
                         ;;
@@ -316,8 +379,9 @@ function func_configure-system() {
   func_echo-header
   echo -e "$green[EFA]$clean Configuring system"
 
+  # +--------------------------------------------------+
+  # Network settings
   echo -e "$green[EFA]$clean - Setting new hostname"
-  #echo $HOSTNAME > /etc/hostnames
   sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
   echo "$IPADDRESS              $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
   hostname $HOSTNAME
@@ -327,19 +391,49 @@ function func_configure-system() {
   echo "nameserver $DNS2" >> /etc/resolv.conf
 
   echo -e "$green[EFA]$clean - Setting IP settings"
+  # Use ipcalc to get the broadcast & network id's
+  BROADCAST="`/bin/ipcalc -b $IPADDRESS $NETMASK`"
+  NETWORK="`/bin/ipcalc -n $IPADDRESS $NETMASK`"
+  echo "DEVICE=\"$INTERFACE\"" > /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "BOOTPROTO=\"none\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "ONBOOT=\"yes\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "$BROADCAST" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "$NETWORK" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "NETMASK=\"$NETMASK\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "IPADDR=\"$IPADDRESS\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "GATEWAY=$GATEWAY" >> /etc/sysconfig/network
+  # +--------------------------------------------------+
   
-  echo -e "$green[EFA]$clean - Changing passwords"
-  echo -e "root:$efaadminpwd" | chpasswd --md5 root
-
+  # +--------------------------------------------------+
+  # User settings
+  echo -e "$green[EFA]$clean - Creating user"
+  useradd -m -d /home/$USERNAME -s /bin/bash $USERNAME
+  echo "$USERNAME:$efauserpwd" | chpasswd --md5 $USERNAME
+  
+  echo -e "$green[EFA]$clean - Changing root password"
+  echo "root:$efarootpwd" | chpasswd --md5 root
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  echo -e "$green[EFA]$clean - Generating SSH Host keys"
+  ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
+  ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring razor"
   su postfix -s /bin/bash -c 'razor-admin -create'
   su postfix -s /bin/bash -c 'razor-admin -register'
   sed -i '/^debuglevel/ c\debuglevel             = 0' /var/spool/postfix/.razor/razor-agent.conf
+  # +--------------------------------------------------+
   
-  echo -e "$green[EFA]$clean - Updating Freshclam"
+  # +--------------------------------------------------+
+  # Update clamav and spamassassin rules
+  echo -e "$green[EFA]$clean - Updating AV and SA rules"
   service clamd start
   freshclam
   sa-update
+  # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
 
@@ -347,50 +441,56 @@ function func_configure-system() {
 # The final settings
 # +---------------------------------------------------+
 function func_end() {
-    echo -e "$green[EFA]$clean Generating SSH Host keys"
-    ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
-    ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
+  
 
-    # Remove the first time login message from console.
-    sed -i "/^First time login: /d" /etc/issue
+  # Remove the first time login message from console.
+  sed -i "/^First time login: /d" /etc/issue
 
-    func_echo-header
-    echo -e "$green[EFA]$clean We will now generate an new SSL Certificate"
-    echo -e "$green[EFA]$clean for postfix, please answer all answers."
-    pause
-    cd /etc/postfix/ssl
-    openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650 
+  func_echo-header
+  echo -e "$green[EFA]$clean We will now generate an new SSL Certificate"
+  echo -e "$green[EFA]$clean for postfix, please answer all answers."
+  pause
+  cd /etc/postfix/ssl
+  openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650 
     
-    touch /etc/EFA-Config
-    echo "HOSTNAME:$HOSTNAME" >> /etc/EFA-Config
-    echo "DOMAINNAME:$DOMAINNAME" >> /etc/EFA-Config
-    echo "ADMINEMAIL:$ADMINEMAIL" >> /etc/EFA-Config
-    echo "INTERFACE:$INTERFACE" >> /etc/EFA-Config
-    echo "IPADDRESS:$IPADDRESS" >> /etc/EFA-Config
-    echo "NETMASK:$NETMASK" >> /etc/EFA-Config
-    echo "GATEWAY:$GATEWAY" >> /etc/EFA-Config
-    echo "DNS1:$DNS1" >> /etc/EFA-Config
-    echo "DNS2:$DNS2" >> /etc/EFA-Config
-    chmod 600 /etc/EFA-Config
+  # +--------------------------------------------------+
+  # Write all settings to EFA-Config
+  touch /etc/EFA-Config
+  echo "HOSTNAME:$HOSTNAME" >> /etc/EFA-Config
+  echo "DOMAINNAME:$DOMAINNAME" >> /etc/EFA-Config
+  echo "ADMINEMAIL:$ADMINEMAIL" >> /etc/EFA-Config
+  echo "INTERFACE:$INTERFACE" >> /etc/EFA-Config
+  echo "IPADDRESS:$IPADDRESS" >> /etc/EFA-Config
+  echo "NETMASK:$NETMASK" >> /etc/EFA-Config
+  echo "GATEWAY:$GATEWAY" >> /etc/EFA-Config
+  echo "DNS1:$DNS1" >> /etc/EFA-Config
+  echo "DNS2:$DNS2" >> /etc/EFA-Config
+  chmod 600 /etc/EFA-Config
+  # +--------------------------------------------------+
   
-    # Enable services at boot
-    chkconfig MailScanner on
-    chkconfig httpd on
-    chkconfig mysqld on
-    chkconfig named on
-    chkconfig saslauthd on
-    chkconfig crond on
-    chkconfig clamd on
-    chkconfig sqlgrey on
-    chkconfig mailgraph-init on
-    chkconfig adcc on
-    chkconfig webmin on
+  # +--------------------------------------------------+  
+  # Enable services at boot
+  chkconfig MailScanner on
+  chkconfig httpd on
+  chkconfig mysqld on
+  chkconfig named on
+  chkconfig saslauthd on
+  chkconfig crond on
+  chkconfig clamd on
+  chkconfig sqlgrey on
+  chkconfig mailgraph-init on
+  chkconfig adcc on
+  chkconfig webmin on
+  # +--------------------------------------------------+
   
-    func_echo-header
-    echo -e "$green[EFA]$clean All settings applied rebooting when you press enter."
-    pause
-    # todo disabled for testing..
-    # reboot
+  # +--------------------------------------------------+
+  # And the end.. we are done.. whooo!
+  func_echo-header
+  echo -e "$green[EFA]$clean All settings applied rebooting when you press enter."
+  pause
+  # todo disabled for testing..
+  # reboot
+  # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
 
@@ -399,7 +499,7 @@ function func_end() {
 # Function to determine the available interfaces.
 # +---------------------------------------------------+
 func_interfaces(){
-  nrintf=` cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '} | wc -l`
+  nrintf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '} | wc -l`
   interf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '}`
 
   if [ $nrintf -gt 1 ]
@@ -531,7 +631,9 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-gateway
     func_ask-dns1
     func_ask-dns2
-    func_ask-password
+    func_ask-username
+    func_ask-userpassword
+    func_ask-rootpassword
     func_verify-settings
     func_configure-system
     func_end
