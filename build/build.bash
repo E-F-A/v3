@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.0 build script version 20131224
+# EFA 3.0.0.0 build script version 20140103
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013  http://www.efa-project.org
 #
@@ -853,6 +853,9 @@ EOF
 
     # Compress logs from logrotate
     sed -i "s/#compress/compress/g" /etc/logrotate.conf
+    
+    # Set EFA-Init to run at first root login:
+    sed -i '1i\\/usr\/local\/sbin\/EFA-Init' /root/.bashrc
 }
 # +---------------------------------------------------+
 
