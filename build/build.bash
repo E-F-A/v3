@@ -90,11 +90,11 @@ func_mysql () {
     # Create and populate the mailscanner db
     # Source:  https://raw.github.com/endelwar/mailwatch/master/create.sql
     # https://raw.github.com/endelwar/mailwatch/master/tools/create_relay_postfix.sql
-    cd /tmp
+    cd /usr/src/EFA
     /usr/bin/wget -q $gitdlurl/MYSQL/create.sql
-    /usr/bin/mysql -u root -p"$password" < /tmp/create.sql
+    /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
     /usr/bin/wget -q $gitdlurl/MYSQL/create_relay_postfix.sql
-    /usr/bin/mysql -u root -p"$password" mailscanner < /tmp/create_relay_postfix.sql
+    /usr/bin/mysql -u root -p"$password" mailscanner < /usr/src/EFA/create_relay_postfix.sql
 
     # Create the users
     /usr/bin/mysql -u root -p"$password" -e "GRANT SELECT,INSERT,UPDATE,DELETE on sa_bayes.* to 'sa_user'@'localhost' identified by '$password'"
@@ -113,15 +113,15 @@ func_mysql () {
  
     # populate the sa_bayes DB
     # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/bayes_mysql.sql
-    cd /tmp
+    cd /usr/src/EFA
     /usr/bin/wget -q $gitdlurl/MYSQL/bayes_mysql.sql
-    /usr/bin/mysql -u root -p"$password" sa_bayes < /tmp/bayes_mysql.sql
+    /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/bayes_mysql.sql
     
     # add the AWL table to sa_bayes
     # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/awl_mysql.sql
-    cd /tmp
+    cd /usr/src/EFA
     /usr/bin/wget -q $gitdlurl/MYSQL/awl_mysql.sql
-    /usr/bin/mysql -u root -p"$password" sa_bayes < /tmp/awl_mysql.sql
+    /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/awl_mysql.sql
 }
 # +---------------------------------------------------+
 
@@ -202,7 +202,7 @@ func_postfix () {
 # install and configure MailScanner
 # +---------------------------------------------------+
 func_mailscanner () {
-    cd /tmp
+    cd /usr/src/EFA
     wget http://mailscanner.info/files/4/rpm/MailScanner-4.84.6-1.rpm.tar.gz
     tar -xvzf MailScanner-4.84.6-1.rpm.tar.gz
     cd MailScanner-4.84.6-1
@@ -291,19 +291,19 @@ func_spam_clamav () {
     
     # don't know if we need it so GPG key import is disabled (I remember GPG key was needed in ESVA for something
     # just don't know for what anymore)
-    #cd /tmp
+    #cd /usr/src/EFA
     #wget -q http://spamassassin.apache.org/released/GPG-SIGNING-KEY
-    #su postfix -c 'gpg --import /tmp/GPG-SIGNING-KEY'
+    #su postfix -c 'gpg --import /usr/src/EFA/GPG-SIGNING-KEY'
 
     #Use the MailScanner packaged version. Answer no to install clam.
-    cd /tmp
+    cd /usr/src/EFA
     wget http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
     tar -xvzf install-Clam-SA-latest.tar.gz
     cd install-Clam*
     echo 'n'>answers.txt
     echo ''>>answers.txt
     cat answers.txt|./install.sh
-    cd /tmp
+    cd /usr/src/EFA
     rm -rf install-Clam*
         
     # fix socket file in mailscanner.conf
@@ -314,7 +314,7 @@ func_spam_clamav () {
     # adds botnet's by default.. also the botnet.tar is not maintained anymore...
     
     # PDFInfo (todo: add option to efa-configure to disable this, if users find its to cpu intensive)
-    cd /tmp
+    cd /usr/src/EFA
     /usr/bin/wget -q -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
     /usr/bin/wget -q -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
     echo "loadplugin Mail::SpamAssassin::Plugin::PDFInfo">>/etc/mail/spamassassin/v310.pre
@@ -350,9 +350,9 @@ func_spam_clamav () {
     
     # Add example spam to db
     # source: http://spamassassin.apache.org/gtube/gtube.txt
-    cd /tmp
+    cd /usr/src/EFA
     /usr/bin/wget -q $gitdlurl/EFA/gtube.txt
-    sa-learn --spam /tmp/gtube.txt
+    sa-learn --spam /usr/src/EFA/gtube.txt
     
     # Enable Auto White Listing
     sed -i '/^#loadplugin Mail::SpamAssassin::Plugin::AWL/ c\loadplugin Mail::SpamAssassin::Plugin::AWL' /etc/mail/spamassassin/v310.pre
@@ -476,7 +476,7 @@ func_sqlgrey () {
 # +---------------------------------------------------+
 func_mailwatch () {
     # Fetch MailWatch
-    cd /tmp
+    cd /usr/src/EFA
     wget http://sourceforge.net/projects/mailwatch/files/mailwatch/$mailwatchver/mailwatch-$mailwatchver.tar.gz
     tar -xzvf mailwatch-$mailwatchver.tar.gz
     cd mailwatch-$mailwatchver
@@ -626,7 +626,7 @@ func_mailwatch () {
 # Mailgraph
 # +---------------------------------------------------+
 func_mailgraph () {
-    cd /tmp 
+    cd /usr/src/EFA 
     wget -q http://mailgraph.schweikert.ch/pub/mailgraph-1.14.tar.gz
     tar xvzf mailgraph-1.14.tar.gz
     cd mailgraph-1.14
@@ -652,7 +652,7 @@ func_mailgraph () {
 # Install Pyzor
 # +---------------------------------------------------+
 func_pyzor () {
-    cd /tmp
+    cd /usr/src/EFA
     wget http://downloads.sourceforge.net/project/pyzor/pyzor/0.5.0/pyzor-0.5.0.tar.gz
     tar xvzf pyzor-0.5.0.tar.gz
     cd pyzor-0.5.0
@@ -675,7 +675,7 @@ func_pyzor () {
 # Install Razor (http://razor.sourceforge.net/)
 # +---------------------------------------------------+
 func_razor () {
-    cd /tmp
+    cd /usr/src/EFA
     wget http://downloads.sourceforge.net/project/razor/razor-agents/2.84/razor-agents-2.84.tar.bz2
     tar xvjf razor-agents-2.84.tar.bz2
     cd razor-agents-2.84
@@ -695,7 +695,7 @@ func_razor () {
 # (current version = version 1.3.154, December 03, 2013)
 # +---------------------------------------------------+
 func_dcc () {
-    cd /tmp
+    cd /usr/src/EFA
     wget http://www.rhyolite.com/dcc/source/dcc.tar.Z
     tar xvzf dcc.tar.Z
     cd dcc-*
@@ -721,7 +721,7 @@ func_dcc () {
 # Webmin
 # +---------------------------------------------------+
 func_webmin () {
-    cd /tmp
+    cd /usr/src/EFA
     wget http://downloads.sourceforge.net/project/webadmin/webmin/1.660/webmin-1.660-1.noarch.rpm
     rpm -i webmin-1.660-1.noarch.rpm
     
@@ -886,7 +886,7 @@ func_cleanup () {
     # clear logfiles
     # clear bash history
     # rm -f /var/log/clamav/freshclam.log
-    # cd /tmp
+    # cd /usr/src/EFA
     # rm -rf *
 
     # Stop running services to allow kickstart to reboot
