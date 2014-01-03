@@ -20,7 +20,7 @@
 # +--------------------------------------------------------------------+
 
 # todo:
-# Detect host type, if vmware install vmware tools, hyper-v is already build in default centos kernel.
+# Install vmware tools
 # time/timezone selection
 # Write auto generated password for mysql root
 # Write auto generated password for mysql sa_user
@@ -425,6 +425,7 @@ function func_configure-system() {
   echo "nameserver $DNS2" >> /etc/resolv.conf
 
   echo -e "$green[EFA]$clean - Setting IP settings"
+  ifdown $INTERFACE
   # Use ipcalc to get the broadcast & network id's
   BROADCAST="`/bin/ipcalc -b $IPADDRESS $NETMASK`"
   NETWORK="`/bin/ipcalc -n $IPADDRESS $NETMASK`"
@@ -436,6 +437,7 @@ function func_configure-system() {
   echo "NETMASK=\"$NETMASK\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
   echo "IPADDR=\"$IPADDRESS\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
   echo "GATEWAY=$GATEWAY" >> /etc/sysconfig/network
+  ifup $INTERFACE
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
@@ -472,10 +474,12 @@ function func_configure-system() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Install Vmware Tools if needed
+# Install Vmware Tools
 # +---------------------------------------------------+
 func_Install-VmwareTools(){
+  func_echo-header
   echo -e "$green[EFA]$clean Installing vmware tools"
+  # TODO TODO TODO
 }
 # +---------------------------------------------------+
 
@@ -483,16 +487,23 @@ func_Install-VmwareTools(){
 # The final settings
 # +---------------------------------------------------+
 function func_end() {
-  
-  # Remove the first time login message from console.
-  sed -i "/^First time login: /d" /etc/issue
-
   func_echo-header
+  # +--------------------------------------------------+
+  # Postfix SSL certificate
   echo -e "$green[EFA]$clean We will now generate an new SSL Certificate"
   echo -e "$green[EFA]$clean for postfix, please answer all answers."
   pause
   cd /etc/postfix/ssl
   openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650 
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+  
+  # Remove the first time login message from console.
+  sed -i "/^First time login: /d" /etc/issue    
+  
+  # Remove EFA-Init from console
+  sed -i "/^\/usr\/local\/sbin\/EFA-Init/d" /root/.bashrc
+  # +--------------------------------------------------+
     
   # +--------------------------------------------------+
   # Write all settings to EFA-Config
