@@ -331,7 +331,13 @@ function func_detect-virtual() {
   AreWeVMware="`/sbin/lspci | grep VGA | grep VMware`"
   if [ -n "${AreWeVMware##+([[:space:]])}"  ];then
     echo -e "$green[EFA]$clean You seem to be running on VMware"
-    echo -e "$green[EFA]$clean would you like me to install VMware tools?"
+    echo -e "$green[EFA]$clean Would you like me to install Open VM Tools?"
+    echo ""
+    echo -e "$green[EFA]$clean Open VM Tools is the opensource version of VMware tools."
+    echo -e "$green[EFA]$clean If you require specific components that are not in Open VM Tools"
+    echo -e "$green[EFA]$clean then choose no here and install VMware tools manually later on."
+    echo ""
+    echo -e "$green[EFA]$clean For most VMware users Open VM Tools should be good enough."
     echo -e -n "$green[EFA]$clean [Y/n]:"
     read VMwareInstallChoice
     if [[ $VMwareInstallChoice == "" || $VMwareInstallChoice == "Y" || $VMwareInstallChoice == "y" ]]; then
