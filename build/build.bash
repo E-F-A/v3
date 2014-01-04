@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.0 build script version 20140103
+# EFA 3.0.0.0 build script version 20140104
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013  http://www.efa-project.org
 #
@@ -60,7 +60,6 @@ func_prebuild () {
 # +---------------------------------------------------+
 func_upgradeOS () {
     yum -y upgrade
-    #rpm -e wireless-tools # (gives dependency error's when removed, so keep..)
 }
 # +---------------------------------------------------+
 
@@ -118,8 +117,7 @@ func_mysql () {
     # sqlgrey user
     /usr/bin/mysql -u root -p"$password" -e "GRANT ALL on sqlgrey.* to 'sqlgrey'@'localhost' identified by '$password'"
 
-    # todo: fuzzyocr user
-    
+    # flush
     /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
  
     # populate the sa_bayes DB
