@@ -45,6 +45,15 @@ mailwatchver="1.2.0-beta-4"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Pre-build
+# +---------------------------------------------------+
+func_prebuild () {
+    # mounting /tmp without nosuid and noexec while building as it breaks building some components.
+    mount -o remount rw /tmp
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Update system before we start
 # +---------------------------------------------------+
 func_upgradeOS () {
@@ -929,6 +938,7 @@ func_cleanup () {
 # +---------------------------------------------------+
 # Main logic (this is where we start calling out functions)
 # +---------------------------------------------------+
+func_prebuild
 func_upgradeOS
 func_repoforge
 func_mysql
