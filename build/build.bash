@@ -710,7 +710,7 @@ func_razor () {
 # +---------------------------------------------------+
 func_dcc () {
     cd /usr/src/EFA
-    wget http://www.rhyolite.com/dcc/source/dcc.tar.Z
+    wget $mirror/$mirrorpath/dcc-1.3.154.tar.Z
     tar xvzf dcc.tar.Z
     cd dcc-*
     
