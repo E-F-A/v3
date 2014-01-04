@@ -1,0 +1,106 @@
+#!/bin/bash
+#
+#   vmtoolsd          Start/stop the vmware tools daemon
+#
+# chkconfig:  2345 90 60
+# description: vmtoolsd is a daemon that starts up.
+#
+
+### BEGIN INIT INFO
+# Provides: vmtoolsd
+# Required-Start: $local_fs $syslog
+# Required-Stop: $local_fs $syslog
+# Default-Start: 2345
+# Default-Stop: 90
+# Short-Description: Run vmware tools daemon
+# Description:  E.F.A vmtools start script, thanks to the jaded admin.
+### END INIT INFO
+
+RETVAL=0
+prog="/usr/local/bin/vmtoolsd"
+lockfile="/var/lock/subsys/vmtoolsd"
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+start() {
+    # Ensure no one has access
+    if [ $UID -ne 0 ]; then
+        echo "User has insufficient privileges."
+        exit 4
+    fi
+
+    [ -x $prog ] || exit 5
+
+    echo -n $"Starting $prog: "
+    daemon $prog --background=/var/run/vmtoolsd.pid
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+
+}
+
+stop() {
+    if [ $UID -ne 0 ]; then
+        echo "User has insufficient privileges."
+        exit 4
+    fi
+
+    echo -n $"Stopping $prog: "
+    if [ -n "`pidfileofproc $prog`" ]; then
+        killproc $prog
+        RETVAL=3
+    else
+        failure $"Stopping $prog"
+    fi
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    echo -n $"Reloading $prog: "
+    if [ -n "`pidfileofproc $prog`" ]; then
+        killproc $prog -HUP
+    else
+        failure $"Reloading $prog"
+    fi
+    retval=$?
+    echo
+}
+
+rh_status() {
+    status -p /var/run/vmtoolsd.pid $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    status)
+        rh_status
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|status}"
+        exit 2
+esac
+exit $?
