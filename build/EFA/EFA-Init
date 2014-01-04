@@ -442,6 +442,39 @@ function func_ask-orgname() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+function func_ask-greylist() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Greylisting:"
+  echo -e "$green[EFA]$clean Greylisting will temporarily reject any email from a sender it" 
+  echo -e "$green[EFA]$clean does not recognize. If the mail is legitimate the originating server"
+  echo -e "$green[EFA]$clean will, after a delay, try again and, if sufficient time has elapsed,"
+  echo -e "$green[EFA]$clean the email will be accepted."
+  echo ""
+  echo -e "$green[EFA]$clean This however causes an delay in receiving mail, by default this system"
+  echo -e "$green[EFA]$clean is configured to reject any email for 5 minutes."
+  echo -e "$green[EFA]$clean Not all admin's like this setup so giving you the option to disable"
+  echo -e "$green[EFA]$clean greylisting on this system."
+  echo ""
+  echo -e -n "$green[EFA]$clean Would you like to DISABLE greylisting? [y/N]: "
+  read TMPGREY
+  greylistcheck=1
+  while [ $greylistcheck != 0 ]
+    do 
+      if [[ "$TMPGREY" == "Y" || "$TMPGREY" == "y" ]]; then 
+        removegrey=1
+        greylistcheck=0
+      elif [[ "$TMPGREY" == "" || "$TMPGREY" == "N" || "$TMPGREY" == "n" ]]; then 
+        greylistcheck=0
+      else
+          echo -e "       $red ERROR: please make an selection.$clean"
+          echo -e -n "$green[EFA]$clean Would you like to DISABLE greylisting? [y/N]: "
+          read TMPGREY
+      fi
+  done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Verify the settings
 # +---------------------------------------------------+
 function func_verify-settings() {
@@ -470,6 +503,7 @@ function func_verify-settings() {
     echo -e "16) IANA Code      : $IANACODE"
     echo -e "17) Mail Server    : $MAILSERVER"
     echo -e "18) Org. name      : $ORGNAME"
+    echo -e -n "19) Greylisting    : "; if [[ "$removegrey" -eq 1 ]]; then echo "Disabled"; else echo "Enabled"; fi
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -513,6 +547,8 @@ function func_verify-settings() {
                 17)       func_ask-mailserver
                         ;;
                 18)       func_ask-orgname
+                        ;;
+                19)       func_ask-greylist
                         ;;
                 OK)       verifymenu=0
                         ;;
@@ -641,6 +677,17 @@ function func_configure-system() {
   echo -e "$green[EFA]$clean - Configuring MailWatch"
   sed -i "s/\(^define(QUARANTINE_FROM_ADDR, \)\(..*$\)/\1'postmaster@$DOMAINNAME'\);/g" /var/www/html/mailscanner/conf.php
   # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # remove greylisting if required
+  if [[ "$removegrey" -eq 1 ]]; then
+    postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_non_fqdn_recipient, reject_unknown_recipient_domain, check_recipient_access hash:/etc/postfix/recipient_access" 
+    postfix reload 
+    service sqlgrey stop 
+    chkconfig sqlgrey off
+  fi
+  # +--------------------------------------------------+
+  
 }
 # +---------------------------------------------------+
 
@@ -882,6 +929,7 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-ianacode
     func_ask-mailserver
     func_ask-orgname
+    func_ask-greylist
     func_verify-settings
     func_configure-system
     if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
