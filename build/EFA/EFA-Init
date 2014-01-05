@@ -20,13 +20,10 @@
 # +--------------------------------------------------------------------+
 
 # todo:
-# Install vmware tools
-# time/timezone selection
 # Write auto generated password for mysql root
 # Write auto generated password for mysql sa_user
 # Write auto generated password for mysql mailwatch
 # Write auto generated password for mysql sqlgrey
-# Give user sudo rights
 # 
 # +---------------------------------------------------+
 # Variables
@@ -686,6 +683,11 @@ function func_configure-system() {
     service sqlgrey stop 
     chkconfig sqlgrey off
   fi
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # Give user sudo permissions
+  echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers.d/EFA-users
   # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
