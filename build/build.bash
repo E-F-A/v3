@@ -80,11 +80,6 @@ func_mysql () {
     echo "Mysql configuration"
     service mysqld start
 
-    # BDB support is removed from MYSQL 5.1, so those variables are gone
-    # (does anything depend on perl-BerkeleyDB or BDB in general?)
-    # Guess you are right, don't see any reason for BDB to be there
-    # AWL used BDB in a previous version but that is moved to MySQL.
-    
     # remove default security flaws from MySQL.
     /usr/bin/mysqladmin -u root password "$password"
     /usr/bin/mysqladmin -u root -p"$password" -h localhost.localdomain password "$password"
@@ -298,12 +293,6 @@ func_spam_clamav () {
     # todo:
     # http://sanesecurity.co.uk/usage/linux-scripts/
     
-    # don't know if we need it so GPG key import is disabled (I remember GPG key was needed in ESVA for something
-    # just don't know for what anymore)
-    #cd /usr/src/EFA
-    #wget -q http://spamassassin.apache.org/released/GPG-SIGNING-KEY
-    #su postfix -c 'gpg --import /usr/src/EFA/GPG-SIGNING-KEY'
-
     #Use the MailScanner packaged version. Answer no to install clam.
     cd /usr/src/EFA
     wget http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
@@ -318,29 +307,12 @@ func_spam_clamav () {
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
     
-    # not todo: botnet.tar
-    # ESVA uses botnet.tar, this old package is in my opinion not needed as spamhaus relay blocklist already 
-    # adds botnet's by default.. also the botnet.tar is not maintained anymore...
-    
     # PDFInfo (todo: add option to efa-configure to disable this, if users find its to cpu intensive)
     cd /usr/src/EFA
     /usr/bin/wget -q -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
     /usr/bin/wget -q -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
     echo "loadplugin Mail::SpamAssassin::Plugin::PDFInfo">>/etc/mail/spamassassin/v310.pre
-
-    # todo: ImageInfo
-    # well not really a todo, ImageInfo is already packaged and enabled by default in spamassassin.
-    # nothing to do here, just adding the remark so we don't spend any extra time on it :-).
-    
-    # not todo: sare
-    # sare channels are dead: http://wiki.apache.org/spamassassin/SareChannels
-    # openprotect seems to have an alternative ^^ see link, need to check if that works.
-    #
-    # Nope, no good.
-    # http://saupdates.openprotect.com
-    # "OpenProtect SpamAssassin sa-update channel is obsolete since SARE
-    # "stopped updating their rulesets. Please stop using this channel."
-
+ 
     # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
     /usr/bin/wget -q -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
     
