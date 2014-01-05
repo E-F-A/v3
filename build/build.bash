@@ -510,6 +510,7 @@ func_mailwatch () {
     sed -i "/^define('AUDIT',/ c\define('AUDIT', true);" conf.php
     sed -i "/^define('MS_LOG',/ c\define('MS_LOG', '/var/log/maillog');" conf.php
     sed -i "/^define('MAIL_LOG',/ c\define('MAIL_LOG', '/var/log/maillog');" conf.php
+    sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/local/bin/');" conf.php
     sed -i "/^define('SA_RULES_DIR',/ c\define('SA_RULES_DIR', '/etc/mail/spamassassin');" conf.php
     # Disable virus_info url as it seems to be down.
     sed -i "/^define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk\/index.php?virus=%s&search=contains&Search=Search\");" conf.php
