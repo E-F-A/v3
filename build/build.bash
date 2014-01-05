@@ -387,7 +387,7 @@ func_apache () {
     sed -i '/IndexIgnore /d' /etc/httpd/conf/httpd.conf
 
     # Secure PHP (this might break some stuff so need to test carefully)
-    sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellarg,escapeshellcmd,eval,exec,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,passthru,php_uname,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,popen,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,syslog,system,xmlrpc_entity_decode,curl_exec,curl_multi_exec' /etc/php.ini
+    sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellarg,escapeshellcmd,eval,exec,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,passthru,php_uname,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,syslog,system,xmlrpc_entity_decode,curl_exec,curl_multi_exec' /etc/php.ini
     
     # Todo: Mod_security
     #       This requires EPEL sources (which have given me lots of dependency issues before
@@ -454,7 +454,7 @@ func_mailwatch () {
     cd mailwatch-$mailwatchver
 
     # Set php parameters needed
-    sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini
+    sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini # Note this one is depricated in php 5.3 should test if it works without magic_quotes_gpc
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
 
     # Set up connection for MailWatch    
@@ -499,6 +499,7 @@ func_mailwatch () {
     chmod ug+rwx images/cache
 
     cp conf.php.example conf.php
+    dos2unix conf.php
     sed -i "/^define('DB_USER',/ c\define('DB_USER', 'mailwatch');" conf.php
     sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
     sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', 'Etc/UTC');" conf.php
@@ -507,7 +508,9 @@ func_mailwatch () {
     sed -i "/^define('QUARANTINE_REPORT_FROM_NAME',/ c\define('QUARANTINE_REPORT_FROM_NAME', 'EFA - Email Filter Appliance');" conf.php
     sed -i "/^define('QUARANTINE_USE_SENDMAIL',/ c\define('QUARANTINE_USE_SENDMAIL', true);" conf.php
     sed -i "/^define('AUDIT',/ c\define('AUDIT', true);" conf.php
-
+    sed -i "/^define('MS_LOG',/ c\define('MS_LOG', '/var/log/maillog');" conf.php
+    sed -i "/^define('MAIL_LOG',/ c\define('MAIL_LOG', '/var/log/maillog');" conf.php
+    
     # Set up a redirect in web root to MailWatch for now
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
@@ -548,13 +551,17 @@ func_mailwatch () {
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA Mailgraph Link*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    /*End EFA Mailgraph Link*/" other.php
  
     # Postfix Relay Info
+    echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    echo "" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/postfix_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/mailscanner_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
     rm -f /usr/local/bin/mailwatch/tools/Postfix_relay/INSTALL
     chmod +x /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
     touch /etc/cron.hourly/mailwatch_update_relay
     echo "#!/bin/sh" > /etc/cron.hourly/mailwatch_update_relay
     echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
     chmod +x /etc/cron.hourly/mailwatch_update_relay
- 
+    
     # Todo: greylisting tools for MailWatch
     #       Andy wrote the greylist interface for Mailwatch in a series of 
     #       php files

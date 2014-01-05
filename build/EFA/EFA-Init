@@ -696,6 +696,17 @@ function func_configure-system() {
   # create the mailwatch user
   /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO users SET username = '$USERNAME', password = md5('$efauserpwd'), fullname = 'Administrator', type ='A'"
   # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # specific mailwatch settings
+  TZONE="Europe/Amsterdam"
+  sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', '$TZONE');" /var/www/html/mailscanner/conf.php
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # Set timezone in php.ini
+  sed -i "/^;date.timezone =/ c\date.timezone = $TZONE" /etc/php.ini
+  # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
 
