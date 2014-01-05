@@ -615,6 +615,10 @@ func_mailwatch () {
     
     # Fix MailScanner / MailWatch auto-commit annoyance
     sed -i '/$dbh->commit/ c\#$dbh->commit' /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
+    
+    # Allow apache to sudo and run the MailScanner lint test
+    sed -i '/Defaults    requiretty/ c\#Defaults    requiretty' /etc/sudoers
+    echo "apache ALL=NOPASSWD: /usr/sbin/MailScanner --lint" > /etc/sudoers.d/EFA-Services
 }
 # +---------------------------------------------------+
 
