@@ -22,14 +22,12 @@ use CGI::Carp qw(fatalsToBrowser);
 use CGI qw(:standard);
 print "Content-type: text/html \n\n";
 
-$query    = new CGI;
-$sendmail = "/usr/sbin/sendmail.postfix";
+$query = new CGI;
 $id = param("id");
 $datenumber = param("datenumber");
 $to = param("to");
-$msgtorelease = "/var/spool/MailScanner/quarantine/$datenumber/spam/$id";
 
-# Check if the variables contain data
+# Check if the variables contain data if one of them is not we die and not even check the syntax..
 if ($id eq "" ){
   die "Error variable is emtpy"
 }
@@ -50,6 +48,8 @@ if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}$/){
     # Then check the datenumber variable
     if ($datenumber =~ /^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$/){
       # All are ok
+      $sendmail = "/usr/sbin/sendmail.postfix";
+      $msgtorelease = "/var/spool/MailScanner/quarantine/$datenumber/spam/$id";
       open(MAIL, "|$sendmail $to <$msgtorelease") or die "Cannot open $sendmail: $!";
       close(MAIL);
 
