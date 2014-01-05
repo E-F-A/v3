@@ -539,7 +539,16 @@ func_mailwatch () {
     # png image looks much better -- linking to png instead
     ln -s EFAlogo-79px.png mailwatch-logo.gif
     ln -s EFAlogo-79px.png mailwatch-logo.png
-    ln -s EFAlogo-47px.gif mailscannerlogo.gif   
+    ln -s EFAlogo-47px.gif mailscannerlogo.gif
+    
+    # Change the yellow to blue match the logo somewhat..
+    sed -i 's/#F7CE4A/#4d8298/g' /var/www/html/mailscanner/style.css
+ 
+    # Remove the w3c logo as it slows down page loading.
+    sed -i '/ <a href="http:\/\/validator.w3.org\/check?uri=referer">/d' /var/www/html/mailscanner/login.php
+    sed -i '/<a href="http:\/\/sourceforge.net\/projects\/mailwatch">/d' /var/www/html/mailscanner/login.php
+    sed -i '/        <a href="http:\/\/validator.w3.org\/check?uri=referer">/d' /var/www/html/mailscanner/functions.php
+    sed -i '/<a href="http:\/\/sourceforge.net\/projects\/mailwatch">/d' /var/www/html/mailscanner/functions.php
  
     # mailscanner bayes configuration should be ok
     # nothing to do
@@ -561,6 +570,7 @@ func_mailwatch () {
     echo "#!/bin/sh" > /etc/cron.hourly/mailwatch_update_relay
     echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
     chmod +x /etc/cron.hourly/mailwatch_update_relay
+    
     
     # Todo: greylisting tools for MailWatch
     #       Andy wrote the greylist interface for Mailwatch in a series of 
