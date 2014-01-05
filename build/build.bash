@@ -26,14 +26,6 @@
 #   website (version change for example, which might cause problems)
 #       This is something we can do as an final stage.
 
-# fuzzyocr project seems to be dead (since 2009)
-# Don't know if it is wise to add it as it has lots of dependancy's.
-# http://wiki.apache.org/spamassassin/FuzzyOcrPlugin
-# 
-# Would Bayes OCR and Image Cerberus Plugin be a good substitute?
-# http://pralab.diee.unica.it/en/BayesOCR
-# http://pralab.diee.unica.it/imageCerberus
-
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
@@ -702,6 +694,34 @@ func_dcc () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# imageCerberus to replace fuzzyocr
+# +---------------------------------------------------+
+func_imagecerberus () {
+    cd /usr/src/EFA
+    wget $mirror/$mirrorpath/imageCerberus-v1.0.zip
+    unzip imageCerberus-v1.0.zip
+    cd imageCerberus-v1.0
+    mkdir /etc/spamassassin
+    mv spamassassin/imageCerberus /etc/spamassassin/
+    rm -f /etc/spamassassin/imageCerberus/imageCerberusEXE
+    mv /etc/spamassassin/imageCerberus/x86_64/imageCerberusEXE /etc/spamassassin/imageCerberus/
+    rm -rf /etc/spamassassin/imageCerberus/x86_64
+    rm -rf /etc/spamassassin/imageCerberus/i386
+ 
+    mv spamassassin/ImageCerberusPLG.pm /usr/local/share/perl5/Mail/SpamAssassin/Plugin/
+    mv spamassassin/ImageCerberusPLG.cf /etc/mail/spamassassin/
+    
+    sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
+    
+    # fix a few library locations
+    ln -s /usr/lib64/libcv.so /usr/lib64/libcv.so.1
+    ln -s /usr/lib64/libhighgui.so /usr/lib64/libhighgui.so.1
+    ln -s /usr/lib64/libcxcore.so /usr/lib64/libcxcore.so.1
+    ln -s /usr/lib64/libcvaux.so /usr/lib64/libcvaux.so.1
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Webmin
 # +---------------------------------------------------+
 func_webmin () {
@@ -923,6 +943,7 @@ func_mailgraph
 func_pyzor
 func_razor
 func_dcc
+func_imagecerberus
 func_webmin
 func_kernmodules
 func_services
