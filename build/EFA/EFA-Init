@@ -233,6 +233,7 @@ function func_ask-username() {
   func_echo-header
   echo -e "$green[EFA]$clean Please enter the user-name you would like to have."
   echo -e "$green[EFA]$clean This user will be granted SSH access to the system."
+  echo -e "$green[EFA]$clean This user will also be used to logon to the webinterface."
   echo -e -n "$green[EFA]$clean : "
   read USERNAME
   uncheck=1
@@ -693,7 +694,7 @@ function func_configure-system() {
   
   # +--------------------------------------------------+
   # create the mailwatch user
-  /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO users SET username = 'admin', password = md5('$efauserpwd'), fullname = 'Administrator', type ='A'"
+  /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO users SET username = '$USERNAME', password = md5('$efauserpwd'), fullname = 'Administrator', type ='A'"
   # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
