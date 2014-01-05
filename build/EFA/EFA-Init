@@ -674,7 +674,8 @@ function func_configure-system() {
   
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring MailWatch"
-  sed -i "s/\(^define(QUARANTINE_FROM_ADDR, \)\(..*$\)/\1'postmaster@$DOMAINNAME'\);/g" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', '$TZONE');" /var/www/html/mailscanner/conf.php
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
@@ -695,12 +696,6 @@ function func_configure-system() {
   # +--------------------------------------------------+
   # create the mailwatch user
   /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO users SET username = '$USERNAME', password = md5('$efauserpwd'), fullname = 'Administrator', type ='A'"
-  # +--------------------------------------------------+
-  
-  # +--------------------------------------------------+
-  # specific mailwatch settings
-  TZONE="Europe/Amsterdam"
-  sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', '$TZONE');" /var/www/html/mailscanner/conf.php
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
