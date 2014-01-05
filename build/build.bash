@@ -510,6 +510,9 @@ func_mailwatch () {
     sed -i "/^define('AUDIT',/ c\define('AUDIT', true);" conf.php
     sed -i "/^define('MS_LOG',/ c\define('MS_LOG', '/var/log/maillog');" conf.php
     sed -i "/^define('MAIL_LOG',/ c\define('MAIL_LOG', '/var/log/maillog');" conf.php
+    sed -i "/^define('SA_RULES_DIR',/ c\define('SA_RULES_DIR', '/etc/mail/spamassassin');" conf.php
+    # Disable virus_info url as it seems to be down.
+    sed -i "/^define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk\/index.php?virus=%s&search=contains&Search=Search\");" conf.php
     
     # Set up a redirect in web root to MailWatch for now
     touch /var/www/html/index.html
@@ -558,6 +561,11 @@ func_mailwatch () {
     cp other.php other.php.orig
     sed -i '/^ MailWatch for MailScanner/a\ Modified for Use With EFA -- Email Filter Appliance -- 1/1/2014'
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA Mailgraph Link*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    /*End EFA Mailgraph Link*/" other.php
+ 
+    # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
+    sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
+    sed -i "/\/\/ EFA-REMOVE/,+10d" lists.php
+    sed -i "/\/\/ Type/a\switch(\$_GET['type']) {\n  case 'h':\n   \$from = \$_GET['host'];\n   break;\n  case 'f':\n   \$from = \$_GET['from'];\n   break;\n  default:\n   if(isset(\$_GET['entry'])) { \$from = \$_GET['entry']; }\n }\n " lists.php
  
     # Postfix Relay Info
     echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
