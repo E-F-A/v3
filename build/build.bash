@@ -588,25 +588,20 @@ func_mailwatch () {
     #   I would say we reuse them, the code seems pretty simple so bugs we can probably
     #   Fix ourself (even tough I got limited php knowledge :P)
 
-    # Todo: spam submission and release cgi scripts
-    #       I am guessing Andy also wrote these
-    #       No license or owner is mentioned
-    #       learn-msg.cgi is vulnerable to command injection...
-    #       http://www.exploit-db.com/exploits/20712
-    #       if we reuse or recreate, we need to harden it
-    #       you can pass anything to the learn-msg.cgi and 
-    #       no validation checks are performed
-    #
-    #   See this topic: http://www.esvacommunity.com/forum/viewtopic.php?f=5&t=232
-    #   I already wrote an simple fix for the security issue and user "endreottem"
-    #   added some extra checks.
+    # Place the learn and release scripts
+    cd /var/www/cgi-bin
+    wget $gitdlurl/EFA/learn-msg.cgi
+    wget $gitdlurl/EFA/release-msg.cgi
+    chmod 755 learn-msg.cgi
+    chmod 755 release-msg.cgi
+    cd /var/www/html
+    wget $gitdlurl/EFA/released.html
+    wget $gitdlurl/EFA/learned.html
+    # Todo configure the system to put an link in the mails for release.
     
     # Todo:  esva also has an mailwatch local system user.
     #        don't see why that user exists or what it's used for
     #        we should also check that out.
-    #
-    # Good night :) Really busy at work at the moment.  Will get back to it
-    # this weekend.
 
     # Todo
     # the following file references /home/www -> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
