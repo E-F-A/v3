@@ -560,7 +560,7 @@ func_mailwatch () {
     # Add Mailgraph link
     cd /var/www/html/mailscanner
     cp other.php other.php.orig
-    sed -i '/^ MailWatch for MailScanner/a\ Modified for Use With EFA -- Email Filter Appliance -- 1/1/2014'
+    sed -i '/^ MailWatch for MailScanner/a\ Modified for Use With EFA -- Email Filter Appliance -- 1/1/2014' other.php
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA Mailgraph Link*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    /*End EFA Mailgraph Link*/" other.php
  
     # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
