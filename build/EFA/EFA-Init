@@ -32,6 +32,7 @@ debug="1"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.0"
+initpassword="EfaPr0j3ct"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -688,6 +689,11 @@ function func_configure-system() {
   # +--------------------------------------------------+
   # Give user sudo permissions
   echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers.d/EFA-users
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # create the mailwatch user
+  /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO users SET username = 'admin', password = md5('$efauserpwd'), fullname = 'Administrator', type ='A'"
   # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
