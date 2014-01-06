@@ -1,9 +1,9 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA-Configure
-# Version 20131227
+# Version 20140106
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2013  http://www.efa-project.org
+# Copyright (C) 2012~2014  http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,3 +18,272 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
+
+# +---------------------------------------------------+
+# Display menus
+# +---------------------------------------------------+
+show_menu() {
+  menu=1
+  while [ $menu == "1" ]
+    do
+      func_echo-header 
+      echo -e "Please choose an option:"
+      echo -e " "
+      echo -e "0) Logout                              4) IP Settings"
+      echo -e "1) Shell                                              "
+      echo -e "2) Reboot system                                      "
+      echo -e "3) Halt system                                        "
+      echo -e ""
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+                    0) exit && exit && logout ;;
+                    1) exit 0 ;;
+                    2) func_reboot ;;
+                    3) func_halt ;;
+                    4) func_ip-settings ;;
+                    *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Option IP_SETTINGS
+# +---------------------------------------------------+
+func_ip-settings(){
+  menu=0
+  ipmenu=1
+  while [ $ipmenu == "1" ]
+    do
+      func_getipsettings
+      func_echo-header
+      echo -e "Current IP settings for $INTERFACE are:"
+      echo -e "1) IP                        :  $IP"
+      echo -e "2) Netmask                :  $NM"
+      echo -e "3) Gateway                :  $GW"
+      echo -e "4) Primary DNS                :  $DNS1"
+      echo -e "5) Secondary DNS        :  $DNS2"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      echo -e ""
+      echo -e "Note: Network will reset when changing values."
+      echo -e ""
+      echo -e "Enter setting you want to change"
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+                1)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new IP: " IP
+                    func_setipsettings
+                    menu=1
+                    ;;
+                2)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new netmask: " NM
+                    func_setipsettings
+                    menu=1
+                    ;;
+                3)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new gateway: " GW
+                    func_setipsettings
+                    menu=1
+                    ;;
+                4)         ipmenu=0
+                    echo ""
+                    read -p "Enter your new primary DNS: " DNS1
+                    func_setipsettings
+                    menu=1
+                    ;;
+                5)         ipmenu=0
+                    echo ""
+                    read -p "Enter your new secondary DNS: " DNS2
+                    func_setipsettings
+                    menu=1
+                    ;;
+                e) menu=1 && return ;;
+                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+            esac
+        done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to grab the current IP settings.
+# +---------------------------------------------------+
+function func_getipsettings(){
+  nrintf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '} | wc -l`
+  interf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '}`
+  if [ $nrintf -gt 1 ]
+    then
+      func_echo-header
+      echo -e "You seem to have multiple network interfaces"
+      echo -e "Please select the interface you want to configure"
+      echo -e "The interface names on your machine are:"
+      for int in $interf
+        do
+          echo " - $int"
+        done
+
+      echo -e ""
+      echo -e "Enter the primary interface name:"
+      echo -e ""
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      choice_check=0
+      for int in $interf
+        do
+        if [ $int == $choice ]
+          then
+            choice_check=1
+        fi
+        done
+         
+      # Check if the user typed a interface that exists.
+      if [ $choice_check -eq 0 ]
+        then
+          echo -e "$red [EFA] ERROR, That interface does not exist. $clean"
+          sleep 2
+          func_getipsettings
+          return
+      fi
+      if [ $choice_check -eq 1 ]
+         then
+          INTERFACE=$choice
+        fi
+     else
+        INTERFACE=$interf
+    fi
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Reboot function
+# +---------------------------------------------------+
+func_reboot() {
+  menu=0
+  rebootmenu=1
+  while [ $rebootmenu == "1" ]
+    do
+      func_echo-header 
+      echo -e "Are you sure you want to reboot this host?"
+      echo -e ""
+      echo -e "Y)  Yes I am sure"
+      echo -e "N)  No no no take me back!"
+      echo -e ""
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+                    Y) reboot && exit 0 ;;
+                    N) menu=1 && return  ;;
+                    n) menu=1 && return  ;;
+                    *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Halt function
+# +---------------------------------------------------+
+func_halt() {
+  menu=0
+  haltmenu=1
+  while [ $haltmenu == "1" ]
+    do
+      func_echo-header 
+      echo -e "Are you sure you want to halt this host?"
+      echo -e ""
+      echo -e "Y)  Yes I am sure"
+      echo -e "N)  No no no take me back!"
+      echo -e ""
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+                    Y) shutdown -h now && exit 0 ;;
+                    N) menu=1 && return  ;;
+                    n) menu=1 && return  ;;
+                    *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to test IP addresses
+# +---------------------------------------------------+
+function checkip(){
+  local ip=$1
+  local stat=1
+
+  if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        OIFS=$IFS
+        IFS='.'
+        ip=($ip)
+        IFS=$OIFS
+        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+        stat=$?
+  fi
+  return $stat
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Trap CTRL+C, CTRL+Z and quit singles
+# +---------------------------------------------------+
+# Disabled for testing
+#  trap '' SIGINT SIGQUIT SIGTSTP
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Pause
+# +---------------------------------------------------+
+pause(){
+  read -p "Press [Enter] key to continue..." fackEnterKey
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Menu header
+# +---------------------------------------------------+
+func_echo-header(){
+  clear
+  echo -e "--------------------------------------------------------------"
+  echo -e "---        Welcome to the EFA Configuration program        ---"
+  echo -e "---                http://www.efa-project.org              ---"
+  echo -e "--------------------------------------------------------------"
+  echo ""
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Main logic
+# +---------------------------------------------------+
+clear
+red='\E[00;31m'
+green='\E[00;32m'
+yellow='\E[00;33m'
+blue='\E[00;34m'
+magenta='\E[00;35'
+cyan='\E[00;36m'
+clean='\e[00m'
+
+if [ `whoami` == root ]
+    then
+        menu="1"
+        while [ $menu == "1" ]
+        do
+            show_menu
+        done
+    else
+        echo -e "$red [EFA] ERROR: Please become root.$clean"
+        exit 0
+    fi
+# +---------------------------------------------------+
