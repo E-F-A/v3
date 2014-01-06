@@ -454,9 +454,9 @@ func_mailwatch () {
     cd mailwatch-$mailwatchver
 
     # Set php parameters needed
-    sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini # Note this one is depricated in php 5.3 should test if it works without magic_quotes_gpc
+    sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini # Note this one is deprecated in php 5.3 should test if it works without magic_quotes_gpc
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
-
+    
     # Set up connection for MailWatch    
     cd MailScanner_perl_scripts
     sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
@@ -485,7 +485,10 @@ func_mailwatch () {
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean" >> /etc/cron.daily/mailwatch
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php" >> /etc/cron.daily/mailwatch
     chmod 755 /etc/cron.daily/mailwatch
-
+    # Fix db_clean.php (http://permalink.gmane.org/gmane.mail.virus.mailscanner.mailwatch.general/9715)
+    sed -i '/#!\/usr\/bin\/php -qn/ c\#!\/usr\/bin\/php -q' /usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php
+    sed -i '/dbquery("delete \* from mtalog where timestamp/ c\dbquery("delete from mtalog where timestamp < (now() - INTERVAL ".RECORD_DAYS_TO_KEEP." DAY)");' /usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php
+        
     # Move MailWatch into web root and configure
     # ESVA MailWatch is directly in /var/www/html
     # Going to move into its own directory and maybe set up a redirect
@@ -498,6 +501,9 @@ func_mailwatch () {
     chown root:apache images/cache
     chmod ug+rwx images/cache
 
+    # Remove the docs directory as it is not needed.
+    rm -rf docs
+    
     cp conf.php.example conf.php
     dos2unix conf.php
     sed -i "/^define('DB_USER',/ c\define('DB_USER', 'mailwatch');" conf.php
