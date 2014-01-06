@@ -580,14 +580,10 @@ func_mailwatch () {
     echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
     chmod +x /etc/cron.hourly/mailwatch_update_relay
     
-    
-    # Todo: greylisting tools for MailWatch
-    #       Andy wrote the greylist interface for Mailwatch in a series of 
-    #       php files
-    #       Should we reuse and adapt?  It is marked GNU GPLv2. 
-    #
-    #   I would say we reuse them, the code seems pretty simple so bugs we can probably
-    #   Fix ourself (even tough I got limited php knowledge :P)
+    # Todo: Compare greylisting tools php files to 
+    # http://www.vanheusden.com/sgwi and update code as appropriate
+    # or determine if it makes more sense to keep integrated with MailWatch
+    # or separate out like mailgraph
 
     # Place the learn and release scripts
     cd /var/www/cgi-bin
