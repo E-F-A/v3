@@ -590,7 +590,11 @@ func_mailwatch () {
     # http://www.vanheusden.com/sgwi and update code as appropriate
     # or determine if it makes more sense to keep integrated with MailWatch
     # or separate out like mailgraph
-
+    #
+    #
+    # just tested out sqlgreywebinterface-1.1.6 this one look way better than the one used in ESVA
+    # So I would say we use that one.
+    
     # Place the learn and release scripts
     cd /var/www/cgi-bin
     wget $gitdlurl/EFA/learn-msg.cgi
