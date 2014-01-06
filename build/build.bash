@@ -448,6 +448,12 @@ func_sqlgrey () {
 # +---------------------------------------------------+
 func_mailwatch () {
     # Fetch MailWatch
+    # Note: 
+    #  Just found out that there us an 1.2.0 beta 4 update 4 version available on github.
+    #  It seems that sourceforge is not updated anymore (after reading through the comments on the mailing lists)
+    #  https://github.com/mailwatch/1.2.0
+    #  Guess we should pull that version as it has some fixes already embedded.
+    
     cd /usr/src/EFA
     wget http://sourceforge.net/projects/mailwatch/files/mailwatch/$mailwatchver/mailwatch-$mailwatchver.tar.gz
     tar -xzvf mailwatch-$mailwatchver.tar.gz
