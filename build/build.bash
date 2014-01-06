@@ -453,7 +453,10 @@ func_mailwatch () {
     #  It seems that sourceforge is not updated anymore (after reading through the comments on the mailing lists)
     #  https://github.com/mailwatch/1.2.0
     #  Guess we should pull that version as it has some fixes already embedded.
-    
+    #
+    #  Good to know.  I see it forked in github.  Do you know which one to use?     #  P.S. I am on your IRC channel if you want to chat.
+
+ 
     cd /usr/src/EFA
     wget http://sourceforge.net/projects/mailwatch/files/mailwatch/$mailwatchver/mailwatch-$mailwatchver.tar.gz
     tar -xzvf mailwatch-$mailwatchver.tar.gz
