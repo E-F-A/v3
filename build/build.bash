@@ -33,7 +33,6 @@ version="3.0.0.0 beta"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
-mailwatchver="1.2.0-beta-4"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.0"
 # +---------------------------------------------------+
@@ -448,23 +447,11 @@ func_sqlgrey () {
 # +---------------------------------------------------+
 func_mailwatch () {
     # Fetch MailWatch
-    # Note: 
-    #  Just found out that there us an 1.2.0 beta 4 update 4 version available on github.
-    #  It seems that sourceforge is not updated anymore (after reading through the comments on the mailing lists)
-    #  https://github.com/mailwatch/1.2.0
-    #  Guess we should pull that version as it has some fixes already embedded.
-    #
-    #  Good to know.  I see it forked in github.  Do you know which one to use?     #  P.S. I am on your IRC channel if you want to chat.
-    
-    # Placed the latest git version on dl.efa-project.org:
-    #  http://dl.efa-project.org/build/3.0.0.0/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
-    #  wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
-    
  
     cd /usr/src/EFA
-    wget http://sourceforge.net/projects/mailwatch/files/mailwatch/$mailwatchver/mailwatch-$mailwatchver.tar.gz
-    tar -xzvf mailwatch-$mailwatchver.tar.gz
-    cd mailwatch-$mailwatchver
+    wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
+    unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
+    cd 1.2.0-master 
 
     # Set php parameters needed
     sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini # Note this one is deprecated in php 5.3 should test if it works without magic_quotes_gpc
