@@ -133,7 +133,7 @@ diff -rupN en.orig/recipient.spam.report.txt en/recipient.spam.report.txt
    Date code: $datenumber
 
 +If you are satisfied that this message is not spam, you can release it from quarantine
-+by clicking http://HOSTNAME/cgi-bin/release-msg.cgi?datenumber=$datenumber&id=$id&to=$to
++by clicking http://$hostname/cgi-bin/release-msg.cgi?datenumber=$datenumber&id=$id&to=$to
 +
  --
 -MailScanner
