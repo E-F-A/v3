@@ -478,16 +478,13 @@ func_mailwatch () {
     mkdir /usr/local/bin/mailwatch
     mv tools /usr/local/bin/mailwatch
     rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
-    chmod 755 /usr/local/bin/mailwatch/tools/Cron_jobs/*
+    chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
     touch /etc/cron.daily/mailwatch
-    echo "#!/bin/bash" > /etc/cron.daily/mailwatch
+    echo "#!/bin/sh" > /etc/cron.daily/mailwatch
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php" >> /etc/cron.daily/mailwatch
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean" >> /etc/cron.daily/mailwatch
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php" >> /etc/cron.daily/mailwatch
-    chmod 755 /etc/cron.daily/mailwatch
-    # Fix db_clean.php (http://permalink.gmane.org/gmane.mail.virus.mailscanner.mailwatch.general/9715)
-    sed -i '/#!\/usr\/bin\/php -qn/ c\#!\/usr\/bin\/php -q' /usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php
-    sed -i '/dbquery("delete \* from mtalog where timestamp/ c\dbquery("delete from mtalog where timestamp < (now() - INTERVAL ".RECORD_DAYS_TO_KEEP." DAY)");' /usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php
+    chmod +x /etc/cron.daily/mailwatch
         
     # Move MailWatch into web root and configure
     # ESVA MailWatch is directly in /var/www/html
