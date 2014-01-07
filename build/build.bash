@@ -620,7 +620,7 @@ func_sgwi () {
     cd /var/www/sgwi
 
     # add db credential 
-    sed -i "/^\$db_pass c\$db_pass	= \"$password\";" 
+    sed -i "/^\$db_pass c\$db_pass	= \"$password\";" ./includes/config.inc.php
 
     # add apache config and set up simple authentication for now
     touch /etc/httpd/conf.d/sgwi.conf
