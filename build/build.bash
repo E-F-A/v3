@@ -625,7 +625,6 @@ func_sgwi () {
     mv * /var/www/html/sgwi
 
     # add db credential 
-<<<<<<< HEAD
     sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" /var/www/html/sgwi/includes/config.inc.php
 
     # Add greylist to mailwatch menu
@@ -662,31 +661,6 @@ func_sgwi () {
     sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/connect.php
     sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/opt_in_out.php
 
-=======
-    sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" ./includes/config.inc.php
-
-    # add apache config and set up simple authentication for now
-    touch /etc/httpd/conf.d/sgwi.conf
-    echo "# E.F.A. -- SQLGrey Web Interface Apache Configuration" > /etc/httpd/conf.d/sgwi.conf
-    echo "" >> /etc/httpd/conf.d/sgwi.conf
-    echo "Alias /sgwi /var/www/sgwi" >> /etc/httpd/conf.d/sgwi.conf
-    echo "<Directory \"/var/www/sgwi\">" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    Options Indexes" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    AllowOverride None" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    AuthName \"SQLGrey Web Access\"" >> /etc/httpd/conf.d/sgwi.conf
-    echo "    AuthType Basic" >> /etc/httpd/conf.d/sgwi.conf
-    echo "    AuthBasicProvider file" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    AuthUserFile /etc/httpd/sgwi.htpasswd" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    Require user admin" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    Order allow,deny" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    Allow from all" >> /etc/httpd/conf.d/sgwi.conf
-    echo "</Directory>" >> /etc/httpd/conf.d/sgwi.conf
-
-    # Create authentication file
-    htpasswd -bc /etc/httpd/sgwi.htpasswd admin $password
-    chown root:apache /etc/httpd/sgwi.htpasswd
-    chmod 640 /etc/httpd/sgwi.htpasswd
->>>>>>> 0558635641ac8feb23bb8b9556b135a0dbad96b7
 }
 # +---------------------------------------------------+
 
