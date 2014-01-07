@@ -611,36 +611,47 @@ func_sgwi () {
     wget $mirror/$mirrorpath/sqlgreywebinterface-1.1.6.tgz
     tar -xzvf sqlgreywebinterface-1.1.6.tgz    
     cd sqlgreywebinterface-1.1.6
-    # placing in its own area to set up authentication without having to
-    # allow .htaccess files
-    mkdir /var/www/sgwi
-    mv * /var/www/sgwi
-    cd /var/www/sgwi
+    # Place next to mailwatch
+    mkdir /var/www/html/sgwi
+    mv * /var/www/html/sgwi
 
     # add db credential 
-    sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" ./includes/config.inc.php
+    sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" /var/www/html/sgwi/includes/config.inc.php
 
-    # add apache config and set up simple authentication for now
-    touch /etc/httpd/conf.d/sgwi.conf
-    echo "# E.F.A. -- SQLGrey Web Interface Apache Configuration" > /etc/httpd/conf.d/sgwi.conf
-    echo "" >> /etc/httpd/conf.d/sgwi.conf
-    echo "Alias /sgwi /var/www/sgwi" >> /etc/httpd/conf.d/sgwi.conf
-    echo "<Directory \"/var/www/sgwi\">" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    Options Indexes" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    AllowOverride None" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    AuthName \"SQLGrey Web Access\"" >> /etc/httpd/conf.d/sgwi.conf
-    echo "    AuthType Basic" >> /etc/httpd/conf.d/sgwi.conf
-    echo "    AuthBasicProvider file" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    AuthUserFile /etc/httpd/sgwi.htpasswd" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    Require user admin" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    Order allow,deny" >> /etc/httpd/conf.d/sgwi.conf 
-    echo "    Allow from all" >> /etc/httpd/conf.d/sgwi.conf
-    echo "</Directory>" >> /etc/httpd/conf.d/sgwi.conf
+    # Add greylist to mailwatch menu
+    sed -i "/^            $nav['docs.php'] = "Documentation";\n        }/ a\        //Begin EFA\n        $nav['grey.php'] = "greylist";\n        //End EFA" /var/www/html/mailscanner/functions.php
 
-    # Create authentication file
-    htpasswd -bc /etc/httpd/sgwi.htpasswd admin $password
-    chmod 600 /etc/httpd/sgwi.htpasswd
-    chown apache:apache /etc/httpd/sgwi.htpasswd
+    # Create wrapper
+    touch /var/www/html/mailscanner/grey.php
+    echo "<?php" > /var/www/html/mailscanner/grey.php
+    echo "" >> /var/www/html/mailscanner/grey.php
+    echo "require_once(\"./functions.php\");" >> /var/www/html/mailscanner/grey.php
+    echo "session_start();" >> /var/www/html/mailscanner/grey.php
+    echo "require('login.function.php');" >> /var/www/html/mailscanner/grey.php
+    echo "$refresh = html_start(\"greylist\",STATUS_REFRESH,false,false);" >> /var/www/html/mailscanner/grey.php
+    echo "?>" >> /var/www/html/mailscanner/grey.php
+    # iframe "works" but the vertical concerns me with a growing list...
+    # may end up doing something else...
+    echo "<iframe src=\"../sgwi/index.php\" width=\"960px\" height=\"1024px\">" >> /var/www/html/mailscanner/grey.php
+    echo " <br />" >> /var/www/html/mailscanner/grey.php
+    echo " <a href=\"..\sgwi/index.php\">Click here for SQLGrey Web Interface</a>" >> /var/www/html/mailscanner/grey.php
+    echo "</iframe>" >> /var/www/html/mailscanner/grey.php
+    echo "<?php" >> /var/www/html/mailscanner/grey.php
+    echo "html_end();" >> /var/www/html/mailscanner/grey.php
+
+    # Secure sgwi from direct access
+    cd /var/www/html/sgwi
+    ln -s ../mailscanner/login.function.php login.function.php
+    ln -s ../mailscanner/login.php login.php
+    ln -s ../mailscanner/functions.php functions.php
+    ln -s ../mailscanner/checklogin.php checklogin.php
+    mkdir images
+    ln -s ../mailscanner/images/EFAlogo-79px.png ./images/mailwatch-logo.png
+    sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/index.php
+    sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/awl.php
+    sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/connect.php
+    sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/opt_in_out.php
+
 }
 # +---------------------------------------------------+
 
@@ -987,8 +998,8 @@ func_mailscanner
 func_spam_clamav
 func_apache
 func_sqlgrey
-func_sgwi
 func_mailwatch
+func_sgwi
 func_mailgraph
 func_pyzor
 func_razor
