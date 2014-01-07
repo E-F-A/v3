@@ -710,7 +710,7 @@ function func_configure-system() {
   
   # +--------------------------------------------------+
   # Whitelist localhost in mysql for mail releasing etc..
-  /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO whitelist SET to_address = '', to_domain = '', from_address = '127.0.0.1'"
+  /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO whitelist SET to_address = 'default', to_domain = '', from_address = '127.0.0.1'"
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
