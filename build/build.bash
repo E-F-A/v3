@@ -569,15 +569,6 @@ func_mailwatch () {
     echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
     chmod +x /etc/cron.hourly/mailwatch_update_relay
     
-    # Todo: Compare greylisting tools php files to 
-    # http://www.vanheusden.com/sgwi and update code as appropriate
-    # or determine if it makes more sense to keep integrated with MailWatch
-    # or separate out like mailgraph
-    #
-    #
-    # just tested out sqlgreywebinterface-1.1.6 this one look way better than the one used in ESVA
-    # So I would say we use that one.
-    
     # Place the learn and release scripts
     cd /var/www/cgi-bin
     wget $gitdlurl/EFA/learn-msg.cgi
@@ -608,6 +599,50 @@ func_mailwatch () {
     # Allow apache to sudo and run the MailScanner lint test
     sed -i '/Defaults    requiretty/ c\#Defaults    requiretty' /etc/sudoers
     echo "apache ALL=NOPASSWD: /usr/sbin/MailScanner --lint" > /etc/sudoers.d/EFA-Services
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# SQLGrey Web Interface 
+# http://www.vanheusden.com/sgwi
+# +---------------------------------------------------+
+func_sgwi () {
+
+    # todo: move gzipped tarball to dl.efa-project.org
+    cd /usr/src/EFA
+    wget -q http://www.vanheusden.com/sgwi/sqlgreywebinterface-1.1.6.tgz
+    tar -xzvf sqlgreywebinterface-1.1.6.tgz    
+    cd sqlgreywebinterface-1.1.6
+    # placing in its own area to set up authentication without having to
+    # allow .htaccess files
+    mkdir /var/www/sgwi
+    mv * /var/www/sgwi
+    cd /var/www/sgwi
+
+    # add db credential 
+    sed -i "/^\$db_pass c\$db_pass	= \"$password\";" 
+
+    # add apache config and set up simple authentication for now
+    touch /etc/httpd/conf.d/sgwi.conf
+    echo "# E.F.A. -- SQLGrey Web Interface Apache Configuration" > /etc/httpd/conf.d/sgwi.conf
+    echo "" >> /etc/httpd/conf.d/sgwi.conf
+    echo "Alias /sgwi /var/www/sgwi" >> /etc/httpd/conf.d/sgwi.conf
+    echo "<Directory \"/var/www/sgwi\">" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    Options Indexes" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    AllowOverride None" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    AuthName \"SQLGrey Web Access\"" >> /etc/httpd/conf.d/sgwi.conf
+    echo "    AuthType Basic" >> /etc/httpd/conf.d/sgwi.conf
+    echo "    AuthBasicProvider file" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    AuthUserFile /etc/httpd/sgwi.htpasswd" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    Require user admin" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    Order allow,deny" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    Allow from all" >> /etc/httpd/conf.d/sgwi.conf
+    echo "</Directory>" >> /etc/httpd/conf.d/sgwi.conf
+
+    # Create authentication file
+    htpasswd -bc /etc/httpd/sgwi.htpasswd admin $password
+    chmod 600 /etc/httpd/sgwi.htpasswd
+
 }
 # +---------------------------------------------------+
 
@@ -951,6 +986,7 @@ func_mailscanner
 func_spam_clamav
 func_apache
 func_sqlgrey
+func_sgwi
 func_mailwatch
 func_mailgraph
 func_pyzor
