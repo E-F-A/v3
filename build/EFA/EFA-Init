@@ -564,6 +564,10 @@ function func_verify-settings() {
 function func_configure-system() {
   func_echo-header
   echo -e "$green[EFA]$clean Configuring system"
+  
+  # +--------------------------------------------------+
+  # Start mysql Daemon 
+  service mysqld start
 
   # +--------------------------------------------------+
   # Network settings
