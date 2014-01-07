@@ -561,9 +561,10 @@ func_mailwatch () {
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA Links*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    echo '<li><a href=\"../sgwi\">SQLGrey Web Interface</a>';\n    /*End EFA Links*/" other.php
  
     # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
-    sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
-    sed -i "/\/\/ EFA-REMOVE/,+10d" lists.php
-    sed -i "/\/\/ Type/a\switch(\$_GET['type']) {\n  case 'h':\n   \$from = \$_GET['host'];\n   break;\n  case 'f':\n   \$from = \$_GET['from'];\n   break;\n  default:\n   if(isset(\$_GET['entry'])) { \$from = \$_GET['entry']; }\n }\n " lists.php
+    #sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
+    #sed -i "/\/\/ EFA-REMOVE/,+10d" lists.php
+    #sed -i "/\/\/ Type/a\switch(\$_GET['type']) {\n  case 'h':\n   \$from = \$_GET['host'];\n   break;\n  case 'f':\n   \$from = \$_GET['from'];\n   break;\n  default:\n   if(isset(\$_GET['entry'])) { \$from = \$_GET['entry']; }\n }\n " lists.php
+    # Note: this is not needed in beta4 patch 4 anymore... keeping here until we fixed the session issue (in case we need to rollback to the previous version..)
  
     # Postfix Relay Info
     echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
