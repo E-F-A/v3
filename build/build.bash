@@ -640,7 +640,7 @@ func_sgwi () {
     # Create authentication file
     htpasswd -bc /etc/httpd/sgwi.htpasswd admin $password
     chmod 600 /etc/httpd/sgwi.htpasswd
-
+    chown apache:apache /etc/httpd/sgwi.htpasswd
 }
 # +---------------------------------------------------+
 
