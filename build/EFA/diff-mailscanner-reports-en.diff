@@ -1,0 +1,344 @@
+diff -rupN en.orig/deleted.content.message.txt en/deleted.content.message.txt
+--- en.orig/deleted.content.message.txt 2014-01-07 20:41:48.189533732 +0100
++++ en/deleted.content.message.txt      2014-01-07 20:46:49.072533875 +0100
+@@ -1,4 +1,4 @@
+-This is a message from the MailScanner E-Mail Virus Protection Service
++This is a message from the E.F.A. E-Mail Virus Protection Service
+ ----------------------------------------------------------------------
+ The original e-mail message contained potentially dangerous content,
+ which has been removed for your safety.
+@@ -13,8 +13,5 @@ Act 2000, we were unable to keep a copy
+ The content filters found this:
+ $report
+ --
+-Postmaster
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/deleted.filename.message.txt en/deleted.filename.message.txt
+--- en.orig/deleted.filename.message.txt        2014-01-07 20:41:48.196533731 +0100
++++ en/deleted.filename.message.txt     2014-01-07 21:08:23.656532684 +0100
+@@ -1,4 +1,4 @@
+-This is a message from the MailScanner E-Mail Virus Protection Service
++This is a message from the E.F.A. E-Mail Virus Protection Service
+ ----------------------------------------------------------------------
+ The original e-mail attachment "$filename"
+ is on the list of unacceptable attachments for this site and has been
+@@ -10,8 +10,5 @@ Act 2000, we were unable to keep a copy
+ At $date the virus scanner said:
+ $report
+ --
+-Postmaster
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/deleted.size.message.txt en/deleted.size.message.txt
+--- en.orig/deleted.size.message.txt    2014-01-07 20:41:48.168533726 +0100
++++ en/deleted.size.message.txt 2014-01-07 21:08:38.768532240 +0100
+@@ -1,4 +1,4 @@
+-This is a message from the MailScanner E-Mail Virus Protection Service
++This is a message from the E.F.A. E-Mail Virus Protection Service
+ ----------------------------------------------------------------------
+ The original e-mail message was too large, and has been removed.
+
+@@ -11,8 +11,5 @@ Act 2000, we were unable to keep a copy
+ The content filters found this:
+ $report
+ --
+-Postmaster
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/deleted.virus.message.txt en/deleted.virus.message.txt
+--- en.orig/deleted.virus.message.txt   2014-01-07 20:41:48.189533732 +0100
++++ en/deleted.virus.message.txt        2014-01-07 21:09:03.262525339 +0100
+@@ -1,4 +1,4 @@
+-This is a message from the MailScanner E-Mail Virus Protection Service
++This is a message from the E.F.A. E-Mail Virus Protection Service
+ ----------------------------------------------------------------------
+ The original e-mail attachment "$filename"
+ was believed to be dangerous and/or infected by a virus and has been
+@@ -12,8 +12,5 @@ you a clean copy.
+ At $date the scanner said:
+ $report
+ --
+-Postmaster
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/disinfected.report.txt en/disinfected.report.txt
+--- en.orig/disinfected.report.txt      2014-01-07 20:41:48.199533731 +0100
++++ en/disinfected.report.txt   2014-01-07 21:09:15.465531246 +0100
+@@ -6,9 +6,5 @@ The viruses have been removed, and the d
+ to this message.
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/inline.sig.html en/inline.sig.html
+--- en.orig/inline.sig.html     2014-01-07 20:41:48.198533731 +0100
++++ en/inline.sig.html  2014-01-07 21:36:09.933531317 +0100
+@@ -1,5 +1,5 @@
+ <br />--
+ <br />This message has been scanned for viruses and
+ <br />dangerous content by
+-<a href="http://www.mailscanner.info/"><b>MailScanner</b></a>, and is
++<a href="http://www.efa-project.org/"><b>E.F.A.</b></a>, and is
+ <br />believed to be clean.
+diff -rupN en.orig/inline.sig.txt en/inline.sig.txt
+--- en.orig/inline.sig.txt      2014-01-07 20:41:48.169533722 +0100
++++ en/inline.sig.txt   2014-01-07 21:20:30.904531659 +0100
+@@ -1,4 +1,4 @@
+ --
+ This message has been scanned for viruses and
+-dangerous content by MailScanner, and is
++dangerous content by E.F.A., and is
+ believed to be clean.
+diff -rupN en.orig/recipient.mcp.report.txt en/recipient.mcp.report.txt
+--- en.orig/recipient.mcp.report.txt    2014-01-07 20:41:48.198533731 +0100
++++ en/recipient.mcp.report.txt 2014-01-07 21:11:20.181530932 +0100
+@@ -18,9 +18,5 @@ Your system administrators will need the
+   Date code: $datenumber
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/recipient.spam.report.txt en/recipient.spam.report.txt
+--- en.orig/recipient.spam.report.txt   2014-01-07 20:41:48.166533739 +0100
++++ en/recipient.spam.report.txt        2014-01-07 21:36:39.804532990 +0100
+@@ -13,9 +13,6 @@ $spamreport.
+ The message to you has been detected as spam based on either its contents or
+ the mail server which sent the message to us, or both.
+
+-We do not accept unsolicited commercial (spam) e-mail and actively
+-work to stop it.
+-
+ If you have any questions about this, or you believe you have received
+ this message in error, please contact the site system administrators.
+
+@@ -24,10 +21,9 @@ Your system administrators will need the
+   Message id: $id
+   Date code: $datenumber
+
++If you are satisfied that this message is not spam, you can release it from quarantine
++by clicking http://$hostname/cgi-bin/release-msg.cgi?datenumber=$datenumber&id=$id&to=$to
++
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/rejection.report.txt en/rejection.report.txt
+--- en.orig/rejection.report.txt        2014-01-07 20:41:48.193533731 +0100
++++ en/rejection.report.txt     2014-01-07 21:36:56.343530631 +0100
+@@ -13,7 +13,5 @@ If you have any questions about this, or
+ this message in error, please contact the site system administrators.
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+diff -rupN en.orig/sender.content.report.txt en/sender.content.report.txt
+--- en.orig/sender.content.report.txt   2014-01-07 20:41:48.190533733 +0100
++++ en/sender.content.report.txt        2014-01-07 21:37:08.707530630 +0100
+@@ -19,9 +19,5 @@ If you have any questions about this, or
+ this message in error, please contact the site system administrators.
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/sender.error.report.txt en/sender.error.report.txt
+--- en.orig/sender.error.report.txt     2014-01-07 20:41:48.193533731 +0100
++++ en/sender.error.report.txt  2014-01-07 21:37:22.818529395 +0100
+@@ -22,9 +22,5 @@ The virus detector said this about the m
+ Report: $report
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/sender.filename.report.txt en/sender.filename.report.txt
+--- en.orig/sender.filename.report.txt  2014-01-07 20:41:48.194533731 +0100
++++ en/sender.filename.report.txt       2014-01-07 21:37:33.100532941 +0100
+@@ -18,9 +18,5 @@ The virus detector said this about the m
+ Report: $report
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/sender.mcp.report.txt en/sender.mcp.report.txt
+--- en.orig/sender.mcp.report.txt       2014-01-07 20:41:48.162533742 +0100
++++ en/sender.mcp.report.txt    2014-01-07 21:37:45.543540137 +0100
+@@ -13,9 +13,5 @@ If you have any questions about this, or
+ this message in error, please contact the site system administrators.
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/sender.size.report.txt en/sender.size.report.txt
+--- en.orig/sender.size.report.txt      2014-01-07 20:41:48.199533731 +0100
++++ en/sender.size.report.txt   2014-01-07 21:37:55.833528073 +0100
+@@ -20,9 +20,5 @@ If you have any questions about this, or
+ this message in error, please contact the site system administrators.
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/sender.spam.rbl.report.txt en/sender.spam.rbl.report.txt
+--- en.orig/sender.spam.rbl.report.txt  2014-01-07 20:41:48.190533733 +0100
++++ en/sender.spam.rbl.report.txt       2014-01-07 21:38:06.480530646 +0100
+@@ -17,9 +17,5 @@ If you have any questions about this, or
+ this message in error, please contact the site system administrators.
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/sender.spam.report.txt en/sender.spam.report.txt
+--- en.orig/sender.spam.report.txt      2014-01-07 20:41:48.165533747 +0100
++++ en/sender.spam.report.txt   2014-01-07 21:38:18.339528923 +0100
+@@ -20,9 +20,5 @@ If you have any questions about this, or
+ this message in error, please contact the site system administrators.
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/sender.spam.sa.report.txt en/sender.spam.sa.report.txt
+--- en.orig/sender.spam.sa.report.txt   2014-01-07 20:41:48.189533732 +0100
++++ en/sender.spam.sa.report.txt        2014-01-07 21:38:28.531533572 +0100
+@@ -20,9 +20,5 @@ If you have any questions about this, or
+ this message in error, please contact the site system administrators.
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/sender.virus.report.txt en/sender.virus.report.txt
+--- en.orig/sender.virus.report.txt     2014-01-07 20:41:48.197533731 +0100
++++ en/sender.virus.report.txt  2014-01-07 21:38:40.610528806 +0100
+@@ -17,9 +17,5 @@ The virus detector said this about the m
+ Report: $report
+
+ --
+-MailScanner
+-Email Virus Scanner
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/stored.content.message.txt en/stored.content.message.txt
+--- en.orig/stored.content.message.txt  2014-01-07 20:41:48.193533731 +0100
++++ en/stored.content.message.txt       2014-01-07 21:39:23.618544818 +0100
+@@ -1,4 +1,4 @@
+-This is a message from the MailScanner E-Mail Virus Protection Service
++This is a message from the E.F.A. E-Mail Virus Protection Service
+ ----------------------------------------------------------------------
+ The original e-mail message contained potentially dangerous content,
+ which has been removed for your safety.
+@@ -16,8 +16,5 @@ At $date the content filters said:
+ $report
+ Note to Help Desk: Look on $hostname in $quarantinedir/$datenumber (message $id).
+ --
+-Postmaster
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/stored.filename.message.txt en/stored.filename.message.txt
+--- en.orig/stored.filename.message.txt 2014-01-07 20:41:48.192533732 +0100
++++ en/stored.filename.message.txt      2014-01-07 21:40:19.740534999 +0100
+@@ -1,4 +1,4 @@
+-This is a message from the MailScanner E-Mail Virus Protection Service
++This is a message from the E.F.A. E-Mail Virus Protection Service
+ ----------------------------------------------------------------------
+ The original e-mail attachment "$filename"
+ is on the list of unacceptable attachments for this site and has been
+@@ -13,8 +13,5 @@ At $date the virus scanner said:
+ $report
+ Note to Help Desk: Look on $hostname in $quarantinedir/$datenumber (message $id).
+ --
+-Postmaster
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/stored.size.message.txt en/stored.size.message.txt
+--- en.orig/stored.size.message.txt     2014-01-07 20:41:48.198533731 +0100
++++ en/stored.size.message.txt  2014-01-07 21:40:33.702531338 +0100
+@@ -1,4 +1,4 @@
+-This is a message from the MailScanner E-Mail Virus Protection Service
++This is a message from the E.F.A. E-Mail Virus Protection Service
+ ----------------------------------------------------------------------
+ The original e-mail message, or an attachment it contained, was too large
+ and has been removed.
+@@ -14,8 +14,5 @@ At $date the content filters said:
+ $report
+ Note to Help Desk: Look on $hostname in $quarantinedir/$datenumber (message $id).
+ --
+-Postmaster
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk
+diff -rupN en.orig/stored.virus.message.txt en/stored.virus.message.txt
+--- en.orig/stored.virus.message.txt    2014-01-07 20:41:48.189533730 +0100
++++ en/stored.virus.message.txt 2014-01-07 21:40:47.659530233 +0100
+@@ -1,4 +1,4 @@
+-This is a message from the MailScanner E-Mail Virus Protection Service
++This is a message from the E.F.A. E-Mail Virus Protection Service
+ ----------------------------------------------------------------------
+ The original e-mail attachment "$filename"
+ was believed to be infected by a virus and has been replaced by this warning
+@@ -13,8 +13,5 @@ At $date the virus scanner said:
+ $report
+ Note to Help Desk: Look on $hostname in $quarantinedir/$datenumber (message $id).
+ --
+-Postmaster
+ %org-long-name%
+ %web-site%
+-
+-For all your IT requirements visit: http://www.transtec.co.uk

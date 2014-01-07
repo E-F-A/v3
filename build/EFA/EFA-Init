@@ -680,6 +680,7 @@ function func_configure-system() {
   sed -i "/^Use Watermarking =/ c\Use Watermarking = yes" /etc/MailScanner/MailScanner.conf
   sed -i "/^Information Header Value =/ c\Information Header Value = Please contact $ADMINEMAIL for more information" /etc/MailScanner/MailScanner.conf
   sed -i "/^Unscanned Header Value =/ c\Unscanned Header Value = Please contact $ADMINEMAIL for details" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Hostname =/ c\Hostname = $HOSTNAME.$DOMAINNAME" /etc/MailScanner/MailScanner.conf
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
@@ -706,6 +707,11 @@ function func_configure-system() {
   # +--------------------------------------------------+
   # create the mailwatch user
   /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO users SET username = '$USERNAME', password = md5('$efauserpwd'), fullname = 'Administrator', type ='A'"
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # Whitelist localhost in mysql for mail releasing etc..
+  /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO whitelist SET to_address = 'default', to_domain = '', from_address = '127.0.0.1'"
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+

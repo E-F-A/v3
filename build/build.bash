@@ -271,6 +271,14 @@ func_mailscanner () {
     
     # Fix (workaround) the "Insecure dependency in open while running with -T switch at /usr/lib64/perl5/IO/File.pm line 185" error
     sed -i '/^#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner/ c\#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner\ -U' /usr/sbin/MailScanner
+    
+    # Remove all reports except en and modify all texts
+    cd /usr/src/EFA
+    wget $gitdlurl/EFA/diff-mailscanner-reports-en.diff
+    cd /etc/MailScanner/reports
+    rm -rf cy+en ca cz de dk es fr hu it nl pt_br ro se sk
+    cd en
+    patch -p1 < /usr/src/EFA/diff-mailscanner-reports-en.diff
 }
 # +---------------------------------------------------+
 
@@ -553,9 +561,10 @@ func_mailwatch () {
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA Links*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    echo '<li><a href=\"../sgwi\">SQLGrey Web Interface</a>';\n    /*End EFA Links*/" other.php
  
     # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
-    sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
-    sed -i "/\/\/ EFA-REMOVE/,+10d" lists.php
-    sed -i "/\/\/ Type/a\switch(\$_GET['type']) {\n  case 'h':\n   \$from = \$_GET['host'];\n   break;\n  case 'f':\n   \$from = \$_GET['from'];\n   break;\n  default:\n   if(isset(\$_GET['entry'])) { \$from = \$_GET['entry']; }\n }\n " lists.php
+    #sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
+    #sed -i "/\/\/ EFA-REMOVE/,+10d" lists.php
+    #sed -i "/\/\/ Type/a\switch(\$_GET['type']) {\n  case 'h':\n   \$from = \$_GET['host'];\n   break;\n  case 'f':\n   \$from = \$_GET['from'];\n   break;\n  default:\n   if(isset(\$_GET['entry'])) { \$from = \$_GET['entry']; }\n }\n " lists.php
+    # Note: this is not needed in beta4 patch 4 anymore... keeping here until we fixed the session issue (in case we need to rollback to the previous version..)
  
     # Postfix Relay Info
     echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
@@ -616,6 +625,7 @@ func_sgwi () {
     mv * /var/www/html/sgwi
 
     # add db credential 
+<<<<<<< HEAD
     sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" /var/www/html/sgwi/includes/config.inc.php
 
     # Add greylist to mailwatch menu
@@ -652,6 +662,31 @@ func_sgwi () {
     sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/connect.php
     sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/opt_in_out.php
 
+=======
+    sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" ./includes/config.inc.php
+
+    # add apache config and set up simple authentication for now
+    touch /etc/httpd/conf.d/sgwi.conf
+    echo "# E.F.A. -- SQLGrey Web Interface Apache Configuration" > /etc/httpd/conf.d/sgwi.conf
+    echo "" >> /etc/httpd/conf.d/sgwi.conf
+    echo "Alias /sgwi /var/www/sgwi" >> /etc/httpd/conf.d/sgwi.conf
+    echo "<Directory \"/var/www/sgwi\">" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    Options Indexes" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    AllowOverride None" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    AuthName \"SQLGrey Web Access\"" >> /etc/httpd/conf.d/sgwi.conf
+    echo "    AuthType Basic" >> /etc/httpd/conf.d/sgwi.conf
+    echo "    AuthBasicProvider file" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    AuthUserFile /etc/httpd/sgwi.htpasswd" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    Require user admin" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    Order allow,deny" >> /etc/httpd/conf.d/sgwi.conf 
+    echo "    Allow from all" >> /etc/httpd/conf.d/sgwi.conf
+    echo "</Directory>" >> /etc/httpd/conf.d/sgwi.conf
+
+    # Create authentication file
+    htpasswd -bc /etc/httpd/sgwi.htpasswd admin $password
+    chown root:apache /etc/httpd/sgwi.htpasswd
+    chmod 640 /etc/httpd/sgwi.htpasswd
+>>>>>>> 0558635641ac8feb23bb8b9556b135a0dbad96b7
 }
 # +---------------------------------------------------+
 
