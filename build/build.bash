@@ -271,6 +271,10 @@ func_mailscanner () {
     
     # Fix (workaround) the "Insecure dependency in open while running with -T switch at /usr/lib64/perl5/IO/File.pm line 185" error
     sed -i '/^#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner/ c\#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner\ -U' /usr/sbin/MailScanner
+    
+    # Remove all reports except en
+    cd /etc/MailScanner/reports
+    rm -rf cy+en ca cz de dk es fr hu it nl pt_br ro se sk
 }
 # +---------------------------------------------------+
 
