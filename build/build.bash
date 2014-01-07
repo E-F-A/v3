@@ -487,9 +487,6 @@ func_mailwatch () {
     chmod +x /etc/cron.daily/mailwatch
         
     # Move MailWatch into web root and configure
-    # ESVA MailWatch is directly in /var/www/html
-    # Going to move into its own directory and maybe set up a redirect
-    # to keep the web root clean and match up with conf.php defaults
     
     mv mailscanner /var/www/html
     cd /var/www/html/mailscanner
@@ -502,7 +499,6 @@ func_mailwatch () {
     rm -rf docs
     
     cp conf.php.example conf.php
-    dos2unix conf.php
     sed -i "/^define('DB_USER',/ c\define('DB_USER', 'mailwatch');" conf.php
     sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
     sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', 'Etc/UTC');" conf.php
