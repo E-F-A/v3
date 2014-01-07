@@ -534,7 +534,6 @@ func_mailwatch () {
     # EFA Branding
     cd /var/www/html/mailscanner/images
     wget $gitdlurl/EFA/EFAlogo-47px.gif
-    #wget $gitdlurl/EFA/EFAlogo-79px.gif
     wget $gitdlurl/EFA/EFAlogo-79px.png
     mv mailwatch-logo.gif mailwatch-logo.gif.orig
     mv mailwatch-logo.png mailwatch-logo.png.orig
@@ -547,15 +546,6 @@ func_mailwatch () {
     # Change the yellow to blue match the logo somewhat..
     sed -i 's/#F7CE4A/#4d8298/g' /var/www/html/mailscanner/style.css
  
-    # Remove the w3c logo as it slows down page loading.
-    sed -i '/ <a href="http:\/\/validator.w3.org\/check?uri=referer">/d' /var/www/html/mailscanner/login.php
-    sed -i '/<a href="http:\/\/sourceforge.net\/projects\/mailwatch">/d' /var/www/html/mailscanner/login.php
-    sed -i '/        <a href="http:\/\/validator.w3.org\/check?uri=referer">/d' /var/www/html/mailscanner/functions.php
-    sed -i '/<a href="http:\/\/sourceforge.net\/projects\/mailwatch">/d' /var/www/html/mailscanner/functions.php
- 
-    # mailscanner bayes configuration should be ok
-    # nothing to do
-
     # Add Mailgraph link
     cd /var/www/html/mailscanner
     cp other.php other.php.orig
