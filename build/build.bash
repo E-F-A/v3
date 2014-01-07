@@ -87,9 +87,9 @@ func_mysql () {
     # Source:  https://raw.github.com/endelwar/mailwatch/master/create.sql
     # https://raw.github.com/endelwar/mailwatch/master/tools/create_relay_postfix.sql
     cd /usr/src/EFA
-    /usr/bin/wget -q $gitdlurl/MYSQL/create.sql
+    /usr/bin/wget $gitdlurl/MYSQL/create.sql
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
-    /usr/bin/wget -q $gitdlurl/MYSQL/create_relay_postfix.sql
+    /usr/bin/wget $gitdlurl/MYSQL/create_relay_postfix.sql
     /usr/bin/mysql -u root -p"$password" mailscanner < /usr/src/EFA/create_relay_postfix.sql
 
     # Create the users
@@ -108,13 +108,13 @@ func_mysql () {
     # populate the sa_bayes DB
     # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/bayes_mysql.sql
     cd /usr/src/EFA
-    /usr/bin/wget -q $gitdlurl/MYSQL/bayes_mysql.sql
+    /usr/bin/wget $gitdlurl/MYSQL/bayes_mysql.sql
     /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/bayes_mysql.sql
     
     # add the AWL table to sa_bayes
     # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/awl_mysql.sql
     cd /usr/src/EFA
-    /usr/bin/wget -q $gitdlurl/MYSQL/awl_mysql.sql
+    /usr/bin/wget $gitdlurl/MYSQL/awl_mysql.sql
     /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/awl_mysql.sql
 }
 # +---------------------------------------------------+
@@ -194,10 +194,11 @@ func_postfix () {
 
 # +---------------------------------------------------+
 # install and configure MailScanner
+# http://mailscanner.info
 # +---------------------------------------------------+
 func_mailscanner () {
     cd /usr/src/EFA
-    wget http://mailscanner.info/files/4/rpm/MailScanner-4.84.6-1.rpm.tar.gz
+    wget $mirror/$mirrorpath/MailScanner-4.84.6-1.rpm.tar.gz
     tar -xvzf MailScanner-4.84.6-1.rpm.tar.gz
     cd MailScanner-4.84.6-1
     ./install.sh
@@ -275,6 +276,8 @@ func_mailscanner () {
 
 # +---------------------------------------------------+
 # Install and configure spamassassin & clamav
+# http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
+# (ClamAV 0.96.5 and SpamAssassin 3.3.1 easy installation package)
 # +---------------------------------------------------+
 func_spam_clamav () {
     # install clamav and clamd.
@@ -285,7 +288,7 @@ func_spam_clamav () {
     
     #Use the MailScanner packaged version. Answer no to install clam.
     cd /usr/src/EFA
-    wget http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
+    wget $mirror/$mirrorpath/install-Clam-SA-latest.tar.gz
     tar -xvzf install-Clam-SA-latest.tar.gz
     cd install-Clam*
     echo 'n'>answers.txt
@@ -299,12 +302,12 @@ func_spam_clamav () {
     
     # PDFInfo (todo: add option to efa-configure to disable this, if users find its to cpu intensive)
     cd /usr/src/EFA
-    /usr/bin/wget -q -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
-    /usr/bin/wget -q -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
+    /usr/bin/wget -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
+    /usr/bin/wget -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
     echo "loadplugin Mail::SpamAssassin::Plugin::PDFInfo">>/etc/mail/spamassassin/v310.pre
  
     # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
-    /usr/bin/wget -q -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
+    /usr/bin/wget -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
     
     # Configure spamassassin bayes and awl DB settings
     echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
@@ -322,7 +325,7 @@ func_spam_clamav () {
     # Add example spam to db
     # source: http://spamassassin.apache.org/gtube/gtube.txt
     cd /usr/src/EFA
-    /usr/bin/wget -q $gitdlurl/EFA/gtube.txt
+    /usr/bin/wget $gitdlurl/EFA/gtube.txt
     sa-learn --spam /usr/src/EFA/gtube.txt
     
     # Enable Auto White Listing
@@ -387,19 +390,16 @@ func_apache () {
 
     # Secure PHP (this might break some stuff so need to test carefully)
     sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellarg,escapeshellcmd,eval,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,syslog,system,xmlrpc_entity_decode,curl_exec,curl_multi_exec' /etc/php.ini
-    
-    # Todo: Mod_security
-    #       This requires EPEL sources (which have given me lots of dependency issues before
-    #       Not sure if that is something we would like to have :-) )
 }
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
 # configure SQLgrey
+# http://sqlgrey.sourceforge.net/
 # +---------------------------------------------------+
 func_sqlgrey () {
     useradd sqlgrey -m -d /home/sqlgrey -s /sbin/nologin
-    wget http://downloads.sourceforge.net/project/sqlgrey/sqlgrey-1.8%20%28stable%29/sqlgrey-1.8.0.tar.gz
+    wget $mirror/$mirrorpath/sqlgrey-1.8.0.tar.gz
     tar -xvzf sqlgrey-1.8.0.tar.gz
     cd sqlgrey-1.8.0
     make rh-install
@@ -444,10 +444,10 @@ func_sqlgrey () {
 
 # +---------------------------------------------------+
 # configure MailWatch
+# https://github.com/mailwatch/1.2.0
 # +---------------------------------------------------+
 func_mailwatch () {
     # Fetch MailWatch
- 
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
     unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
@@ -607,10 +607,8 @@ func_mailwatch () {
 # http://www.vanheusden.com/sgwi
 # +---------------------------------------------------+
 func_sgwi () {
-
-    # todo: move gzipped tarball to dl.efa-project.org
     cd /usr/src/EFA
-    wget -q http://www.vanheusden.com/sgwi/sqlgreywebinterface-1.1.6.tgz
+    wget $mirror/$mirrorpath/sqlgreywebinterface-1.1.6.tgz
     tar -xzvf sqlgreywebinterface-1.1.6.tgz    
     cd sqlgreywebinterface-1.1.6
     # placing in its own area to set up authentication without having to
@@ -648,10 +646,11 @@ func_sgwi () {
 
 # +---------------------------------------------------+
 # Mailgraph
+# http://mailgraph.schweikert.ch
 # +---------------------------------------------------+
 func_mailgraph () {
-    cd /usr/src/EFA 
-    wget -q http://mailgraph.schweikert.ch/pub/mailgraph-1.14.tar.gz
+    cd /usr/src/EFA
+    wget $mirror/$mirrorpath/mailgraph-1.14.tar.gz 
     tar xvzf mailgraph-1.14.tar.gz
     cd mailgraph-1.14
     
@@ -674,10 +673,11 @@ func_mailgraph () {
 
 # +---------------------------------------------------+
 # Install Pyzor
+# http://downloads.sourceforge.net/project/pyzor/pyzor/0.5.0/pyzor-0.5.0.tar.gz
 # +---------------------------------------------------+
 func_pyzor () {
     cd /usr/src/EFA
-    wget http://downloads.sourceforge.net/project/pyzor/pyzor/0.5.0/pyzor-0.5.0.tar.gz
+    wget $mirror/$mirrorpath/pyzor-0.5.0.tar.gz
     tar xvzf pyzor-0.5.0.tar.gz
     cd pyzor-0.5.0
     python setup.py build
@@ -700,7 +700,7 @@ func_pyzor () {
 # +---------------------------------------------------+
 func_razor () {
     cd /usr/src/EFA
-    wget http://downloads.sourceforge.net/project/razor/razor-agents/2.84/razor-agents-2.84.tar.bz2
+    wget $mirror/$mirrorpath/razor-agents-2.84.tar.bz2
     tar xvjf razor-agents-2.84.tar.bz2
     cd razor-agents-2.84
     
@@ -743,6 +743,7 @@ func_dcc () {
 
 # +---------------------------------------------------+
 # imageCerberus to replace fuzzyocr
+# http://sourceforge.net/projects/imagecerberus/
 # +---------------------------------------------------+
 func_imagecerberus () {
     cd /usr/src/EFA
@@ -770,11 +771,11 @@ func_imagecerberus () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Webmin
+# Webmin (http://www.webmin.com/)
 # +---------------------------------------------------+
 func_webmin () {
     cd /usr/src/EFA
-    wget http://downloads.sourceforge.net/project/webadmin/webmin/1.660/webmin-1.660-1.noarch.rpm
+    wget $mirror/$mirrorpath/webmin-1.660-1.noarch.rpm
     rpm -i webmin-1.660-1.noarch.rpm
     
     # shoot a hole in webmin so we can change settings
@@ -868,13 +869,13 @@ func_efarequirements () {
     echo "First time login: root/EfaPr0j3ct" >> /etc/issue
     
     # Grab EFA specific scripts/programs
-    /usr/bin/wget -q -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
+    /usr/bin/wget -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
     chmod 700 /usr/local/sbin/EFA-Init
-    /usr/bin/wget -q -O /usr/local/sbin/EFA-Configure $gitdlurl/EFA/EFA-Configure
+    /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/EFA/EFA-Configure
     chmod 700 /usr/local/sbin/EFA-Configure
-    /usr/bin/wget -q -O /usr/local/sbin/EFA-Update $gitdlurl/EFA/EFA-Update
+    /usr/bin/wget -O /usr/local/sbin/EFA-Update $gitdlurl/EFA/EFA-Update
     chmod 700 /usr/local/sbin/EFA-Update
-    /usr/bin/wget -q -O /usr/local/sbin/EFA-SA-Update $gitdlurl/EFA/EFA-SA-Update
+    /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/EFA/EFA-SA-Update
     chmod 700 /usr/local/sbin/EFA-SA-Update
     
     # Write SSH banner
@@ -915,9 +916,9 @@ EOF
 # Cron settings
 # +---------------------------------------------------+
 func_cron () {
-    /usr/bin/wget -q -O /etc/cron.daily/EFA-Daily-cron $gitdlurl/EFA/EFA-Daily-cron
+    /usr/bin/wget -O /etc/cron.daily/EFA-Daily-cron $gitdlurl/EFA/EFA-Daily-cron
     chmod 700 /etc/cron.daily/EFA-Daily-cron
-    /usr/bin/wget -q -O /etc/cron.monthly/EFA-Monthly-cron  $gitdlurl/EFA/EFA-Monthly-cron
+    /usr/bin/wget -O /etc/cron.monthly/EFA-Monthly-cron  $gitdlurl/EFA/EFA-Monthly-cron
     chmod 700 /etc/cron.monthly/EFA-Monthly-cron
 }
 # +---------------------------------------------------+
