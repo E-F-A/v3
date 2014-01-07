@@ -114,7 +114,12 @@ function func_ask-ipaddress() {
   func_echo-header
   # Get the primary interface
   func_interfaces
-  
+ 
+  # Display current IP
+  echo -e "$green[EFA] Your curent IP address is"
+  ifconfig $INTERFACE | grep inet
+  echo -e "" 
+
   # Get the IP and validate it
   echo -e ""
   echo -e "$green[EFA]$clean Please enter the IP address"
