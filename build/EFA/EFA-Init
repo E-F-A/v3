@@ -880,6 +880,7 @@ function func_end() {
   chkconfig mailgraph-init on
   chkconfig adcc on
   chkconfig webmin on
+  chkconfig ntpd on
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
