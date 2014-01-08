@@ -1001,8 +1001,8 @@ func_cleanup () {
     #       Currently se-linux blocks clamd. 
     #       (denied  { read } for  pid=4083 comm="clamd" name="3899" dev=tmpfs ino=23882 scontext=unconfined_u:system_r:antivirus_t:s0 tcontext=unconfined_u:object_r:var_spool_t:s0 tclass=dir
 
-    # Remove boot splash so we can see whats going on while booting
-    sed -i 's/\<rhgb quiet\>//g' /boot/grub/grub.conf
+    # Remove boot splash so we can see whats going on while booting and set console reso to 1024x768
+    sed -i 's/\<rhgb quiet\>/ vga=791/g' /boot/grub/grub.conf
     
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
