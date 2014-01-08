@@ -507,7 +507,7 @@ func_ask-tunables(){
       else
         echo -e "       $red ERROR: The number of threads $MSTHREADS appears to be invalid."
         echo -e "        ERROR: please re-enter the number of threads.$clean"
-        echo -e -n "$green[EFA]$clean Mailscanner children (default/min 2, max 10:"
+        echo -e -n "$green[EFA]$clean Mailscanner children (default/min 2, max 10):"
         read MSTHREADS
      fi
    done
