@@ -793,7 +793,7 @@ function func_end() {
   chkconfig MailScanner on
   chkconfig httpd on
   chkconfig mysqld on
-  chkconfig named on
+  chkconfig dnsmasq on
   chkconfig saslauthd on
   chkconfig crond on
   chkconfig clamd on

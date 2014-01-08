@@ -824,14 +824,20 @@ func_webmin () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Disable unneeded kernel modules
+# Dnsmasq
 # +---------------------------------------------------+
-func_kernmodules () {
-    echo "# Begin Disable modules not required for E.F.A">>/etc/modprobe.d/EFA.conf
-    echo "alias ipv6 off">>/etc/modprobe.d/EFA.conf
-    echo "alias net-pf-10 off">>/etc/modprobe.d/EFA.conf
-    echo "alias pcspkr off">>/etc/modprobe.d/EFA.conf
-    echo "# End Disable modules not required for E.F.A.">>/etc/modprobe.d/EFA.conf
+func_dnsmasq () {
+    sed -i s/"#listen-address="/"listen-address=127.0.0.1"/ /etc/dnsmasq.conf
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# kernel settings
+# +---------------------------------------------------+
+func_kernsettings () {
+    sed -i '/net.bridge.bridge-nf-call-/d' /etc/sysctl.conf
+    echo -e "# IPv6 \nnet.ipv6.conf.all.disable_ipv6 = 1 \nnet.ipv6.conf.default.disable_ipv6 = 1 \nnet.ipv6.conf.lo.disable_ipv6 = 1" >> /etc/sysctl.conf
+    sysctl -q -p
 }
 # +---------------------------------------------------+
 
@@ -859,7 +865,6 @@ func_services () {
     chkconfig MailScanner off
     chkconfig httpd off
     chkconfig mysqld off
-    chkconfig named off
     chkconfig saslauthd off
     chkconfig crond off
     chkconfig clamd off
@@ -867,6 +872,7 @@ func_services () {
     chkconfig mailgraph-init off
     chkconfig adcc off
     chkconfig webmin off
+    chkconfig dnsmasq off
 }
 # +---------------------------------------------------+
 
@@ -1017,7 +1023,8 @@ func_razor
 func_dcc
 func_imagecerberus
 func_webmin
-func_kernmodules
+func_dnsmasq
+func_kernsettings
 func_services
 func_efarequirements
 func_cron

@@ -19,6 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
+# Todo's:
+#
+# enable/disable PDFinfo (incase of to cpu intensive)  "loadplugin Mail::SpamAssassin::Plugin::PDFInfo" in /etc/mail/spamassassin/v310.pre
+
 # +---------------------------------------------------+
 # Display menus
 # +---------------------------------------------------+
