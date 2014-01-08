@@ -18,14 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------
 
-# Todo:
-# grabb all installation files and place them on dl.efa-project.org
-#   some servers are very slow (dcc for example) causing installations
-#   to fail, having it all on dl.efa-project.org will be faster and
-#   will save us the trouble if files become unavailable from the official
-#   website (version change for example, which might cause problems)
-#       This is something we can do as an final stage.
-
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
@@ -322,7 +314,7 @@ func_spam_clamav () {
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
     
-    # PDFInfo (todo: add option to efa-configure to disable this, if users find its to cpu intensive)
+    # PDFInfo
     cd /usr/src/EFA
     /usr/bin/wget -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
     /usr/bin/wget -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
@@ -692,11 +684,6 @@ func_mailgraph () {
     sed -i '/^MAIL_LOG=/ c\MAIL_LOG=\/var\/log\/maillog' /etc/init.d/mailgraph-init
     sed -i "/^my \$rrd =/ c\my \$rrd = \'\/var\/lib\/mailgraph.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
     sed -i "/^my \$rrd_virus =/ c\my \$rrd_virus = \'\/var\/lib\/mailgraph_virus.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
-
-    # todo:
-    # figure out how this was incorporated in mailwatch..
-    # it appears that it wasn't.  ESVA used to have an index.html
-    # that linked to it, but it is renamed index.html.old
 }
 # +---------------------------------------------------+
 
