@@ -20,11 +20,7 @@
 # +--------------------------------------------------------------------+
 
 # todo:
-# Write auto generated password for mysql root
-# Write auto generated password for mysql sa_user
-# Write auto generated password for mysql mailwatch
-# Write auto generated password for mysql sqlgrey
-# Password for htaccess
+# Password for htaccess? (if still needed)
 # 
 # +---------------------------------------------------+
 # Variables
