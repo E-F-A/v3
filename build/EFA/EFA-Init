@@ -618,12 +618,13 @@ function func_configure-system() {
   # Network settings
   echo -e "$green[EFA]$clean - Setting new hostname"
   sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
-  echo "$IPADDRESS              $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
+  echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+  echo "$IPADDRESS   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
   hostname $HOSTNAME
 
   echo -e "$green[EFA]$clean - Setting DNS Servers"
-  echo "nameserver $DNS1" >> /etc/resolv.conf
-  echo "nameserver $DNS2" >> /etc/resolv.conf
+  echo "nameserver $DNS1" > /etc/resolv.dnsmasq
+  echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
 
   echo -e "$green[EFA]$clean - Setting IP settings"
   ifdown $INTERFACE
@@ -763,6 +764,35 @@ function func_configure-system() {
   # Set timezone in php.ini
   sed -i "/^;date.timezone =/ c\date.timezone = $TZONE" /etc/php.ini
   # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # Set the random passwords
+
+  # sa_user SQL password
+  randompw
+  SAUSERSQLPWD=$PASSWD
+  /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SAUSERSQLPWD') WHERE User='sa_user';"
+  /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
+  # todo change passwords in files
+  
+  # mailwatch SQL password
+  randompw
+  MAILWATCHSQLPWD=$PASSWD
+  /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$MAILWATCHSQLPWD') WHERE User='mailwatch';"
+  /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
+  # todo change passwords in files
+  
+  # sqlgrey SQL password
+  randompw
+  SQLGREYSQLPWD=$PASSWD
+  /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SQLGREYSQLPWD') WHERE User='sqlgrey';"
+  /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
+  # todo change passwords in files
+  
+  # And finally we change the MYSQL root password.
+  randompw
+  MYSQLROOTPWD=$PASSWD
+  /usr/bin/mysqladmin -u root -p$initpassword password "$MYSQLROOTPWD"
 }
 # +---------------------------------------------------+
 
@@ -830,6 +860,10 @@ function func_end() {
   echo "IANA:$IANACODE" >> /etc/EFA-Config
   echo "MAILSERVER:$MAILSERVER" >> /etc/EFA-Config
   echo "ORGNAME:$ORGNAME" >> /etc/EFA-Config
+  echo "SAUSERSQLPWD:$SAUSERSQLPWD" >> /etc/EFA-Config
+  echo "MAILWATCHSQLPWD:$MAILWATCHSQLPWD" >> /etc/EFA-Config
+  echo "SQLGREYSQLPWD:$SQLGREYSQLPWD" >> /etc/EFA-Config
+  echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
   chmod 600 /etc/EFA-Config
   # +--------------------------------------------------+
   
@@ -838,7 +872,7 @@ function func_end() {
   chkconfig MailScanner on
   chkconfig httpd on
   chkconfig mysqld on
-  chkconfig named on
+  chkconfig dnsmasq on
   chkconfig saslauthd on
   chkconfig crond on
   chkconfig clamd on
@@ -936,8 +970,8 @@ function checkip()
 # +---------------------------------------------------+
 function randompw()
 {
-    PASSWD=""
-    PASSWD=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
+  PASSWD=""
+  PASSWD=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
 }
 # +---------------------------------------------------+
 

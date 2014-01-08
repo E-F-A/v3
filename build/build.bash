@@ -71,7 +71,6 @@ func_mysql () {
     /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
     
     # Create the databases 
-    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE FuzzyOcr"
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sa_bayes"
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sqlgrey"
    
@@ -827,14 +826,34 @@ func_webmin () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Disable unneeded kernel modules
+# Dnsmasq
 # +---------------------------------------------------+
-func_kernmodules () {
-    echo "# Begin Disable modules not required for E.F.A">>/etc/modprobe.d/EFA.conf
-    echo "alias ipv6 off">>/etc/modprobe.d/EFA.conf
-    echo "alias net-pf-10 off">>/etc/modprobe.d/EFA.conf
-    echo "alias pcspkr off">>/etc/modprobe.d/EFA.conf
-    echo "# End Disable modules not required for E.F.A.">>/etc/modprobe.d/EFA.conf
+func_dnsmasq () {
+    groupadd -r dnsmasq
+    useradd -r -g dnsmasq dnsmasq
+    sed -i '/#listen-address=/ c\listen-address=127.0.0.1' /etc/dnsmasq.conf
+    sed -i '/#user=/ c\user=dnsmasq' /etc/dnsmasq.conf
+    sed -i '/#group=/ c\group=dnsmasq' /etc/dnsmasq.conf
+    sed -i '/#bind-interfaces/ c\bind-interfaces' /etc/dnsmasq.conf
+    sed -i '/#domain-needed/ c\domain-needed' /etc/dnsmasq.conf
+    sed -i '/#bogus-priv/ c\bogus-priv' /etc/dnsmasq.conf
+    sed -i '/#cache-size=/ c\cache-size=1500' /etc/dnsmasq.conf
+    sed -i '/#no-poll/ c\no-poll' /etc/dnsmasq.conf
+    sed -i '/#resolv-file=/ c\resolv-file=/etc/resolv.dnsmasq' /etc/dnsmasq.conf
+    touch /etc/resolv.dnsmasq
+    echo "nameserver 8.8.8.8" >> /etc/resolv.dnsmasq
+    echo "nameserver 8.8.4.4" >> /etc/resolv.dnsmasq
+    echo "nameserver 127.0.0.1" > /etc/resolv.conf
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# kernel settings
+# +---------------------------------------------------+
+func_kernsettings () {
+    sed -i '/net.bridge.bridge-nf-call-/d' /etc/sysctl.conf
+    echo -e "# IPv6 \nnet.ipv6.conf.all.disable_ipv6 = 1 \nnet.ipv6.conf.default.disable_ipv6 = 1 \nnet.ipv6.conf.lo.disable_ipv6 = 1" >> /etc/sysctl.conf
+    sysctl -q -p
 }
 # +---------------------------------------------------+
 
@@ -862,7 +881,6 @@ func_services () {
     chkconfig MailScanner off
     chkconfig httpd off
     chkconfig mysqld off
-    chkconfig named off
     chkconfig saslauthd off
     chkconfig crond off
     chkconfig clamd off
@@ -870,6 +888,7 @@ func_services () {
     chkconfig mailgraph-init off
     chkconfig adcc off
     chkconfig webmin off
+    chkconfig dnsmasq off
 }
 # +---------------------------------------------------+
 
@@ -984,8 +1003,8 @@ func_cleanup () {
     #       Currently se-linux blocks clamd. 
     #       (denied  { read } for  pid=4083 comm="clamd" name="3899" dev=tmpfs ino=23882 scontext=unconfined_u:system_r:antivirus_t:s0 tcontext=unconfined_u:object_r:var_spool_t:s0 tclass=dir
 
-    # Remove boot splash so we can see whats going on while booting
-    sed -i 's/\<rhgb quiet\>//g' /boot/grub/grub.conf
+    # Remove boot splash so we can see whats going on while booting and set console reso to 1024x768
+    sed -i 's/\<rhgb quiet\>/ vga=791/g' /boot/grub/grub.conf
     
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
@@ -1020,7 +1039,8 @@ func_razor
 func_dcc
 func_imagecerberus
 func_webmin
-func_kernmodules
+func_dnsmasq
+func_kernsettings
 func_services
 func_efarequirements
 func_cron
