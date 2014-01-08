@@ -542,7 +542,7 @@ func_mailwatch () {
     echo "</html>" >> /var/www/html/index.html
     
     # Grabbing an favicon to complete the look 
-    cd /var/www/html
+    cd /var/www/html/mailscanner
     wget http://www.efa-project.org/favicon.ico
 
     # EFA Branding
@@ -570,6 +570,12 @@ func_mailwatch () {
     #sed -i "/\/\/ EFA-REMOVE/,+10d" lists.php
     #sed -i "/\/\/ Type/a\switch(\$_GET['type']) {\n  case 'h':\n   \$from = \$_GET['host'];\n   break;\n  case 'f':\n   \$from = \$_GET['from'];\n   break;\n  default:\n   if(isset(\$_GET['entry'])) { \$from = \$_GET['entry']; }\n }\n " lists.php
     # Note: this is not needed in beta4 patch 4 anymore... keeping here until we fixed the session issue (in case we need to rollback to the previous version..)
+    
+    # session issue may have been self-inflicted (at least on my end).
+    # I was making changes to mailwatch files while it was open
+    # I'm not sure, but I think this may have confused the session
+    # Time will tell...
+
  
     # Postfix Relay Info
     echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
