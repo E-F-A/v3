@@ -611,6 +611,9 @@ func_mailwatch () {
     # Allow apache to sudo and run the MailScanner lint test
     sed -i '/Defaults    requiretty/ c\#Defaults    requiretty' /etc/sudoers
     echo "apache ALL=NOPASSWD: /usr/sbin/MailScanner --lint" > /etc/sudoers.d/EFA-Services
+
+    # Fix menu width
+    sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
 }
 # +---------------------------------------------------+
 
