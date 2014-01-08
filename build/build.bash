@@ -827,7 +827,21 @@ func_webmin () {
 # Dnsmasq
 # +---------------------------------------------------+
 func_dnsmasq () {
-    sed -i s/"#listen-address="/"listen-address=127.0.0.1"/ /etc/dnsmasq.conf
+    groupadd -r dnsmasq
+    useradd -r -g dnsmasq dnsmasq
+    sed -i '/#listen-address=/ c\listen-address=127.0.0.1' /etc/dnsmasq.conf
+    sed -i '/#user=/ c\user=dnsmasq' /etc/dnsmasq.conf
+    sed -i '/#group=/ c\group=dnsmasq' /etc/dnsmasq.conf
+    sed -i '/#bind-interfaces/ c\bind-interfaces' /etc/dnsmasq.conf
+    sed -i '/#domain-needed/ c\domain-needed' /etc/dnsmasq.conf
+    sed -i '/#bogus-priv/ c\bogus-priv' /etc/dnsmasq.conf
+    sed -i '/#cache-size=/ c\cache-size=1500' /etc/dnsmasq.conf
+    sed -i '/#no-poll/ c\no-poll' /etc/dnsmasq.conf
+    sed -i '/#resolv-file=/ c\resolv-file=/etc/resolv.dnsmasq' /etc/dnsmasq.conf
+    touch /etc/resolv.dnsmasq
+    echo "nameserver 8.8.8.8" >> /etc/resolv.dnsmasq
+    echo "nameserver 8.8.4.4" >> /etc/resolv.dnsmasq
+    echo "nameserver 127.0.0.1" > /etc/resolv.conf
 }
 # +---------------------------------------------------+
 

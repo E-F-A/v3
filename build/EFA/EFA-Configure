@@ -64,10 +64,10 @@ func_ip-settings(){
       func_getipsettings
       func_echo-header
       echo -e "Current IP settings for $INTERFACE are:"
-      echo -e "1) IP                        :  $IP"
-      echo -e "2) Netmask                :  $NM"
-      echo -e "3) Gateway                :  $GW"
-      echo -e "4) Primary DNS                :  $DNS1"
+      echo -e "1) IP                   :  $IP"
+      echo -e "2) Netmask              :  $NM"
+      echo -e "3) Gateway              :  $GW"
+      echo -e "4) Primary DNS          :  $DNS1"
       echo -e "5) Secondary DNS        :  $DNS2"
       echo -e ""
       echo -e "e) Return to main menu"
