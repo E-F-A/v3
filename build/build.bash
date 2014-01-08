@@ -628,7 +628,7 @@ func_sgwi () {
     sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" /var/www/html/sgwi/includes/config.inc.php
 
     # Add greylist to mailwatch menu
-    sed -i "/^            $nav['docs.php'] = "Documentation";\n        }/ a\        //Begin EFA\n        $nav['grey.php'] = "greylist";\n        //End EFA" /var/www/html/mailscanner/functions.php
+    sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        \$nav\['grey.php'\] = \"greylist\";\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
 
     # Create wrapper
     touch /var/www/html/mailscanner/grey.php
@@ -637,7 +637,7 @@ func_sgwi () {
     echo "require_once(\"./functions.php\");" >> /var/www/html/mailscanner/grey.php
     echo "session_start();" >> /var/www/html/mailscanner/grey.php
     echo "require('login.function.php');" >> /var/www/html/mailscanner/grey.php
-    echo "$refresh = html_start(\"greylist\",STATUS_REFRESH,false,false);" >> /var/www/html/mailscanner/grey.php
+    echo "\$refresh = html_start(\"greylist\",STATUS_REFRESH,false,false);" >> /var/www/html/mailscanner/grey.php
     echo "?>" >> /var/www/html/mailscanner/grey.php
     # iframe "works" but the vertical concerns me with a growing list...
     # may end up doing something else...
@@ -654,12 +654,13 @@ func_sgwi () {
     ln -s ../mailscanner/login.php login.php
     ln -s ../mailscanner/functions.php functions.php
     ln -s ../mailscanner/checklogin.php checklogin.php
+    ln -s ../mailscanner/conf.php conf.php
     mkdir images
-    ln -s ../mailscanner/images/EFAlogo-79px.png ./images/mailwatch-logo.png
-    sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/index.php
-    sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/awl.php
-    sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/connect.php
-    sed -i "/^<?php/ a\n//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/opt_in_out.php
+    ln -s ../../mailscanner/images/EFAlogo-79px.png ./images/mailwatch-logo.png
+    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/index.php
+    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/awl.php
+    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/connect.php
+    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/opt_in_out.php
 
 }
 # +---------------------------------------------------+
