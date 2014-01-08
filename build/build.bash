@@ -291,8 +291,22 @@ func_spam_clamav () {
     # install clamav and clamd.
     yum -y install clamav clamd
 
-    # todo:
+    # Sane security scripts
     # http://sanesecurity.co.uk/usage/linux-scripts/
+    cd /usr/src/EFA
+    wget $mirror/$mirrorpath/clamav-unofficial-sigs-3.7.2.tar.gz
+    tar -xvzf clamav-unofficial-sigs-3.7.2.tar.gz
+    cd clamav-unofficial-sigs-3.7.2
+    cp clamav-unofficial-sigs.sh /usr/local/bin/
+    cp clamav-unofficial-sigs.conf /usr/local/etc/
+    cp clamav-unofficial-sigs.8 /usr/share/man/man8/
+    cp clamav-unofficial-sigs-cron /etc/cron.d/
+    cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
+    sed -i '/clam_dbs=/ c\clam_dbs="/var/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
+    sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
+    sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
+    sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
+    sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
     
     #Use the MailScanner packaged version. Answer no to install clam.
     cd /usr/src/EFA
