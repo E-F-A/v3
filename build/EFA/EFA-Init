@@ -20,11 +20,7 @@
 # +--------------------------------------------------------------------+
 
 # todo:
-# Write auto generated password for mysql root
-# Write auto generated password for mysql sa_user
-# Write auto generated password for mysql mailwatch
-# Write auto generated password for mysql sqlgrey
-# Password for htaccess
+# Password for htaccess? (if still needed)
 # 
 # +---------------------------------------------------+
 # Variables
@@ -767,27 +763,31 @@ function func_configure-system() {
   
   # +--------------------------------------------------+
   # Set the random passwords
-
   # sa_user SQL password
   randompw
   SAUSERSQLPWD=$PASSWD
   /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SAUSERSQLPWD') WHERE User='sa_user';"
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
-  # todo change passwords in files
+  sed -i "/bayes_sql_password/ c\bayes_sql_password              $SAUSERSQLPWD" /etc/MailScanner/spam.assassin.prefs.conf
+  sed -i "/user_awl_sql_password/ c\user_awl_sql_password           $SAUSERSQLPWD" /etc/MailScanner/spam.assassin.prefs.conf
   
   # mailwatch SQL password
   randompw
   MAILWATCHSQLPWD=$PASSWD
   /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$MAILWATCHSQLPWD') WHERE User='mailwatch';"
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
-  # todo change passwords in files
+  sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
+  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/SQLBlackWhiteList.pm
+  sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/SQLSpamSettings.pm
+  sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$MAILWATCHSQLPWD');" /var/www/html/mailscanner/conf.php
   
   # sqlgrey SQL password
   randompw
   SQLGREYSQLPWD=$PASSWD
   /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SQLGREYSQLPWD') WHERE User='sqlgrey';"
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
-  # todo change passwords in files
+  sed -i "/db_pass =/ c\db_pass = $SQLGREYSQLPWD" /etc/sqlgrey/sqlgrey.conf
+  sed -i "/^\$db_pass/ c\$db_pass	= \"$SQLGREYSQLPWD\";" /var/www/html/sgwi/includes/config.inc.php
   
   # And finally we change the MYSQL root password.
   randompw
@@ -880,6 +880,7 @@ function func_end() {
   chkconfig mailgraph-init on
   chkconfig adcc on
   chkconfig webmin on
+  chkconfig ntpd on
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
