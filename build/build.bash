@@ -71,7 +71,6 @@ func_mysql () {
     /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
     
     # Create the databases 
-    /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE FuzzyOcr"
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sa_bayes"
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sqlgrey"
    
