@@ -563,8 +563,7 @@ func_mailwatch () {
     # Add Mailgraph link
     cd /var/www/html/mailscanner
     cp other.php other.php.orig
-    sed -i '/^ MailWatch for MailScanner/a\ Modified for Use With EFA -- Email Filter Appliance -- 1/1/2014' other.php
-    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA Links*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    /*End EFA Links*/" other.php
+    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
  
     # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
     #sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
@@ -628,6 +627,7 @@ func_sgwi () {
     # Add greylist to mailwatch menu
     # hide from non-admins 
     # todo: secure from non-admins
+    cp /var/www/html/mailscanner/functions.php /var/www/html/mailscanner/functions.php.orig
     sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
 
     # Create wrapper
