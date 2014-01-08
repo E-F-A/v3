@@ -21,7 +21,7 @@
 
 # Todo's:
 #
-# enable/disable PDFinfo (incase of to cpu intensive)  "loadplugin Mail::SpamAssassin::Plugin::PDFInfo" in /etc/mail/spamassassin/v310.pre
+# enable/disable PDFinfo (in case of to CPU intensive)  "loadplugin Mail::SpamAssassin::Plugin::PDFInfo" in /etc/mail/spamassassin/v310.pre
 
 # +---------------------------------------------------+
 # Display menus
@@ -42,7 +42,7 @@ show_menu() {
       local choice
       read choice
       case $choice in
-                    0) exit && exit && logout ;;
+                    0) clear; SSHPID=`ps aux | egrep "sshd: [a-zA-Z]+@" | awk {' print $2 '}`; kill $SSHPID ;;
                     1) exit 0 ;;
                     2) func_reboot ;;
                     3) func_halt ;;
@@ -72,7 +72,7 @@ func_ip-settings(){
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
-      echo -e "Note: Network will reset when changing values."
+      echo -e "$red Note: Network will reset when changing values.$clean"
       echo -e ""
       echo -e "Enter setting you want to change"
       echo -e -n "$green[EFA]$clean : "
@@ -113,6 +113,57 @@ func_ip-settings(){
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
             esac
         done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to set the new IP settings
+# +---------------------------------------------------+
+func_setipsettings(){
+    for ip in $IP $NM $GW $DNS1 $DNS2
+        do
+            validcheck=1
+            while [ $validcheck != 0 ]
+                do
+                    if checkip $ip
+                        then
+                            validcheck=0
+                        else
+                            echo "ERROR: The value $ip seems to be invalid"
+                            pause
+                            return
+                    fi
+                done
+        done
+  # Grab current FQDN
+  HOSTNAME="`cat /etc/EFA-Config | grep HOSTNAME | sed 's/.*://'`"
+  DOMAINNAME="`cat /etc/EFA-Config | grep DOMAINNAME | sed 's/.*://'`"
+    
+  # Write new hosts file
+  echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+  echo "$IP   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
+        
+  # Write resolv file
+  echo "nameserver $DNS1" > /etc/resolv.dnsmasq
+  echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
+
+  # Set ip settings
+  ifdown $INTERFACE
+  # Use ipcalc to get the broadcast & network id's
+  BROADCAST="`/bin/ipcalc -b $IP $NM`"
+  NETWORK="`/bin/ipcalc -n $IP $NM`"
+  echo "DEVICE=\"$INTERFACE\"" > /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "BOOTPROTO=\"none\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "ONBOOT=\"yes\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "$BROADCAST" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "$NETWORK" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "NETMASK=\"$NM\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "IPADDR=\"$IP\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  sed -i "/GATEWAY=/ c\GATEWAY=$GW" /etc/sysconfig/network
+  ifup $INTERFACE
+  
+  echo -e "All done"
+  pause
 }
 # +---------------------------------------------------+
 
@@ -163,6 +214,11 @@ function func_getipsettings(){
      else
         INTERFACE=$interf
     fi
+    IP="`cat /etc/sysconfig/network-scripts/ifcfg-$INTERFACE | grep IPADDR | sed 's/IPADDR=//;s/"//g'`"
+    NM="`cat /etc/sysconfig/network-scripts/ifcfg-$INTERFACE | grep NETMASK | sed 's/NETMASK=//;s/"//g'`"
+    GW="`cat /etc/sysconfig/network | grep GATEWAY | sed 's/GATEWAY=//'`"
+    DNS1="`cat /etc/resolv.dnsmasq  | grep -v '#' | grep -v 127.0.0.1 | grep nameserver | awk 'NR==1 {print $2}'`"
+    DNS2="`cat /etc/resolv.dnsmasq  | grep -v '#' | grep -v 127.0.0.1 | grep nameserver | awk 'NR==2 {print $2}'`"
 }
 # +---------------------------------------------------+
 
