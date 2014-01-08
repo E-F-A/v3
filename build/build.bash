@@ -628,7 +628,9 @@ func_sgwi () {
     sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" /var/www/html/sgwi/includes/config.inc.php
 
     # Add greylist to mailwatch menu
-    sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        \$nav\['grey.php'\] = \"greylist\";\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+    # hide from non-admins 
+    # todo: secure from non-admins
+    sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
 
     # Create wrapper
     touch /var/www/html/mailscanner/grey.php
