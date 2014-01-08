@@ -948,7 +948,7 @@ func_cleanup () {
     #/bin/rm /etc/ssh/ssh_host_*
     
     # Secure SSH
-    #sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
+    sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
     
     # todo:
     # clear/set dns
