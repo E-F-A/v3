@@ -587,14 +587,6 @@ func_mailwatch () {
     cd /var/www/html
     wget $gitdlurl/EFA/released.html
     wget $gitdlurl/EFA/learned.html
-    # Todo configure the system to put an link in the mails for release.
-    
-    # Todo:  esva also has an mailwatch local system user.
-    #        don't see why that user exists or what it's used for
-    #        we should also check that out.
-
-    # Todo
-    # the following file references /home/www -> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
     
     # MailWatch requires access to /var/spool/postfix/hold & incoming dir's
     chown -R postfix:apache /var/spool/postfix/hold
