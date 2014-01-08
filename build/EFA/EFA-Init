@@ -117,7 +117,7 @@ function func_ask-ipaddress() {
  
   # Display current IP
   echo -e "" 
-  echo -e "$green[EFA]$clean Your curent IP address is"
+  echo -e "$green[EFA]$clean Your current IP address is"
   ifconfig $INTERFACE | grep inet
 
   # Get the IP and validate it
