@@ -635,7 +635,6 @@ func_sgwi () {
 
     # Add greylist to mailwatch menu
     # hide from non-admins 
-    # todo: secure from non-admins
     cp /var/www/html/mailscanner/functions.php /var/www/html/mailscanner/functions.php.orig
     sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
 
@@ -666,10 +665,10 @@ func_sgwi () {
     ln -s ../mailscanner/conf.php conf.php
     mkdir images
     ln -s ../../mailscanner/images/EFAlogo-79px.png ./images/mailwatch-logo.png
-    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/index.php
-    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/awl.php
-    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/connect.php
-    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n//End EFA" /var/www/html/sgwi/opt_in_out.php
+    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (!($_SESSION['user_type'] == 'A')) die('Access Denied');\n//End EFA" /var/www/html/sgwi/index.php
+    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (!($_SESSION['user_type'] == 'A')) die('Access Denied');\n//End EFA" /var/www/html/sgwi/awl.php
+    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (!($_SESSION['user_type'] == 'A')) die('Access Denied');\n//End EFA" /var/www/html/sgwi/connect.php
+    sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (!($_SESSION['user_type'] == 'A')) die('Access Denied');\n//End EFA" /var/www/html/sgwi/opt_in_out.php
 
 }
 # +---------------------------------------------------+
