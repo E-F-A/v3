@@ -646,7 +646,7 @@ func_sgwi () {
     echo "require_once(\"./functions.php\");" >> /var/www/html/mailscanner/grey.php
     echo "session_start();" >> /var/www/html/mailscanner/grey.php
     echo "require('login.function.php');" >> /var/www/html/mailscanner/grey.php
-    echo "\$refresh = html_start(\"greylist\",STATUS_REFRESH,false,false);" >> /var/www/html/mailscanner/grey.php
+    echo "\$refresh = html_start(\"greylist\",0,false,false);" >> /var/www/html/mailscanner/grey.php
     echo "?>" >> /var/www/html/mailscanner/grey.php
     # iframe "works" but the vertical concerns me with a growing list...
     # may end up doing something else...
