@@ -543,6 +543,7 @@ func_mailwatch () {
     # Grabbing an favicon to complete the look 
     cd /var/www/html/mailscanner
     wget http://www.efa-project.org/favicon.ico
+    cp /var/www/html/mailscanner/favicon.ico /var/www/html/mailscanner/images
 
     # EFA Branding
     cd /var/www/html/mailscanner/images
