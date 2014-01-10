@@ -495,7 +495,7 @@ func_ask-tunables(){
    do
      if [[ $MSTHREADS = "" ]]
       then
-        MSTHREADS = 2
+        MSTHREADS=2
      fi
      if [[ $MSTHREADS =~ ^([2-9]|10)$ ]]
       then
