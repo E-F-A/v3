@@ -34,7 +34,7 @@ show_menu() {
       echo -e "Please choose an option:"
       echo -e " "
       echo -e "0) Logout                              4) IP Settings"
-      echo -e "1) Shell                                              "
+      echo -e "1) Shell                               5) Tunables    "
       echo -e "2) Reboot system                                      "
       echo -e "3) Halt system                                        "
       echo -e ""
@@ -47,6 +47,7 @@ show_menu() {
                     2) func_reboot ;;
                     3) func_halt ;;
                     4) func_ip-settings ;;
+                    5) func_tunables ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
@@ -113,6 +114,48 @@ func_ip-settings(){
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
             esac
         done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to set mailscanner threads (other tunables?)
+# +---------------------------------------------------+
+func_tunables(){
+
+  func_echo-header
+
+  echo -e "$green[EFA]$clean - Configuring System Tunables"
+  echo -e ""
+
+  mschildren="`cat /etc/MailScanner/MailScanner.conf | grep -e '^Max Children' | awk -F'=' '{print $2}' | tr -d '[:blank:]'`"
+  echo -e "$green[EFA]$clean Mailscanner is currently set to use $mschildren children."
+  echo -e "" 
+  echo -e -n "$green[EFA]$clean : Mailscanner children (default/min 2, max 10):"
+  read MSTHREADS
+  mstuning=1
+  while [ $mstuning != 0 ]
+   do
+     if [[ $MSTHREADS = "" ]]
+      then
+        MSTHREADS=2
+     fi
+     if [[ $MSTHREADS =~ ^([2-9]|10)$ ]]
+      then
+        mstuning=0
+      else
+        echo -e "       $red ERROR: The number of threads $MSTHREADS appears to be invalid."
+        echo -e "        ERROR: please re-enter the number of threads.$clean"
+        echo -e -n "$green[EFA]$clean Mailscanner children (default/min 2, max 10):"
+        read MSTHREADS
+     fi
+   done
+
+  # Set mailscanner children 
+  sed -i "/^Max Children =/ c\Max Children = $MSTHREADS" /etc/MailScanner/MailScanner.conf
+  
+  echo -e "MailScanner threads reconfigured to use $MSTHREADS children."
+  pause
+
 }
 # +---------------------------------------------------+
 
