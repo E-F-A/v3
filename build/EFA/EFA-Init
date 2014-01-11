@@ -649,6 +649,8 @@ function func_configure-system() {
   
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Generating SSH Host keys"
+  rm -f /etc/ssh/ssh_host_rsa_key
+  rm -f /etc/ssh/ssh_host_dsa_key
   ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
   ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
   # +--------------------------------------------------+
