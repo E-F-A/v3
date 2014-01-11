@@ -731,13 +731,14 @@ function func_configure-system() {
     postfix reload 
     service sqlgrey stop 
     chkconfig sqlgrey off
+
+    # todo: disable Greylist menu item here
   fi
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
   # Set mailscanner children 
   sed -i "/^Max Children =/ c\Max Children = $MSTHREADS" /etc/MailScanner/MailScanner.conf
-
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
@@ -777,8 +778,8 @@ function func_configure-system() {
   /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$MAILWATCHSQLPWD') WHERE User='mailwatch';"
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
   sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
-  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/SQLBlackWhiteList.pm
-  sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/SQLSpamSettings.pm
+  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm
+  sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLSpamSettings.pm
   sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$MAILWATCHSQLPWD');" /var/www/html/mailscanner/conf.php
   
   # sqlgrey SQL password
