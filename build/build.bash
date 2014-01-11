@@ -367,6 +367,10 @@ func_spam_clamav () {
     echo '/usr/sbin/trim-awl'>>trim-sql-awl-weekly
     echo 'exit 0'>>trim-sql-awl-weekly
     chmod +x trim-sql-awl-weekly
+
+    # Create .spamassassin directory (error reported in lint test)
+    mkdir /var/www/.spamassassin
+    chown postfix:postfix /var/www/.spamassassin
     
     # and in the end we run sa-update just for the fun of it..
     sa-update
