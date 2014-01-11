@@ -269,7 +269,7 @@ func_mailscanner () {
     cd /etc/MailScanner/reports
     rm -rf cy+en ca cz de dk es fr hu it nl pt_br ro se sk
     cd en
-    patch -p1 < /usr/src/EFA/diff-mailscanner-reports-en.diff
+    #patch -p1 < /usr/src/EFA/diff-mailscanner-reports-en.diff
 }
 # +---------------------------------------------------+
 
