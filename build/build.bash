@@ -547,8 +547,10 @@ func_mailwatch () {
     # Grabbing an favicon to complete the look 
     cd /var/www/html/
     wget http://www.efa-project.org/favicon.ico
-    cp -f favicon.ico /var/www/html/mailscanner/
-    cp -f favicon.ico /var/www/html/mailscanner/images
+    # override cp -i alias
+    /bin/cp -f favicon.ico /var/www/html/mailscanner/
+    /bin/cp -f favicon.ico /var/www/html/mailscanner/images
+    /bin/cp -f favicon.ico /var/www/html/mailscanner/images/favicon.png
 
     # EFA Branding
     cd /var/www/html/mailscanner/images
