@@ -739,8 +739,6 @@ func_razor () {
 func_dcc () {
     cd /usr/src/EFA
 
-    # Fixme: Download of DCC is failing during build
-
     wget $mirror/$mirrorpath/dcc-1.3.154.tar.Z
     tar xvzf dcc-1.3.154.tar.Z
     cd dcc-*
