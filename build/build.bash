@@ -579,16 +579,17 @@ func_mailwatch () {
     # Note: this is not needed in beta4 patch 4 anymore... keeping here until we fixed the session issue (in case we need to rollback to the previous version..)
     
     # Postfix Relay Info
-    echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    echo "" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/postfix_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/mailscanner_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    rm -f /usr/local/bin/mailwatch/tools/Postfix_relay/INSTALL
-    chmod +x /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    touch /etc/cron.hourly/mailwatch_update_relay
-    echo "#!/bin/sh" > /etc/cron.hourly/mailwatch_update_relay
-    echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
-    chmod +x /etc/cron.hourly/mailwatch_update_relay
+    # Disabled until needed...no front end for data
+    #echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    #echo "" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    #echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/postfix_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    #echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/mailscanner_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    #rm -f /usr/local/bin/mailwatch/tools/Postfix_relay/INSTALL
+    #chmod +x /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
+    #touch /etc/cron.hourly/mailwatch_update_relay
+    #echo "#!/bin/sh" > /etc/cron.hourly/mailwatch_update_relay
+    #echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
+    #chmod +x /etc/cron.hourly/mailwatch_update_relay
     
     # Place the learn and release scripts
     cd /var/www/cgi-bin
