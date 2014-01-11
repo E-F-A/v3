@@ -704,7 +704,7 @@ function func_configure-system() {
   echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamCheck">>/etc/MailScanner/spam.assassin.prefs.conf
   echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamScore">>/etc/MailScanner/spam.assassin.prefs.conf
   echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-Information">>/etc/MailScanner/spam.assassin.prefs.conf
-  sed -i '/^envelope_sender_header / c\envelope_sender_header X-$ORGNAME-MailScanner-EFA-From' /etc/MailScanner/spam.assassin.prefs.conf
+  sed -i "/^envelope_sender_header / c\envelope_sender_header X-$ORGNAME-MailScanner-EFA-From" /etc/MailScanner/spam.assassin.prefs.conf
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
