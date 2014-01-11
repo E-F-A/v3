@@ -293,6 +293,8 @@ func_spam_clamav () {
     cp clamav-unofficial-sigs.8 /usr/share/man/man8/
     cp clamav-unofficial-sigs-cron /etc/cron.d/
     cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
+    sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log" /etc/cron.d/clamav-unofficial-sigs-cron
+    
     sed -i '/clam_dbs=/ c\clam_dbs="/var/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -494,13 +496,12 @@ func_mailwatch () {
     chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
     touch /etc/cron.daily/mailwatch
     echo "#!/bin/sh" > /etc/cron.daily/mailwatch
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php" >> /etc/cron.daily/mailwatch
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean" >> /etc/cron.daily/mailwatch
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php" >> /etc/cron.daily/mailwatch
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
+    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
     chmod +x /etc/cron.daily/mailwatch
         
     # Move MailWatch into web root and configure
-    
     mv mailscanner /var/www/html
     cd /var/www/html/mailscanner
     chown root:apache images
