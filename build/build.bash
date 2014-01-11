@@ -267,13 +267,12 @@ func_mailscanner () {
     cd /usr/src/EFA/
     wget $gitdlurl/MailScanner/reports/en/en-reports-filelist.txt
     rm -rf /etc/MailScanner/reports
-    mkdir -P /etc/MailScanner/reports/en
+    mkdir -p /etc/MailScanner/reports/en
     cd /etc/MailScanner/reports/en
     for report in `cat /usr/src/EFA/en-reports-filelist.txt`
       do
         wget $gitdlurl/MailScanner/reports/en/$report
     done
-    
 }
 # +---------------------------------------------------+
 
