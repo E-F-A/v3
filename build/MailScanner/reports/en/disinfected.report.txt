@@ -1,0 +1,10 @@
+A message you recently received from "$from" with the
+subject "$subject"
+contained one or more viruses that could be disinfected.
+
+The viruses have been removed, and the disinfected files are attached
+to this message.
+
+-- 
+%org-long-name%
+%web-site%
