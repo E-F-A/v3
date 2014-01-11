@@ -972,7 +972,7 @@ func_cron () {
 func_cleanup () {
     echo "DISABLED FOR NOW UNTIL TESTING IS OVER..."
     # Clean SSH keys (generate at first boot)
-    /bin/rm /etc/ssh/ssh_host_*
+    /bin/rm -f /etc/ssh/ssh_host_*
     
     # Secure SSH
     sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
