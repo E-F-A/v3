@@ -541,9 +541,10 @@ func_mailwatch () {
     echo "</html>" >> /var/www/html/index.html
     
     # Grabbing an favicon to complete the look 
-    cd /var/www/html/mailscanner
+    cd /var/www/html/
     wget http://www.efa-project.org/favicon.ico
-    cp /var/www/html/mailscanner/favicon.ico /var/www/html/mailscanner/images
+    cp -f favicon.ico /var/www/html/mailscanner/
+    cp -f favicon.ico /var/www/html/mailscanner/images
 
     # EFA Branding
     cd /var/www/html/mailscanner/images
@@ -686,6 +687,9 @@ func_mailgraph () {
     sed -i '/^MAIL_LOG=/ c\MAIL_LOG=\/var\/log\/maillog' /etc/init.d/mailgraph-init
     sed -i "/^my \$rrd =/ c\my \$rrd = \'\/var\/lib\/mailgraph.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
     sed -i "/^my \$rrd_virus =/ c\my \$rrd_virus = \'\/var\/lib\/mailgraph_virus.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
+
+    #todo: secure mailgraph (may need to use htaccess)
+
 }
 # +---------------------------------------------------+
 
