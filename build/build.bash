@@ -264,12 +264,16 @@ func_mailscanner () {
     sed -i '/^#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner/ c\#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner\ -U' /usr/sbin/MailScanner
     
     # Remove all reports except en and modify all texts
-    cd /usr/src/EFA
-    wget $gitdlurl/EFA/diff-mailscanner-reports-en.diff
-    cd /etc/MailScanner/reports
-    rm -rf cy+en ca cz de dk es fr hu it nl pt_br ro se sk
-    cd en
-    #patch -p1 < /usr/src/EFA/diff-mailscanner-reports-en.diff
+    cd /usr/src/EFA/
+    wget $gitdlurl/MailScanner/reports/en/en-reports-filelist.txt
+    rm -rf /etc/MailScanner/reports
+    mkdir -P /etc/MailScanner/reports/en
+    cd /etc/MailScanner/reports/en
+    for report in `cat /usr/src/EFA/en-reports-filelist.txt`
+      do
+        wget $gitdlurl/MailScanner/reports/en/$report
+    done
+    
 }
 # +---------------------------------------------------+
 
