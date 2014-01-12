@@ -576,7 +576,7 @@ func_mailwatch () {
     # Add Mailgraph link
     cd /var/www/html/mailscanner
     cp other.php other.php.orig
-    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"../cgi-bin/mailgraph.cgi\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
  
     # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
     #sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
@@ -666,7 +666,7 @@ func_sgwi () {
     echo "</iframe>" >> /var/www/html/mailscanner/grey.php
     echo "<?php" >> /var/www/html/mailscanner/grey.php
     echo "html_end();" >> /var/www/html/mailscanner/grey.php
-    echo "db_close();" >> /var/www/html/mailscanner/grey.php
+    echo "dbclose();" >> /var/www/html/mailscanner/grey.php
 
     # Secure sgwi from direct access
     cd /var/www/html/sgwi
@@ -736,6 +736,22 @@ func_mailgraph () {
     make install
     
     sed -i "/^my \$VERSION = \"1.14\";/ a\# Begin EFA\nuse PHP::Session;\nuse CGI::Lite;\n\neval {\n  my \$session_name='PHPSESSID';\n  my \$cgi=new CGI::Lite;\n  my \$cookies = \$cgi->parse_cookies;\n  if (\$cookies->{\$session_name}) {\n    my \$session = PHP::Session->new(\$cookies->{\$session_name},{save_path => '/var/lib/php/session/'});\n    if (\$session->get('user_type') ne 'A') {\n      print \"Access Denied\";\n      exit;\n    }\n  } else {\n    print\"Access Denied\";\n    exit;\n  }\n};\nif (\$@) {\n  die(\"Access Denied\");\n}\n# End EFA" /var/www/cgi-bin/mailgraph.cgi
+
+    # Create wrapper
+    touch /var/www/html/mailscanner/mailgraph.php
+    echo "<?php" > /var/www/html/mailscanner/mailgraph.php
+    echo "" >> /var/www/html/mailscanner/mailgraph.php
+    echo "require_once(\"./functions.php\");" >> /var/www/html/mailscanner/mailgraph.php
+    echo "session_start();" >> /var/www/html/mailscanner/mailgraph.php
+    echo "require('login.function.php');" >> /var/www/html/mailscanner/mailgraph.php
+    echo "\$refresh = html_start(\"Tools/Links\",0,false,false);" >> /var/www/html/mailscanner/mailgraph.php
+    echo "?>" >> /var/www/html/mailscanner/mailgraph.php
+    echo "<iframe src=\"../cgi-bin/mailgraph.cgi\" width=\"960px\" height=\"1024px\">" >> /var/www/html/mailscanner/mailgraph.php
+    echo " <a href=\"../cgi-bin/mailgraph.php\">Click here for Mailgraph Statistics</a>" >> /var/www/html/mailscanner/mailgraph.php
+    echo "</iframe>" >> /var/www/html/mailscanner/mailgraph.php
+    echo "<?php" >> /var/www/html/mailscanner/mailgraph.php
+    echo "html_end();" >> /var/www/html/mailscanner/mailgraph.php
+    echo "dbclose();" >> /var/www/html/mailscanner/mailgraph.php
 
 }
 # +---------------------------------------------------+
