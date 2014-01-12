@@ -476,7 +476,9 @@ func_mailwatch () {
     cd 1.2.0-master 
 
     # Set php parameters needed
-    sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini # Note this one is deprecated in php 5.3 should test if it works without magic_quotes_gpc
+    #sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini # Note this one is deprecated in php 5.3 should test if it works without magic_quotes_gpc
+    # appears to work fine w/o magic_quotes_gpc
+
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
     
     # Set up connection for MailWatch    
