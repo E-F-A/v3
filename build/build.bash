@@ -21,7 +21,7 @@
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.0 beta"
+version="3.0.0.0-beta"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
@@ -920,7 +920,7 @@ func_efarequirements () {
     # write issue file
     echo "" > /etc/issue
     echo "------------------------------" >> /etc/issue
-    echo "--- Welcome to EFA $version ---" >> /etc/issue
+    echo "--- Welcome to EFA-$version ---" >> /etc/issue
     echo "------------------------------" >> /etc/issue
     echo "  http://www.efa-project.org  " >> /etc/issue
     echo "------------------------------" >> /etc/issue
