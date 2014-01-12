@@ -74,7 +74,7 @@ function check_update()
       exit 0
     else
       echo "[EFA] You are running EFA version $CVERSION"
-      echo "[EFA] Latest version update is $LVERSION."
+      echo "[EFA] Latest version update is $LVERSION"
       exit 0
   fi
 }
