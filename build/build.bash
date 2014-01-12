@@ -344,7 +344,7 @@ func_spam_clamav () {
     # source: http://spamassassin.apache.org/gtube/gtube.txt
     cd /usr/src/EFA
     /usr/bin/wget $gitdlurl/EFA/gtube.txt
-    sa-learn --spam /usr/src/EFA/gtube.txt
+    /usr/local/bin/sa-learn --spam /usr/src/EFA/gtube.txt
     
     # Enable Auto White Listing
     sed -i '/^#loadplugin Mail::SpamAssassin::Plugin::AWL/ c\loadplugin Mail::SpamAssassin::Plugin::AWL' /etc/mail/spamassassin/v310.pre
@@ -373,7 +373,7 @@ func_spam_clamav () {
     chown postfix:postfix /var/www/.spamassassin
     
     # and in the end we run sa-update just for the fun of it..
-    sa-update
+    /usr/local/bin/sa-update
 }
 # +---------------------------------------------------+
 
