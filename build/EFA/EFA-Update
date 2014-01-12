@@ -92,7 +92,7 @@ function cron_check()
     then
       exit 0
     else
-      if [[ $AUTOUPDATES == "ENABLED" ]]
+      if [[ $AUTOUPDATES == "ENABLED" ]]; then
         start_update
       else
 	    echo "From: $MAILFROM" > $TMPMAIL
