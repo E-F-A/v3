@@ -570,8 +570,8 @@ func_mailwatch () {
     ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
     
-    # Change the yellow to blue match the logo somewhat..
-    sed -i 's/#F7CE4A/#4d8298/g' /var/www/html/mailscanner/style.css
+    # Change the yellow to match website colors..
+    sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
  
     # Add Mailgraph link
     cd /var/www/html/mailscanner
