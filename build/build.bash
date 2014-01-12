@@ -698,14 +698,44 @@ func_mailgraph () {
     mv mailgraph.cgi /var/www/cgi-bin/
     mv mailgraph.pl /usr/local/bin/
     mv mailgraph-init /etc/init.d/
+    mv mailgraph.css /var/www/html
     chmod 0755 /etc/init.d/mailgraph-init
     chmod 0755 /var/www/cgi-bin/mailgraph.cgi
+
+    #change css path
+    sed -i '/^<link rel=stylesheet" href="mailgraph.css"/ c\<link rel="stylesheet" href="../mailgraph.css" type="text/css" />' /var/www/cgi-bin/mailgraph.cgi
     
     sed -i '/^MAIL_LOG=/ c\MAIL_LOG=\/var\/log\/maillog' /etc/init.d/mailgraph-init
     sed -i "/^my \$rrd =/ c\my \$rrd = \'\/var\/lib\/mailgraph.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
     sed -i "/^my \$rrd_virus =/ c\my \$rrd_virus = \'\/var\/lib\/mailgraph_virus.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
 
-    #todo: secure mailgraph (may need to use htaccess)
+    # Mailgraph security modifications
+    cd /usr/src/EFA
+    wget $mirror/$mirrorpath/PHP-Session-0.27.tar.gz
+    wget $mirror/$mirrorpath/UNIVERSAL-require-0.15.tar.gz
+    # todo: upload CGI::Lite to dl.efaproject.org
+    wget http://search.cpan.org/CPAN/authors/id/S/SM/SMYLERS/CGI-Lite-2.02.tar.gz
+    tar -xzvf UNIVERSAL-require-0.15.tar.gz
+    cd UNIVERSAL-require-0.15
+    perl Makefile.PL
+    make
+    make test
+    make install
+    cd ..
+    tar -xzvf PHP-Session-0.27.tar.gz
+    cd PHP-Session-0.27
+    perl Makefile.PL
+    make
+    make test
+    make install
+    cd ..
+    tar -xzvf CGI-Lite-2.02.tar.gz
+    cd CGI-Lite-2.02
+    perl Makefile.PL
+    make
+    make install
+    
+    sed -i "/^my \$VERSION = \"1.14\";/ a\# Begin EFA\nuse PHP::Session;\nuse CGI::Lite;\n\neval {\n  my \$session_name='PHPSESSID';\n  my \$cgi=new CGI::Lite;\n  my \$cookies = \$cgi->parse_cookies;\n  if (\$cookies->{\$session_name}) {\n    my \$session = PHP::Session->new(\$cookies->{\$session_name},{save_path => '/var/lib/php/session/'});\n    if (\$session->get('user_type') ne 'A') {\n      print \"Access Denied\";\n      exit;\n    }\n  } else {\n    print\"Access Denied\";\n    exit;\n  }\n};\nif (\$@) {\n  die(\"Access Denied\");\n}\n# End EFA" /var/www/cgi-bin/mailgraph.cgi
 
 }
 # +---------------------------------------------------+
