@@ -511,6 +511,41 @@ func_ask-tunables(){
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+function func_ask-updates() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Auto Updates:"
+  echo -e "$green[EFA]$clean With auto updates you can make sure this system is always up to date." 
+  echo -e "$green[EFA]$clean by default we $red DISABLE $clean auto updates as it might not match your"
+  echo -e "$green[EFA]$clean company update policy."
+  echo -e "$green[EFA]$clean If you choose to keep auto updates DISABLED you will receive mails on your"
+  echo -e "$green[EFA]$clean admin e-mail account if an update is available"
+  echo ""
+  echo -e "$green[EFA]$clean Here you can $green ENABLE $clean auto updates for this E.F.A. system."
+  echo -e "$green[EFA]$clean This will check every month if there is an update available and if so"
+  echo -e "$green[EFA]$clean it will automatically install the update."
+  echo ""
+  echo -e "$green[EFA]$clean Note: your system might reboot automatically during auto updates."
+  echo ""
+  echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
+  read TMPUPDATES
+  updatescheck=1
+  while [ $updatescheck != 0 ]
+    do 
+      if [[ "$TMPUPDATES" == "Y" || "$TMPUPDATES" == "y" ]]; then 
+        enableupdates=1
+        updatescheck=0
+      elif [[ "$TMPUPDATES" == "" || "$TMPUPDATES" == "N" || "$TMPUPDATES" == "n" ]]; then 
+        enableupdates=0
+      else
+          echo -e "       $red ERROR: please make an selection.$clean"
+          echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
+          read TMPUPDATES
+      fi
+  done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Verify the settings
 # +---------------------------------------------------+
 function func_verify-settings() {
@@ -541,6 +576,7 @@ function func_verify-settings() {
     echo -e "18) Org. name      : $ORGNAME"
     echo -e -n "19) Greylisting    : "; if [[ "$removegrey" -eq 1 ]]; then echo "Disabled"; else echo "Enabled"; fi
     echo -e "20) MS Children    : $MSTHREADS"
+    echo -e -n "21) Auto update    : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -588,6 +624,8 @@ function func_verify-settings() {
                 19)       func_ask-greylist
                         ;;
                 20)       func_ask-tunables
+                        ;;
+                21)       func_ask-updates
                         ;;
                 OK)       verifymenu=0
                         ;;
@@ -737,7 +775,7 @@ function func_configure-system() {
     # todo: disable Greylist menu item here
   fi
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Set mailscanner children 
   sed -i "/^Max Children =/ c\Max Children = $MSTHREADS" /etc/MailScanner/MailScanner.conf
@@ -867,6 +905,13 @@ function func_end() {
   echo "MAILWATCHSQLPWD:$MAILWATCHSQLPWD" >> /etc/EFA-Config
   echo "SQLGREYSQLPWD:$SQLGREYSQLPWD" >> /etc/EFA-Config
   echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
+
+  if [[ "$enableupdates" -eq 1 ]]; then 
+    echo "AUTOUPDATES:ENABLED" >> /etc/EFA-Config
+  else
+    echo "AUTOUPDATES:DISABLED" >> /etc/EFA-Config
+  fi
+  
   chmod 600 /etc/EFA-Config
   # +--------------------------------------------------+
   
@@ -1052,6 +1097,7 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-orgname
     func_ask-greylist
     func_ask-tunables
+    func_ask-updates
     func_verify-settings
     func_configure-system
     if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
