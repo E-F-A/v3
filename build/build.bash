@@ -620,6 +620,10 @@ func_mailwatch () {
 
     # Fix menu width
     sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
+
+    # Fix typo in bayes_info.php
+    sed -i "/Number of Spam Messages/ c\\\t\t    echo '<tr><td class=\"heading\">Number of Spam Messages:</td><td align=\"right\">'.number_format(\$regs[3]).'</td></tr>';" /var/www/html/mailscanner/bayes_info.php
+
 }
 # +---------------------------------------------------+
 
