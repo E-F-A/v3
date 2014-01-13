@@ -836,6 +836,11 @@ function func_configure-system() {
   randompw
   MYSQLROOTPWD=$PASSWD
   /usr/bin/mysqladmin -u root -p$initpassword password "$MYSQLROOTPWD"
+
+  # Change watermark secret
+  randompw
+  WATERMARK=$PASSWD
+  sed -i "/^Watermark Secret =/ c\Watermark Secret = %orgname%-$WATERMARK" /etc/MailScanner/MailScanner.conf
 }
 # +---------------------------------------------------+
 
