@@ -703,7 +703,7 @@ func_mailgraph () {
     chmod 0755 /var/www/cgi-bin/mailgraph.cgi
 
     #change css path
-    sed -i '/^<link rel=stylesheet" href="mailgraph.css"/ c\<link rel="stylesheet" href="../mailgraph.css" type="text/css" />' /var/www/cgi-bin/mailgraph.cgi
+    sed -i '/^<link rel="stylesheet" href="mailgraph.css"/ c\<link rel="stylesheet" href="../mailgraph.css" type="text/css" />' /var/www/cgi-bin/mailgraph.cgi
     
     sed -i '/^MAIL_LOG=/ c\MAIL_LOG=\/var\/log\/maillog' /etc/init.d/mailgraph-init
     sed -i "/^my \$rrd =/ c\my \$rrd = \'\/var\/lib\/mailgraph.rrd\'\;" /var/www/cgi-bin/mailgraph.cgi
