@@ -536,7 +536,7 @@ func_mailwatch () {
     sed -i "/^define('SA_RULES_DIR',/ c\define('SA_RULES_DIR', '/etc/mail/spamassassin');" conf.php
     # Disable virus_info url as it seems to be down.
     sed -i "/^define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk\/index.php?virus=%s&search=contains&Search=Search\");" conf.php
-    
+ 
     # Set up a redirect in web root to MailWatch for now
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
@@ -573,11 +573,12 @@ func_mailwatch () {
     # Change the yellow to match website colors..
     sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
  
-    # Add Mailgraph link
+    # Add Mailgraph link and remove dnsreport link
     cd /var/www/html/mailscanner
     cp other.php other.php.orig
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
- 
+    sed -i '/^    <li><a href="http://www.dnsreport.com">/d' other.php 
+
     # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
     #sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
     #sed -i "/\/\/ EFA-REMOVE/,+10d" lists.php
@@ -677,6 +678,7 @@ func_sgwi () {
     ln -s ../mailscanner/conf.php conf.php
     mkdir images
     ln -s ../../mailscanner/images/EFAlogo-79px.png ./images/mailwatch-logo.png
+    cp ../mailscanner/images/favicon.png ./images/favicon.png
     sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (\$_SESSION['user_type'] != 'A') die('Access Denied');\n//End EFA" /var/www/html/sgwi/index.php
     sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (\$_SESSION['user_type'] != 'A') die('Access Denied');\n//End EFA" /var/www/html/sgwi/awl.php
     sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (\$_SESSION['user_type'] != 'A') die('Access Denied');\n//End EFA" /var/www/html/sgwi/connect.php
