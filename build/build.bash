@@ -296,7 +296,7 @@ func_spam_clamav () {
     cp clamav-unofficial-sigs.8 /usr/share/man/man8/
     cp clamav-unofficial-sigs-cron /etc/cron.d/
     cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
-    sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log" /etc/cron.d/clamav-unofficial-sigs-cron
+    sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log 2>&1" /etc/cron.d/clamav-unofficial-sigs-cron
     
     sed -i '/clam_dbs=/ c\clam_dbs="/var/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -476,8 +476,10 @@ func_mailwatch () {
 
     # Fetch MailWatch
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
-    unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
+    #wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
+    #unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
+    wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-4139a39d8c.zip
+    unzip -d . MailWatch-1.2.0-master-GIT-4139a39d8c.zip
     cd 1.2.0-master 
 
     # Set php parameters needed
@@ -631,8 +633,8 @@ func_mailwatch () {
     # Fix menu width
     sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
 
-    # Fix typo in bayes_info.php
-    sed -i "/Number of Spam Messages/ c\\\t\t    echo '<tr><td class=\"heading\">Number of Spam Messages:</td><td align=\"right\">'.number_format(\$regs[3]).'</td></tr>';" /var/www/html/mailscanner/bayes_info.php
+    # Fix typo in bayes_info.php (uncommented for now, this should be fixed in the latest version (https://github.com/mailwatch/1.2.0/commit/31f5f6ca46144d7392e2c3b200e30765115dcb45)
+    # sed -i "/Number of Spam Messages/ c\\\t\t    echo '<tr><td class=\"heading\">Number of Spam Messages:</td><td align=\"right\">'.number_format(\$regs[3]).'</td></tr>';" /var/www/html/mailscanner/bayes_info.php
 
 }
 # +---------------------------------------------------+
@@ -722,8 +724,7 @@ func_mailgraph () {
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/PHP-Session-0.27.tar.gz
     wget $mirror/$mirrorpath/UNIVERSAL-require-0.15.tar.gz
-    # todo: upload CGI::Lite to dl.efaproject.org
-    wget http://search.cpan.org/CPAN/authors/id/S/SM/SMYLERS/CGI-Lite-2.02.tar.gz
+    wget $mirror/$mirrorpath/CGI-Lite-2.02.tar.gz
     tar -xzvf UNIVERSAL-require-0.15.tar.gz
     cd UNIVERSAL-require-0.15
     perl Makefile.PL
