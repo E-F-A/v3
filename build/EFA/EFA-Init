@@ -202,6 +202,13 @@ function func_ask-gateway() {
 # +---------------------------------------------------+
 function func_ask-dns1() {
   func_echo-header
+  
+  # Display current primary dns
+  echo -e "" 
+  echo -e "$green[EFA]$clean Your current primary dns is:"
+  grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n p1
+  echo -e ""
+  
   echo -e "$green[EFA]$clean Please enter the primary DNS server address"
   echo -e -n "$green[EFA]$clean : "
   read DNS1
@@ -225,6 +232,13 @@ function func_ask-dns1() {
 # +---------------------------------------------------+
 function func_ask-dns2() {
   func_echo-header
+  
+  # Display current secondary dns
+  echo -e "" 
+  echo -e "$green[EFA]$clean Your current secondary dns is:"
+  grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p
+  echo -e ""
+  
   echo -e "$green[EFA]$clean Please enter the secondary DNS server address"
   echo -e -n "$green[EFA]$clean : "
   read DNS2
