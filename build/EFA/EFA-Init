@@ -206,7 +206,7 @@ function func_ask-dns1() {
   # Display current primary dns
   echo -e "" 
   echo -e "$green[EFA]$clean Your current primary dns is:"
-  grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n p1
+  grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p
   echo -e ""
   
   echo -e "$green[EFA]$clean Please enter the primary DNS server address"
