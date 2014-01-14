@@ -522,6 +522,8 @@ func_mailwatch () {
     chmod ug+rwx images
     chown root:apache images/cache
     chmod ug+rwx images/cache
+    chown root:apache temp
+    chmod ug+rwx temp
 
     # Remove the docs directory as it is not needed.
     rm -rf docs
