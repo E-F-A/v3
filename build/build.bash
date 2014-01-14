@@ -476,8 +476,10 @@ func_mailwatch () {
 
     # Fetch MailWatch
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
-    unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
+    #wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
+    #unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
+    wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-4139a39d8c.zip
+    unzip -d . MailWatch-1.2.0-master-GIT-4139a39d8c.zip
     cd 1.2.0-master 
 
     # Set php parameters needed
@@ -631,8 +633,8 @@ func_mailwatch () {
     # Fix menu width
     sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
 
-    # Fix typo in bayes_info.php
-    sed -i "/Number of Spam Messages/ c\\\t\t    echo '<tr><td class=\"heading\">Number of Spam Messages:</td><td align=\"right\">'.number_format(\$regs[3]).'</td></tr>';" /var/www/html/mailscanner/bayes_info.php
+    # Fix typo in bayes_info.php (uncommented for now, this should be fixed in the latest version (https://github.com/mailwatch/1.2.0/commit/31f5f6ca46144d7392e2c3b200e30765115dcb45)
+    # sed -i "/Number of Spam Messages/ c\\\t\t    echo '<tr><td class=\"heading\">Number of Spam Messages:</td><td align=\"right\">'.number_format(\$regs[3]).'</td></tr>';" /var/www/html/mailscanner/bayes_info.php
 
 }
 # +---------------------------------------------------+
