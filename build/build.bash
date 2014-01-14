@@ -722,8 +722,7 @@ func_mailgraph () {
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/PHP-Session-0.27.tar.gz
     wget $mirror/$mirrorpath/UNIVERSAL-require-0.15.tar.gz
-    # todo: upload CGI::Lite to dl.efaproject.org
-    wget http://search.cpan.org/CPAN/authors/id/S/SM/SMYLERS/CGI-Lite-2.02.tar.gz
+    wget $mirror/$mirrorpath/CGI-Lite-2.02.tar.gz
     tar -xzvf UNIVERSAL-require-0.15.tar.gz
     cd UNIVERSAL-require-0.15
     perl Makefile.PL
