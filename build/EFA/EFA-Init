@@ -696,15 +696,15 @@ function func_configure-system() {
   echo -e "$green[EFA]$clean - Setting IP settings"
   ifdown $INTERFACE
   # Use ipcalc to get the broadcast & network id's
-  BROADCAST="`/bin/ipcalc -b $IPADDRESS $NETMASK | sed 's/=/=\"/'`\"" 
-  NETWORK="`/bin/ipcalc -n $IPADDRESS $NETMASK | sed 's/=/=\"/'`\""
-  echo "DEVICE=\"$INTERFACE\"" > /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "BOOTPROTO=\"none\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "ONBOOT=\"yes\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  BROADCAST="`/bin/ipcalc -b $IPADDRESS $NETMASK`" 
+  NETWORK="`/bin/ipcalc -n $IPADDRESS $NETMASK`"
+  echo "DEVICE=$INTERFACE" > /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "BOOTPROTO=none" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "ONBOOT=yes" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
   echo "$BROADCAST" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
   echo "$NETWORK" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "NETMASK=\"$NETMASK\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "IPADDR=\"$IPADDRESS\"" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "NETMASK=$NETMASK" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
+  echo "IPADDR=$IPADDRESS" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
   echo "GATEWAY=$GATEWAY" >> /etc/sysconfig/network
   ifup $INTERFACE
   # +--------------------------------------------------+
