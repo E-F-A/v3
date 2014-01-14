@@ -551,7 +551,7 @@ function func_ask-updates() {
         updatescheck=0
       elif [[ "$TMPUPDATES" == "" || "$TMPUPDATES" == "N" || "$TMPUPDATES" == "n" ]]; then 
         enableupdates=0
-        updatecheck=0
+        updatescheck=0
       else
           echo -e "       $red ERROR: please make an selection.$clean"
           echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
