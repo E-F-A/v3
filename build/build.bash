@@ -296,7 +296,7 @@ func_spam_clamav () {
     cp clamav-unofficial-sigs.8 /usr/share/man/man8/
     cp clamav-unofficial-sigs-cron /etc/cron.d/
     cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
-    sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log" /etc/cron.d/clamav-unofficial-sigs-cron
+    sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log 2>&1" /etc/cron.d/clamav-unofficial-sigs-cron
     
     sed -i '/clam_dbs=/ c\clam_dbs="/var/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
