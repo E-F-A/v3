@@ -469,6 +469,11 @@ func_sqlgrey () {
 # https://github.com/mailwatch/1.2.0
 # +---------------------------------------------------+
 func_mailwatch () {
+    
+    # todo: fetch latest commit for mailwatch and modify
+    # this function to remove fixes implemented upstream
+    # multiple fixes have been implemented recently
+
     # Fetch MailWatch
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
