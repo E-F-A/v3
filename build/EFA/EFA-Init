@@ -114,7 +114,7 @@ function func_ask-ipaddress() {
   # Display current IP
   echo -e "" 
   echo -e "$green[EFA]$clean Your current IP address is"
-  ifconfig $INTERFACE | grep inet
+  ifconfig $INTERFACE | grep inet\ addr | awk '{print $2}' | awk -F':' '{print $2}'
 
   # Get the IP and validate it
   echo -e ""
@@ -141,7 +141,15 @@ function func_ask-ipaddress() {
 # +---------------------------------------------------+
 function func_ask-netmask() {
   func_echo-header
+
+  # Display current netmask
+  echo -e "" 
+  echo -e "$green[EFA]$clean Your current netmask is:"
+  ifconfig $INTERFACE | grep inet\ addr | awk '{print $4}' | awk -F':' '{print $2}'
+  echo -e ""
+ 
   echo -e "$green[EFA]$clean Please enter the NETMASK"
+  
   echo -e -n "$green[EFA]$clean : "
   read NETMASK
   nmcheck=1
@@ -164,6 +172,13 @@ function func_ask-netmask() {
 # +---------------------------------------------------+
 function func_ask-gateway() {
   func_echo-header
+  
+  # Display current gateway
+  echo -e "" 
+  echo -e "$green[EFA]$clean Your current default gateway is:"
+  route | grep default | awk '{print $2}'
+  echo -e ""
+  
   echo -e "$green[EFA]$clean Please enter the default gateway address"
   echo -e -n "$green[EFA]$clean : "
   read GATEWAY
