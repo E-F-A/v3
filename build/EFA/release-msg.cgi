@@ -42,7 +42,7 @@ if ($to eq "" ){
 # all 3 variables should check out ok.
 
 # First check the ID variable
-if ($id =~ /^[A-F0-9]{11}\.[A-F0-9]{5}$/){
+if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/){
   # Then check the to variable
   if ($to =~ /^[\w-]+(?:\.[\w-]+)*@(?:[\w-]+\.)+[a-zA-Z]{2,7}$/){
     # Then check the datenumber variable
