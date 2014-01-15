@@ -42,6 +42,14 @@ AUTOUPDATES="`cat /etc/EFA-Config | grep AUTOUPDATES | sed 's/.*://'`"
 function start_update()
 {
   CVERSION="`cat $VERSIONFILE`"
+  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0.9]{1}\.[0.9]{1}\.[0.9]{1}-beta$ ]]
+    then
+      echo "ERROR: You seem to be running an beta version"
+      echo "ERROR: no upgrade possible"
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+  
   get_version
    if [ "$CVERSION" == "$LVERSION" ]
     then
@@ -67,6 +75,14 @@ function start_update()
 function check_update()
 {
   CVERSION="`cat $VERSIONFILE`"
+  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0.9]{1}\.[0.9]{1}\.[0.9]{1}-beta$ ]]
+    then
+      echo "ERROR: You seem to be running an beta version"
+      echo "ERROR: no upgrade possible"
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+  
   echo "[EFA] Getting latest version number from $MIRROR"
   get_version
   if [ "$CVERSION" == "$LVERSION" ]
@@ -87,8 +103,19 @@ function check_update()
 function cron_check()
 {
   CVERSION="`cat $VERSIONFILE`"
+  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0.9]{1}\.[0.9]{1}\.[0.9]{1}-beta$ ]]
+    then
+      echo "ERROR: You seem to be running an beta version"
+      echo "ERROR: no upgrade possible"
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+  
   get_version
+  
+  # Call in our current version number for statistics.
   wget -qO- $MIRROR/versioncheck/`cat /etc/EFA-Version`.txt $> /dev/null
+  
   if [ "$CVERSION" == "$LVERSION" ]
     then
       exit 0
@@ -129,6 +156,15 @@ function get_version()
     then
       LVERSION="`head -1 /tmp/EFA-Version`" 
   fi
+
+  # Check if LVERSION is an valid Version file
+  if ! [[ $LVERSION =~ ^EFA\-[0-9]{1}\.[0.9]{1}\.[0.9]{1}\.[0.9]{1}$ ]]
+    then
+      echo "ERROR: The version file downloaded does not seem to be valid."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+
 }
 #----------------------------------------------------------------#
 
