@@ -867,10 +867,10 @@ func_imagecerberus () {
     sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
     
     # fix a few library locations
-    ln -s /usr/lib64/libcv.so /usr/lib64/libcv.so.1
-    ln -s /usr/lib64/libhighgui.so /usr/lib64/libhighgui.so.1
-    ln -s /usr/lib64/libcxcore.so /usr/lib64/libcxcore.so.1
-    ln -s /usr/lib64/libcvaux.so /usr/lib64/libcvaux.so.1
+    ln -s /usr/lib64/libcv.so.2.0 /usr/lib64/libcv.so.1
+    ln -s /usr/lib64/libhighgui.so.2.0 /usr/lib64/libhighgui.so.1
+    ln -s /usr/lib64/libcxcore.so.2.0 /usr/lib64/libcxcore.so.1
+    ln -s /usr/lib64/libcvaux.so.2.0 /usr/lib64/libcvaux.so.1
 }
 # +---------------------------------------------------+
 
