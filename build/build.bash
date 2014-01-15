@@ -35,6 +35,14 @@ mirrorpath="/build/3.0.0.0"
 func_prebuild () {
     # mounting /tmp without nosuid and noexec while building as it breaks building some components.
     mount -o remount rw /tmp
+
+    # Users of opendns assigned directly or indirectly
+    # via DHCP will cause NetAddr-IP module to fail
+    # during complile tests, so override nameservers
+    # during build
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+
 }
 # +---------------------------------------------------+
 
