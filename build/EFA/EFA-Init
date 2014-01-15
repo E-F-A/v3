@@ -972,12 +972,6 @@ function func_end() {
   echo "nameserver 127.0.0.1" > /etc/resolv.conf
   
   # +--------------------------------------------------+
-  # Synchronize time
-  ntpdate 0.centos.pool.ntp.org
-  hwclock --systohc  
-  # +--------------------------------------------------+
-  
-  # +--------------------------------------------------+
   # And the end.. we are done.. whooo!
   func_echo-header
   echo -e "$green[EFA]$clean All settings applied rebooting when you press enter."
