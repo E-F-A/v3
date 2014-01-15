@@ -975,7 +975,6 @@ function func_end() {
   # Synchronize time
   ntpdate 0.centos.pool.ntp.org
   hwclock --systohc  
-
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
