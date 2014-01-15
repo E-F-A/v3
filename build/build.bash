@@ -1056,6 +1056,9 @@ func_cleanup () {
     
     # Secure SSH
     sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
+
+    # clear dns entries
+    echo "" > /etc/resolv.conf
     
     # todo:
     # clear logfiles
