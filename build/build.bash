@@ -379,7 +379,10 @@ func_spam_clamav () {
     # Create .spamassassin directory (error reported in lint test)
     mkdir /var/www/.spamassassin
     chown postfix:postfix /var/www/.spamassassin
-    
+   
+    # todo: Add spamassassin rulesets from rules directory
+    # from spamassassin source in ./rules? 
+ 
     # and in the end we run sa-update just for the fun of it..
     /usr/local/bin/sa-update
 }
