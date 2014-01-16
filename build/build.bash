@@ -248,6 +248,9 @@ func_mailscanner () {
     sed -i '/^High Scoring Spam Actions =/ c\High Scoring Spam Actions = store' /etc/MailScanner/MailScanner.conf
     # todo: change Non Spam Actions not to store? Otherwise all mail will
     # be copied into the quarantine list
+    # 
+    # Default esva is store and I like this feature for small company's that have no (or bad) mail recovery software in place (just release msg from spam filter again if user deleted an item)
+    # But might be better to have this as an question in EFA-Init? (or maybe even disabled by default and add an option in EFA-Configure?
     sed -i '/^Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status: No"' /etc/MailScanner/MailScanner.conf
     sed -i '/^Log Spam =/ c\Log Spam = yes' /etc/MailScanner/MailScanner.conf
     sed -i '/^Log Silent Viruses =/ c\Log Silent Viruses = yes' /etc/MailScanner/MailScanner.conf
