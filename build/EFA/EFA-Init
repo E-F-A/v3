@@ -915,7 +915,7 @@ function func_configure-system() {
 
   # Set non spam delivery behavior
   if [[ "$storenspam" -eq 0 ]]; then
-    sed -i '/Non Spam Actions =/ c\Non Spam Actions = deliver header "X-Spam-Status:NO"' /etc/MailScanner/MailScanner.conf
+    sed -i '/Non Spam Actions =/ c\Non Spam Actions = deliver header "X-Spam-Status:No"' /etc/MailScanner/MailScanner.conf
   fi
 
 }
