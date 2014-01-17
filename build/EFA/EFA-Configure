@@ -33,10 +33,11 @@ show_menu() {
       func_echo-header 
       echo -e "Please choose an option:"
       echo -e " "
-      echo -e "0) Logout                              4) IP Settings"
-      echo -e "1) Shell                               5) Tunables   "
-      echo -e "2) Reboot system                       6) Greylisting"
-      echo -e "3) Halt system                         7) Auto Update"
+      echo -e "0) Logout                              5) Tunables   "
+      echo -e "1) Shell                               6) Greylisting"
+      echo -e "2) Reboot system                       7) Auto Update"
+      echo -e "3) Halt system                         8) Mail Settings"
+      echo -e "4) IP Settings"
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
@@ -49,8 +50,133 @@ show_menu() {
                     4) func_ip-settings ;;
                     5) func_tunables ;;
                     6) func_greylisting ;;
-                    7) func_autoupdates ;; 
+                    7) func_autoupdates ;;                    
+                    8) func_mail-settings ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Option Mail settings menu
+# +---------------------------------------------------+
+func_mail-settings(){
+  menu=0
+  mailmenu=1
+  while [ $mailmenu == "1" ]
+    do
+      func_echo-header
+      echo -e "Mail settings"
+      echo ""
+      echo -e "1) Outbound mail relay"
+      echo -e "2) Outbound smarthost"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      echo -e ""
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+                1) func_outbound-relay;;
+                2) func_outbound-smarthost;;   
+                e) menu=1 && return ;;
+                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+            esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Configure outbound relay
+# +---------------------------------------------------+
+func_outbound-relay(){
+  func_echo-header
+  obmrmenu=1
+  while [ $obmrmenu == "1" ]
+    do
+      RELAYS=`cat /etc/postfix/main.cf | grep "mynetworks = 127.0.0.0/8" | sed 's/^\(.\{24\}\)//'`
+      echo " "
+      echo "Description:"
+      echo "With this option you can configure E.F.A"
+      echo "to relay outgoing message for your local"
+      echo "mail-server or clients."
+      echo ""
+      echo "Current settings are:"
+      echo "1) Hosts:                $RELAYS"
+      echo ""
+      echo "e) Return to main menu"
+      echo ""
+      local choice
+      read -p "Enter setting you want to change: " choice
+      case $choice in
+        1)  obmrmenu=0
+            echo ""
+            echo "Enter your new hosts string below."
+            echo "Note: If you already have hosts defined you need to re-enter these."
+            echo "      An empty line will remove all hosts."
+            echo "      Separate multiple hosts with spaces."
+            echo "      Networks can be defined in the format: x.x.x.x/xx"
+            echo ""
+            read -p "> " RELAYS
+            postconf -e mynetworks="127.0.0.0/8 $RELAYS"
+            /etc/init.d/postfix reload >>/dev/null
+            obmrmenu=1
+            ;;
+            e) mailmenu=1 && return ;;
+        *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Configure Outbound smart-host
+# +---------------------------------------------------+
+func_outbound-smarthost(){
+  func_echo-header
+  obshmenu=1
+  while [ $obshmenu == "1" ]
+    do
+      OBSH="`cat /etc/postfix/main.cf |grep "relayhost ="| grep -v "#" | sed 's/.*relayhost = //'`"
+      if [ -z "$OBSH" ]
+        then
+          OBSH="DISABLED"
+      fi
+      echo " "
+      echo "Description:"
+      echo "With this option you can configure E.F.A"
+      echo "to use a external smart-host for outgoing"
+      echo "mail. (useful if you also use E.F.A as"
+      echo "an mail-relay)"
+      echo ""
+      echo "Current settings are:"
+      echo "1) Smart-host:                $OBSH"
+      echo "2) Disable smart-host"
+      echo ""
+      echo "e) Return to main menu"
+      echo ""
+      local choice
+      read -p "Enter setting you want to change: " choice
+      case $choice in
+            1)  obshmenu=0
+                echo ""
+                read -p "Enter your new smart host: " OBSH
+                postconf -e relayhost=$OBSH
+                /etc/init.d/postfix reload >>/dev/null
+                echo "Smart-host configured"
+                pause
+                obshmenu=1
+                ;;
+            2)  obshmenu=0
+                echo ""
+                echo "Disabling SmartHost"
+                postconf -e relayhost=
+                /etc/init.d/postfix reload >>/dev/null
+                obshmenu=1
+                ;;
+            e) mailmenu=1 && return ;;
+            *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
 }
