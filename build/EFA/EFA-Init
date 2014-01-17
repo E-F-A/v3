@@ -804,7 +804,7 @@ function func_configure-system() {
     chkconfig sqlgrey off
 
     # disable Greylist menu item
-    cp -f functions.php.org functions.php
+    cp -f /var/www/html/mailscanner/functions.php.org /var/www/html/mailscanner/functions.php
   fi
   # +--------------------------------------------------+
 
