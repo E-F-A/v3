@@ -803,7 +803,8 @@ function func_configure-system() {
     service sqlgrey stop 
     chkconfig sqlgrey off
 
-    # todo: disable Greylist menu item here
+    # disable Greylist menu item
+    cp -f functions.php.org functions.php
   fi
   # +--------------------------------------------------+
 
