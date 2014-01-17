@@ -91,14 +91,14 @@ func_mail-settings(){
 # Configure outbound relay
 # +---------------------------------------------------+
 func_outbound-relay(){
-  func_echo-header
   obmrmenu=1
   while [ $obmrmenu == "1" ]
     do
       RELAYS=`cat /etc/postfix/main.cf | grep "mynetworks = 127.0.0.0/8" | sed 's/^\(.\{24\}\)//'`
+      func_echo-header
       echo " "
       echo "Description:"
-      echo "With this option you can configure E.F.A"
+      echo "With this option you can configure E.F.A."
       echo "to relay outgoing message for your local"
       echo "mail-server or clients."
       echo ""
@@ -134,7 +134,6 @@ func_outbound-relay(){
 # Configure Outbound smart-host
 # +---------------------------------------------------+
 func_outbound-smarthost(){
-  func_echo-header
   obshmenu=1
   while [ $obshmenu == "1" ]
     do
@@ -143,11 +142,12 @@ func_outbound-smarthost(){
         then
           OBSH="DISABLED"
       fi
+      func_echo-header
       echo " "
       echo "Description:"
-      echo "With this option you can configure E.F.A"
+      echo "With this option you can configure E.F.A."
       echo "to use a external smart-host for outgoing"
-      echo "mail. (useful if you also use E.F.A as"
+      echo "mail. (useful if you also use E.F.A. as"
       echo "an mail-relay)"
       echo ""
       echo "Current settings are:"
@@ -164,7 +164,7 @@ func_outbound-smarthost(){
                 read -p "Enter your new smart host: " OBSH
                 postconf -e relayhost=$OBSH
                 /etc/init.d/postfix reload >>/dev/null
-                echo "Smart-host configured"
+                echo "Smarthost configured"
                 pause
                 obshmenu=1
                 ;;
