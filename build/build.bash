@@ -18,6 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------
 
+# todo: A solution replacement for Sare Channels recommended on 
+# Spamassassin Wiki
+# See:  wiki.apache.org/spamassassin/SoughtRules
+
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
