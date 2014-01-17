@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA Monthly cron
-# Version 20140112
+# EFA update script
+# Version 20140117
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2014  http://www.efa-project.org
 #
@@ -19,5 +19,76 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
-echo "I'm sorry currently auto update is not implemented yet.."
-exit 0
+#----------------------------------------------------------------#
+# get-update path
+#----------------------------------------------------------------#
+function get_update_path() {
+  get_cversion
+  if [[ $CVERSION == "EFA-3.0.0.0" ]]
+    then
+      #update-3.0.0.1
+      echo "I'm sorry currently auto update is not implemented yet.."
+      exit 0
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Dummy Update to EFA-3.0.0.1 unused for now
+#----------------------------------------------------------------#
+function update-3.0.0.1() {
+  echo "Staring update to E.F.A. 3.0.0.1"
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function get current version number
+#----------------------------------------------------------------#
+function get_cversion() {
+  if [ -f /etc/EFA-Version ]
+    then
+      CVERSION="`head -1 /etc/EFA-Version`" 
+    else
+      echo "ERROR: No valid version file found on this system." 
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+  
+  # Check if we run an beta version
+  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}-beta$ ]]
+    then
+      echo "ERROR: You seem to be running an beta version, no upgrade possible."
+      echo "ERROR: please look at http://www.efa-project.org for more information."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+  
+  # Check if CVERSION is an valid Version file
+  if ! [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}$ ]]
+    then
+      echo "ERROR: The version file on your system does not seem to be valid."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Check if we are root
+#----------------------------------------------------------------#
+function user_check() {
+  if [ `whoami` == root ]
+    then
+      echo "[EFA] Good you are root"
+  else
+    echo "[EFA] Please become root to run this update"
+    exit 0
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Where to start
+#----------------------------------------------------------------#
+user_check
+get_update_path

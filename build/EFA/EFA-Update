@@ -56,7 +56,7 @@ function start_update()
       fi
       wget -q $MIRROR/update/EFA-update-script
       chmod 700 EFA-update-script
-      /var/EFA/update/EFA-update-script
+      logsave /var/log/EFA/update-`/bin/date +%F-%T`.log /var/EFA/update/EFA-update-script
   fi
 }
 #----------------------------------------------------------------#
