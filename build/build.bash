@@ -250,9 +250,6 @@ func_mailscanner () {
     sed -i '/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = 4' /etc/MailScanner/MailScanner.conf
     sed -i '/^Spam Actions =/ c\Spam Actions = store notify' /etc/MailScanner/MailScanner.conf
     sed -i '/^High Scoring Spam Actions =/ c\High Scoring Spam Actions = store' /etc/MailScanner/MailScanner.conf
-    # Default esva is store and I like this feature for small company's that have no (or bad) mail recovery software in place (just release msg from spam filter again if user deleted an item)
-    # But might be better to have this as an question in EFA-Init? (or maybe even disabled by default and add an option in EFA-Configure?
-    # An option would be great.  Could ask this and also whether to store or deliver spam with X-Spam-Status: Yes for those that want spam folders in their email solutions too.
     sed -i '/^Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status: No"' /etc/MailScanner/MailScanner.conf
     sed -i '/^Log Spam =/ c\Log Spam = yes' /etc/MailScanner/MailScanner.conf
     sed -i '/^Log Silent Viruses =/ c\Log Silent Viruses = yes' /etc/MailScanner/MailScanner.conf
