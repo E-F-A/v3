@@ -41,16 +41,8 @@ AUTOUPDATES="`cat /etc/EFA-Config | grep AUTOUPDATES | sed 's/.*://'`"
 #----------------------------------------------------------------#
 function start_update()
 {
-  CVERSION="`cat $VERSIONFILE`"
-  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0.9]{1}\.[0.9]{1}\.[0.9]{1}-beta$ ]]
-    then
-      echo "ERROR: You seem to be running an beta version"
-      echo "ERROR: no upgrade possible"
-      echo "ERROR: exiting now"
-      exit 0
-  fi
-  
-  get_version
+  get_cversion
+  get_lversion
    if [ "$CVERSION" == "$LVERSION" ]
     then
       echo "[EFA] You are already running the latest version, no update needed"
@@ -74,17 +66,9 @@ function start_update()
 #----------------------------------------------------------------#
 function check_update()
 {
-  CVERSION="`cat $VERSIONFILE`"
-  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0.9]{1}\.[0.9]{1}\.[0.9]{1}-beta$ ]]
-    then
-      echo "ERROR: You seem to be running an beta version"
-      echo "ERROR: no upgrade possible"
-      echo "ERROR: exiting now"
-      exit 0
-  fi
-  
+  get_cversion
   echo "[EFA] Getting latest version number from $MIRROR"
-  get_version
+  get_lversion
   if [ "$CVERSION" == "$LVERSION" ]
     then
       echo "[EFA] You are already running version $LVERSION, no update needed"
@@ -102,16 +86,8 @@ function check_update()
 #----------------------------------------------------------------#
 function cron_check()
 {
-  CVERSION="`cat $VERSIONFILE`"
-  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0.9]{1}\.[0.9]{1}\.[0.9]{1}-beta$ ]]
-    then
-      echo "ERROR: You seem to be running an beta version"
-      echo "ERROR: no upgrade possible"
-      echo "ERROR: exiting now"
-      exit 0
-  fi
-  
-  get_version
+  get_cversion
+  get_lversion
   
   # Call in our current version number for statistics.
   wget -qO- $MIRROR/versioncheck/`cat /etc/EFA-Version`.txt $> /dev/null
@@ -141,9 +117,42 @@ function cron_check()
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
+# Function get current version number
+#----------------------------------------------------------------#
+function get_cversion()
+{
+  if [ -f /etc/EFA-Version ]
+    then
+      CVERSION="`head -1 /etc/EFA-Version`" 
+    else
+      echo "ERROR: No valid version file found on this system." 
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+  
+  # Check if we run an beta version
+  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}-beta$ ]]
+    then
+      echo "ERROR: You seem to be running an beta version, no upgrade possible."
+      echo "ERROR: please look at http://www.efa-project.org for more information."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+  
+  # Check if CVERSION is an valid Version file
+  if ! [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}$ ]]
+    then
+      echo "ERROR: The version file on your system does not seem to be valid."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
 # Function get latest version number
 #----------------------------------------------------------------#
-function get_version()
+function get_lversion()
 {
   cd /tmp
   if [ -f /tmp/EFA-Version ]
@@ -158,13 +167,12 @@ function get_version()
   fi
 
   # Check if LVERSION is an valid Version file
-  if ! [[ $LVERSION =~ ^EFA\-[0-9]{1}\.[0.9]{1}\.[0.9]{1}\.[0.9]{1}$ ]]
+  if ! [[ $LVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}$ ]]
     then
       echo "ERROR: The version file downloaded does not seem to be valid."
       echo "ERROR: exiting now"
       exit 0
   fi
-
 }
 #----------------------------------------------------------------#
 
