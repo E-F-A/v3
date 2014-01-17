@@ -507,7 +507,7 @@ function func_ask-greylist() {
 # +---------------------------------------------------+
 # Function to set mailscanner threads (other tunables?)
 # +---------------------------------------------------+
-func_ask-tunables(){
+function func_ask-tunables(){
 
   func_echo-header
   echo -e "$green[EFA]$clean - Configuring System Tunables"
@@ -576,9 +576,9 @@ function func_ask-updates() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Configure Spam Behavior
+# Configure Spam Behaviour
 # +---------------------------------------------------+
-func ask_spam-settings() {
+function func_ask-spamsettings() {
   func_echo-header
 
   echo -e "$green[EFA]$clean Spam Delivery and Retention Settings:"
@@ -591,7 +591,7 @@ func ask_spam-settings() {
   echo -e "$green[EFA]$clean storing it and store only spam in the quarantine."
   echo -e ""
   echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N]: "
-u
+
   read TMPSTORENSPAM
   spamcheck=1
   while [ $spamcheck != 0 ]
@@ -608,9 +608,7 @@ u
           read TMPSTORENSPAM
       fi
   done
-
 }
-
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -696,7 +694,7 @@ function func_verify-settings() {
                         ;;
                 21)       func_ask-updates
                         ;;
-                22)       func_spam-settings
+                22)       func_ask-spamsettings
                         ;;
                 OK)       verifymenu=0
                         ;;
@@ -1189,6 +1187,7 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-greylist
     func_ask-tunables
     func_ask-updates
+    func_ask-spamsettings
     func_verify-settings
     func_configure-system
     if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
