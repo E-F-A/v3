@@ -52,7 +52,7 @@ show_menu() {
                     6) func_greylisting ;;
                     7) func_autoupdates ;;                    
                     8) func_mail-settings ;;
-		    9) func_ask_spam ;;
+		    9) func_ask-spam ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
