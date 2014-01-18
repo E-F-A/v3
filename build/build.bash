@@ -387,6 +387,9 @@ func_spam_clamav () {
     # Add Sought Channel to replace Sare
     /usr/bin/wget -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY
     /usr/local/bin/sa-update --import /usr/src/EFA/GPG.KEY
+
+    # Customize sa-update in /etc/sysconfig/update_spamassassin
+    sed -i '/^SAUPDATE=/ c\SAUPDATE="/usr/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org --updatedir /etc/mail/spamassassin"'
     
     # and in the end we run sa-update just for the fun of it..
     sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org --updatedir /etc/mail/spamassassin  
