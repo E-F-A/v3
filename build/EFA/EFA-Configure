@@ -127,6 +127,7 @@ function func_ask-spam() {
           read TMPDELIVERSPAM
       fi
   done
+  service MailScanner reload
   pause
 }
 # +---------------------------------------------------+
@@ -477,7 +478,8 @@ func_tunables(){
    done
 
   # Set mailscanner children 
-  sed -i "/^Max Children =/ c\Max Children = $MSTHREADS" /etc/MailScanner/MailScanner.conf 
+  sed -i "/^Max Children =/ c\Max Children = $MSTHREADS" /etc/MailScanner/MailScanner.conf
+  service MailScanner reload 
   echo -e "MailScanner threads reconfigured to use $MSTHREADS children."
   pause
 
