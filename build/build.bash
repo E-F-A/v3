@@ -498,9 +498,6 @@ func_mailwatch () {
     cd 1.2.0-master 
 
     # Set php parameters needed
-    #sed -i '/^magic_quotes_gpc =/ c\magic_quotes_gpc = On' /etc/php.ini # Note this one is deprecated in php 5.3 should test if it works without magic_quotes_gpc
-    # appears to work fine w/o magic_quotes_gpc
-
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
     
     # Set up connection for MailWatch    
@@ -550,7 +547,6 @@ func_mailwatch () {
     sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
     sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', 'Etc/UTC');" conf.php
     sed -i "/^define('QUARANTINE_USE_FLAG',/ c\define('QUARANTINE_USE_FLAG', true);" conf.php
-    # Note...Set QUARANTINE_FROM_ADDR in EFA_Init for conf.php
     sed -i "/^define('QUARANTINE_REPORT_FROM_NAME',/ c\define('QUARANTINE_REPORT_FROM_NAME', 'EFA - Email Filter Appliance');" conf.php
     sed -i "/^define('QUARANTINE_USE_SENDMAIL',/ c\define('QUARANTINE_USE_SENDMAIL', true);" conf.php
     sed -i "/^define('AUDIT',/ c\define('AUDIT', true);" conf.php
@@ -561,7 +557,7 @@ func_mailwatch () {
     # Disable virus_info url as it seems to be down.
     sed -i "/^define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk\/index.php?virus=%s&search=contains&Search=Search\");" conf.php
  
-    # Set up a redirect in web root to MailWatch for now
+    # Set up a redirect in web root to MailWatch 
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
     echo "<html>" >> /var/www/html/index.html
@@ -601,7 +597,6 @@ func_mailwatch () {
     cd /var/www/html/mailscanner
     cp other.php other.php.orig
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
-    sed -i '/^    <li><a href="http://www.dnsreport.com">/d' other.php 
 
     # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
     #sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php

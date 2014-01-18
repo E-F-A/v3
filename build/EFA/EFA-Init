@@ -472,74 +472,6 @@ function func_ask-orgname() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-function func_ask-greylist() {
-  func_echo-header
-  echo -e "$green[EFA]$clean Greylisting:"
-  echo -e "$green[EFA]$clean Greylisting will temporarily reject any email from a sender it" 
-  echo -e "$green[EFA]$clean does not recognize. If the mail is legitimate the originating server"
-  echo -e "$green[EFA]$clean will, after a delay, try again and, if sufficient time has elapsed,"
-  echo -e "$green[EFA]$clean the email will be accepted."
-  echo ""
-  echo -e "$green[EFA]$clean This however causes an delay in receiving mail, by default this system"
-  echo -e "$green[EFA]$clean is configured to reject any email for 5 minutes."
-  echo -e "$green[EFA]$clean Not all admin's like this setup so giving you the option to disable"
-  echo -e "$green[EFA]$clean greylisting on this system."
-  echo ""
-  echo -e -n "$green[EFA]$clean Would you like to DISABLE greylisting? [y/N]: "
-  read TMPGREY
-  greylistcheck=1
-  while [ $greylistcheck != 0 ]
-    do 
-      if [[ "$TMPGREY" == "Y" || "$TMPGREY" == "y" ]]; then 
-        removegrey=1
-        greylistcheck=0
-      elif [[ "$TMPGREY" == "" || "$TMPGREY" == "N" || "$TMPGREY" == "n" ]]; then 
-        greylistcheck=0
-      else
-          echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Would you like to DISABLE greylisting? [y/N]: "
-          read TMPGREY
-      fi
-  done
-}
-# +---------------------------------------------------+
-
-# +---------------------------------------------------+
-# Function to set mailscanner threads (other tunables?)
-# +---------------------------------------------------+
-function func_ask-tunables(){
-
-  func_echo-header
-  echo -e "$green[EFA]$clean - Configuring System Tunables"
-  echo -e "" 
-  echo -e "$green[EFA]$clean By default, mailscanner is set to 2 children."
-  echo -e "$green[EFA]$clean On busier systems, more may be needed."
-  echo -e "$green[EFA]$clean This setting can be changed later with EFA-Configure."
-  echo -e "" 
-  echo -e -n "$green[EFA]$clean : Mailscanner children (default/min 2, max 10):"
-  read MSTHREADS
-  mstuning=1
-  while [ $mstuning != 0 ]
-   do
-     if [[ $MSTHREADS = "" ]]
-      then
-        MSTHREADS=2
-     fi
-     if [[ $MSTHREADS =~ ^([2-9]|10)$ ]]
-      then
-        mstuning=0
-      else
-        echo -e "       $red ERROR: The number of threads $MSTHREADS appears to be invalid."
-        echo -e "        ERROR: please re-enter the number of threads.$clean"
-        echo -e -n "$green[EFA]$clean Mailscanner children (default/min 2, max 10):"
-        read MSTHREADS
-     fi
-   done
-
-}
-# +---------------------------------------------------+
-
-# +---------------------------------------------------+
 function func_ask-updates() {
   func_echo-header
   echo -e "$green[EFA]$clean Auto Updates:"
@@ -576,42 +508,6 @@ function func_ask-updates() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Configure Spam Behaviour
-# +---------------------------------------------------+
-function func_ask-spamsettings() {
-  func_echo-header
-
-  echo -e "$green[EFA]$clean Spam Delivery and Retention Settings:"
-  echo -e ""
-  echo -e "$green[EFA]$clean By default, both spam and non spam is stored"
-  echo -e "$green[EFA]$clean in the quarantine. This allows a copy of each"
-  echo -e "$green[EFA]$clean email to be retained for the retention period."
-  echo -e ""
-  echo -e "$green[EFA]$clean You can also choose to deliver non spam without"
-  echo -e "$green[EFA]$clean storing it and store only spam in the quarantine."
-  echo -e ""
-  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N]: "
-
-  read TMPSTORENSPAM
-  spamcheck=1
-  while [ $spamcheck != 0 ]
-    do 
-      if [[ "$TMPSTORENSPAM" == "Y" || "$TMPSTORENSPAM" == "y" ]]; then 
-        storenspam=0
-        spamcheck=0
-      elif [[ "$TMPSTORENSPAM" == "" || "$TMPSTORENSPAM" == "N" || "$TMPSTORENSPAM" == "n" ]]; then 
-        storenspam=1
-        spamcheck=0
-      else
-          echo -e "       $red ERROR: please make an selection.$clean"
-  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N]: "
-          read TMPSTORENSPAM
-      fi
-  done
-}
-# +---------------------------------------------------+
-
-# +---------------------------------------------------+
 # Verify the settings
 # +---------------------------------------------------+
 function func_verify-settings() {
@@ -640,10 +536,7 @@ function func_verify-settings() {
     echo -e "16) IANA Code      : $IANACODE"
     echo -e "17) Mail Server    : $MAILSERVER"
     echo -e "18) Org. name      : $ORGNAME"
-    echo -e -n "19) Greylisting    : "; if [[ "$removegrey" -eq 1 ]]; then echo "Disabled"; else echo "Enabled"; fi
-    echo -e "20) MS Children    : $MSTHREADS"
-    echo -e -n "21) Auto update    : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
-    echo -e -n "22) Store non spam : "; if [[ "$storenspam" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
+    echo -e -n "19) Auto update    : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -688,13 +581,7 @@ function func_verify-settings() {
                         ;;
                 18)       func_ask-orgname
                         ;;
-                19)       func_ask-greylist
-                        ;;
-                20)       func_ask-tunables
-                        ;;
-                21)       func_ask-updates
-                        ;;
-                22)       func_ask-spamsettings
+                19)       func_ask-updates
                         ;;
                 OK)       verifymenu=0
                         ;;
@@ -727,7 +614,6 @@ function func_configure-system() {
   echo -e "$green[EFA]$clean - Setting DNS Servers"
   echo "nameserver $DNS1" > /etc/resolv.dnsmasq
   echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
-  service dnsmasq start
 
   echo -e "$green[EFA]$clean - Setting IP settings"
   ifdown $INTERFACE
@@ -835,19 +721,6 @@ function func_configure-system() {
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
-  # remove greylisting if required
-  if [[ "$removegrey" -eq 1 ]]; then
-    postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_non_fqdn_recipient, reject_unknown_recipient_domain, check_recipient_access hash:/etc/postfix/recipient_access" 
-    postfix reload 
-    service sqlgrey stop 
-    chkconfig sqlgrey off
-
-    # disable Greylist menu item
-    cp -f /var/www/html/mailscanner/functions.php.orig /var/www/html/mailscanner/functions.php
-  fi
-  # +--------------------------------------------------+
-
-  # +--------------------------------------------------+
   # Set mailscanner children 
   sed -i "/^Max Children =/ c\Max Children = $MSTHREADS" /etc/MailScanner/MailScanner.conf
   # +--------------------------------------------------+
@@ -910,11 +783,6 @@ function func_configure-system() {
   randompw
   WATERMARK=$PASSWD
   sed -i "/^Watermark Secret =/ c\Watermark Secret = %orgname%-$WATERMARK" /etc/MailScanner/MailScanner.conf
-
-  # Set non spam delivery behavior
-  if [[ "$storenspam" -eq 0 ]]; then
-    sed -i '/Non Spam Actions =/ c\Non Spam Actions = deliver header "X-Spam-Status:No"' /etc/MailScanner/MailScanner.conf
-  fi
 
 }
 # +---------------------------------------------------+
