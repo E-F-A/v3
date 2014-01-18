@@ -1,3 +1,0 @@
---
-Click here to report this message as spam.
-http://$hostname/cgi-bin/learn-msg.cgi?id=$id
