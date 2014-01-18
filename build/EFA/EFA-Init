@@ -877,15 +877,15 @@ function func_end() {
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
-  # set nameserver to local dnsmasq
-  echo "nameserver 127.0.0.1" > /etc/resolv.conf
-  
-  # +--------------------------------------------------+
-  
-  # +--------------------------------------------------+
   # Synchronize time
   ntpdate 0.centos.pool.ntp.org
   hwclock --systohc  
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # set nameserver to local dnsmasq
+  echo "nameserver 127.0.0.1" > /etc/resolv.conf
+  
   # +--------------------------------------------------+
   
   # And the end.. we are done.. whooo!
