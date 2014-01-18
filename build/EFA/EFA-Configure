@@ -67,12 +67,12 @@ function func_ask-spam() {
 
   echo -e "$green[EFA]$clean Non Spam Delivery and Retention Settings:"
   echo -e ""
-  echo -e "$green[EFA]$clean By default, both spam and non spam is stored"
-  echo -e "$green[EFA]$clean in the quarantine. This allows a copy of each"
-  echo -e "$green[EFA]$clean email to be retained for the retention period."
+  echo -e "$green[EFA]$clean By default, non spam is stored in the quarantine."
+  echo -e "$green[EFA]$clean This allows a copy of each email to be retained"
+  echo -e "$green[EFA]$clean for the retention period."
   echo -e ""
   echo -e "$green[EFA]$clean You can also choose to deliver non spam without"
-  echo -e "$green[EFA]$clean storing it and store only spam in the quarantine."
+  echo -e "$green[EFA]$clean storing it."
   echo -e ""
   echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N]: "
 
