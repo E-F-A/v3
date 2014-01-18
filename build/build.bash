@@ -385,12 +385,17 @@ func_spam_clamav () {
     chown postfix:postfix /var/www/.spamassassin
    
     # Add latest spamassassin rulesets from rules directory
-    # from Spamassassin 3.3.2
+    # from Spamassassin 3.3.x
     # source:  git.apache.org/spamassassin/rules
     /usr/bin/wget /etc/mail/spamassassin $gitdlurl/EFA/build/sarules
- 
+
+    # Add Sought Channel to replace Sare
+    /usr/bin/wget -O /usr/src/EFA/GPG.KEY $gitdlurl/EFA/build/Sought/GPG.KEY
+    /usr/local/bin/sa-update --import /usr/src/EFA/GPG.KEY
+    
     # and in the end we run sa-update just for the fun of it..
-    /usr/local/bin/sa-update
+    sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org 
+ 
 }
 # +---------------------------------------------------+
 
