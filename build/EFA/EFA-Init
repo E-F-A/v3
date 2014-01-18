@@ -1047,10 +1047,7 @@ if [ ! -e /etc/EFA-Config ]
     func_ask-ianacode
     func_ask-mailserver
     func_ask-orgname
-    func_ask-greylist
-    func_ask-tunables
     func_ask-updates
-    func_ask-spamsettings
     func_verify-settings
     func_configure-system
     if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
