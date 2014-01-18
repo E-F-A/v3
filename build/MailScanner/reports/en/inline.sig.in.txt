@@ -1,0 +1,3 @@
+--
+Click here to report htis message as spam.
+http://$hostname/cgi-bin/learn-msg.cgi?id=$id
