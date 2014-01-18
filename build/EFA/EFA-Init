@@ -801,6 +801,8 @@ func_Install-VmwareTools(){
   make install
   /usr/bin/wget -O /etc/init.d/vmtoolsd $gitdlurl/EFA/vmtoolsd.init
   chmod 755 /etc/init.d/vmtoolsd
+  # lib adjustment
+  ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1
   chkconfig vmtoolsd on
   service vmtoolsd start
   func_echo-header
