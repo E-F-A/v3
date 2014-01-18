@@ -394,7 +394,7 @@ func_spam_clamav () {
     sed -i '/^SAUPDATEARGS=/ c\SAUPDATEARGS=" --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org --updatedir /etc/mail/spamassassin"'
     
     # and in the end we run sa-update just for the fun of it..
-    sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org --updatedir /etc/mail/spamassassin  
+    /usr/loca/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org --updatedir /etc/mail/spamassassin  
  
 }
 # +---------------------------------------------------+
