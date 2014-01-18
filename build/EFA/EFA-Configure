@@ -371,11 +371,9 @@ func_greylisting(){
           postfix reload 
           service sqlgrey start 
           chkconfig sqlgrey on
+          # Enable Greylist menu item
           /bin/cp -f /var/www/html/mailscanner/functions.php.orig /var/www/html/mailscanner/functions.php
           sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
-
-          # Enable Greylist menu item
-
 
           echo -e "$green[EFA]$clean Greylisting $green ENABLED $clean"
           pause
