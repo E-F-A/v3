@@ -384,8 +384,10 @@ func_spam_clamav () {
     mkdir /var/www/.spamassassin
     chown postfix:postfix /var/www/.spamassassin
    
-    # todo: Add spamassassin rulesets from rules directory
-    # from spamassassin source in ./rules? 
+    # Add latest spamassassin rulesets from rules directory
+    # from Spamassassin 3.3.2
+    # source:  git.apache.org/spamassassin/rules
+    /usr/bin/wget /etc/mail/spamassassin $gitdlurl/EFA/build/sarules
  
     # and in the end we run sa-update just for the fun of it..
     /usr/local/bin/sa-update
