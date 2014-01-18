@@ -721,11 +721,6 @@ function func_configure-system() {
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
-  # Set mailscanner children 
-  sed -i "/^Max Children =/ c\Max Children = $MSTHREADS" /etc/MailScanner/MailScanner.conf
-  # +--------------------------------------------------+
-  
-  # +--------------------------------------------------+
   # Give user sudo permissions
   echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers.d/EFA-users
   # +--------------------------------------------------+
