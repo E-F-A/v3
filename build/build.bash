@@ -285,6 +285,7 @@ func_mailscanner () {
       do
         wget $gitdlurl/MailScanner/reports/en/$report
     done
+
 }
 # +---------------------------------------------------+
 
