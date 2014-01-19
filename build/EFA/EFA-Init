@@ -910,8 +910,7 @@ function func_end() {
   func_echo-header
   echo -e "$green[EFA]$clean All settings applied rebooting when you press enter."
   pause
-  # todo disabled for testing..
-  # reboot
+  reboot
   # +--------------------------------------------------+
 }
 # +---------------------------------------------------+
