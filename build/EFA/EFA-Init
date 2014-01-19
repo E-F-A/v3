@@ -176,7 +176,7 @@ function func_ask-gateway() {
   # Display current gateway
   echo -e "" 
   echo -e "$green[EFA]$clean Your current default gateway is:"
-  route | grep default | awk '{print $2}'
+  route -n | grep 0.0.0.0 | awk '{print $2}' | grep -v 0.0.0.0
   echo -e ""
   
   echo -e "$green[EFA]$clean Please enter the default gateway address"
