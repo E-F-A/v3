@@ -706,8 +706,7 @@ function checkip(){
 # +---------------------------------------------------+
 # Trap CTRL+C, CTRL+Z and quit singles
 # +---------------------------------------------------+
-# Disabled for testing
-#  trap '' SIGINT SIGQUIT SIGTSTP
+trap '' SIGINT SIGQUIT SIGTSTP
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
