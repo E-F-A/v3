@@ -725,8 +725,8 @@ function func_configure-system() {
   echo -e "<br><a href=\"http://$HOSTNAME.$DOMAINNAME/cgi-bin/learn-msg.cgi?id=\$id\">Click here to report this message as spam.</a>" >> /etc/MailScanner/reports/en/inline.sig.in.html
   cat /etc/MailScanner/reports/en/inline.sig.txt > /etc/MailScanner/reports/en/inline.sig.in.txt
   echo -e "" >> /etc/MailScanner/reports/en/inline.sig.in.txt
-  echo -e "Click here to report this message as spam."
-  echo -e "http://$HOSTNAME.$DOMAINNAME/cgi-bin/learn-msg.cgi?id=\$id"
+  echo -e "Click here to report this message as spam." >> /etc/MailScanner/reports/en/inline.sig.in.txt
+  echo -e "http://$HOSTNAME.$DOMAINNAME/cgi-bin/learn-msg.cgi?id=\$id" >> /etc/MailScanner/reports/en/inline.sig.in.txt
 
   # +--------------------------------------------------+
   
