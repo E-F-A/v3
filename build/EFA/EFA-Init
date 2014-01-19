@@ -25,7 +25,7 @@
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-debug="1"
+debug="0"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.0"
@@ -739,6 +739,7 @@ function func_configure-system() {
   # +--------------------------------------------------+
   # Give user sudo permissions
   echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers.d/EFA-users
+  echo "$USERNAME ALL=(ALL) NOPASSWD: /usr/local/sbin/EFA-Configure" >> /etc/sudoers.d/EFA-users
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+
@@ -794,7 +795,6 @@ function func_configure-system() {
   randompw
   WATERMARK=$PASSWD
   sed -i "/^Watermark Secret =/ c\Watermark Secret = %orgname%-$WATERMARK" /etc/MailScanner/MailScanner.conf
-
 }
 # +---------------------------------------------------+
 
@@ -847,6 +847,12 @@ function func_end() {
   
   # Remove EFA-Init from console
   sed -i "/^\/usr\/local\/sbin\/EFA-Init/d" /root/.bashrc
+  
+  # Add EFA-Configure to user logon
+  sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /home/$USERNAME/.bashrc
+  
+  # Add EFA-Configure to root logon
+  sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /root/.bashrc
   # +--------------------------------------------------+
     
   # +--------------------------------------------------+
