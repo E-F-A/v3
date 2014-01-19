@@ -1058,7 +1058,6 @@ func_cron () {
 # Clean-up
 # +---------------------------------------------------+
 func_cleanup () {
-    echo "DISABLED FOR NOW UNTIL TESTING IS OVER..."
     # Clean SSH keys (generate at first boot)
     /bin/rm -f /etc/ssh/ssh_host_*
     
@@ -1067,16 +1066,35 @@ func_cleanup () {
 
     # clear dns entries
     echo "" > /etc/resolv.conf
-    
-    # todo:
-    # clear logfiles
-    # rm -f /var/log/clamav/freshclam.log
-    # rm -rf /usr/src/EFA/*
 
     # Stop running services to allow kickstart to reboot
     service mysqld stop
     service webmin stop
     
+    # clear logfiles
+    rm -f /var/log/clamav/freshclam.log
+    rm -rf /usr/src/EFA/*
+    rm -f /var/log/messages
+    touch /var/log/messages
+    chmod 600 /var/log/messages
+    rm -f /var/log/clamav-unofficial-sigs.log
+    rm -f /var/log/cron
+    touch /var/log/cron
+    chmod 600 /var/log/cron
+    rm -f /var/log/dmesg.old
+    rm -f /var/log/dracut.log
+    rm -f /var/log/httpd/*
+    rm -f /var/log/maillog
+    touch /var/log/maillog
+    chmod 600 /var/log/maillog
+    rm -f /var/log/mysqld.log
+    touch /var/log/mysqld.log
+    chown mysql:mysql /var/log/mysqld.log
+    chmod 640 /var/log/mysqld.log
+    rm -f /var/log/yum.log    
+    touch /var/log/yum.log
+    chmod 600 /var/log/yum.log
+
     # clean yum cache
     yum clean all
     
