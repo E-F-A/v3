@@ -1096,6 +1096,11 @@ func_cleanup () {
     touch /var/log/yum.log
     chmod 600 /var/log/yum.log
 
+    # Clean networking in preparation for creating VM Images
+    rm -f /etc/udev/rules.d/70-persistent-net.rules
+    echo -e "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0
+    echo -e "BOOTPROTO=dhcp" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+
     # SELinux is giving me headaches disabling until everything works correctly
     # When everything works we should enable SELinux and try to fix all permissions..
     sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/selinux/config
