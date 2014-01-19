@@ -1124,6 +1124,9 @@ func_cleanup () {
     rm -f /boot/filler
     dd if=/dev/zero of=/var/filler bs=1000
     rm -f /var/filler
+
+    # Shutdown instead of reboot for VM Image building
+    shutdown -h now
 }
 # +---------------------------------------------------+
 
