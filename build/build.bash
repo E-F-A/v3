@@ -479,6 +479,7 @@ func_sqlgrey () {
     sed -i "/reject_code = dunno/d" /etc/sqlgrey/sqlgrey.conf
     sed -i '/reject_code =/ c\reject_code = 451' /etc/sqlgrey/sqlgrey.conf
     sed -i '/whitelists_host =/ c\whitelists_host = sqlgrey.bouton.name' /etc/sqlgrey/sqlgrey.conf
+    sed -i '/optmethod =/ c\optmethod = optout' /etc/sqlgrey/sqlgrey.conf
     
     # start and stop sqlgrey (first launch will create all database tables)
     # We give it 15 seconds to populate the database and then stop it again.
