@@ -1070,10 +1070,15 @@ func_cleanup () {
     # Stop running services to allow kickstart to reboot
     service mysqld stop
     service webmin stop
+   
+    # clear source files
+    rm -rf /usr/src/EFA/*
     
+    # clean yum cache
+    yum clean all
+   
     # clear logfiles
     rm -f /var/log/clamav/freshclam.log
-    rm -rf /usr/src/EFA/*
     rm -f /var/log/messages
     touch /var/log/messages
     chmod 600 /var/log/messages
@@ -1095,9 +1100,6 @@ func_cleanup () {
     touch /var/log/yum.log
     chmod 600 /var/log/yum.log
 
-    # clean yum cache
-    yum clean all
-    
     # SELinux is giving me headaches disabling until everything works correctly
     # When everything works we should enable SELinux and try to fix all permissions..
     sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/selinux/config
@@ -1113,14 +1115,14 @@ func_cleanup () {
     
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
-    #dd if=/dev/zero of=/filler bs=1000
-    #rm -f /filler
-    #dd if=/dev/zero of=/tmp/filler bs=1000
-    #rm -f /tmp/filler
-    #dd if=/dev/zero of=/boot/filler bs=1000
-    #rm -f /boot/filler
-    #dd if=/dev/zero of=/var/filler bs=1000
-    #rm -f /var/filler
+    dd if=/dev/zero of=/filler bs=1000
+    rm -f /filler
+    dd if=/dev/zero of=/tmp/filler bs=1000
+    rm -f /tmp/filler
+    dd if=/dev/zero of=/boot/filler bs=1000
+    rm -f /boot/filler
+    dd if=/dev/zero of=/var/filler bs=1000
+    rm -f /var/filler
 }
 # +---------------------------------------------------+
 
