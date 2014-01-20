@@ -91,6 +91,10 @@ func_mysql () {
     /usr/bin/wget $gitdlurl/MYSQL/create_relay_postfix.sql
     /usr/bin/mysql -u root -p"$password" mailscanner < /usr/src/EFA/create_relay_postfix.sql
 
+    # Create and populate efa db
+    /usr/bin/wget $gitdlurl/MYSQL/efatokens.sql
+    /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/efatokens.sql
+
     # Create the users
     /usr/bin/mysql -u root -p"$password" -e "GRANT SELECT,INSERT,UPDATE,DELETE on sa_bayes.* to 'sa_user'@'localhost' identified by '$password'"
     
@@ -100,6 +104,9 @@ func_mysql () {
     
     # sqlgrey user
     /usr/bin/mysql -u root -p"$password" -e "GRANT ALL on sqlgrey.* to 'sqlgrey'@'localhost' identified by '$password'"
+
+    # efa user for token handling
+    /usr/bin/mysql -u root -p"$password" -e "GRANT ALL on efa.* to 'efa'@'localhost' identified by '$password'"
 
     # flush
     /usr/bin/mysql -u root -p"$password" -e "FLUSH PRIVILEGES;"
@@ -282,6 +289,11 @@ func_mailscanner () {
         wget $gitdlurl/MailScanner/reports/en/$report
     done
 
+    # Add CustomAction.pm for token handling
+    cd /usr/lib/MailScanner/MailScanner/CustomFunctions
+    mv CustomAction.pm CustomAction.pm.orig
+    wget $gitdlurl/EFA/CustomAction.pm
+    
 }
 # +---------------------------------------------------+
 
