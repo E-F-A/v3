@@ -26,23 +26,23 @@ use strict 'refs';
 use DBI;
 use Sys::Syslog qw( :DEFAULT setlogsock);
 
-$user = $ENV{'USER'};
+my($user) = $ENV{'USER'};
 setlogsock('unix');
 
 my($db_name) = 'efa';
 my($db_host) = 'localhost';
-my($db_user) = 'root';
+my($db_user) = 'efa';
 my($db_pass) = 'EfaPr0j3ct';
+my($sql,$sth,$dbh);
 
 # Connect to the database
-my($dbh) = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
+$dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
                       $db_user, $db_pass,
                       {PrintError => 0});
 
 if ($dbh) {
-  my($todaysdate) = `date +%Y-%m-%d`;
-  my($sql) = "DELETE from tokens WHERE datestamp < DATE_SUB(NOW() , INTERVAL 3 DAYS)"
-  my($sth) = $dbh->prepare($sql);
+  $sql = "DELETE from tokens WHERE datestamp < DATE_SUB(NOW() , INTERVAL 3 DAYS)";
+  $sth = $dbh->prepare($sql);
   $sth->execute;
 
   openlog($0,'','user');
