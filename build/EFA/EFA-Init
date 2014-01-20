@@ -858,7 +858,8 @@ function func_end() {
   sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /home/$USERNAME/.bashrc
   
   # Add EFA-Configure to root logon
-  sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /root/.bashrc
+  # Issue #6: adcc hanging system on start after latest build
+  # sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /root/.bashrc
   # +--------------------------------------------------+
     
   # +--------------------------------------------------+
