@@ -8,7 +8,7 @@ USE efa;
 
 CREATE TABLE tokens (
   token char(32) NOT NULL,
-  datestamp date NOT NULL
+  datestamp datetime NOT NULL
 ) ENGINE=MyISAM;
 
 
