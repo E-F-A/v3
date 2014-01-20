@@ -293,6 +293,11 @@ func_mailscanner () {
     cd /usr/lib/MailScanner/MailScanner/CustomFunctions
     mv CustomAction.pm CustomAction.pm.orig
     wget $gitdlurl/EFA/CustomAction.pm
+
+    # Add EFA-Tokens-Cron
+    cd /etc/cron.daily
+    wget $gitdlurl/EFA/EFA-Tokens-Cron
+    chmod 700 EFA-Tokens-Cron
     
 }
 # +---------------------------------------------------+
