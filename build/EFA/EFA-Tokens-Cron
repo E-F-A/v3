@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+
+# EFA-Tokens-Cron
+# Expires old tokens from efa database
+# # Version 20140119
+# # # +--------------------------------------------------------------------+
+# # # Copyright (C) 2012~2013  http://www.efa-project.org
+# # #
+# # # This program is free software: you can redistribute it and/or modify
+# # # it under the terms of the GNU General Public License as published by
+# # # the Free Software Foundation, either version 3 of the License, or
+# # # (at your option) any later version.
+# # #
+# # # This program is distributed in the hope that it will be useful,
+# # # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# # # GNU General Public License for more details.
+# # #
+# # # You should have received a copy of the GNU General Public License
+# # # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# # # +--------------------------------------------------------------------+
+
+use strict 'vars';
+use strict 'refs';
+
+use DBI;
+use Sys::Syslog qw( :DEFAULT setlogsock);
+
+$user = $ENV{'USER'};
+setlogsock('unix');
+
+my($db_name) = 'efa';
+my($db_host) = 'localhost';
+my($db_user) = 'root';
+my($db_pass) = 'EfaPr0j3ct';
+
+# Connect to the database
+my($dbh) = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
+                      $db_user, $db_pass,
+                      {PrintError => 0});
+
+if ($dbh) {
+  my($todaysdate) = `date +%Y-%m-%d`;
+  my($sql) = "DELETE from tokens WHERE datestamp < DATE_SUB(NOW() , INTERVAL 3 DAYS"
+  my($sth) = $dbh->prepare($sql);
+  $sth->execute;
+
+  openlog($0,'','user');
+  syslog('info', "Successfully expired old tokens.");
+  closelog;
+} else {
+  
+  openlog($0,'','user');
+  syslog('ERR', "Unable to open efa database, tokens not expired!");
+  closelog;
+}
