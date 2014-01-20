@@ -41,7 +41,7 @@ my($dbh) = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
 
 if ($dbh) {
   my($todaysdate) = `date +%Y-%m-%d`;
-  my($sql) = "DELETE from tokens WHERE datestamp < DATE_SUB(NOW() , INTERVAL 3 DAYS"
+  my($sql) = "DELETE from tokens WHERE datestamp < DATE_SUB(NOW() , INTERVAL 3 DAYS)"
   my($sth) = $dbh->prepare($sql);
   $sth->execute;
 
