@@ -1,22 +1,22 @@
 #
 # CustomAction.pm 
-# # Version 20140119
-# # +--------------------------------------------------------------------+
-# # Copyright (C) 2012~2013  http://www.efa-project.org
-# #
-# # This program is free software: you can redistribute it and/or modify
-# # it under the terms of the GNU General Public License as published by
-# # the Free Software Foundation, either version 3 of the License, or
-# # (at your option) any later version.
-# #
-# # This program is distributed in the hope that it will be useful,
-# # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# # GNU General Public License for more details.
-# #
-# # You should have received a copy of the GNU General Public License
-# # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# # +--------------------------------------------------------------------+
+# Version 20140119
+# +--------------------------------------------------------------------+
+# Copyright (C) 2012~2014  http://www.efa-project.org
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# +--------------------------------------------------------------------+
 
 package MailScanner::CustomConfig;
 
@@ -26,7 +26,7 @@ no  strict 'subs'; # Allow bare words for parameter %'s
 
 use vars qw($VERSION);
 
-### The package version, both in 1.23 style *and* usable by MakeMaker:
+# The package version, both in 1.23 style *and* usable by MakeMaker:
 $VERSION = substr q$Revision: 1.0 $, 10;
 
 use DBI;
@@ -74,7 +74,7 @@ sub EFASpamNotify {
                       $db_user, $db_pass,
                       {PrintError => 0}); 
 
-  # Check if connection was successfull - if it isn't
+  # Check if connection was successful - if it isn't
   # then generate a warning and continue processing.
   if (!$dbh) {
    MailScanner::Log::WarnLog("Unable to initialise database connection: %s", $DBI::errstr);
@@ -102,8 +102,8 @@ sub EFASpamNotify {
 }
 
 # +---------------------------------------------------+
-# # Function to create a random 32 char token
-# # +---------------------------------------------------+
+# Function to create a random 32 char token
+# +---------------------------------------------------+
 sub randomtoken {
    my($token) = `date | md5sum | tr -cd '[:alnum:]'`;
    return $token;

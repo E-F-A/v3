@@ -917,8 +917,10 @@ function func_end() {
   # +--------------------------------------------------+
   # set nameserver to local dnsmasq
   echo "nameserver 127.0.0.1" > /etc/resolv.conf
-  
   # +--------------------------------------------------+
+  
+  # Cleanup /var/log/EFA 
+  rm -f /var/log/EFA/*
   
   # And the end.. we are done.. whooo!
   func_echo-header
