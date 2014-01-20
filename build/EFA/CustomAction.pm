@@ -98,7 +98,7 @@ sub CustomAction {
 }
 
 # +---------------------------------------------------+
-# # Function to create a random 30 char token
+# # Function to create a random 32 char token
 # # +---------------------------------------------------+
 sub randomtoken {
    my($token) = `date | md5sum | tr -cd '[:alnum:]'`;
