@@ -77,10 +77,7 @@ sub CustomAction {
   # Generate a new token
   my($token) = randomtoken();
 
-  # Get today's date
-  my($datestamp) = `date +%Y-%m-%d\ %H:%M:%S`;
-
-  $sql = "INSERT INTO tokens (token, datestamp) VALUES ('$token', '$datestamp')";
+  $sql = "INSERT INTO tokens (token, datestamp) VALUES ('$token', NOW())";
   $sth = $dbh->prepare($sql);
   $sth->execute;
 
