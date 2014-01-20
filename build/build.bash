@@ -291,7 +291,8 @@ func_mailscanner () {
 
     # Add CustomAction.pm for token handling
     cd /usr/lib/MailScanner/MailScanner/CustomFunctions
-    mv CustomAction.pm CustomAction.pm.orig
+    # Remove as a copy will throw a mailscanner --lint error
+    rm -f CustomAction.pm 
     wget $gitdlurl/EFA/CustomAction.pm
 
     # Add EFA-Tokens-Cron
