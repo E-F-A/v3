@@ -22,7 +22,7 @@ Your system administrators will need the following information:
   Date code: $datenumber
 
 If you are satisfied that this message is not spam, you can release it from quarantine
-by clicking http://$hostname/cgi-bin/release-msg.cgi?datenumber=$datenumber&id=$id
+by clicking http://$hostname/cgi-bin/release-msg.cgi?datenumber=$datenumber&id=$id&token=$token
 
 Note that if this mail has been send to multiple recipients you will release this mail to all users.
 -- 
