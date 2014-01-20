@@ -782,7 +782,15 @@ function func_configure-system() {
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
   sed -i "/db_pass =/ c\db_pass = $SQLGREYSQLPWD" /etc/sqlgrey/sqlgrey.conf
   sed -i "/^\$db_pass/ c\$db_pass	= \"$SQLGREYSQLPWD\";" /var/www/html/sgwi/includes/config.inc.php
-  
+ 
+  # efa token SQL password
+  randompw
+  EFASQLPWD=$PASSWD
+  /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$EFASQLPWD') WHERE User='efa';"
+  /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
+  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/release-msg.cgi
+ 
   # And finally we change the MYSQL root password.
   randompw
   MYSQLROOTPWD=$PASSWD
