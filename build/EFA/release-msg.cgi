@@ -57,11 +57,11 @@ if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/){
       
       if (!$dbh) { die "Error connecting to database" }
       
-      $sql = "SELECT token from tokens WHERE token=$token"
+      $sql = "SELECT token from tokens WHERE token=\"$token\"";
       $sth = $dbh->prepare($sql);
       $sth->execute;
       @results = $sth->fetchrow;
-      if ($results[0] -eq "") { die "Token has expired. Message cannot be released." }
+      if (!$results[0]) { die "Token has expired. Message cannot be released." }
 
       $sendmail = "/usr/sbin/sendmail.postfix";
       $msgtorelease = "/var/spool/MailScanner/quarantine/$datenumber/spam/$id";
