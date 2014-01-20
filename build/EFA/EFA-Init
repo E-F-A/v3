@@ -879,6 +879,7 @@ function func_end() {
   echo "SAUSERSQLPWD:$SAUSERSQLPWD" >> /etc/EFA-Config
   echo "MAILWATCHSQLPWD:$MAILWATCHSQLPWD" >> /etc/EFA-Config
   echo "SQLGREYSQLPWD:$SQLGREYSQLPWD" >> /etc/EFA-Config
+  echo "EFASQLPWD:$EFASQLPWD" >> /etc/EFA-Config
   echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
 
   if [[ "$enableupdates" -eq 1 ]]; then 
