@@ -59,7 +59,7 @@ sub CustomAction {
   my($message) = @_;
   my($db_name) = 'efa';
   my($db_host) = 'localhost';
-  my($db_user) = 'root';
+  my($db_user) = 'efa';
   my($db_pass) = 'EfaPr0j3ct';
   
   # Connect to the database
