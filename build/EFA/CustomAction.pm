@@ -52,9 +52,16 @@ use File::Temp;
 use MailScanner::FileInto;
 
 #
-# CustomAction for EFA Token Generation
+# CustomAction for EFA 
 #
 sub CustomAction {
+  my($message,$yes_or_no,$param) = @_;
+  if ($param =~ /spam/ ) {
+    return EFASpamNotify($message);
+  }
+}
+
+sub EFASpamNotify {
   my($dbh, $sth, $sql);
   my($message) = @_;
   my($db_name) = 'efa';
