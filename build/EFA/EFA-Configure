@@ -118,7 +118,7 @@ function func_ask-spam() {
         spamcheck=0
         # Set spam delivery behavior
       elif [[ "$TMPDELIVERSPAM" == "" || "$TMPDELIVERSPAM" == "N" || "$TMPDELIVERSPAM" == "n" ]]; then 
-        sed -i '/^Spam Actions =/ c\Spam Actions = store custom()"' /etc/MailScanner/MailScanner.conf
+        sed -i '/^Spam Actions =/ c\Spam Actions = store custom(spam)"' /etc/MailScanner/MailScanner.conf
         echo -e "$green[EFA]$clean Spam delivery $green DISABLED $clean"
         spamcheck=0
       else
