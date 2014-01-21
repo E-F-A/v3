@@ -45,6 +45,9 @@ if ($dbh) {
   $sth = $dbh->prepare($sql);
   $sth->execute;
 
+  $sth->finish();
+  $dbh->disconnect();  
+
   openlog($0,'','user');
   syslog('info', "Successfully expired old tokens.");
   closelog;
