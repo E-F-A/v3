@@ -7,6 +7,7 @@ sender.spam.report.txt
 stored.filename.message.txt
 deleted.filename.message.txt
 inline.sig.html
+inline.sig.in.html
 inline.sig.out.html
 inline.warning.txt
 rejection.report.txt
@@ -15,6 +16,7 @@ sender.spam.sa.report.txt
 stored.size.message.txt
 deleted.size.message.txt
 inline.sig.txt
+inlint.sig.in.txt
 inline.sig.out.txt
 languages.conf
 sender.content.report.txt

@@ -716,15 +716,6 @@ function func_configure-system() {
   echo -e "To: *@$DOMAINNAME /etc/MailScanner/reports/en/inline.sig.in.txt" > /etc/MailScanner/rules/sig.text.rules
   echo -e "To: default /etc/MailScanner/reports/en/inline.sig.out.txt" >> /etc/MailScanner/rules/sig.text.rules
 
-  # Build inline inbound sigs (MailScanner $hostname ignored inline so sigs must be created)
-  cat /etc/MailScanner/reports/en/inline.sig.html > /etc/MailScanner/reports/en/inline.sig.in.html
-  echo -e "" >> /etc/MailScanner/reports/en/inline.sig.in.html
-  echo -e "<br><a href=\"http://$HOSTNAME.$DOMAINNAME/cgi-bin/learn-msg.cgi?id=\$id\">Click here to report this message as spam.</a>" >> /etc/MailScanner/reports/en/inline.sig.in.html
-  cat /etc/MailScanner/reports/en/inline.sig.txt > /etc/MailScanner/reports/en/inline.sig.in.txt
-  echo -e "" >> /etc/MailScanner/reports/en/inline.sig.in.txt
-  echo -e "Click here to report this message as spam." >> /etc/MailScanner/reports/en/inline.sig.in.txt
-  echo -e "http://$HOSTNAME.$DOMAINNAME/cgi-bin/learn-msg.cgi?id=\$id" >> /etc/MailScanner/reports/en/inline.sig.in.txt
-
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+

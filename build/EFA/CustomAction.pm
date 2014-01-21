@@ -455,7 +455,8 @@ sub ReadVirusWarning {
   $from = $message->{from};
   $subject = $message->{subject};
   my($token) = $message->{token};
-
+  my($hostname) = MailScanner::Config::Value('hostname', $message);
+  
   my $result = "";
   while (<$fh>) {
     chomp;
