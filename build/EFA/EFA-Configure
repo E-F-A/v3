@@ -179,7 +179,13 @@ func_transport-settings(){
       echo -e "All mail domains for which this system accepts mail need an destination server."
       echo -e "Below is the list of current mail domains on this system."
       echo -e ""
-      echo -e "TODO: show all the current domains here with 1) domain ip etc.."
+      RELAYS=( `cat /etc/postfix/transport | sed '/^\#/d;/^$/d;s/smtp:\[//;s/\]//'` )
+      tLen=${#RELAYS[@]}
+      padding="                        "
+      for (( y=0; y<$tLen; y+=2 ));
+      do
+        echo -e "$((y/2+1))) ${RELAYS[$y]} ${padding:${#RELAYS[$y]}} ${RELAYS[$((y+1))]}"
+      done
       echo -e ""
       echo -e "n) Add new mail domain"
       echo -e ""
@@ -187,31 +193,41 @@ func_transport-settings(){
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
-      read choice
-      case $choice in
-        n) tpmenu=0
-           echo -e ""
-           echo -e "Please enter the domain you want add:"
-           echo -e -n "$green[Domain]$clean : "
-           local DOMAIN
-           read DOMAIN
-           echo -e "Thank you..."
-           echo -e ""
-           echo -e "Now enter the destination server"
-           echo -e -n "$green[Destination]$clean : "
-           local DEST
-           read DEST
-           echo -e "Thank you.."
-           echo -e "$DOMAIN  smtp:[$DEST]" >> /etc/postfix/transport
-           postmap /etc/postfix/transport
-           echo -e "Domain $DOMAIN added to this system"
-           pause
-           tpmenu=1
-           ;;
-        e) mailmenu=1 && return ;;
-        *) echo -e "Error \"$choice\" is not an option..." && sleep 2
-      esac
-    done
+      shopt -s extglob
+      while [[ 1 ]]
+        do
+          local choice
+          read choice
+          case $choice in
+                +([0-9]))
+                    echo ${RELAYS[$((choice*2-2))]}
+                    pause 
+                    ;;
+                n)  tpmenu=0
+                    echo -e ""
+                    echo -e "Please enter the domain you want add:"
+                    echo -e -n "$green[Domain]$clean : "
+                    local DOMAIN
+                    read DOMAIN
+                    echo -e "Thank you..."
+                    echo -e ""
+                    echo -e "Now enter the destination server"
+                    echo -e -n "$green[Destination]$clean : "
+                    local DEST
+                    read DEST
+                    echo -e "Thank you.."
+                    echo -e "$DOMAIN  smtp:[$DEST]" >> /etc/postfix/transport
+                    postmap /etc/postfix/transport
+                    echo -e "Domain $DOMAIN added to this system"
+                    pause
+                    tpmenu=1
+                    ;;
+                e)  mailmenu=1 && return ;;
+                *)  echo -e "Error \"$choice\" is not an option..." && sleep 2
+                    ;;
+          esac
+        done
+  done 
 }
 # +---------------------------------------------------+
 
