@@ -60,24 +60,25 @@ if ($id =~ /^[A-F0-9]{10}.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
     
     # redirect to failure page
     print "<meta http-equiv=\"refresh\" content=\"0;URL=/notlearned.html\">";
-  }
+  } else {
 
-  $msgtolearn = `find /var/spool/MailScanner/quarantine/ -name $id`;
+    $msgtolearn = `find /var/spool/MailScanner/quarantine/ -name $id`;
 
-  print "$msgtolearn";
-  open(MAIL, "|$salearn $msgtolearn") or die "Cannot open $salearn: $!";
-  close(MAIL);
+    print "$msgtolearn";
+    open(MAIL, "|$salearn $msgtolearn") or die "Cannot open $salearn: $!";
+    close(MAIL);
 
-  # Remove token from db after release
-  $sql = "DELETE from tokens WHERE token=\"$token\"";
-  $sth = $dbh->prepare($sql);
-  $sth->execute;
+    # Remove token from db after release
+    $sql = "DELETE from tokens WHERE token=\"$token\"";
+    $sth = $dbh->prepare($sql);
+    $sth->execute;
   
-  $sth->finish();
-  $dbh->disconnect();  
+    $sth->finish();
+    $dbh->disconnect();  
 
-  # redirect to success page
-  print "<meta http-equiv=\"refresh\" content=\"0;URL=/learned.html\">";
+    # redirect to success page
+    print "<meta http-equiv=\"refresh\" content=\"0;URL=/learned.html\">";
+  }
 }else{
   die "Error in id or token syntax";
 }

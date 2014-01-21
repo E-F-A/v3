@@ -67,23 +67,24 @@ if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/){
  
         # redirect to failure page
         print "<meta http-equiv=\"refresh\" content=\"0;URL=/notreleased.html\">";
-      }
+      } else {
 
-      $sendmail = "/usr/sbin/sendmail.postfix";
-      $msgtorelease = "/var/spool/MailScanner/quarantine/$datenumber/spam/$id";
-      open(MAIL, "|$sendmail -t <$msgtorelease") or die "Cannot open $sendmail: $!";
-      close(MAIL);
+        $sendmail = "/usr/sbin/sendmail.postfix";
+        $msgtorelease = "/var/spool/MailScanner/quarantine/$datenumber/spam/$id";
+        open(MAIL, "|$sendmail -t <$msgtorelease") or die "Cannot open $sendmail: $!";
+        close(MAIL);
 
-      # Remove token from db after release
-      $sql = "DELETE from tokens WHERE token=\"$token\"";
-      $sth = $dbh->prepare($sql);
-      $sth->execute;
+        # Remove token from db after release
+        $sql = "DELETE from tokens WHERE token=\"$token\"";
+        $sth = $dbh->prepare($sql);
+        $sth->execute;
      
-      $sth->finish();
-      $dbh->disconnect();  
+        $sth->finish();
+        $dbh->disconnect();  
  
-      # redirect to success page
-      print "<meta http-equiv=\"refresh\" content=\"0;URL=/released.html\">";
+        # redirect to success page
+        print "<meta http-equiv=\"refresh\" content=\"0;URL=/released.html\">";
+      }
     } else {
       die "Error in token syntax";
     }
