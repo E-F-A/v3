@@ -593,7 +593,7 @@ func_mailwatch () {
     
     # Grabbing an favicon to complete the look 
     cd /var/www/html/
-    wget http://$mirror/static/favicon.ico
+    wget $mirror/static/favicon.ico
     # override cp -i alias
     /bin/cp -f favicon.ico /var/www/html/mailscanner/
     /bin/cp -f favicon.ico /var/www/html/mailscanner/images
