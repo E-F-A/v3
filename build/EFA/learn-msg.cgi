@@ -53,8 +53,14 @@ if ($id =~ /^[A-F0-9]{10}.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
   $sth = $dbh->prepare($sql);
   $sth->execute;
   @results = $sth->fetchrow;
-  # Todo: redirect to expiration page with a brief explanation instead
-  if (!$results[0]) { die "Token has expired. Message cannot be submitted." }
+  if (!$results[0]) { 
+
+    $sth->finish();
+    $dbh->disconnect();  
+    
+    # redirect to failure page
+    print "<meta http-equiv=\"refresh\" content=\"0;URL=/notlearned.html\">";
+  }
 
   $msgtolearn = `find /var/spool/MailScanner/quarantine/ -name $id`;
 
