@@ -646,8 +646,10 @@ func_mailwatch () {
     chmod 755 release-msg.cgi
     cd /var/www/html
     wget $gitdlurl/EFA/released.html
+    wget $gitdlurl/EFA/notreleased.html
     wget $gitdlurl/EFA/learned.html
-    
+    wget $gitdlurl/EFA/notlearned.html    
+ 
     # MailWatch requires access to /var/spool/postfix/hold & incoming dir's
     chown -R postfix:apache /var/spool/postfix/hold
     chown -R postfix:apache /var/spool/postfix/incoming
