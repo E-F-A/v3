@@ -26,7 +26,7 @@ no  strict 'subs'; # Allow bare words for parameter %'s
 
 use vars qw($VERSION);
 
-### The package version, both in 1.23 style *and* usable by MakeMaker:
+# The package version, both in 1.23 style *and* usable by MakeMaker:
 $VERSION = substr q$Revision: 1.0 $, 10;
 
 use DBI;
