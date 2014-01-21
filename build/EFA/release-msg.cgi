@@ -61,8 +61,13 @@ if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/){
       $sth = $dbh->prepare($sql);
       $sth->execute;
       @results = $sth->fetchrow;
-      # Todo: redirect to expiration page with a brief explanation instead
-      if (!$results[0]) { die "Token has expired. Message cannot be released." }
+      if (!$results[0]) { 
+        $sth->finish();
+        $dbh->disconnect();  
+ 
+        # redirect to failure page
+        print "<meta http-equiv=\"refresh\" content=\"0;URL=/notreleased.html\">";
+      }
 
       $sendmail = "/usr/sbin/sendmail.postfix";
       $msgtorelease = "/var/spool/MailScanner/quarantine/$datenumber/spam/$id";
