@@ -273,7 +273,7 @@ func_mailscanner () {
     touch /etc/MailScanner/rules/sig.text.rules
     rm -rf /var/spool/MailScanner/incoming
     mkdir /var/spool/MailScanner/incoming
-    echo "none /var/spool/MailScanner/incoming tmpfs defaults 0 0">>/etc/fstab
+    echo "none /var/spool/MailScanner/incoming tmpfs noatime 0 0">>/etc/fstab
     mount -a
     
     # Fix (workaround) the "Insecure dependency in open while running with -T switch at /usr/lib64/perl5/IO/File.pm line 185" error
