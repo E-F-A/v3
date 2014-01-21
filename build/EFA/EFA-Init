@@ -790,6 +790,7 @@ function func_configure-system() {
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
   sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/release-msg.cgi
+  sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
   sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$EFASQLPWD';" /etc/cron.daily/EFA-Tokens-Cron
  
   # And finally we change the MYSQL root password.
