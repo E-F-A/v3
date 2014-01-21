@@ -50,12 +50,19 @@ sub CustomAction {
 sub EFANonSpam {
   my($message) = @_;
   my($token);
-  # Generate Token
-  $token = EFACreateToken();
+  
+  # Generate Token/Sign unless message is originates from localhost
+  my($clientip) = $message->{clientip};
+  
+  if ($clientip =~ /^127/) { 
+    return $message; 
+  } else {
+    $token = EFACreateToken();
  
-  $message->{token} = $token;
+    $message->{token} = $token;
 
-  return SignNonSpam($message);
+    return SignNonSpam($message);
+  }
 }
 
 #
