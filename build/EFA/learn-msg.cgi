@@ -21,21 +21,57 @@
 
 use CGI::Carp qw(fatalsToBrowser);
 use CGI qw(:standard);
+use DBI;
 print "Content-type: text/html \n\n";
 
 $query = new CGI;
 $salearn = "/usr/local/bin/sa-learn --spam";
 $id = param("id");
+$token = param("token");
 
-if ($id =~ /^[A-F0-9]{10}.[A-F0-9]{5}$/){
+$db_name = "efa";
+$db_host = "localhost";
+$db_user = "efa";
+$db_pass = "EfaPr0j3ct";
+
+if ($id eq "" ){
+  die "Error variable is empty"
+}
+if ($token eq "" ){
+  die "Error variable is empty"
+}
+
+if ($id =~ /^[A-F0-9]{10}.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
+
+  $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
+     $db_user, $db_pass,
+     {PrintError => 0});
+
+  if (!dbh) { die "Error connecting to database" }
+
+  $sql = "SELECT token from tokens WHERE token=\"$token\"";
+  $sth = $dbh->prepare($sql);
+  $sth->execute;
+  @results = $sth->fetchrow;
+  # Todo: redirect to expiration page with a brief explanation instead
+  if (!$results[0]) { die "Token has expired. Message cannot be submitted." }
+
   $msgtolearn = `find /var/spool/MailScanner/quarantine/ -name $id`;
 
   print "$msgtolearn";
   open(MAIL, "|$salearn $msgtolearn") or die "Cannot open $salearn: $!";
   close(MAIL);
 
+  # Remove token from db after release
+  $sql = "DELETE from tokens WHERE token=\"$token\"";
+  $sth = $dbh->prepare($sql);
+  $sth->execute;
+  
+  $sth->finish();
+  $dbh->disconnect();  
+
   # redirect to success page
   print "<meta http-equiv=\"refresh\" content=\"0;URL=/learned.html\">";
 }else{
-  die "Error in id syntax";
+  die "Error in id or token syntax";
 }

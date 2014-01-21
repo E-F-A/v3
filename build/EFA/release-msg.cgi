@@ -61,6 +61,7 @@ if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/){
       $sth = $dbh->prepare($sql);
       $sth->execute;
       @results = $sth->fetchrow;
+      # Todo: redirect to expiration page with a brief explanation instead
       if (!$results[0]) { die "Token has expired. Message cannot be released." }
 
       $sendmail = "/usr/sbin/sendmail.postfix";
@@ -68,6 +69,14 @@ if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/){
       open(MAIL, "|$sendmail -t <$msgtorelease") or die "Cannot open $sendmail: $!";
       close(MAIL);
 
+      # Remove token from db after release
+      $sql = "DELETE from tokens WHERE token=\"$token\"";
+      $sth = $dbh->prepare($sql);
+      $sth->execute;
+     
+      $sth->finish();
+      $dbh->disconnect();  
+ 
       # redirect to success page
       print "<meta http-equiv=\"refresh\" content=\"0;URL=/released.html\">";
     } else {
