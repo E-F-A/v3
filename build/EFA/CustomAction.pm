@@ -66,7 +66,7 @@ sub EFACreateToken {
   my($db_name) = 'efa';
   my($db_host) = 'localhost';
   my($db_user) = 'efa';
-  my($db_pass) = '0SZYDD4pYMO5wNDRQMrAOYOcdarxID';
+  my($db_pass) = 'EfaPr0j3ct';
   
   # Connect to the database
   $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
