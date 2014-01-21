@@ -273,7 +273,7 @@ func_mailscanner () {
     touch /etc/MailScanner/rules/sig.text.rules
     rm -rf /var/spool/MailScanner/incoming
     mkdir /var/spool/MailScanner/incoming
-    echo "none /var/spool/MailScanner/incoming tmpfs defaults 0 0">>/etc/fstab
+    echo "none /var/spool/MailScanner/incoming tmpfs noatime 0 0">>/etc/fstab
     mount -a
     
     # Fix (workaround) the "Insecure dependency in open while running with -T switch at /usr/lib64/perl5/IO/File.pm line 185" error
@@ -593,7 +593,7 @@ func_mailwatch () {
     
     # Grabbing an favicon to complete the look 
     cd /var/www/html/
-    wget http://www.efa-project.org/favicon.ico
+    wget $mirror/static/favicon.ico
     # override cp -i alias
     /bin/cp -f favicon.ico /var/www/html/mailscanner/
     /bin/cp -f favicon.ico /var/www/html/mailscanner/images
