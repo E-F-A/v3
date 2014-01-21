@@ -52,7 +52,7 @@ show_menu() {
                     6) func_greylisting ;;
                     7) func_autoupdates ;;                    
                     8) func_mail-settings ;;
-		    9) func_ask-spam ;;
+                    9) func_ask-spam ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
@@ -146,6 +146,7 @@ func_mail-settings(){
       echo -e "1) Outbound mail relay"
       echo -e "2) Outbound smarthost"
       echo -e "3) Admin Email"
+      echo -e "4) Transport settings"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
@@ -156,9 +157,60 @@ func_mail-settings(){
                 1) func_outbound-relay;;
                 2) func_outbound-smarthost;;  
                 3) func_adminemail;;
+                4) func_transport-settings;;
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
             esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# transport menu
+# +---------------------------------------------------+
+func_transport-settings(){
+  tpmenu=1
+  while [ $tpmenu == "1" ]
+    do
+      TRANSPORTS=`cat /etc/postfix/transport | sed '/^\#/d;/^$/d'`
+      func_echo-header
+      echo -e ""
+      echo -e "Description:"
+      echo -e "All mail domains for which this system accepts mail need an destination server."
+      echo -e "Below is the list of current mail domains on this system."
+      echo -e ""
+      echo -e "TODO: show all the current domains here with 1) domain ip etc.."
+      echo -e ""
+      echo -e "n) Add new mail domain"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      echo -e ""
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+        n) tpmenu=0
+           echo -e ""
+           echo -e "Please enter the domain you want add:"
+           echo -e -n "$green[Domain]$clean : "
+           local DOMAIN
+           read DOMAIN
+           echo -e "Thank you..."
+           echo -e ""
+           echo -e "Now enter the destination server"
+           echo -e -n "$green[Destination]$clean : "
+           local DEST
+           read DEST
+           echo -e "Thank you.."
+           echo -e "$DOMAIN  smtp:[$DEST]" >> /etc/postfix/transport
+           postmap /etc/postfix/transport
+           echo -e "Domain $DOMAIN added to this system"
+           pause
+           tpmenu=1
+           ;;
+        e) mailmenu=1 && return ;;
+        *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+      esac
     done
 }
 # +---------------------------------------------------+
