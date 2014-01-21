@@ -82,11 +82,11 @@ function func_ask-spam() {
     do 
       if [[ "$TMPSTORENSPAM" == "Y" || "$TMPSTORENSPAM" == "y" ]]; then 
         # Set non spam delivery behavior
-        sed -i '/Non Spam Actions =/ c\Non Spam Actions = deliver header "X-Spam-Status:No"' /etc/MailScanner/MailScanner.conf
+        sed -i '/Non Spam Actions =/ c\Non Spam Actions = deliver header "X-Spam-Status:No custom(nonspam)"' /etc/MailScanner/MailScanner.conf
         echo -e "$green[EFA]$clean Non spam storage $green DISABLED $clean"
         spamcheck=0
       elif [[ "$TMPSTORENSPAM" == "" || "$TMPSTORENSPAM" == "N" || "$TMPSTORENSPAM" == "n" ]]; then 
-        sed -i '/Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status:No"' /etc/MailScanner/MailScanner.conf
+        sed -i '/Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status:No custom(nonspam)"' /etc/MailScanner/MailScanner.conf
         echo -e "$green[EFA]$clean Non spam storage $green ENABLED $clean"
         spamcheck=0
       else
