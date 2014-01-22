@@ -202,7 +202,7 @@ func_transport-settings(){
                      echo -e ""
                      echo -e "Do you want to $green[r]$clean replace or $green[d]$clean delete this entry? : "
                      read TMPOPTION
-                     if [[ $TMPOPTON == "r" || $TMPOPTION == "R" ]]; then
+                     if [[ $TMPOPTION == "r" || $TMPOPTION == "R" ]]; then
                         echo -e ""
                         echo -e "Please enter the domain you want use:"
                         echo -e -n "$green[Domain]$clean : "
@@ -215,14 +215,14 @@ func_transport-settings(){
                         local DEST
                         read DEST
                         echo -e "Thank you.."
-                        sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
+                        sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp[${RELAY[$((choice*2-1))]}]/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
                         flag=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
-                        sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/d"
+                        sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp[${RELAY[$((choice*2-1))]}]/d"
                         echo -e "Entry deleted from transports." && sleep 2
                         flag=1
                       else 
-                        echo -e "Error \"$choice\" is not an option..." && sleep 2
+                        echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
                       fi
                     done
                     ;;
