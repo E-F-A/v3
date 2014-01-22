@@ -415,7 +415,7 @@ func_transport-settings(){
                  while [ $flag == "0" ]
                    do
                      echo -e ""
-                     echo -e "Do you want to $green[r]$clean replace or $green[d]$clean delete this entry? : "
+                     echo -e "Do you want to $green[r]$clean replace, $green[d]$clean delete this entry, or $green[c]$clean cancel? : "
                      local TMPOPTION
                      read TMPOPTION
                      if [[ $TMPOPTION == "r" || $TMPOPTION == "R" ]]; then
@@ -437,6 +437,8 @@ func_transport-settings(){
                         sed -i "/$ENTDOMAIN[[:space:]]\+smtp:\[$ENTDEST\]/d" /etc/postfix/transport
                         echo -e "Entry deleted from transports." && sleep 2
                         flag=1
+                      elif [[ $TMPOPTION == "c" || $TMPOPTION == "C" ]]; then
+                        flag=1
                       else 
                         echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
                       fi
@@ -450,12 +452,43 @@ func_transport-settings(){
                     echo -e -n "$green[Domain]$clean : "
                     local DOMAIN
                     read DOMAIN
+                    # Simple check if domain contains any data.
+                    DOMAINCHECK=1
+                    while [ $DOMAINCHECK != 0 ]
+                      do
+                        if [[ $DOMAIN == "" ]]; then
+                          echo -e "       $red ERROR: Please enter an domain. $clean"
+                          echo -e ""
+                          echo -e -n "$green[Domain]$clean : "
+                          local DOMAIN
+                          read DOMAIN
+                        else
+                          DOMAINCHECK=0
+                        fi
+                      done
                     echo -e "Thank you..."
                     echo -e ""
                     echo -e "Now enter the destination server"
                     echo -e -n "$green[Destination]$clean : "
                     local DEST
                     read DEST
+                    # Simple check if destination contains any data.
+                    DESTCHECK=1
+                    while [ $DESTCHECK != 0 ]
+                      do
+                        if [[ $DEST == "" ]]; then
+                          echo -e "       $red ERROR: Please enter an destination. $clean"
+                          echo -e ""
+                          echo -e -n "$green[Destination]$clean : "
+                          local DEST
+                          read DEST
+                        else
+                          DESTCHECK=0
+                        fi
+                      done
+                          
+                    
+                    
                     echo -e "Thank you.."
                     echo -e "$DOMAIN  smtp:[$DEST]" >> /etc/postfix/transport
                     postmap /etc/postfix/transport
