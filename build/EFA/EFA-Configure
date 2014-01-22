@@ -406,8 +406,8 @@ func_transport-settings(){
       local choice
       read choice
       case $choice in
-             +([0-9]))
-               if [[ $choice > "0" && $choice < $(($rLen+1)) ]]; then
+             [0-9]*)
+               if [[ $choice > "0" && $choice < $(($tLen+1)) ]]; then
                  ENTDOMAIN=${RELAYS[$((choice*2-2))]}
                  ENTDEST=${RELAYS[$((choice*2-1))]}
                  echo -e "Entry Selected: $ENTDOMAIN  $ENTDEST" 
