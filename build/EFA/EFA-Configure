@@ -202,6 +202,7 @@ func_transport-settings(){
                     echo -e "Entry Selected: ${RELAYS[$((choice*2-2))]}"
                     flag=0
                     while [ flag != 0 ]
+                    do
                       echo -e ""
                       echo -e "Do you want to $green[r]$clean replace or $green[d]$clean delete this entry? : "
                       read TMPOPTION
