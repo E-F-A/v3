@@ -19,9 +19,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
-# Todo's:
-#
-# enable/disable PDFinfo (in case of to CPU intensive)  "loadplugin Mail::SpamAssassin::Plugin::PDFInfo" in /etc/mail/spamassassin/v310.pre
+# Enable Extended Globs
+shopt -s extglob
 
 # +---------------------------------------------------+
 # Display menus
@@ -200,8 +199,34 @@ func_transport-settings(){
           read choice
           case $choice in
                 +([0-9]))
-                    echo ${RELAYS[$((choice*2-2))]}
-                    pause 
+                    echo -e "Entry Selected: ${RELAYS[$((choice*2-2))]}"
+                    flag=0
+                    while [ flag != 0 ]
+                      echo -e ""
+                      echo -e "Do you want to $green[r]$clean replace or $green[d]$clean delete this entry? : "
+                      read TMPOPTION
+                      if ( $TMPOPTON == "r" || $TMPOPTION == "R" )
+                        echo -e ""
+                        echo -e "Please enter the domain you want use:"
+                        echo -e -n "$green[Domain]$clean : "
+                        local DOMAIN
+                        read DOMAIN
+                        echo -e "Thank you..."
+                        echo -e ""
+                        echo -e "Now enter the destination server"
+                        echo -e -n "$green[Destination]$clean : "
+                        local DEST
+                        read DEST
+                        echo -e "Thank you.."
+                        sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
+                        
+                      elseif ( $TMPOPTION == "d" || $TMPOPTION == "D" )
+                        sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/d"
+                        echo -e "Entry deleted from transports." && sleep 2
+                        flag=1
+                      else 
+                        echo -e "Error \"$choice\" is not an option..." && sleep 2
+                      fi
                     ;;
                 n)  tpmenu=0
                     echo -e ""
@@ -224,6 +249,7 @@ func_transport-settings(){
                     ;;
                 e)  mailmenu=1 && return ;;
                 *)  echo -e "Error \"$choice\" is not an option..." && sleep 2
+                    echo -e -n "$green[EFA]$clean : "
                     ;;
           esac
         done
