@@ -448,14 +448,19 @@ func_transport-settings(){
                         DESTCHECK=1
                         while [ $DESTCHECK != 0 ]
                         do
-                          if [[ $DEST == "" ]]; then
-                            echo -e "       $red ERROR: Please enter an destination. $clean"
-                            echo -e ""
-                            echo -e -n "$green[Destination]$clean : "
-                            local DEST
-                            read DEST
-                          else
-                            DESTCHECK=0
+                          if checkip $DEST
+                            then
+                              # If $DEST looks to be an valid IP we are ok.
+                              DESTCHECK=0
+                            elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]; then
+                              # If $DEST looks like an valid domain name we are ok.
+                              DESTCHECK=0
+                            else
+                              echo -e "       $red ERROR: The value $DEST seems to be invalid"
+                              echo -e "        ERROR: please re-enter the destination$clean"
+                              echo -e ""
+                              echo -e -n "$green[Destination]$clean : "
+                              read DEST
                           fi
                         done
                         echo -e "Thank you.."
@@ -504,14 +509,19 @@ func_transport-settings(){
                     DESTCHECK=1
                     while [ $DESTCHECK != 0 ]
                       do
-                        if [[ $DEST == "" ]]; then
-                          echo -e "       $red ERROR: Please enter an destination. $clean"
-                          echo -e ""
-                          echo -e -n "$green[Destination]$clean : "
-                          local DEST
-                          read DEST
-                        else
-                          DESTCHECK=0
+                        if checkip $DEST
+                          then
+                            # If $DEST looks to be an valid IP we are ok.
+                            DESTCHECK=0
+                          elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]; then
+                            # If $DEST looks like an valid domain name we are ok.
+                            DESTCHECK=0
+                          else
+                            echo -e "       $red ERROR: The value $DEST seems to be invalid"
+                            echo -e "        ERROR: please re-enter the destination$clean"
+                            echo -e ""
+                            echo -e -n "$green[Destination]$clean : "
+                            read DEST
                         fi
                       done
                     echo -e "Thank you.."
