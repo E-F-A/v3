@@ -192,8 +192,8 @@ func_transport-settings(){
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
-      shopt -s extglob
-      while [[ 1 ]]
+      tpmenu=0
+      while [[ $tpmenu != 0 ]]
         do
           local choice
           read choice
@@ -228,10 +228,10 @@ func_transport-settings(){
                       else 
                         echo -e "Error \"$choice\" is not an option..." && sleep 2
                       fi
-                    done 
+                    done
+                    tpmenu=1 
                     ;;
-                n)  tpmenu=0
-                    echo -e ""
+                n)  echo -e ""
                     echo -e "Please enter the domain you want add:"
                     echo -e -n "$green[Domain]$clean : "
                     local DOMAIN
