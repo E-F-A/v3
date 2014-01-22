@@ -220,14 +220,14 @@ func_transport-settings(){
                         echo -e "Thank you.."
                         sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
                         
-                      elseif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]
+                      elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]
                         sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/d"
                         echo -e "Entry deleted from transports." && sleep 2
                         flag=1
                       else 
                         echo -e "Error \"$choice\" is not an option..." && sleep 2
                       fi
-                    loop
+                    done 
                     ;;
                 n)  tpmenu=0
                     echo -e ""
