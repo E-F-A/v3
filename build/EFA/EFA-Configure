@@ -192,8 +192,8 @@ func_transport-settings(){
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
-      tpmenu=0
-      while [[ $tpmenu != 0 ]]
+      entry=0
+      while [[ $entry != 0 ]]
         do
           local choice
           read choice
@@ -220,16 +220,15 @@ func_transport-settings(){
                         read DEST
                         echo -e "Thank you.."
                         sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
-                        
+                        entry=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
                         sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/d"
                         echo -e "Entry deleted from transports." && sleep 2
-                        flag=1
+                        entry=1
                       else 
                         echo -e "Error \"$choice\" is not an option..." && sleep 2
                       fi
                     done
-                    tpmenu=1 
                     ;;
                 n)  echo -e ""
                     echo -e "Please enter the domain you want add:"
@@ -247,7 +246,6 @@ func_transport-settings(){
                     postmap /etc/postfix/transport
                     echo -e "Domain $DOMAIN added to this system"
                     pause
-                    tpmenu=1
                     ;;
                 e)  mailmenu=1 && return ;;
                 *)  echo -e "Error \"$choice\" is not an option..." && sleep 2
