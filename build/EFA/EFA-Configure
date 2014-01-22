@@ -152,7 +152,7 @@ function func_ask-sigrules() {
                       fi
                     done
                   else
-                        echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
+                        echo -e "Error \"$choice\" is not an option..." && sleep 2
                   fi  
                     ;;
                 n)  echo -e ""
@@ -347,7 +347,7 @@ func_transport-settings(){
                       fi
                     done
                   else
-                        echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
+                        echo -e "Error \"$choice\" is not an option..." && sleep 2
                   fi
                     ;;
                 n)  echo -e ""
