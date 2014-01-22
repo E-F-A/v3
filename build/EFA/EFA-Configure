@@ -227,6 +227,7 @@ func_transport-settings(){
                       else 
                         echo -e "Error \"$choice\" is not an option..." && sleep 2
                       fi
+                    loop
                     ;;
                 n)  tpmenu=0
                     echo -e ""
