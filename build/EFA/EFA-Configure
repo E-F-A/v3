@@ -73,6 +73,8 @@ function func_spam-settings() {
       echo -e "1) Spam and Non Spam Delivery"
       echo -e "2) Inline Signature Rules"
       echo -e ""
+      echo -e "e) Return to main menu"
+      echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
       read choice
