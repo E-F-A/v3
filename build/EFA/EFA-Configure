@@ -191,21 +191,18 @@ func_transport-settings(){
       echo -e "e) Return to main menu"
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
-      entry=0
-      while [ $entry == "0" ]
-        do
-          local choice
-          read choice
-          case $choice in
-                +([0-9]))
-                    echo -e "Entry Selected: ${RELAYS[$((choice*2-2))]}"
-                    flag=0
-                    while [ flag != 0 ]
-                    do
-                      echo -e ""
-                      echo -e "Do you want to $green[r]$clean replace or $green[d]$clean delete this entry? : "
-                      read TMPOPTION
-                      if [[ $TMPOPTON == "r" || $TMPOPTION == "R" ]]; then
+      local choice
+      read choice
+      case $choice in
+             +([0-9]))
+                 echo -e "Entry Selected: ${RELAYS[$((choice*2-2))]}"
+                 flag=0
+                 while [ $flag == "0" ]
+                   do
+                     echo -e ""
+                     echo -e "Do you want to $green[r]$clean replace or $green[d]$clean delete this entry? : "
+                     read TMPOPTION
+                     if [[ $TMPOPTON == "r" || $TMPOPTION == "R" ]]; then
                         echo -e ""
                         echo -e "Please enter the domain you want use:"
                         echo -e -n "$green[Domain]$clean : "
@@ -219,11 +216,11 @@ func_transport-settings(){
                         read DEST
                         echo -e "Thank you.."
                         sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
-                        entry=1
+                        flag=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
                         sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/d"
                         echo -e "Entry deleted from transports." && sleep 2
-                        entry=1
+                        flag=1
                       else 
                         echo -e "Error \"$choice\" is not an option..." && sleep 2
                       fi
@@ -252,7 +249,6 @@ func_transport-settings(){
                     echo -e -n "$green[EFA]$clean : "
                     ;;
           esac
-        done
   done 
 }
 # +---------------------------------------------------+
