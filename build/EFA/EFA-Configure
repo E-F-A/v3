@@ -139,8 +139,8 @@ function func_ask-sigrules() {
                         local DOMAIN
                         read DOMAIN
                         echo -e "Thank you.."
-                        sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/ c\To: \*@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.html" /etc/MailScanner/rules/sig.html.rules
-                        sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/ c\To: \*@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.txt" /etc/MailScanner/rules/sig.text.rules
+                        sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/ c\To: *@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.html" /etc/MailScanner/rules/sig.html.rules
+                        sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/ c\To: *@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.txt" /etc/MailScanner/rules/sig.text.rules
                         flag=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
                         sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/d" /etc/MailScanner/rules/sig.html.rules
@@ -159,8 +159,8 @@ function func_ask-sigrules() {
                     read DOMAIN
                     echo -e "Thank you..."
                     echo -e ""
-                    echo -e "To: \*@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.html" >> /etc/MailScanner/rules/sig.html.rules
-                    echo -e "To: \*@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.txt" >> /etc/MailScanner/rules/sig.text.rules
+                    echo -e "To: *@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.html" >> /etc/MailScanner/rules/sig.html.rules
+                    echo -e "To: *@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.txt" >> /etc/MailScanner/rules/sig.text.rules
                     postmap /etc/postfix/transport
                     echo -e "Domain $DOMAIN added to to signature rules"
                     pause
