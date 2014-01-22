@@ -424,12 +424,40 @@ func_transport-settings(){
                         echo -e -n "$green[Domain]$clean : "
                         local DOMAIN
                         read DOMAIN
+                        # Simple check if domain contains any data.
+                        DOMAINCHECK=1
+                        while [ $DOMAINCHECK != 0 ]
+                          do
+                            if [[ $DOMAIN == "" ]]; then
+                              echo -e "       $red ERROR: Please enter an domain. $clean"
+                              echo -e ""
+                              echo -e -n "$green[Domain]$clean : "
+                              local DOMAIN
+                              read DOMAIN
+                            else
+                              DOMAINCHECK=0
+                            fi
+                          done
                         echo -e "Thank you..."
                         echo -e ""
                         echo -e "Now enter the destination server"
                         echo -e -n "$green[Destination]$clean : "
                         local DEST
                         read DEST
+                        # Simple check if destination contains any data.
+                        DESTCHECK=1
+                        while [ $DESTCHECK != 0 ]
+                        do
+                          if [[ $DEST == "" ]]; then
+                            echo -e "       $red ERROR: Please enter an destination. $clean"
+                            echo -e ""
+                            echo -e -n "$green[Destination]$clean : "
+                            local DEST
+                            read DEST
+                          else
+                            DESTCHECK=0
+                          fi
+                        done
                         echo -e "Thank you.."
                         sed -i "/$ENTDOMAIN[[:space:]]\+smtp:\[$ENTDEST\]/ c\\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
                         flag=1
@@ -486,9 +514,6 @@ func_transport-settings(){
                           DESTCHECK=0
                         fi
                       done
-                          
-                    
-                    
                     echo -e "Thank you.."
                     echo -e "$DOMAIN  smtp:[$DEST]" >> /etc/postfix/transport
                     postmap /etc/postfix/transport
