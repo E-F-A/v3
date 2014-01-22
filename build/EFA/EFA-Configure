@@ -122,7 +122,7 @@ function func_ask-sigrules() {
       read choice
       case $choice in
              +([0-9]))
-                 #if [[ $choice > "0" && $choice < $(($rLen+1)) ]]; then
+               if [[ $choice > "0" && $choice < $(($rLen+1)) ]]; then
                  ENTDOMAIN=${RULES[$((choice-1))]}
                  echo -e "Entry Selected: $ENTDOMAIN" 
                  flag=0
@@ -151,6 +151,9 @@ function func_ask-sigrules() {
                         echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
                       fi
                     done
+                  else
+                        echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
+                  fi  
                     ;;
                 n)  echo -e ""
                     echo -e "Please enter the domain you want add:"
@@ -161,7 +164,6 @@ function func_ask-sigrules() {
                     echo -e ""
                     echo -e "To: *@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.html" >> /etc/MailScanner/rules/sig.html.rules
                     echo -e "To: *@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.txt" >> /etc/MailScanner/rules/sig.text.rules
-                    postmap /etc/postfix/transport
                     echo -e "Domain $DOMAIN added to to signature rules"
                     pause
                     entry=1
@@ -310,6 +312,7 @@ func_transport-settings(){
       read choice
       case $choice in
              +([0-9]))
+               if [[ $choice > "0" && $choice < $(($rLen+1)) ]]; then
                  ENTDOMAIN=${RELAYS[$((choice*2-2))]}
                  ENTDEST=${RELAYS[$((choice*2-1))]}
                  echo -e "Entry Selected: $ENTDOMAIN  $ENTDEST" 
@@ -343,6 +346,9 @@ func_transport-settings(){
                         echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
                       fi
                     done
+                  else
+                        echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
+                  fi
                     ;;
                 n)  echo -e ""
                     echo -e "Please enter the domain you want add:"
