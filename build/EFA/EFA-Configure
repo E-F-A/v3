@@ -218,10 +218,10 @@ func_transport-settings(){
                         local DEST
                         read DEST
                         echo -e "Thank you.."
-                        sed -i "/$ENTDOMAIN[:space:]+smtp\[$ENTDEST\]/ c\\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
+                        sed -i "/$ENTDOMAIN  smtp\[$ENTDEST\]/ c\\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
                         flag=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
-                        sed -i "/$ENTDOMAIN[:space:]+smtp\[$ENTDEST\]/d" /etc/postfix/transport
+                        sed -i "/$ENTDOMAIN  smtp\[$ENTDEST\]/d" /etc/postfix/transport
                         echo -e "Entry deleted from transports." && sleep 2
                         flag=1
                       else 
