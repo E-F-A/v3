@@ -1,5 +1,5 @@
 <p align="center" >
-  <img src="http://www.efa-project.org/wp-content/uploads/2012/10/logo-2-55px.png" alt="EFA" title="EFA">
+  <img src="http://dl.efa-project.org/build/3.0.0.0/EFA/EFAlogo-79px.png" alt="EFA" title="EFA">
 </p>
 
 
