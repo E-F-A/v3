@@ -65,7 +65,7 @@ show_menu() {
 function func_spam-settings() {
   menu=0
   spammenu=1
-  while [ $mailmenu == "1" ]
+  while [ $spammenu == "1" ]
     do  
       func_echo-header
       echo -e "Mail settings"
@@ -81,7 +81,7 @@ function func_spam-settings() {
                 2) func_ask-sigrules;;  
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
-            esac
+      esac
     done
 
 }
