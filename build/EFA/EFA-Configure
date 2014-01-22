@@ -83,7 +83,6 @@ function func_spam-settings() {
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
-
 }
 
 # +---------------------------------------------------+
@@ -99,7 +98,7 @@ function func_ask-sigrules() {
   echo -e "that allow users to submit and release spam."
   echo -e ""
   
-  RULES=( `cat /etc/MailScanner/rules/sig.html.rules | sed '/^To: default/d;/^$/d;s/To: \*@/d' | awk '{print $1}'` )
+  RULES=( `cat /etc/MailScanner/rules/sig.html.rules | sed '/^To: default/d;/^$/d;s/To: \*@//g' | awk '{print $1}'` )
   
   echo ${RULES[0]}
   echo ${RULES[1]}
@@ -126,7 +125,7 @@ function func_ask-spam() {
 
   read TMPSTORENSPAM
   spamcheck=1
-  while [ $spamcheck != 0 ]
+  while [ $spamcheck != "0" ]
     do 
       if [[ "$TMPSTORENSPAM" == "Y" || "$TMPSTORENSPAM" == "y" ]]; then 
         # Set non spam delivery behavior
@@ -157,7 +156,7 @@ function func_ask-spam() {
   echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean spam delivery? [y/N]: "
   read TMPDELIVERSPAM
   spamcheck=1
-  while [ $spamcheck != 0 ]
+  while [ $spamcheck != "0" ]
     do 
       if [[ "$TMPDELIVERSPAM" == "Y" || "$TMPDELIVERSPAM" == "y" ]]; then 
         # Set spam delivery behavior
@@ -640,7 +639,7 @@ func_tunables(){
   echo -e -n "$green[EFA]$clean : Mailscanner children (default/min 2, max 10):"
   read MSTHREADS
   mstuning=1
-  while [ $mstuning != 0 ]
+  while [ $mstuning != "0" ]
    do
      if [[ $MSTHREADS = "" ]]
       then
@@ -673,7 +672,7 @@ func_setipsettings(){
     for ip in $IP $NM $GW $DNS1 $DNS2
         do
             validcheck=1
-            while [ $validcheck != 0 ]
+            while [ $validcheck != "0" ]
                 do
                     if checkip $ip
                         then
