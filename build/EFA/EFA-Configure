@@ -100,7 +100,7 @@ function func_ask-sigrules() {
   echo -e "that allow users to submit and release spam."
   echo -e ""
   
-  RULES=( `cat /etc/MailScanner/rules/sig.html.rules | sed '/^To: default/d;/^$/d;s/To: \*@//g' | awk '{print $1}'` )
+  RULES=( `cat /etc/MailScanner/rules/sig.html.rules | sed '/^To:[[:space:]]\+default/d;/^$/d' | awk '{print $1}' | awk -F'@' '{print $2}'` )
   
   echo ${RULES[0]}
   echo ${RULES[1]}
