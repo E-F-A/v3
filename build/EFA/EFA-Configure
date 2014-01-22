@@ -215,10 +215,10 @@ func_transport-settings(){
                         local DEST
                         read DEST
                         echo -e "Thank you.."
-                        sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp[${RELAY[$((choice*2-1))]}]/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
+                        sed -i "/${RELAY[$((choice*2-2))]}/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
                         flag=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
-                        sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp[${RELAY[$((choice*2-1))]}]/d"
+                        sed -i "/${RELAY[$((choice*2-2))]}/d" /etc/postfix/transport
                         echo -e "Entry deleted from transports." && sleep 2
                         flag=1
                       else 
