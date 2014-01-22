@@ -110,7 +110,7 @@ function func_ask-sigrules() {
     rLen=${#RULES[@]}
     for (( y=0; y<$rLen; y++ ));
       do
-        echo -e "$((y+1)) ${RULES[$y]}"
+        echo -e "$((y+1))) ${RULES[$y]}"
       done
       echo -e ""
       echo -e "n) Add new mail domain rule"
@@ -139,12 +139,12 @@ function func_ask-sigrules() {
                         local DOMAIN
                         read DOMAIN
                         echo -e "Thank you.."
-                        sed -i "/^To:[[:space:]]\+\*@$ENTDOMAIN/ c\To: \*@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.html" /etc/MailScanner/rules/sig.html.rules
-                        sed -i "/^To:[[:space:]]\+\*@$ENTDOMAIN/ c\To: \*@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.txt" /etc/MailScanner/rules/sig.text.rules
+                        sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/ c\To: \*@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.html" /etc/MailScanner/rules/sig.html.rules
+                        sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/ c\To: \*@$DOMAIN /etc/MailScanner/reports/en/inline.sig.in.txt" /etc/MailScanner/rules/sig.text.rules
                         flag=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
-                        sed -i "/To:[[:space:]]\+\*@$ENTDOMAIN/d" /etc/MailScanner/rules/sig.html.rules
-                        sed -i "/To:[[:space:]]\+\*@$ENTDOMAIN/d" /etc/MailScanner/rules/sig.text.rules
+                        sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/d" /etc/MailScanner/rules/sig.html.rules
+                        sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/d" /etc/MailScanner/rules/sig.text.rules
                         echo -e "Entry deleted from signature rules." && sleep 2
                         flag=1
                       else 
