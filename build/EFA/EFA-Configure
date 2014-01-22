@@ -168,7 +168,10 @@ function func_ask-sigrules() {
                     pause
                     entry=1
                     ;;
-                e)  spammenu=1 && return ;;
+                e)  spammenu=1 
+                    service MailScanner reload
+                    return
+                    ;;
                 *)  echo -e "Error \"$choice\" is not an option..." && sleep 2
                     echo -e -n "$green[EFA]$clean : "
                     ;;
