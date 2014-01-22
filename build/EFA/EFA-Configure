@@ -300,7 +300,7 @@ function func_ask-spam() {
       fi
   done
 
-  if [[ DELIVERSPAM == "store" ]]; then
+  if [[ $DELIVERSPAM == "store" ]]; then
     echo -e ""
     echo -e "$green[EFA]$clean Spam Notification Settings:"
     echo -e ""
