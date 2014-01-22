@@ -192,7 +192,7 @@ func_transport-settings(){
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       entry=0
-      while [ $entry != "0" ]
+      while [ $entry == "0" ]
         do
           local choice
           read choice
