@@ -51,13 +51,62 @@ show_menu() {
                     6) func_greylisting ;;
                     7) func_autoupdates ;;                    
                     8) func_mail-settings ;;
-                    9) func_ask-spam ;;
+                    9) func_spam-settings ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
 }
 # +---------------------------------------------------+
 
+# +---------------------------------------------------+
+# +---------------------------------------------------+
+# Configure Spam Behaviour
+# +---------------------------------------------------+
+function func_spam-settings() {
+  menu=0
+  spammenu=1
+  while [ $mailmenu == "1" ]
+    do  
+      func_echo-header
+      echo -e "Mail settings"
+      echo ""
+      echo -e "1) Spam and Non Spam Delivery"
+      echo -e "2) Inline Signature Rules"
+      echo -e ""
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+                1) func_ask-spam;;
+                2) func_ask-sigrules;;  
+                e) menu=1 && return ;;
+                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+            esac
+    done
+
+}
+
+# +---------------------------------------------------+
+# Configure Spam Behaviour
+# +---------------------------------------------------+
+function func_ask-sigrules() {
+  func_echo-header
+  
+  echo -e ""
+  echo -e "Description:"
+  echo -e "Signature rules control which mail domains"
+  echo -e "receive spam and non spam inline signatures"
+  echo -e "that allow users to submit and release spam."
+  echo -e ""
+  
+  RULES=( `cat /etc/MailScanner/rules/sig.html.rules | sed '/^To: default/d;/^$/d;s/To: \*@/d' | awk '{print $1}'` )
+  
+  echo ${RULES[0]}
+  echo ${RULES[1]}
+
+  pause
+
+}
 # +---------------------------------------------------+
 # Configure Spam Behaviour
 # +---------------------------------------------------+
