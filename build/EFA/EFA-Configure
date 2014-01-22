@@ -191,7 +191,6 @@ func_transport-settings(){
       echo -e "e) Return to main menu"
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
-      local choice
       entry=0
       while [[ $entry != 0 ]]
         do
