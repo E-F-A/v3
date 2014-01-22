@@ -424,18 +424,18 @@ func_transport-settings(){
                         echo -e -n "$green[Domain]$clean : "
                         local DOMAIN
                         read DOMAIN
-                        # Simple check if domain contains any data.
+                        # Simple check if domain is valid.
                         DOMAINCHECK=1
                         while [ $DOMAINCHECK != 0 ]
                           do
-                            if [[ $DOMAIN == "" ]]; then
-                              echo -e "       $red ERROR: Please enter an domain. $clean"
+                            if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]; then
+                              DOMAINCHECK=0
+                            else
+                              echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
+                              echo -e "        ERROR: please re-enter the domain$clean"
                               echo -e ""
                               echo -e -n "$green[Domain]$clean : "
-                              local DOMAIN
                               read DOMAIN
-                            else
-                              DOMAINCHECK=0
                             fi
                           done
                         echo -e "Thank you..."
@@ -480,18 +480,18 @@ func_transport-settings(){
                     echo -e -n "$green[Domain]$clean : "
                     local DOMAIN
                     read DOMAIN
-                    # Simple check if domain contains any data.
+                    # Check if the domain is valid.
                     DOMAINCHECK=1
                     while [ $DOMAINCHECK != 0 ]
                       do
-                        if [[ $DOMAIN == "" ]]; then
-                          echo -e "       $red ERROR: Please enter an domain. $clean"
+                        if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]; then
+                          DOMAINCHECK=0
+                        else
+                          echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
+                          echo -e "        ERROR: please re-enter the domain$clean"
                           echo -e ""
                           echo -e -n "$green[Domain]$clean : "
-                          local DOMAIN
                           read DOMAIN
-                        else
-                          DOMAINCHECK=0
                         fi
                       done
                     echo -e "Thank you..."
