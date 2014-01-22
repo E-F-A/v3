@@ -1,5 +1,5 @@
 <p align="center" >
-  <img src="http://dl.efa-project.org/build/3.0.0.0/EFA/EFAlogo-79px.png" alt="EFA" title="EFA">
+  <img src="https://raw.github.com/E-F-A/v3/master/build/EFA/EFAlogo-79px.png" alt="EFA" title="EFA">
 </p>
 
 
