@@ -205,7 +205,7 @@ func_transport-settings(){
                       echo -e ""
                       echo -e "Do you want to $green[r]$clean replace or $green[d]$clean delete this entry? : "
                       read TMPOPTION
-                      if ( $TMPOPTON == "r" || $TMPOPTION == "R" )
+                      if [[ $TMPOPTON == "r" || $TMPOPTION == "R" ]]; then
                         echo -e ""
                         echo -e "Please enter the domain you want use:"
                         echo -e -n "$green[Domain]$clean : "
@@ -220,7 +220,7 @@ func_transport-settings(){
                         echo -e "Thank you.."
                         sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/ c\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
                         
-                      elseif ( $TMPOPTION == "d" || $TMPOPTION == "D" )
+                      elseif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
                         sed -i "/${RELAY[$((choice*2-2))]}[:space:]+smtp\[${RELAY[$((choice*2-1))]}\]/d"
                         echo -e "Entry deleted from transports." && sleep 2
                         flag=1
