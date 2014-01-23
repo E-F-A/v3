@@ -1120,6 +1120,14 @@ func_cleanup () {
     touch /var/log/yum.log
     chmod 600 /var/log/yum.log
 
+    # Clean root
+    rm -f /root/anaconda-ks.cfg
+    rm -f /root/install.log
+    rm -f /root/install.log.syslog
+
+    # Clean tmp
+    rm -rf /tmp/*
+
     # Clean networking in preparation for creating VM Images
     rm -f /etc/udev/rules.d/70-persistent-net.rules
     echo -e "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0
