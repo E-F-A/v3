@@ -32,12 +32,12 @@ show_menu() {
       func_echo-header 
       echo -e "Please choose an option:"
       echo -e " "
-      echo -e "0) Logout                              5) Tunables   "
-      echo -e "1) Shell                               6) Greylisting"
-      echo -e "2) Reboot system                       7) Auto Update"
-      echo -e "3) Halt system                         8) Mail Settings"
-      echo -e "4) IP Settings                         9) Spam Settings" 
-      echo -e ""
+      echo -e "0) Logout                              6) Greylisting"
+      echo -e "1) Shell                               7) Auto Update" 
+      echo -e "2) Reboot system                       8) Mail Settings" 
+      echo -e "3) Halt system                         9) Spam Settings"
+      echo -e "4) IP Settings                        10) Mysql Recovery" 
+      echo -e "5) Tunables"
       echo -e -n "$green[EFA]$clean : "
       local choice
       read choice
@@ -52,6 +52,7 @@ show_menu() {
                     7) func_autoupdates ;;                    
                     8) func_mail-settings ;;
                     9) func_spam-settings ;;
+                   10) func_recover-mysql ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
@@ -59,6 +60,78 @@ show_menu() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Configure Spam Behaviour
+# +---------------------------------------------------+
+function func_recover-mysql() {
+  func_echo-header
+  echo -e ""
+  echo -e "MySQL Daemon and Database Recovery"
+  echo -e ""
+  echo -e "Description:"
+  echo -e "This tool will assist with mysql recovery"
+  echo -e "after a system crash or power failure."
+  echo -e ""
+  echo -e "If recovery fails, it is recommended that"
+  echo -e "you restore your mysql database from a"
+  echo -e "recent backup."
+  echo -e ""
+  echo -e "Do you wish to continue? (y/n)"
+  echo -e ""
+  echo -e -n "$green[EFA]$clean: "
+  local $MYSQLQ  
+  read $MYSQLQ
+    
+  flag=0
+  while [ $flag == "0" ]
+    do
+      if [[ $MYSQLQ == "y" or $MYSQLQ == "Y" ]]; then
+        # Fetch mysql pw
+        MYSQLPW=`grep MYSQLROOTPWD /etc/EFA-Config | awk -F':' '{print $2}'` 
+
+        echo -e ""
+        echo -e "Beginning recovery..."
+
+        echo -e ""
+        echo -e "Stopping MySQL, MailScanner, and sqlgrey"
+        service sqlgrey stop
+        service MailScanner stop
+        service mysqld stop
+        #killall -9 mysqld
+
+        echo -e "Removing socket if present"
+        rm -f /var/lib/mysql/mysql.sock
+
+        echo -e "Performing MyISAM checks"
+        myisamchk --force --fast --update-state --key_buffer_size=64M --sort_buffer_size=64M --read_buffer_size=1M --write_buffer_size=1M /var/lib/mysql/*/*.MYI
+
+        echo -e "Attempting to start MySQL"
+        service mysqld start
+
+        echo -e "Performing additional database checks"
+        mysqlcheck -u sa -p$MYSQLPW --repair --all-databases
+       
+        echo -e "Runing database verification"
+        mysqlcheck -u sa -p$MYSQLPW -o
+
+        echo -e "Starting MySQL and MailScanner"
+        service mysqld start
+        service MailScanner start
+        service sqlgrey start
+
+        flag=1
+      elif [[ $MYSQLQ == "n" or $MYSQLQ == "N" ]]; then
+        echo -e ""
+        echo -e "Exiting..."
+        sleep 2
+        flag=1
+      else
+        echo -e "Choice $green\"$MYSQLQ\"$clean is not a valid choice."
+        echo -e ""
+        echo -e -n "$green[EFA]$clean: "
+        read $MYSQLQ
+      fi
+    done
+}
 # +---------------------------------------------------+
 # Configure Spam Behaviour
 # +---------------------------------------------------+
