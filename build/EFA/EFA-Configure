@@ -38,6 +38,7 @@ show_menu() {
       echo -e "3) Halt system                         9) Spam Settings"
       echo -e "4) IP Settings                        10) Mysql Recovery" 
       echo -e "5) Tunables"
+      echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
       read choice
@@ -105,10 +106,10 @@ function func_recover-mysql() {
         service mysqld start
 
         echo -e "Performing additional database checks"
-        mysqlcheck -u sa -p$MYSQLPW --repair --all-databases
+        mysqlcheck -u root -p$MYSQLPW --repair --all-databases
        
         echo -e "Runing database verification"
-        mysqlcheck -u sa -p$MYSQLPW -o
+        mysqlcheck -u root -p$MYSQLPW -o
 
         echo -e "Starting MySQL and MailScanner"
         service mysqld start
