@@ -115,6 +115,8 @@ function func_recover-mysql() {
         service MailScanner start
         service sqlgrey start
 
+        pause
+
         flag=1
       elif [[ $MYSQLQ == "n" || $MYSQLQ == "N" ]]; then
         echo -e ""
