@@ -84,7 +84,7 @@ function func_recover-mysql() {
   flag=0
   while [ $flag == "0" ]
     do
-      if [[ $MYSQLQ == "y" or $MYSQLQ == "Y" ]]; then
+      if [[ $MYSQLQ == "y" || $MYSQLQ == "Y" ]]; then
         # Fetch mysql pw
         MYSQLPW=`grep MYSQLROOTPWD /etc/EFA-Config | awk -F':' '{print $2}'` 
 
@@ -119,7 +119,7 @@ function func_recover-mysql() {
         service sqlgrey start
 
         flag=1
-      elif [[ $MYSQLQ == "n" or $MYSQLQ == "N" ]]; then
+      elif [[ $MYSQLQ == "n" || $MYSQLQ == "N" ]]; then
         echo -e ""
         echo -e "Exiting..."
         sleep 2
