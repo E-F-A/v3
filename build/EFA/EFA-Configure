@@ -76,7 +76,7 @@ function func_recover-mysql() {
   echo -e "recent backup."
   echo -e ""
   echo -e -n "$green[EFA]$clean Do you wish to continue? (y/n): "
-  read $MYSQLQ
+  read MYSQLQ
     
   flag=0
   while [ $flag == "0" ]
@@ -125,7 +125,7 @@ function func_recover-mysql() {
         echo -e "Choice $green\"$MYSQLQ\"$clean is not a valid choice."
         echo -e ""
         echo -e -n "$green[EFA]$clean: "
-        read $MYSQLQ
+        read MYSQLQ
       fi
     done
 }
