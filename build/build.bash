@@ -21,7 +21,7 @@
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.0-beta"
+version="3.0.0.0"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
