@@ -108,11 +108,10 @@ function func_recover-mysql() {
         echo -e "Performing additional database checks"
         mysqlcheck -u root -p$MYSQLPW --repair --all-databases
        
-        echo -e "Runing database verification"
-        mysqlcheck -u root -p$MYSQLPW -o
+        echo -e "Runing database optimization"
+        mysqlcheck -u root -p$MYSQLPW --optimize --all-databases
 
-        echo -e "Starting MySQL and MailScanner"
-        service mysqld start
+        echo -e "MailScanner and SQLgrey"
         service MailScanner start
         service sqlgrey start
 
