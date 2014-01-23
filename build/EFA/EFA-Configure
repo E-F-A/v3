@@ -101,15 +101,18 @@ function func_recover-mysql() {
 
         echo -e "Performing MyISAM checks"
         myisamchk --force --fast --update-state --key_buffer_size=64M --sort_buffer_size=64M --read_buffer_size=1M --write_buffer_size=1M /var/lib/mysql/*/*.MYI
+        pause
 
         echo -e "Attempting to start MySQL"
         service mysqld start
 
         echo -e "Performing additional database checks"
         mysqlcheck -u root -p$MYSQLPW --repair --all-databases
+        pause
        
         echo -e "Runing database optimization"
         mysqlcheck -u root -p$MYSQLPW --optimize --all-databases
+        pause
 
         echo -e "MailScanner and SQLgrey"
         service MailScanner start
