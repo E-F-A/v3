@@ -302,7 +302,7 @@ func_mailscanner () {
     chmod 700 EFA-Tokens-Cron
 
     # Force mailscanner init to return a code on all failures 
-    sed -i 's/failure/ a\RETVAL=1' /etc/init.d/MailScanner
+    sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/MailScanner
      
 }
 # +---------------------------------------------------+
