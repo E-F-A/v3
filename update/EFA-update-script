@@ -20,24 +20,36 @@
 # +--------------------------------------------------------------------+
 
 #----------------------------------------------------------------#
+# Variables
+#----------------------------------------------------------------#
+logdir="/var/log/EFA"
+gitdlurl="https://raw.github.com/E-F-A/v3/master/"
+mirror="http://dl.efa-project.org"
+mirrorpath="/update"
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
 # get-update path
 #----------------------------------------------------------------#
 function get_update_path() {
   get_cversion
   if [[ $CVERSION == "EFA-3.0.0.0" ]]
     then
-      #update-3.0.0.1
-      echo "I'm sorry currently auto update is not implemented yet.."
-      exit 0
+      update-3.0.0.1
   fi
 }
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
-# Dummy Update to EFA-3.0.0.1 unused for now
+# Update to EFA-3.0.0.1 
 #----------------------------------------------------------------#
 function update-3.0.0.1() {
   echo "Staring update to E.F.A. 3.0.0.1"
+  
+  # grab latest version of EFA-Configure
+  rm -f /usr/local/sbin/EFA-Configure
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/build/EFA/EFA-Configure
+  chmod 700 /usr/local/sbin/EFA-Configure
 }
 #----------------------------------------------------------------#
 
