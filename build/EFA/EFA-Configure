@@ -311,6 +311,15 @@ function func_ask-nonspam() {
         STORENSPAM="deliver header \"X-Spam-Status:No\""
         echo -e "$green[EFA]$clean Non spam storage $green DISABLED $clean"
         spamcheck=0
+        echo -e ""
+        echo -e "Note: When non spam storage is disabled the inline signature"
+        echo -e "\"Report this message as spam\" will not be able to submit"
+        echo -e "messages to the bayesian filter."
+        echo -e ""
+        echo -e "Modify your Inline Signature Rules and remove all domains"
+        echo -e "to receive an inline signature without \"Report this message"
+        echo -e "as spam\" appended."
+        echo -e "" 
       elif [[ "$TMPSTORENSPAM" == "" || "$TMPSTORENSPAM" == "N" || "$TMPSTORENSPAM" == "n" ]]; then 
         STORENSPAM="store deliver header \"X-Spam-Status:No\""
         #sed -i '/Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status:No custom(nonspam)"' /etc/MailScanner/MailScanner.conf
@@ -328,11 +337,10 @@ function func_ask-nonspam() {
   echo -e ""
   echo -e "$green[EFA]$clean By default, non spam has a signature appended."
   echo -e "$green[EFA]$clean This allows users to submit emails that they"
-  echo -e "$green[EFA]$clean suspect is spam."
+  echo -e "$green[EFA]$clean suspect is spam or to receive the default signature"
+  echo -e "$green[EFA]$clean depending on your inline signature rules."
   echo -e ""
-  echo -e "$green[EFA]$clean You can choose to disable the signature, especially"
-  echo -e "$green[EFA]$clean if users are abusing this feature and poisoning the"
-  echo -e "$green[EFA]$clean Bayesian filter."
+  echo -e "$green[EFA]$clean You can choose to disable the signature entirely."
   echo -e ""
   echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean non spam signatures ? [y/N]: "
 
