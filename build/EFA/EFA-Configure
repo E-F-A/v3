@@ -83,8 +83,8 @@ function func_apache-settings() {
       if [[ $TMPSECURE == "y" || $TMPSECURE == "Y" ]]; then
         sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
 
-        iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCETP >/dev/null 2>&1
-        iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCETP
+        iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT>/dev/null 2>&1
+        iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
         echo -e ""
         echo -e "Port 443 $green[Enabled]$clean"
         echo -e ""
@@ -100,7 +100,7 @@ function func_apache-settings() {
 
         sed -i '/^Listen 443/ c\#Listen 443' /etc/httpd/conf.d/ssl.conf
 
-        iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCETP >/dev/null 2>&1
+        iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT >/dev/null 2>&1
 
         echo -e ""
         echo -e "Port 443 $green[Disabled]$clean"
