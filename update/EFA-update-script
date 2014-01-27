@@ -47,18 +47,19 @@ function update-3.0.0.1() {
   echo "Staring update to E.F.A. 3.0.0.1"
   VERSION="3.0.0.1"
   
+  # Upgrade OS to latest version
+  yum -y update
+  
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
   /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/build/EFA/EFA-Configure
   chmod 700 /usr/local/sbin/EFA-Configure
-  
   
   # fix issue 32 clean quarantine not enabled
   sed -i '/$disabled = 1;/ c\$disabled = 0;' /etc/cron.daily/clean.quarantine
 
   # fix issue 23 
   yum -y remove cyrus-sasl-sql cyrus-sasl-ldap
-
 }
 #----------------------------------------------------------------#
 
