@@ -56,6 +56,8 @@ function update-3.0.0.1() {
   # fix issue 32 clean quarantine not enabled
   sed -i '/$disabled = 1;/ c\$disabled = 0;' /etc/cron.daily/clean.quarantine
 
+  # fix issue 23 
+  yum -y remove cyrus-sasl-sql cyrus-sasl-ldap
 
 }
 #----------------------------------------------------------------#
