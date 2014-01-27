@@ -604,6 +604,10 @@ func_transport-settings(){
       padding="                        "
       for (( y=0; y<$tLen; y+=2 ));
       do
+        # Fix layout spacing up to 999 rows..
+        if (( $((y/2+1)) < 10 )); then echo -n "  "
+        elif (( $((y/2+1)) < 100 )); then echo -n " "
+        fi
         echo -e "$((y/2+1))) ${RELAYS[$y]} ${padding:${#RELAYS[$y]}} ${RELAYS[$((y+1))]}"
       done
       echo -e ""
