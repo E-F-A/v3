@@ -303,7 +303,9 @@ func_mailscanner () {
 
     # Force mailscanner init to return a code on all failures 
     sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/MailScanner
-     
+
+    # Enable the quarantine cleanup script
+    sed -i '/$disabled = 1;/ c\$disabled = 0;' /etc/cron.daily/clean.quarantine
 }
 # +---------------------------------------------------+
 
