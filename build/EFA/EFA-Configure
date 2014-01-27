@@ -83,6 +83,7 @@ function func_apache-settings() {
       if [[ $TMPSECURE == "y" || $TMPSECURE == "Y" ]]; then
         sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
 
+        # Todo: this should go to /etc/sysconfig/iptables as the config will be gone after a reboot
         iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT>/dev/null 2>&1
         iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
         echo -e ""
@@ -129,7 +130,7 @@ function func_apache-settings() {
         if [[ $TMPREDIRECT == "y" || $TMPREDIRECT == "Y" ]]; then
         echo -e "RewriteEngine On" > /etc/httpd/conf.d/redirectssl.conf
         echo -e "RewriteCond %{HTTPS} !=on" >> /etc/httpd/conf.d/redirectssl.conf
-        echo -e "RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]" >> /etc/httpd/conf.d/reidrectssl.conf
+        echo -e "RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]" >> /etc/httpd/conf.d/redirectssl.conf
         
         echo -e ""
         echo -e "Port 80 to 443 redirection $green[Enabled]$clean"
