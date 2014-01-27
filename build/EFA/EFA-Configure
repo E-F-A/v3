@@ -82,10 +82,9 @@ function func_apache-settings() {
     do
       if [[ $TMPSECURE == "y" || $TMPSECURE == "Y" ]]; then
         sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
-
-        # Todo: this should go to /etc/sysconfig/iptables as the config will be gone after a reboot
         iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT>/dev/null 2>&1
         iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+        iptables-save
         echo -e ""
         echo -e "Port 443 $green[Enabled]$clean"
         echo -e ""
@@ -102,7 +101,7 @@ function func_apache-settings() {
         sed -i '/^Listen 443/ c\#Listen 443' /etc/httpd/conf.d/ssl.conf
 
         iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT >/dev/null 2>&1
-
+        iptables-save
         echo -e ""
         echo -e "Port 443 $green[Disabled]$clean"
         sleep 2
