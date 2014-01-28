@@ -309,7 +309,6 @@ function func_ask-cleandeliver() {
 
   local TMPDELIVER
   read TMPDELIVER
-  local CLEANDELIVER
   local flag
   flag=1
   while [ $flag != "0" ]
