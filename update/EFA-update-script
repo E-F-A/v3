@@ -60,6 +60,10 @@ function update-3.0.0.1() {
 
   # fix issue 23 
   yum -y remove cyrus-sasl-sql cyrus-sasl-ldap
+
+  # fix issue 24 Disable Deliver Cleaned Messages
+  sed -i '/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No' /etc/MailScanner/MailScanner.conf
+  
 }
 #----------------------------------------------------------------#
 

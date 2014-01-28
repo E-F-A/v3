@@ -32,12 +32,13 @@ show_menu() {
       func_echo-header 
       echo -e "Please choose an option:"
       echo -e " "
-      echo -e "0) Logout                              6) Greylisting"
-      echo -e "1) Shell                               7) Auto Update" 
-      echo -e "2) Reboot system                       8) Mail Settings" 
-      echo -e "3) Halt system                         9) Spam Settings"
-      echo -e "4) IP Settings                        10) Mysql Recovery" 
-      echo -e "5) Tunables                           11) Apache Settings"
+      echo -e "0) Logout                              7) Auto Update"
+      echo -e "1) Shell                               8) Mail Settings" 
+      echo -e "2) Reboot system                       9) Spam Settings" 
+      echo -e "3) Halt system                        10) Mysql Recovery"
+      echo -e "4) IP Settings                        11) Apache Settings" 
+      echo -e "5) Tunables                           12) Virus Settings"
+      echo -e "6) Greylisting"
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
@@ -55,6 +56,7 @@ show_menu() {
                     9) func_spam-settings ;;
                    10) func_recover-mysql ;;
                    11) func_apache-settings ;;
+                   12) func_virus-settings ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
@@ -158,7 +160,7 @@ function func_apache-settings() {
   
 }
 # +---------------------------------------------------+
-# Configure Spam Behaviour
+# Mysql Recovery
 # +---------------------------------------------------+
 function func_recover-mysql() {
   func_echo-header
@@ -240,7 +242,7 @@ function func_spam-settings() {
   while [ $spammenu == "1" ]
     do  
       func_echo-header
-      echo -e "Mail settings"
+      echo -e "Spam settings"
       echo ""
       echo -e "1) Non Spam Settings"
       echo -e "2) Spam Settings"
@@ -262,7 +264,78 @@ function func_spam-settings() {
 }
 
 # +---------------------------------------------------+
-# Configure Spam Behaviour
+# Configure Deliver Cleaned Messages Behaviour
+# +---------------------------------------------------+
+function func_virus-settings() {
+  local menu
+  local virusmenu
+  menu=0
+  virusmenu=1
+  while [ $virusmenu == "1" ]
+    do  
+      func_echo-header
+      echo -e "Virus settings"
+      echo ""
+      echo -e "1) Cleaned Message Delivery"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      echo -e ""
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+                1) func_ask-cleandeliver;;
+                e) menu=1 && return ;;
+                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+      esac
+    done
+}
+
+# +---------------------------------------------------+
+# Cleaned Messages Delivery 
+# +---------------------------------------------------+
+function func_ask-cleandeliver() {
+  func_echo-header
+
+  echo -e ""
+  echo -e "$green[EFA]$clean Cleaned Messages Delivery Settings:"
+  echo -e ""
+  echo -e "$green[EFA]$clean By default, messages that are cleaned of viruses"
+  echo -e "$green[EFA]$clean are not delivered, as they do not undergo spam"
+  echo -e "$green[EFA]$clean checks.  When this option is enabled, cleaned"
+  echo -e "$green[EFA]$clean messages are automatically delivered."
+  echo -e ""
+  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean cleaned message delivery ? [y/N]: "
+
+  local TMPDELIVER
+  read TMPDELIVER
+  local CLEANDELIVER
+  local flag
+  flag=1
+  while [ $flag != "0" ]
+    do 
+      if [[ "$TMPDELIVER" == "Y" || "$TMPDELIVER" == "y" ]]; then 
+        sed -i '/Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No' /etc/MailScanner/MailScanner.conf
+        echo -e "$green[EFA]$clean Cleaned Message Delivery $green DISABLED $clean"
+        flag=0
+      
+      elif [[ "$TMPDELIVER" == "" || "$TMPDELIVER" == "N" || "$TMPDELIVER" == "n" ]]; then 
+        sed -i '/Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = Yes' /etc/MailScanner/MailScanner.conf
+        echo -e "$green[EFA]$clean Cleaned Message Delivery $green ENABLED $clean"
+        flag=0
+      else
+          echo -e "       $red ERROR: please make an selection.$clean"
+          echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean cleaned message delivery? [y/N]: "
+          read TMPDELIVER
+      fi
+  done
+
+
+
+}
+
+# +---------------------------------------------------+
+# Configure Signature Rules
 # +---------------------------------------------------+
 function func_ask-sigrules() {
   sigrules=0
@@ -380,6 +453,7 @@ function func_ask-sigrules() {
           esac
   done
 }
+
 # +---------------------------------------------------+
 # Configure Non Spam Behaviour
 # +---------------------------------------------------+
