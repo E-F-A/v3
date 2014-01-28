@@ -1,0 +1,19 @@
+EFA Verison 3.0.0.1 Changes
+
+01/28/14
+Issue 24 
+Disabled cleaned message delivery
+Add option to configure cleaned message delivery
+
+01/27/14
+Issue 23
+Remove cyrus-sasl-ldap and cyrus-sasl-sql packages
+To suppress sql_select option missing and
+auxpropfunc error no mechanism available
+
+Issue 32
+Enable quarantine cleanup
+
+01/25/14
+Issue 25
+Add https/ssl/tls configuration options for Apache
