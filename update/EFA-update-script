@@ -66,7 +66,7 @@ function update-3.0.0.1() {
   
   # Download latest learn-msg.cgi (fix issue 41)
   cd /var/www/cgi-bin
-  wget $gitdlurl/EFA/learn-msg.cgi
+  wget $gitdlurl/build/EFA/learn-msg.cgi
   chmod 755 learn-msg.cgi
 }
 #----------------------------------------------------------------#
