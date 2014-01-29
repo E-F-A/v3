@@ -41,7 +41,7 @@ if ($token eq "" ){
   die "Error variable is empty"
 }
 
-if ($id =~ /^[A-F0-9]{10}.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
+if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
 
   $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
      $db_user, $db_pass,
