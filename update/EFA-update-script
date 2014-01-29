@@ -64,6 +64,10 @@ function update-3.0.0.1() {
   # fix issue 24 Disable Deliver Cleaned Messages
   sed -i '/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No' /etc/MailScanner/MailScanner.conf
   
+  # Download latest learn-msg.cgi (fix issue 41)
+  cd /var/www/cgi-bin
+  wget $gitdlurl/EFA/learn-msg.cgi
+  chmod 755 learn-msg.cgi
 }
 #----------------------------------------------------------------#
 
