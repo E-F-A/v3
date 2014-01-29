@@ -69,6 +69,9 @@ function update-3.0.0.1() {
   cd /var/www/cgi-bin
   wget $gitdlurl/build/EFA/learn-msg.cgi
   chmod 755 learn-msg.cgi
+
+  # Update Version Number
+  echo "EFA-$VERSION" > /etc/EFA-Version
 }
 #----------------------------------------------------------------#
 
