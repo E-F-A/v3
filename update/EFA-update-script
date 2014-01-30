@@ -23,7 +23,7 @@
 # Variables
 #----------------------------------------------------------------#
 logdir="/var/log/EFA"
-gitdlurl="https://raw.github.com/E-F-A/v3/master/"
+gitdlurl="https://raw.github.com/E-F-A/v3"
 mirror="http://dl.efa-project.org"
 mirrorpath="/update"
 #----------------------------------------------------------------#
@@ -52,7 +52,7 @@ function update-3.0.0.1() {
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/build/EFA/EFA-Configure
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
   chmod 700 /usr/local/sbin/EFA-Configure
   
   # fix issue 32 clean quarantine not enabled
@@ -67,7 +67,7 @@ function update-3.0.0.1() {
   # Download latest learn-msg.cgi (fix issue 41)
   rm -f /var/www/cgi-bin/learn-msg.cgi
   cd /var/www/cgi-bin
-  wget $gitdlurl/build/EFA/learn-msg.cgi
+  wget $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   chmod 755 learn-msg.cgi
 
   # Update Version Number
