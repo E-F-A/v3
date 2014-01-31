@@ -72,6 +72,7 @@ function update-3.0.0.1() {
 
   # Update Version Number
   echo "EFA-$VERSION" > /etc/EFA-Version
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue  
 }
 #----------------------------------------------------------------#
 
