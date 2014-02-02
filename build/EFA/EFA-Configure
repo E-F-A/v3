@@ -128,8 +128,8 @@ function func_system-restore() {
                       echo -e
                       cd /var/EFA/backup
                       tar xzvf ${BACKUPLIST[$choice]} --overwrite
-                      mv -f /var/EFA/backup/backup/etc/* /etc
-                      mv -f /var/EFA/backup/backup/var/* /var 
+                      cp -rf /var/EFA/backup/backup/etc/* /etc
+                      cp -rf /var/EFA/backup/backup/var/* /var
                       cd /var/EFA/backup/backup/sql
                       #fetch SQL root password
                       MYSQLROOTPWD="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/.*://'`"
