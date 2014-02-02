@@ -71,7 +71,7 @@ function update-3.0.0.1() {
   echo "Staring update to E.F.A. 3.0.0.1"
   VERSION="3.0.0.1"
   
-  # Upgrade OS tov latest version
+  # Upgrade OS to latest version
   yum -y update
   
   # grab latest version of EFA-Configure
