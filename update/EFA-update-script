@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20140117
+# Version 20140201
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2014  http://www.efa-project.org
 #
@@ -36,9 +36,33 @@ function get_update_path() {
   if [[ $CVERSION == "EFA-3.0.0.0" ]]
     then
       update-3.0.0.1
+  elif [[ $CVERSION == "EFA-3.0.0.1" ]]
+    then
+      update-3.0.0.2
   fi
 }
 #----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.2 
+#----------------------------------------------------------------#
+function update-3.0.0.2() {
+
+  echo "Staring update to E.F.A. 3.0.0.1"
+  VERSION="3.0.0.2"
+ 
+  # Upgrade OS to latest version
+  yum -y update
+  
+  # grab latest version of EFA-Configure
+  rm -f /usr/local/sbin/EFA-Configure
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/build/EFA/EFA-Configure
+  chmod 700 /usr/local/sbin/EFA-Configure
+
+  # Issue #16 System/db/settings backup
+  mkdir -p /var/EFA/backup
+
+}
 
 #----------------------------------------------------------------#
 # Update to EFA-3.0.0.1 
@@ -47,7 +71,7 @@ function update-3.0.0.1() {
   echo "Staring update to E.F.A. 3.0.0.1"
   VERSION="3.0.0.1"
   
-  # Upgrade OS to latest version
+  # Upgrade OS tov latest version
   yum -y update
   
   # grab latest version of EFA-Configure

@@ -1011,6 +1011,9 @@ func_efarequirements () {
     
     # pre-create the EFA update directory
     mkdir -p /var/EFA/update
+
+    # pre-create the EFA backup directory
+    mkdir -p /var/EFA/backup
     
     # write issue file
     echo "" > /etc/issue
