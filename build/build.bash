@@ -1034,7 +1034,10 @@ func_efarequirements () {
     chmod 700 /usr/local/sbin/EFA-Update
     /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/EFA/EFA-SA-Update
     chmod 700 /usr/local/sbin/EFA-SA-Update
-    
+    /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/EFA/EFA-Backup
+    chmod 700 /usr/local/sbin/EFA-Backup
+      
+ 
     # Write SSH banner
     sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config
     cat > /etc/banner << 'EOF'
@@ -1077,6 +1080,8 @@ func_cron () {
     chmod 700 /etc/cron.daily/EFA-Daily-cron
     /usr/bin/wget -O /etc/cron.monthly/EFA-Monthly-cron  $gitdlurl/EFA/EFA-Monthly-cron
     chmod 700 /etc/cron.monthly/EFA-Monthly-cron
+    /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron  $gitdlurl/EFA/EFA-Backup-cron
+    chmod 700 /etc/cron.daily/EFA-Backup-cron
 }
 # +---------------------------------------------------+
 

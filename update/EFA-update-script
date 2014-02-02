@@ -61,7 +61,10 @@ function update-3.0.0.2() {
 
   # Issue #16 System/db/settings backup
   mkdir -p /var/EFA/backup
-
+  /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/build/EFA/EFA-Backup
+  chmod 700 /usr/local/sbin/EFA-Backup
+  /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/build/EFA/EFA-Backup-cron
+  chmod 700 /etc/cron.daily/EFA-Backup-cron
 }
 
 #----------------------------------------------------------------#
