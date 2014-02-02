@@ -83,7 +83,7 @@ function func_system-restore() {
   local TMPRECOVER
   read TMPRECOVER
   local flag=0
-  while [[ $flag != "0" ]]
+  while [[ $flag != "1" ]]
     do
       if [[ $TMPRECOVER == "N" || $TMPRECOVER == "n" || $TMPRECOVER == "" ]]; then
         flag=1
