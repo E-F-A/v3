@@ -90,7 +90,7 @@ function func_system-restore() {
       elif [[ $TMPRECOVER = "Y" || $TMPRECOVER == "y" ]]; then
         # Gather backups
         local BACKUPLIST
-        BACKUPLIST="`find /var/EFA/backup -type f`"
+        BACKUPLIST="`find /var/EFA/backup -type f` | tr \n \ "
 
         if [[ -n $BACKUPLIST ]]; then
           func_echo-header
@@ -102,6 +102,7 @@ function func_system-restore() {
             echo -e "$((y+1))) ${BACKUPLIST[$y]}"
           done
           local flag2=0
+          echo -e ""
           echo -en "Choose a backup or press $green e) $clean to exit:"
           while [[ $flag2 != "1" ]]
           do
