@@ -90,8 +90,7 @@ function func_system-restore() {
       elif [[ $TMPRECOVER = "Y" || $TMPRECOVER == "y" ]]; then
         # Gather backups
         local BACKUPLIST
-        BACKUPLIST="`find /var/EFA/backup -type f | tr \n \ `"
-
+        BACKUPLIST=(`find /var/EFA/backup -type f`)
         if [[ -n $BACKUPLIST ]]; then
           func_echo-header
           echo -e "Backup Listing"
