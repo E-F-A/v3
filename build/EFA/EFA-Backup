@@ -106,7 +106,7 @@ function start_backup()
   cp -a /var/www/html/mailscanner/conf.php $WORKINGDIR/var/www/html/mailscanner
 
   # Gzip tarball the collection
-  tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz $WORKINGDIR --strip-components=2
+  tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz -C $WORKINGDIR 
   rm -rf $WORKINGDIR
   mv $TMPDIR/backup-$CDATE-$CTIME.tar.gz /var/EFA/backup
 
