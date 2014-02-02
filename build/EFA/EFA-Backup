@@ -26,7 +26,20 @@ action="$1"
 BACKUPDIR="/var/EFA/backup"
 MYSQLROOTPWD="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/.*://'`"
 TMPDIR="/tmp"
+DAYSTOKEEP=5
 
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Begin Backup Purge
+#----------------------------------------------------------------#
+function start_purge()
+{
+  # Do not purge if no recent backups are present
+  if [[ -n `find $BACKUPDIR -type f -mtime -$((DAYSTOKEEP+1))` ]]; then
+    find $BACKUPDIR -type f -mtime +$DAYSTOKEEP -exec rm -f {} \;
+  fi
+} 
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -101,9 +114,13 @@ function start_backup()
   mkdir -p $WORKINGDIR/etc/pki
   cp -ra /etc/pki/* $WORKINGDIR/etc/pki
 
-  # Backup MailScanner Config
+  # Backup MailWatch Config
   mkdir -p $WORKINGDIR/var/www/html/mailscanner
   cp -a /var/www/html/mailscanner/conf.php $WORKINGDIR/var/www/html/mailscanner
+
+  # Backup Apache
+  mkdir -p $WORKINGDIR/etc/httpd
+  cp -ra /etc/httpd/* $WORKINGDIR/etc/httpd
 
   # Gzip tarball the collection
   tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz -C $TMPDIR/$CDATE$CTIME .
@@ -122,7 +139,11 @@ function user_check()
   if [ `whoami` == root ]
     then
       echo "[EFA] Good you are root"
-      start_backup
+      if [[ ${action} == "-backup" ]]; then
+        start_backup
+      elif [[ ${action} == "-purge" ]]; then
+        start_purge
+      fi
   else
     echo "[EFA] Please become root to run this backup"
     exit 0
@@ -141,14 +162,8 @@ function show_usage()
   echo "-backup"
   echo "   Initiate backup"
   echo ""
-  
-  # TODO
-  echo "-verify"
-  echo "   Verify backup"
-  echo ""
-  # TODO
-  echo "-rotate"
-  echo "   Rotate out oldest backups"
+  echo "-purge"
+  echo "   Purge oldest backups"
   echo ""
 }
 #----------------------------------------------------------------#
@@ -162,10 +177,7 @@ function parse_action()
       -backup)
         user_check
         ;;
-      -verify)
-        user_check
-        ;;
-      -rotate)
+      -purge)
         user_check
         ;;
       *)

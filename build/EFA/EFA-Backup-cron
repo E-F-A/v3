@@ -20,3 +20,4 @@
 # +--------------------------------------------------------------------+
 
 /usr/local/sbin/EFA-Backup -backup >> /var/log/EFA/EFA-Backup.log 2>&1
+/usr/local/sbin/EFA-Backup -purge >> /var/log/EFA/EFA-Backup.log 2>&1
