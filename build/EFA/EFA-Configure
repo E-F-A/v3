@@ -73,7 +73,7 @@ function func_system-restore() {
   echo -e ""
   echo -e "System Restore"
   echo -e ""
-  echo -e "!!!WARNING!!!"
+  echo -e "$red !!!WARNING!!! $clean"
   echo -e "System Restore is intended to be used in disaster recovery"
   echo -e "situations only as a last resort! Rolling back the system"
   echo -e "to a recent backup can have consequences, such as the need to"
@@ -83,7 +83,7 @@ function func_system-restore() {
   local TMPRECOVER
   read TMPRECOVER
   local flag=0
-  while [[ $flag=="0" ]]
+  while [ $flag=="0" ]
     do
       if [[ $TMPRECOVER == "N" || $TMPRECOVER == "n" || $TMPRECOVER == "" ]]; then
         flag=1
@@ -103,7 +103,7 @@ function func_system-restore() {
           done
           local flag2=0
           echo -en "Choose a backup or press $green e) $clean to exit:"
-          while [[ $flag2 == "0" ]]
+          while [ $flag2 == "0" ]
           do
             local choice
             read choice
@@ -118,7 +118,7 @@ function func_system-restore() {
                   local TMPRESTORE
                   read TMPRESTORE
                   local flag3=0
-                  while [[ $flag3 == "0" ]]
+                  while [ $flag3 == "0" ]
                   do
                     if [[ $TMPRESTORE == "n" || $TMPRESTORE == "N" || $TMPRESTORE == "" ]]; then
                       flag2=1
@@ -170,6 +170,8 @@ function func_system-restore() {
         read TMPRECOVER
       fi
     done
+
+  sleep 2
 
 }
  
