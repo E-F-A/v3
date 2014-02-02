@@ -112,7 +112,7 @@ function func_system-restore() {
                 if [[ $choice > 0 && $choice < $((tLen+1)) ]]; then
                   echo -e "You have chosen $green $choice $clean"
                   echo -e ""
-                  echo -e "$choice) ${BACKUPLIST[$choice]}"
+                  echo -e "$choice) ${BACKUPLIST[$((choice-1))]}"
                   echo -e ""
                   echo -e "Proceed with restore? (y/N)"
                   local TMPRESTORE
