@@ -122,6 +122,7 @@ function func_system-restore() {
                   do
                     if [[ $TMPRESTORE == "n" || $TMPRESTORE == "N" || $TMPRESTORE == "" ]]; then
                       flag2=1
+                      flag3=1
                     elif [[ $TMPRESTORE == "Y" || $TMPRESTORE == "y" ]]; then
                       echo -e "Beginning Restore of ${BACKUPLIST[$choice]}..."
                       echo -e
