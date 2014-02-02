@@ -126,7 +126,7 @@ function func_system-restore() {
                       echo -e "Beginning Restore of ${BACKUPLIST[$choice]}..."
                       echo -e
                       cd /var/EFA/backup
-                      tar xzvf /var/EFA/backup/${BACKUPLIST[$choice]} --overwrite
+                      tar xzvf ${BACKUPLIST[$choice]} --overwrite
                       mv -f /var/EFA/backup/backup/* / 
                       cd /sql
                       #fetch SQL root password
@@ -149,6 +149,7 @@ function func_system-restore() {
                  ;;
                      e)
                  sleep 2
+                 flag3=1
                  flag2=1  
                  flag=1
                  ;;
