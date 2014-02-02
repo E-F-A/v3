@@ -107,7 +107,7 @@ function start_backup()
 
   # Gzip tarball the collection
   tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz -C $WORKINGDIR .
-  rm -rf $WORKINGDIR
+  rm -rf $TMPDIR/$CDATE$CTIME
   mv $TMPDIR/backup-$CDATE-$CTIME.tar.gz /var/EFA/backup
 
   echo "Backup Completed at `date +%m%d%Y\ %H%M%S`"
