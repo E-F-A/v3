@@ -1,0 +1,199 @@
+#!/bin/bash
+# +--------------------------------------------------------------------+
+# EFA Backup
+# Version 20140201
+# +--------------------------------------------------------------------+
+# Copyright (C) 2012~2014  http://www.efa-project.org
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# +--------------------------------------------------------------------+
+action="$1"
+
+#----------------------------------------------------------------#
+# Variables
+#----------------------------------------------------------------#
+BACKUPDIR="/var/EFA/backup"
+MYSQLROOTPWD="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/.*://'`"
+TMPDIR="/tmp"
+
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Begin Backup
+#----------------------------------------------------------------#
+function start_backup()
+{
+  # Get current date and time
+  CDATE=`date +%m%d%Y`
+  CTIME=`date +%H%M%S`
+
+  echo "Beginning System Backup at $CDATE $CTIME"
+
+  WORKINGDIR=$TMPDIR/$CDATE$CTIME
+
+  mkdir -p $WORKINGDIR
+
+  # Perform SQL Dump
+  mkdir -p $WORKINGDIR/sql
+  mysqldump --user=root --password=$MYSQLROOTPWD --all-databases --events > $WORKINGDIR/sql/backup.sql
+  
+  # Backup Postfix Settings
+  mkdir -p $WORKINGDIR/etc/postfix/ssl
+  cp -a /etc/postfix/*cf $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/*access $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/transport $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/virtual $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/sasl_passwd $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/relocated $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/access $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/canonical $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/generic $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/header_checks $WORKINGDIR/etc/postfix
+  cp -a /etc/postfix/ssl/smtpd.pem $WORKINGDIR/etc/postfix/ssl
+
+  # Backup EFA-Config
+  cp -a /etc/EFA-Config $WORKINGDIR/etc
+  
+  # Backup sysconfig
+  mkdir $WORKINGDIR/etc/sysconfig/
+  cp -ra /etc/sysconfig/* $WORKINGDIR/etc/sysconfig 
+  
+  # Backup portions of /etc
+  cp -a /etc/passwd $WORKINGDIR/etc
+  cp -a /etc/fstab $WORKINGDIR/etc
+  cp -a /etc/shadow $WORKINGDIR/etc
+  cp -a /etc/clamd.conf $WORKINGDIR/etc
+  cp -a /etc/hosts* $WORKINGDIR/etc
+  cp -a /etc/networks $WORKINGDIR/etc
+  cp -a /etc/my.cnf $WORKINGDIR/etc
+  cp -a /etc/php.ini $WORKINGDIR/etc
+  cp -a /etc/resolv* $WORKINGDIR/etc
+  cp -a /etc/sudo.conf $WORKINGDIR/etc
+  cp -a /etc/webmin.config $WORKINGDIR/etc
+  
+  # Backup MailScanner settings
+  mkdir -p $WORKINGDIR/etc/MailScanner
+  cp -ra /etc/MailScanner/* $WORKINGDIR/etc/MailScanner
+  
+  # Backup Cron
+  cp -ra /etc/cron* $WORKINGDIR/etc
+
+  # Backup SQLGrey
+  mkdir -p $WORKINGDIR/etc/sqlgrey
+  cp -a /etc/sqlgrey/* $WORKDINGDIR/etc/sqlgrey
+  
+  # Backup SSH Config
+  mkdir -p $WORKINGDIR/etc/ssh
+  cp -a /etc/ssh/* $WORKINGDIR/etc/ssh
+
+  # Backup pki
+  mkdir -p $WORKINGDIR/etc/pki
+  cp -ra /etc/pki/* $WORKINGDIR/etc/pki
+
+  # Backup MailScanner Config
+  mkdir -p $WORKINGDIR/var/www/html/mailscanner
+  cp -a /var/www/html/mailscanner/conf.php $WORKINGDIR/var/www/html/mailscanner
+
+  # Gzip tarball the collection
+  tar -cfpz $TMPDIR/backup-$CDATE-$CTIME.tar.gz $WORKINGDIR
+  rm -rf $WORKINGDIR
+  mv $TMPDIR/backup-$CDATE-$CTIME.tar.gz /var/EFA/backup
+
+  echo "Backup Completed at `date`"
+
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Check if we are root
+#----------------------------------------------------------------#
+function user_check()
+{
+  if [ `whoami` == root ]
+    then
+      echo "[EFA] Good you are root"
+      start_backup
+  else
+    echo "[EFA] Please become root to run this backup"
+    exit 0
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# show the usage
+#----------------------------------------------------------------#
+function show_usage()
+{
+  echo "Usage: $0 [option]"
+  echo "Where [option] is:"
+  echo ""
+  echo "-backup"
+  echo "   Initiate backup"
+  echo ""
+  
+  # TODO
+  echo "-verify"
+  echo "   Verify backup"
+  echo ""
+  # TODO
+  echo "-rotate"
+  echo "   Rotate out oldest backups"
+  echo ""
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Parse action
+#----------------------------------------------------------------#
+function parse_action()
+{
+  case $action in
+      -backup)
+        user_check
+        ;;
+      -verify)
+        user_check
+        ;;
+      -rotate)
+        user_check
+        ;;
+      *)
+        show_usage
+        ;;
+  esac
+  exit 0
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Main function
+#----------------------------------------------------------------#
+function main()
+{
+  if [ "X${action}" == "X" ]
+    then
+      show_usage
+      exit 0
+    else
+      parse_action
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Run main
+#----------------------------------------------------------------#
+main
+#----------------------------------------------------------------#

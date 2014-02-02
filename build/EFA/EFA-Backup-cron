@@ -19,7 +19,4 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
-/usr/local/sbin/EFA-Backup -cron >> /var/log/EFA/EFA-Backup.log 2>&1
-
-
-
+/usr/local/sbin/EFA-Backup -backup >> /var/log/EFA/EFA-Backup.log 2>&1
