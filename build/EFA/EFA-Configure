@@ -124,10 +124,10 @@ function func_system-restore() {
                       flag2=1
                       flag3=1
                     elif [[ $TMPRESTORE == "Y" || $TMPRESTORE == "y" ]]; then
-                      echo -e "Beginning Restore of ${BACKUPLIST[$choice]}..."
+                      echo -e "Beginning Restore of ${BACKUPLIST[$((choice-1))]}..."
                       echo -e
                       cd /var/EFA/backup
-                      tar xzvf ${BACKUPLIST[$choice]} --overwrite
+                      tar xzvf ${BACKUPLIST[$((choice-1))]} --overwrite
                       cp -rf /var/EFA/backup/backup/etc/* /etc
                       cp -rf /var/EFA/backup/backup/var/* /var
                       cd /var/EFA/backup/backup/sql
