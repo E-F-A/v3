@@ -40,7 +40,7 @@ function start_backup()
 
   echo "Beginning System Backup at $CDATE $CTIME"
 
-  WORKINGDIR=$TMPDIR/$CDATE$CTIME
+  WORKINGDIR=$TMPDIR/$CDATE$CTIME/backup
 
   mkdir -p $WORKINGDIR
 
