@@ -91,7 +91,7 @@ function start_backup()
 
   # Backup SQLGrey
   mkdir -p $WORKINGDIR/etc/sqlgrey
-  cp -a /etc/sqlgrey/* $WORKDINGDIR/etc/sqlgrey
+  cp -a /etc/sqlgrey/* $WORKINGDIR/etc/sqlgrey
   
   # Backup SSH Config
   mkdir -p $WORKINGDIR/etc/ssh
@@ -106,7 +106,7 @@ function start_backup()
   cp -a /var/www/html/mailscanner/conf.php $WORKINGDIR/var/www/html/mailscanner
 
   # Gzip tarball the collection
-  tar -cfpz $TMPDIR/backup-$CDATE-$CTIME.tar.gz $WORKINGDIR
+  tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz $WORKINGDIR
   rm -rf $WORKINGDIR
   mv $TMPDIR/backup-$CDATE-$CTIME.tar.gz /var/EFA/backup
 
