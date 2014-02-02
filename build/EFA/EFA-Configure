@@ -141,7 +141,7 @@ function func_system-restore() {
                       echo -e ""
                       echo -e "A restart is needed to complete restore.  Press enter to reboot."
                       pause
-                      shutdown -r -t now
+                      shutdown -r now
                       flag3=1
                       flag2=1
                       flag=1
