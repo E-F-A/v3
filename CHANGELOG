@@ -1,5 +1,9 @@
 EFA Version 3.0.0.2 Changes
 
+02/02/14
+Issue #16 Enhancement
+Automated Backup of MySQL and Settings
+
 02/01/14
 Issue #12 Enhancement
 Improved handling of transport file with EFA-Configure
