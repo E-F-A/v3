@@ -35,9 +35,14 @@ DAYSTOKEEP=5
 #----------------------------------------------------------------#
 function start_purge()
 {
+
+  echo "Purging Backups older than $DAYSTOKEEP..."
   # Do not purge if no recent backups are present
   if [[ -n `find $BACKUPDIR -type f -mtime -$((DAYSTOKEEP+1))` ]]; then
     find $BACKUPDIR -type f -mtime +$DAYSTOKEEP -exec rm -f {} \;
+    echo "Old backups purged."
+  elif
+    echo "No recent backups are present!  Skipping purge."
   fi
 } 
 #----------------------------------------------------------------#
