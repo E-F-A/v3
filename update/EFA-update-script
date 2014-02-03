@@ -36,7 +36,7 @@ function get_update_path() {
   if [[ $CVERSION == "EFA-3.0.0.0" ]]
     then
       update-3.0.0.1
-  elif [[ $CVERSION == "EFA-3.0.0.1 ]]
+  elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
       update-3.0.0.2
   fi
