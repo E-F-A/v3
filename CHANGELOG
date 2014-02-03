@@ -1,3 +1,12 @@
+EFA Version 3.0.0.2 changes
+
+02/03/14
+Issue #44
+Urgent: learn-msg.cgi broken
+Insert EFA database password back into script
+
+No other changes for 3.0.0.2.  Build from scratch is not affected by this bug and can remain on 3.0.0.1 at this time.
+
 EFA Version 3.0.0.1 Changes
 
 01/29/14
