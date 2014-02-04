@@ -1,4 +1,4 @@
-EFA Version 3.0.0.2 Changes
+EFA Version 3.0.0.3 Changes
 
 02/02/14
 Issue #16 Enhancement
@@ -7,6 +7,15 @@ Automated Backup of MySQL and Settings
 02/01/14
 Issue #12 Enhancement
 Improved handling of transport file with EFA-Configure
+
+EFA Version 3.0.0.2 changes
+
+02/03/14
+Issue #44
+Urgent: learn-msg.cgi broken
+Insert EFA database password back into script
+
+No other changes for 3.0.0.2.  Build from scratch is not affected by this bug and can remain on 3.0.0.1 at this time.
 
 EFA Version 3.0.0.1 Changes
 
