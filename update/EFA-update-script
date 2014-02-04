@@ -39,21 +39,24 @@ function get_update_path() {
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
       update-3.0.0.2
+  elif [[ $CVERSION == "EFA-3.0.0.2" ]]
+    then
+      update-3.0.0.3
   fi
 }
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
-# Update to EFA-3.0.0.2 
+# Update to EFA-3.0.0.3
 #----------------------------------------------------------------#
-function update-3.0.0.2() {
+function update-3.0.0.3() {
 
-  echo "Staring update to E.F.A. 3.0.0.2"
-  VERSION="3.0.0.2"
+  echo "Staring update to E.F.A. 3.0.0.3"
+  VERSION="3.0.0.3"
  
   # Upgrade OS to latest version
   yum -y update
-  
+
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
   /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/build/EFA/EFA-Configure
@@ -65,6 +68,28 @@ function update-3.0.0.2() {
   chmod 700 /usr/local/sbin/EFA-Backup
   /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/build/EFA/EFA-Backup-cron
   chmod 700 /etc/cron.daily/EFA-Backup-cron
+  
+  echo "EFA-$VERSION" > /etc/EFA-Version
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
+
+}
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.2 
+#----------------------------------------------------------------#
+function update-3.0.0.2() {
+
+  echo "Staring update to E.F.A. 3.0.0.2"
+  VERSION="3.0.0.2"
+ 
+  # Upgrade OS to latest version
+  yum -y update
+  
+   # fix issue Urgent: learn-msg.cgi broken #44
+  EFASQLPWD="grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'"
+  sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
+  
+  echo "EFA-$VERSION" > /etc/EFA-Version
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
 }
 
 #----------------------------------------------------------------#
