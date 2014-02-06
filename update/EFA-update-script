@@ -36,9 +36,12 @@ function get_update_path() {
   if [[ $CVERSION == "EFA-3.0.0.0" ]]
     then
       update-3.0.0.1
+      update-3.0.0.2
+      update-3.0.0.3
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
       update-3.0.0.2
+      update-3.0.0.3
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
       update-3.0.0.3
@@ -71,7 +74,6 @@ function update-3.0.0.3() {
   
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
-
 }
 #----------------------------------------------------------------#
 # Update to EFA-3.0.0.2 
