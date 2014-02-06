@@ -55,7 +55,7 @@ function update-3.0.0.2() {
   yum -y update
   
   # fix issue Urgent: learn-msg.cgi broken #44
-  EFASQLPWD="grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'"
+  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
   
   echo "EFA-$VERSION" > /etc/EFA-Version
