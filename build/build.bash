@@ -655,6 +655,7 @@ func_mailwatch () {
     wget $gitdlurl/EFA/notreleased.html
     wget $gitdlurl/EFA/learned.html
     wget $gitdlurl/EFA/notlearned.html    
+    wget $gitdlurl/EFA/denylearned.html
  
     # MailWatch requires access to /var/spool/postfix/hold & incoming dir's
     chown -R postfix:apache /var/spool/postfix/hold
