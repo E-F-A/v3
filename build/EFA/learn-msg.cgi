@@ -28,7 +28,8 @@ $query = new CGI;
 $salearn = "/usr/local/bin/sa-learn --spam";
 $id = param("id");
 $token = param("token");
-
+$trustednets = file_get_contents('/etc/sysconfig/EFA_trusted_nets');
+$ipaddress = getenv('REMOTE_ADDR');
 $db_name = "efa";
 $db_host = "localhost";
 $db_user = "efa";
@@ -42,43 +43,79 @@ if ($token eq "" ){
 }
 
 if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
-
-  $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
-     $db_user, $db_pass,
-     {PrintError => 0});
-
-  if (!dbh) { die "Error connecting to database" }
-
-  $sql = "SELECT token from tokens WHERE token=\"$token\"";
-  $sth = $dbh->prepare($sql);
-  $sth->execute;
-  @results = $sth->fetchrow;
-  if (!$results[0]) { 
-
-    $sth->finish();
-    $dbh->disconnect();  
-    
-    # redirect to failure page
-    print "<meta http-equiv=\"refresh\" content=\"0;URL=/notlearned.html\">";
+  # Check Trusted Networks
+  $flag=0;
+  # Is it empty or just whitepace? If so just move on...
+  if ($trustednets == '' || ctype_space($trustednets) {
+    $flag=1;
   } else {
+    # Not empty, now loop though and see if source ip is in trusted nets
+    $trustednets = explode("\n", $trustednets);
+    foreach($trustednets as $row => $data)
+    {
+      $row_data = explode(" ", $data);
 
-    $msgtolearn = `find /var/spool/MailScanner/quarantine/ -name $id`;
+      $ipnet = $row_data[0];
+      $mask = $row_data[1];
+      
+      if (isIPIn($ipaddress,$ipnet,$mask)){
+        $flag=1;
+      }
+    }
+  }
+  if ($flag == 1) {
+    $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
+       $db_user, $db_pass,
+       {PrintError => 0});
 
-    print "$msgtolearn";
-    open(MAIL, "|$salearn $msgtolearn") or die "Cannot open $salearn: $!";
-    close(MAIL);
+    if (!dbh) { die "Error connecting to database" }
 
-    # Remove token from db after release
-    $sql = "DELETE from tokens WHERE token=\"$token\"";
+    $sql = "SELECT token from tokens WHERE token=\"$token\"";
     $sth = $dbh->prepare($sql);
-    $sth->execute;
-  
-    $sth->finish();
-    $dbh->disconnect();  
+     $sth->execute;
+    @results = $sth->fetchrow;
+    if (!$results[0]) { 
 
-    # redirect to success page
-    print "<meta http-equiv=\"refresh\" content=\"0;URL=/learned.html\">";
+      $sth->finish();
+      $dbh->disconnect();  
+    
+      # redirect to failure page
+      print "<meta http-equiv=\"refresh\" content=\"0;URL=/notlearned.html\">";
+    } else {
+
+      $msgtolearn = `find /var/spool/MailScanner/quarantine/ -name $id`;
+
+      print "$msgtolearn";
+      open(MAIL, "|$salearn $msgtolearn") or die "Cannot open $salearn: $!";
+      close(MAIL);
+
+      # Remove token from db after release
+      $sql = "DELETE from tokens WHERE token=\"$token\"";
+      $sth = $dbh->prepare($sql);
+      $sth->execute;
+  
+      $sth->finish();
+      $dbh->disconnect();  
+
+      # redirect to success page
+      print "<meta http-equiv=\"refresh\" content=\"0;URL=/learned.html\">";
+    }
+  } else {
+    # Untrusted network detected
+    print "<meta http-equiv="\refresh\" content\"0;URL=/denylearned.html\">";
   }
 }else{
-  die "Error in id or token syntax";
+    die "Error in id or token syntax";
+}
+
+# from samulele at norsam dot org
+# http://www.php.net/manual/en/ref.network.php
+function isIPIn($ip,$net,$mask) {
+ $lnet=ip2long($net);
+ $lip=ip2long($ip);
+ $binnet=str_pad( decbin($lnet),32,"0","STR_PAD_LEFT" );
+ $firstpart=substr($binnet,0,$mask);
+ $binip=str_pad( decbin($lip),32,"0","STR_PAD_LEFT" );
+ $firstip=substr($binip,0,$mask);
+ return(strcmp($firstpart,$firstip)==0);
 }
