@@ -22,63 +22,88 @@
 use CGI::Carp qw(fatalsToBrowser);
 use CGI qw(:standard);
 use DBI;
+use Net::Netmask;
 print "Content-type: text/html \n\n";
 
 $query = new CGI;
 $salearn = "/usr/local/bin/sa-learn --spam";
 $id = param("id");
 $token = param("token");
-
 $db_name = "efa";
 $db_host = "localhost";
 $db_user = "efa";
 $db_pass = "EfaPr0j3ct";
 
+open(FILE, '/etc/sysconfig/EFA_trusted_networks') or die "Trusted Networks File Missing");
+@trustednetworks = <FILE>;
+close (FILE);
+
 if ($id eq "" ){
-  die "Error variable is empty"
+  die "Error variable is empty";
 }
 if ($token eq "" ){
-  die "Error variable is empty"
+  die "Error variable is empty";
 }
 
 if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
-
-  $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
-     $db_user, $db_pass,
-     {PrintError => 0});
-
-  if (!dbh) { die "Error connecting to database" }
-
-  $sql = "SELECT token from tokens WHERE token=\"$token\"";
-  $sth = $dbh->prepare($sql);
-  $sth->execute;
-  @results = $sth->fetchrow;
-  if (!$results[0]) { 
-
-    $sth->finish();
-    $dbh->disconnect();  
-    
-    # redirect to failure page
-    print "<meta http-equiv=\"refresh\" content=\"0;URL=/notlearned.html\">";
+  # Is the array empty or not...
+  $flag=0;
+  # TODO:  May need to test for whitepace in the array
+  if(@trustednetworks) {
+    foreach (@trustednetworks) {
+      @items = split(/ /);
+      $ip = @items[0];
+      $mask = @items[1];
+      $block = new Net::Netmask ($ip,$mask);
+      if ($block->match($ENV{REMOTE_ADDR}) {
+        $flag=1;
+      }
+    }
   } else {
+    $flag=1;
+  }  
 
-    $msgtolearn = `find /var/spool/MailScanner/quarantine/ -name $id`;
+  if ($flag) {
+    $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
+       $db_user, $db_pass,
+       {PrintError => 0});
 
-    print "$msgtolearn";
-    open(MAIL, "|$salearn $msgtolearn") or die "Cannot open $salearn: $!";
-    close(MAIL);
+    if (!dbh) { die "Error connecting to database" }
 
-    # Remove token from db after release
-    $sql = "DELETE from tokens WHERE token=\"$token\"";
+    $sql = "SELECT token from tokens WHERE token=\"$token\"";
     $sth = $dbh->prepare($sql);
     $sth->execute;
-  
-    $sth->finish();
-    $dbh->disconnect();  
+    @results = $sth->fetchrow;
+    if (!$results[0]) { 
+ 
+      $sth->finish();
+      $dbh->disconnect();  
+    
+      # redirect to failure page
+      print "<meta http-equiv=\"refresh\" content=\"0;URL=/notlearned.html\">";
+    } else {
 
-    # redirect to success page
-    print "<meta http-equiv=\"refresh\" content=\"0;URL=/learned.html\">";
-  }
+      $msgtolearn = `find /var/spool/MailScanner/quarantine/ -name $id`;
+
+      print "$msgtolearn";
+      open(MAIL, "|$salearn $msgtolearn") or die "Cannot open $salearn: $!";
+      close(MAIL);
+
+      # Remove token from db after release
+      $sql = "DELETE from tokens WHERE token=\"$token\"";
+      $sth = $dbh->prepare($sql);
+      $sth->execute;
+  
+      $sth->finish();
+      $dbh->disconnect();  
+
+      # redirect to success page
+      print "<meta http-equiv=\"refresh\" content=\"0;URL=/learned.html\">";
+    }
+  } else {
+      # redirect to denial page
+      print "<meta http-equiv=\"refresh\" content=\"0;URL=/denylearned.html\">";
+  }  
 }else{
-  die "Error in id or token syntax";
+    die "Error in id or token syntax";
 }
