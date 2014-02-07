@@ -394,10 +394,10 @@ function func_ask-trustednets() {
       echo -e ""
       echo -e "$green[EFA]$clean Trusted Network Settings:"
       echo -e ""
-      echo -e "$green[EFA]$clean Trusted networks are networks from which you want to"
-      echo -e "$green[EFA]$clean accept spam submissions via the \"Click here to report this message as spam\""
-      echo -e "$green[EFA]$clean link. All other networks will receive a message indicating that submission is"
-      echo -e "$green[EFA]$clean being performed from an untrusted network and will be declined."
+      echo -e "$green[EFA]$clean Trusted networks are networks from which you want to accept"
+      echo -e "$green[EFA]$clean spam submissions via the \"Click here to report this message as spam\""
+      echo -e "$green[EFA]$clean link. All other networks will receive a message indicating that"
+      echo -e "$green[EFA]$clean submission is being attempted from an untrusted network."
       echo -e ""
 
       local RULES
@@ -466,15 +466,14 @@ function func_ask-trustednets() {
                         local NETCHECK=1
                         while [ $NETCHECK != 0 ]
                         do
-                          if checkip $NETMASK
-                            then
-                              NETCHECK=0
-                            else
-                              echo -e "       $red ERROR: The value $NETMASK seems to be invalid"
-                              echo -e "        ERROR: please re-enter the subnet mask$clean"
-                              echo -e ""
-                              echo -e -n "$green[netmask]$clean : "
-                              read NETMASK
+                          if checkip $NETMASK; then
+                            NETCHECK=0
+                          else
+                            echo -e "       $red ERROR: The value $NETMASK seems to be invalid"
+                            echo -e "        ERROR: please re-enter the subnet mask$clean"
+                            echo -e ""
+                            echo -e -n "$green[netmask]$clean : "
+                            read NETMASK
                           fi
                         done
                         echo -e "Thank you.."
@@ -496,7 +495,7 @@ function func_ask-trustednets() {
                 ;;
                 n)
                 echo -e ""
-                echo -e "Please enter the IP network (i.e. 192.168.0.0, 10.0.0.0, 172.16.0.0) you want add:"
+                echo -e "Please enter the IP network (192.168.0.0, 10.0.0.0, 172.16.0.0) you want add:"
                 echo -e -n "$green[ipnetwork]$clean : "
                 local IPNET
                 read IPNET
@@ -523,7 +522,7 @@ function func_ask-trustednets() {
                 while [ $NETCHECK != 0 ]
                   do
                     if checkip $NETMASK; then
-                      DESTCHECK=0
+                      NETCHECK=0
                     else
                       echo -e "       $red ERROR: The value $NETMASK seems to be invalid"
                       echo -e "        ERROR: please re-enter the subnet mask$clean"
@@ -538,7 +537,7 @@ function func_ask-trustednets() {
                 pause
                 ;;
                 e)  
-                mailmenu=1 && return 
+                spammenu=1 && return 
                 ;;
                 *)  
                 echo -e "Error \"$choice\" is not an option..." && sleep 2
