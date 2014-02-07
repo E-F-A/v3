@@ -71,6 +71,11 @@ function update-3.0.0.3() {
   chmod 700 /usr/local/sbin/EFA-Backup
   /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/build/EFA/EFA-Backup-cron
   chmod 700 /etc/cron.daily/EFA-Backup-cron
+
+  # Issue #17 Trusted Network Rules
+  touch /etc/sysconfig/EFA_trusted_networks
+  yum -y install perl-Net-Netmask
+  /usr/bin/wget -O /var/www/html/denylearned.html $gitdlurl/build/EFA/denylearned.html
   
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
