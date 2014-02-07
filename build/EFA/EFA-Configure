@@ -387,10 +387,10 @@ function func_spam-settings() {
 # Configure Trusted Networks
 # +---------------------------------------------------+
 function func_ask-trustednets() {
-  func_echo-header
   local trustednets=0
   while [ $trustednets != "1" ];
     do
+      func_echo-header
       echo -e ""
       echo -e "$green[EFA]$clean Trusted Network Settings:"
       echo -e ""
@@ -425,7 +425,7 @@ function func_ask-trustednets() {
       read choice
       case $choice in
              +([0-9]))
-                if [[ $choice > "0" && $choice < $((tLen/2+1)) ]]; then
+                if [[ $choice > "0" && $choice < $((rLen/2+1)) ]]; then
                   ENTIP=${RULES[$((choice*2-2))]}
                   ENTNET=${RULES[$((choice*2-1))]}
                   echo -e "Entry Selected: $ENTIP  $ENTNET" 
