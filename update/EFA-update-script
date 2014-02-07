@@ -78,6 +78,7 @@ function update-3.0.0.3() {
   /usr/bin/wget -O /var/www/html/denylearned.html $gitdlurl/build/EFA/denylearned.html
   rm -f /var/www/cgi-bin/learn-msg.cgi
   /usr/bin/wget -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/build/EFA/learn-msg.cgi
+  chmod 755 /var/www/cgi-bin/learn-msg.cgi
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
   
