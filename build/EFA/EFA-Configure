@@ -446,7 +446,7 @@ function func_ask-trustednets() {
                         local IPCHECK=1
                         while [ $IPCHECK != 0 ]
                           do
-                            if ipcheck $IPNET; then
+                            if checkip $IPNET; then
                               IPCHECK=0
                             else
                               echo -e "       $red ERROR: The IP $IPNET seems to be invalid"
