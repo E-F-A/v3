@@ -1,5 +1,9 @@
 EFA Version 3.0.0.3 Changes
 
+02/06/14
+Issue #17 Enhancement
+Trusted Networks Support for learn-msg.cgi
+
 02/02/14
 Issue #16 Enhancement
 Automated Backup of MySQL and Settings
