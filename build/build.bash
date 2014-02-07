@@ -1014,7 +1014,10 @@ func_efarequirements () {
 
     # pre-create the EFA backup directory
     mkdir -p /var/EFA/backup
-    
+   
+    # pre-create the EFA Trusted Networks Config
+    touch /etc/sysconfig/EFA_trusted_networks
+ 
     # write issue file
     echo "" > /etc/issue
     echo "------------------------------" >> /etc/issue
