@@ -34,7 +34,7 @@ $db_host = "localhost";
 $db_user = "efa";
 $db_pass = "EfaPr0j3ct";
 
-open(FILE, '/etc/sysconfig/EFA_trusted_networks') or die "Trusted Networks File Missing");
+open(FILE, '/etc/sysconfig/EFA_trusted_networks') or die ("Trusted Networks File Missing");
 @trustednetworks = <FILE>;
 close (FILE);
 
@@ -54,8 +54,8 @@ if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/ && $token =~/
       @items = split(/ /);
       $ip = @items[0];
       $mask = @items[1];
-      $block = new Net::Netmask ($ip,$mask);
-      if ($block->match($ENV{REMOTE_ADDR}) {
+      $block = new Net::Netmask($ip,$mask);
+      if ($block->match($ENV{REMOTE_ADDR})) {
         $flag=1;
       }
     }
