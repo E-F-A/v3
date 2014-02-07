@@ -375,7 +375,7 @@ function func_spam-settings() {
       case $choice in
                 1) func_ask-nonspam;;
                 2) func_ask-spam;;
-                3) func_ask-sigrules;;a
+                3) func_ask-sigrules;;
                 4) func_ask-trustednets;;  
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
