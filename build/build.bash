@@ -465,6 +465,7 @@ func_apache () {
 # http://sqlgrey.sourceforge.net/
 # +---------------------------------------------------+
 func_sqlgrey () {
+    cd /usr/src/EFA
     useradd sqlgrey -m -d /home/sqlgrey -s /sbin/nologin
     wget $mirror/$mirrorpath/sqlgrey-1.8.0.tar.gz
     tar -xvzf sqlgrey-1.8.0.tar.gz

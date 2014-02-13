@@ -82,6 +82,10 @@ function update-3.0.0.3() {
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
   
+  #  Issue #50, clean sqlgrey source files
+  rm -rf /etc/cron.weekly/sqlgrey-1.8.0*
+  
+  # Version update
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
 }
