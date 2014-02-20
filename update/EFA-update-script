@@ -84,6 +84,13 @@ function update-3.0.0.3() {
   
   #  Issue #50, clean sqlgrey source files
   rm -rf /etc/cron.weekly/sqlgrey-1.8.0*
+
+  #  Issue #53, fix postfix queues after yum update
+  #  Todo:  add this to every future update as a standard change
+  chown postfix:apache /var/spool/postfix/incoming
+  chown postfix:apache /var/spool/postfix/hold
+  chmod 740 /var/spool/postfix/incoming
+  chmod 740 /var/spool/postfix/hold
   
   # Version update
   echo "EFA-$VERSION" > /etc/EFA-Version
