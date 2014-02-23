@@ -86,11 +86,82 @@ function update-3.0.0.3() {
   rm -rf /etc/cron.weekly/sqlgrey-1.8.0*
 
   #  Issue #53, fix postfix queues after yum update
-  #  Todo:  add this to every future update as a standard change
   chown postfix:apache /var/spool/postfix/incoming
   chown postfix:apache /var/spool/postfix/hold
   chmod 740 /var/spool/postfix/incoming
   chmod 740 /var/spool/postfix/hold
+
+  #  Issue #47 and #48, fix typo in lists.php and Fix All Release in MailWatch
+  service httpd stop
+  service MailScanner stop
+  # Backup existing MailWatch
+  mkdir -p /var/EFA/backup/3.0.0.2
+  mv /var/www/html/mailscanner /var/EFA/backup/3.0.0.2
+  mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/3.0.0.2
+  mv /usr/local/bin/mailwatch/tools /var/EFA/backup/3.0.0.2
+  # Fetch new MailWatch
+  cd /usr/src/EFA
+  wget $mirror/build/$VERSION/MailWatch-1.2.0-master-GIT-8e1a202895.zip
+  unzip -d . MailWatch-1.2.0-master-GIT-8e1a202895.zip
+  cd 1.2.0-master/MailScanner_perl_scripts
+  MAILWATCHSQLPWD=`grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+  sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" MailWatch.pm
+
+  mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+  # no diff SQLBLackWhiteList.pm
+  # no diff SQLSpamSettings.pm
+  cd ..
+  mv tools /usr/local/bin/mailwatch
+  rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
+  chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
+  mv mailscanner /var/www/html
+  # MSRE support in this snapthot, but it is not ready, skipping 
+  mv mailscanner /var/www/html
+  cd /var/www/html/mailscanner
+  chown root:apache images
+  chmod ug+rwx images
+  chown root:apache images/cache
+  chmod ug+rwx images/cache
+  chown root:apache temp
+  chmod ug+rwx temp
+  rm -rf docs
+  
+  # Bulid new conf.php
+  cp /var/EFA/backup/3.0.0.2/mailscanner/conf.php /var/www/html/mailscanner
+  echo "" >> /var/www/html/mailscanner/conf.php
+  echo "// Enable MailScanner Rule Editor" >> /var/www/html/mailscanner/conf.php
+  echo "// Initially disabled as other config needs to be done to use it" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE', false);" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE_RELOAD_INTERVAL', 5);" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE_RULESET_DIR', \"/etc/MailScanner/rules\");" >> /var/www/html/mailscanner/conf.php
+
+  # Add favicons back
+  /bin/cp -f /var/EFA/backup/3.0.0.2/mailscanner/favicon.ico /var/www/html/mailscanner/
+  /bin/cp -f /var/EFA/backup/3.0.0.2/mailscanner/favicon.ico /var/www/html/mailscanner/images
+  /bin/cp -f /var/EFA/backup/3.0.0.2/mailscanner/favicon.ico /var/www/html/mailscanner/images/favicon.png
+
+  # Add back EFA Branding
+  cd /var/www/html/mailscanner/images
+  cp /var/EFA/backup/3.0.0.2/mailscanner/images/EFAlogo-47px.gif .
+  cp /var/EFA/backup/3.0.0.2/mailscanner/images/EFAlogo-79px.gif .
+  mv mailwatch-logo.gif mailwatch-logo.gif.orig
+  mv mailwatch-logo.png mailwatch-logo.png.orig
+  mv mailscannerlogo.gif mailscannerlogo.gif.orig
+  ln -s EFAlogo-79px.png mailwatch-logo.gif
+  ln -s EFAlogo-79px.png mailwatch-logo.png
+  ln -s EFAlogo-47px.gif mailscannerlogo.gif
+  
+  # Alter color scheme
+  sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
+
+  # Add back Mailgraph link
+  cd /var/www/html/mailscanner
+  cp other.php orther.php.orig
+  sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+
+  # Fix menu width
+  sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
   
   # Version update
   echo "EFA-$VERSION" > /etc/EFA-Version
