@@ -1,5 +1,12 @@
 EFA Version 3.0.0.3 Changes
 
+02/24/14
+Issue #55 Bug
+Kernel Update from yum update breaks vmware-tools (open-vm-tools)
+
+Issue #48 and #47
+MailWatch update to include lists.php typo and Release All bugs
+
 02/20/14
 Issue #53 Bug
 Fix postfix queue directories after yum update
