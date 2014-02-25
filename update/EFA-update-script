@@ -116,7 +116,7 @@ function update-3.0.0.3() {
   rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
   chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
   mv mailscanner /var/www/html
-  # MSRE support in this snapthot, but it is not ready, skipping 
+  # MSRE support in this snapshot, but it is not ready, skipping 
   mv mailscanner /var/www/html
   cd /var/www/html/mailscanner
   chown root:apache images
@@ -157,12 +157,21 @@ function update-3.0.0.3() {
 
   # Add back Mailgraph link
   cd /var/www/html/mailscanner
-  cp other.php orther.php.orig
+  cp other.php other.php.orig
   sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
 
   # Fix menu width
   sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
   
+  # Reconfigure Greylisting as previously configured
+  cp functions.php functions.php.orig
+  cp /var/EFA/backup/3.0.0.2/mailscanner/grey.php .
+  
+  # Is greylisting enabled?  Add back menu item...
+  if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
+     sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+  fi  
+
   # Version update
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
