@@ -170,7 +170,22 @@ function update-3.0.0.3() {
   # Is greylisting enabled?  Add back menu item...
   if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
      sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
-  fi  
+  fi 
+
+  service MailScanner start
+  service httpd start
+
+  # Issue #55 reapply open-vm-tools, if present 
+  if [[ "`/usr/local/bin/vmware-toolbox-cmd -v`" -eq "9.4.0.25793 (build-1280544)" ]]; then
+    service vmtoolsd stop
+    wget $mirror/$mirrorpath/open-vm-tools-9.4.0-1280544.tar.gz
+    tar xvzf open-vm-tools-9.4.0-1280544.tar.gz
+    cd open-vm-tools-9.4.0-1280544
+    ./configure --without-x
+    make
+    make install
+    service vmtoolsd start
+  fi
 
   # Version update
   echo "EFA-$VERSION" > /etc/EFA-Version
