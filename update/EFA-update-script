@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20140201
+# Version 20140301
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2014  http://www.efa-project.org
 #
@@ -26,6 +26,7 @@ logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/"
 mirror="http://dl.efa-project.org"
 mirrorpath="/update"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav*"
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -58,7 +59,7 @@ function update-3.0.0.3() {
   VERSION="3.0.0.3"
  
   # Upgrade OS to latest version
-  yum -y update
+  yum_update
 
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
@@ -127,7 +128,7 @@ function update-3.0.0.3() {
   chmod ug+rwx temp
   rm -rf docs
   
-  # Bulid new conf.php
+  # Build new conf.php
   cp /var/EFA/backup/3.0.0.2/mailscanner/conf.php /var/www/html/mailscanner
   echo "" >> /var/www/html/mailscanner/conf.php
   echo "// Enable MailScanner Rule Editor" >> /var/www/html/mailscanner/conf.php
@@ -202,7 +203,7 @@ function update-3.0.0.2() {
   VERSION="3.0.0.2"
  
   # Upgrade OS to latest version
-  yum -y update
+  yum_update
   
    # fix issue Urgent: learn-msg.cgi broken #44
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
@@ -221,7 +222,7 @@ function update-3.0.0.1() {
   VERSION="3.0.0.1"
   
   # Upgrade OS to latest version
-  yum -y update
+  yum_update
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
@@ -246,6 +247,17 @@ function update-3.0.0.1() {
   # Update Version Number
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue  
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update system with yum
+#----------------------------------------------------------------#
+function yum_update() {
+  yum -y --exclude="$yumexclude" update
+  # Todo, write some logic that checks any of the yumexclude packages and updates them after testing...
+  
+  
 }
 #----------------------------------------------------------------#
 
