@@ -61,6 +61,10 @@ function update-3.0.0.3() {
   # Upgrade OS to latest version
   yum_update
 
+  # Create /var/EFA/lib
+  mkdir /var/EFA/lib
+  mkdir /var/EFA/lib/EFA-Configure
+  
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
   /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/build/EFA/EFA-Configure
