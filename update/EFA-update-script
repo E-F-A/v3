@@ -27,6 +27,13 @@ gitdlurl="https://raw.github.com/E-F-A/v3"
 mirror="http://dl.efa-project.org"
 mirrorpath="/update"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav*"
+ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
+MAILFROM="$ADMINEMAIL"
+MAILTO="$ADMINEMAIL"
+MAILSUBJECT="EFA Update Complete For: `hostname`"
+SENDMAIL="/usr/lib/sendmail"
+TMPMAIL="/tmp/tempmail"
+
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -217,7 +224,30 @@ function update-3.0.0.3() {
   cd /
   rm -rf /usr/src/EFA/*
 
-  # Version update
+  # Notify admin of update completion and notes
+
+  echo ""
+  echo "Update to 3.0.0.3 complete. Please note the following."
+  echo "MailWatch has been updated. If you have custom tweaks,"
+  echo "please restore those tweaks in the new MailWatch."
+  echo "Look in /var/EFA/backup/3.0.0.2 for backed up files."
+  echo ""
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL 
+
+  echo "From: $MAILFROM" > $TMPMAIL
+  echo "To: $MAILTO" >> $TMPMAIL
+  echo "Reply-To: $MAILFROM" >> $TMPMAIL
+  echo "Subject: $MAILSUBJECT" >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "Update to 3.0.0.3 complete. Please note the following." >> $TMPMAIL
+  echo "MailWatch has been updated. If you have custom tweaks,"  >> $TMPMAIL
+  echo "please restore those tweaks in the new MailWatch."  >> $TMPMAIL
+  echo "Look in /var/EFA/backup/3.0.0.2 for backed up files."  >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
 }
