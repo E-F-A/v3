@@ -230,7 +230,7 @@ function update-3.0.0.3() {
     rm -rf /usr/local/include/vmGuestLib
 
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/open-vm-tools-9.4.0-1280544.tar.gz
+    wget $mirror/build/3.0.0.0/open-vm-tools-9.4.0-1280544.tar.gz
     tar xvzf open-vm-tools-9.4.0-1280544.tar.gz
     cd open-vm-tools-9.4.0-1280544
     ./configure --without-x
@@ -239,7 +239,7 @@ function update-3.0.0.3() {
     /usr/bin/wget -O /etc/init.d/vmtoolsd $gitdlurl/$VERSION/EFA/vmtoolsd.init
     chmod 755 /etc/init.d/vmtoolsd
     # lib adjustment
-    ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1
+    ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1
     chkconfig vmtoolsd on
     service vmtoolsd start
   fi
