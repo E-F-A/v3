@@ -154,7 +154,6 @@ function update-3.0.0.3() {
   chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
   mv mailscanner /var/www/html
   # MSRE support in this snapshot, but it is not ready, skipping 
-  mv mailscanner /var/www/html
   cd /var/www/html/mailscanner
   chown root:apache images
   chmod ug+rwx images
