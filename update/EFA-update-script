@@ -25,7 +25,7 @@
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3"
 mirror="http://dl.efa-project.org"
-mirrorpath="/update"
+mirrorpath="update"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav*"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
 MAILFROM="$ADMINEMAIL"
