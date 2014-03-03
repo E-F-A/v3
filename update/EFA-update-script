@@ -232,7 +232,7 @@ function update-3.0.0.3() {
   echo "please restore those tweaks in the new MailWatch."
   echo "Look in /var/EFA/backup/3.0.0.2 for backed up files."
   echo ""
-  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL 
+  echo "Please visit http://www.efa-project.org for more information." 
 
   echo "From: $MAILFROM" > $TMPMAIL
   echo "To: $MAILTO" >> $TMPMAIL
