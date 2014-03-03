@@ -409,3 +409,5 @@ function user_check() {
 #----------------------------------------------------------------#
 user_check
 get_update_path
+
+exit 0
