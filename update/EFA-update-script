@@ -149,7 +149,7 @@ function update-3.0.0.3() {
   # Add back EFA Branding
   cd /var/www/html/mailscanner/images
   cp /var/EFA/backup/3.0.0.2/mailscanner/images/EFAlogo-47px.gif .
-  cp /var/EFA/backup/3.0.0.2/mailscanner/images/EFAlogo-79px.gif .
+  cp /var/EFA/backup/3.0.0.2/mailscanner/images/EFAlogo-79px.png .
   mv mailwatch-logo.gif mailwatch-logo.gif.orig
   mv mailwatch-logo.png mailwatch-logo.png.orig
   mv mailscannerlogo.gif mailscannerlogo.gif.orig
@@ -164,6 +164,7 @@ function update-3.0.0.3() {
   cd /var/www/html/mailscanner
   cp other.php other.php.orig
   sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+  cp /var/EFA/backup/3.0.0.2/mailscanner/mailgraph.php .  
 
   # Fix menu width
   sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
@@ -181,16 +182,40 @@ function update-3.0.0.3() {
   service httpd start
 
   # Issue #55 reapply open-vm-tools, if present 
-  if [[ "`/usr/local/bin/vmware-toolbox-cmd -v`" -eq "9.4.0.25793 (build-1280544)" ]]; then
+  if [[ "`/usr/local/bin/vmware-toolbox-cmd -v`" == "9.4.0.25793 (build-1280544)" ]]; then
     service vmtoolsd stop
+    
+    # Cleanup existing open-vm-tools 
+    rm -f /etc/init.d/vmtoolsd
+    rm -f /usr/local/lib/libvmtools*
+    rm -f /usr/local/lib/libhgfs*
+    rm -f /usr/local/lib/libguestlib*
+    rm -rf /usr/local/lib/open-vm-tools
+    rm -f /usr/local/bin/vmware*
+    rm -f /usr/local/bin/vmtoolsd
+    rm -f /usr/local/sbin/mount.vmhgfs
+    rm -rf /etc/vmware-tools
+    rm -f /usr/local/include/vmci_sockets.h
+    rm -rf /usr/local/include/vmGuestLib
+
+    cd /usr/src/EFA
     wget $mirror/$mirrorpath/open-vm-tools-9.4.0-1280544.tar.gz
     tar xvzf open-vm-tools-9.4.0-1280544.tar.gz
     cd open-vm-tools-9.4.0-1280544
     ./configure --without-x
     make
     make install
+    /usr/bin/wget -O /etc/init.d/vmtoolsd $gitdlurl/$VERSION/EFA/vmtoolsd.init
+    chmod 755 /etc/init.d/vmtoolsd
+    # lib adjustment
+    ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1
+    chkconfig vmtoolsd on
     service vmtoolsd start
   fi
+
+  # Cleanup
+  cd /
+  rm -rf /usr/src/EFA/*
 
   # Version update
   echo "EFA-$VERSION" > /etc/EFA-Version
