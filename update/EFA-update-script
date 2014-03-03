@@ -64,7 +64,32 @@ function update-3.0.0.3() {
 
   echo "Staring update to E.F.A. 3.0.0.3"
   VERSION="3.0.0.3"
- 
+
+  # Kernel update check
+  # If the kernel has updated in a previous update, and
+  # the system has not rebooted, do not proceed until running
+  # on latest kernel
+  CURRENTKERNEL="`uname -r`"
+  LATESTKERNEL="`grep -m 1 CentOS /boot/grub/menu.lst | sed 's/.*(//' | sed 's/)//'`"
+  if [[ $CURRENTKERNEL != $LATESTKERNEL ]]; then 
+    echo "Your system has an updated kernel, but you are not running"
+    echo "on the latest kernel.  Please restart your system and run"
+    echo "EFA-Update after restart." 
+
+    echo "From: $MAILFROM" > $TMPMAIL
+    echo "To: $MAILTO" >> $TMPMAIL
+    echo "Reply-To: $MAILFROM" >> $TMPMAIL
+    echo "Subject: Restart needed to update to 3.0.0.3 " >> $TMPMAIL
+    echo "" >> $TMPMAIL
+    echo "Update to 3.0.0.3 is pending." >> $TMPMAIL
+    echo "Your system has an updated kernel, but you are not running" >> $TMPMAIL
+    echo "on the latest kernel.  Please restart your system and run" >> $TMPMAIL
+    echo "EFA-Update after restart." >> $TMPMAIL
+    cat $TMPMAIL | $SENDMAIL -t
+    rm $TMPMAIL
+    exit 1
+  fi
+
   # Upgrade OS to latest version
   yum_update
 
@@ -231,9 +256,14 @@ function update-3.0.0.3() {
 
   echo ""
   echo "Update to 3.0.0.3 complete. Please note the following."
+  echo ""
   echo "MailWatch has been updated. If you have custom tweaks,"
   echo "please restore those tweaks in the new MailWatch."
   echo "Look in /var/EFA/backup/3.0.0.2 for backed up files."
+  echo ""
+  echo "The kernel has likely updated."
+  echo "If you are using vmware-tools (commercial version)"
+  echo "please restart your E.F.A. and install the latest version"
   echo ""
   echo "Please visit http://www.efa-project.org for more information." 
 
@@ -243,9 +273,15 @@ function update-3.0.0.3() {
   echo "Subject: $MAILSUBJECT" >> $TMPMAIL
   echo "" >> $TMPMAIL
   echo "Update to 3.0.0.3 complete. Please note the following." >> $TMPMAIL
-  echo "MailWatch has been updated. If you have custom tweaks,"  >> $TMPMAIL
-  echo "please restore those tweaks in the new MailWatch."  >> $TMPMAIL
-  echo "Look in /var/EFA/backup/3.0.0.2 for backed up files."  >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "MailWatch has been updated. If you have custom tweaks," >> $TMPMAIL
+  echo "please restore those tweaks in the new MailWatch." >> $TMPMAIL
+  echo "Look in /var/EFA/backup/3.0.0.2 for backed up files." >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "The kernel has likely updated." >> $TMPMAIL
+  echo "If you are using vmware-tools (commercial version)" >> $TMPMAIL
+  echo "please restart your E.F.A. and install the latest version" >> $TMPMAIL
+
   echo "" >> $TMPMAIL
   echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
   cat $TMPMAIL | $SENDMAIL -t
