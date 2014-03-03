@@ -23,7 +23,7 @@
 # Variables
 #----------------------------------------------------------------#
 logdir="/var/log/EFA"
-gitdlurl="https://raw.github.com/E-F-A/v3/master/"
+gitdlurl="https://raw.github.com/E-F-A/v3"
 mirror="http://dl.efa-project.org"
 mirrorpath="/update"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav*"
@@ -67,22 +67,22 @@ function update-3.0.0.3() {
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/build/EFA/EFA-Configure
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
   chmod 700 /usr/local/sbin/EFA-Configure
 
   # Issue #16 System/db/settings backup
   mkdir -p /var/EFA/backup
-  /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/build/EFA/EFA-Backup
+  /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup
   chmod 700 /usr/local/sbin/EFA-Backup
-  /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/build/EFA/EFA-Backup-cron
+  /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron
   chmod 700 /etc/cron.daily/EFA-Backup-cron
 
   # Issue #17 Trusted Network Rules
   touch /etc/sysconfig/EFA_trusted_networks
   yum -y install perl-Net-Netmask
-  /usr/bin/wget -O /var/www/html/denylearned.html $gitdlurl/build/EFA/denylearned.html
+  /usr/bin/wget -O /var/www/html/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html
   rm -f /var/www/cgi-bin/learn-msg.cgi
-  /usr/bin/wget -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/build/EFA/learn-msg.cgi
+  /usr/bin/wget -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   chmod 755 /var/www/cgi-bin/learn-msg.cgi
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
@@ -230,7 +230,7 @@ function update-3.0.0.1() {
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/build/EFA/EFA-Configure
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
   chmod 700 /usr/local/sbin/EFA-Configure
   
   # fix issue 32 clean quarantine not enabled
@@ -245,7 +245,7 @@ function update-3.0.0.1() {
   # Download latest learn-msg.cgi (fix issue 41)
   rm -f /var/www/cgi-bin/learn-msg.cgi
   cd /var/www/cgi-bin
-  wget $gitdlurl/build/EFA/learn-msg.cgi
+  wget $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   chmod 755 learn-msg.cgi
 
   # Update Version Number
