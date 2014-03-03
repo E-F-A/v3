@@ -220,6 +220,9 @@ function update-3.0.0.3() {
     service vmtoolsd start
   fi
 
+  # Issue #30 filter non-spam from quarantine reports
+  sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+
   # Cleanup
   cd /
   rm -rf /usr/src/EFA/*

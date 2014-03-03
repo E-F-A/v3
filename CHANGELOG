@@ -1,5 +1,10 @@
 EFA Version 3.0.0.3 Changes
 
+03/02/14
+Issue #30 Filter non-spam from quarantine reports
+
+Issue #56 Add yum update exclusions
+
 02/24/14
 Issue #55 Bug
 Kernel Update from yum update breaks vmware-tools (open-vm-tools)
