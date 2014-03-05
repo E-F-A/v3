@@ -1,5 +1,8 @@
 EFA Version 3.0.0.3 Changes
 
+03/04/14
+Issue #60 kam.cf.backup parsed by spamassassin
+
 03/02/14
 Issue #30 Filter non-spam from quarantine reports
 
