@@ -93,6 +93,9 @@ function update-3.0.0.3() {
   # Upgrade OS to latest version
   yum_update
 
+  # Issue #62 install perl-Compress-Raw-Zlib
+  yum -y install perl-Compress-Raw-Zlib
+
   # Create /var/EFA/lib
   mkdir /var/EFA/lib
   mkdir /var/EFA/lib/EFA-Configure
