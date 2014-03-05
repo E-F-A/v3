@@ -521,8 +521,10 @@ func_mailwatch () {
     cd /usr/src/EFA
     #wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
     #unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
-    wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-4139a39d8c.zip
-    unzip -d . MailWatch-1.2.0-master-GIT-4139a39d8c.zip
+    #wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-4139a39d8c.zip
+    #unzip -d . MailWatch-1.2.0-master-GIT-4139a39d8c.zip
+    wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-8e1a202895.zip
+    unzip -d . MailWatch-1.2.0-master-GIT-8e1a202895.zip
     cd 1.2.0-master 
 
     # Set php parameters needed
@@ -665,7 +667,8 @@ func_mailwatch () {
     chmod -R 750 /var/spool/postfix/incoming
     
     # Fix MailScanner / MailWatch auto-commit annoyance
-    sed -i '/$dbh->commit/ c\#$dbh->commit' /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
+    # Fixed in latest snapshot
+    #sed -i '/$dbh->commit/ c\#$dbh->commit' /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
     
     # Allow apache to sudo and run the MailScanner lint test
     sed -i '/Defaults    requiretty/ c\#Defaults    requiretty' /etc/sudoers
