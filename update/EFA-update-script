@@ -205,7 +205,10 @@ function update-3.0.0.3() {
 
   # Fix menu width
   sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
-  
+ 
+  # Issue #61 Domain Administrator cannot delete domain only whitelist/blacklis
+  sed -i '/^    \$to_domain = \$split\[2\];/{N;s/$/\nelse \{ \$to_domain = \$url_to; \}/}' /var/www/html/mailscanner/lists.php   
+ 
   # Reconfigure Greylisting as previously configured
   cp functions.php functions.php.orig
   cp /var/EFA/backup/3.0.0.2/mailscanner/grey.php .
