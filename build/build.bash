@@ -35,14 +35,6 @@ mirrorpath="/build/3.0.0.3"
 func_prebuild () {
     # mounting /tmp without nosuid and noexec while building as it breaks building some components.
     mount -o remount rw /tmp
-
-    # Users of opendns assigned directly or indirectly
-    # via DHCP will cause NetAddr-IP module to fail
-    # during complile tests, so override nameservers
-    # during build
-    echo "nameserver 8.8.8.8" > /etc/resolv.conf
-    echo "nameserver 8.8.4.4" >> /etc/resolv.conf
-
 }
 # +---------------------------------------------------+
 
@@ -60,7 +52,7 @@ func_upgradeOS () {
 func_repoforge () {
     rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
     rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-    yum install -y unrar tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df Perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-Net-LDAP perl-File-Tail perl-Mail-ClamAV perl-Net-Netmask
+    yum install -y unrar tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df Perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-Net-LDAP perl-File-Tail perl-Mail-ClamAV perl-Net-Netmask perl-NetAddr-IP
 }
 # +---------------------------------------------------+
 
