@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA Project SpamAssassin update script 
-# Version 20131227
+# Version 20140304
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2013  http://www.efa-project.org
 #
@@ -61,14 +61,14 @@ function update_kam()
   wget -N $KAMSRC
   if [ "$?" = "0" ]; then
         echo It completed okay.
-        if [ -r KAM.cf.backup ]; then
-                if [ KAM.cf -nt KAM.cf.backup ]; then
+        if [ -r /var/EFA/backup/KAM/KAM.cf.backup ]; then
+                if [ KAM.cf -nt /var/EFA/backup/KAM/KAM.cf.backup ]; then
                         if ( tail -10 KAM.cf | grep -q '^#.*EOF' ); then
                                 # echo It succeeded, so make a backup
-                                cp -f KAM.cf KAM.cf.backup
+                                cp -f KAM.cf /var/EFA/backup/KAM/KAM.cf.backup
                          else
                                 echo ERROR: Could not find EOF marker in KAM.cf
-                                cp -f KAM.cf.backup KAM.cf
+                                cp -f /var/EFA/backup/KAM/KAM.cf.backup KAM.cf
                         fi
                 else
                 # Remote file not newer than local copy
@@ -78,7 +78,7 @@ function update_kam()
                 # No backup file present, so delete file if it is bad
                 if ( tail -10 KAM.cf | grep -q '^#.*EOF' ); then
                         #      echo Success, make a backup
-                        cp -f KAM.cf KAM.cf.backup
+                        cp -f KAM.cf /var/EFA/backup/KAM/KAM.cf.backup
                  else
                         echo ERROR: Could not find EOF marker in KAM.cf and no backup
                         rm -f KAM.cf
@@ -87,9 +87,9 @@ function update_kam()
         fi
   else
         echo It failed to complete properly
-        if [ -r KAM.cf.backup ]; then
+        if [ -r /var/EFA/backup/KAM/KAM.cf.backup ]; then
                 echo Restored backup of KAM.cf
-                cp -f KAM.cf.backup KAM.cf
+                cp -f /var/EFA/backup/KAM/KAM.cf.backup KAM.cf
          else
                 # No backup copy present, so delete bad KAM.cf
                 echo ERROR: wget of KAM.cf failed and no backup

@@ -109,6 +109,12 @@ function update-3.0.0.3() {
   /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron
   chmod 700 /etc/cron.daily/EFA-Backup-cron
 
+  # Issue #60 kam.cf.backup parsed by spamassassin
+  mkdir -p /var/EFA/backup/KAM
+  rm -f /etc/cron.daily/EFA-SA-Update
+  /usr/bin/wget -O /etc/cron.daily/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
+  chmod 755 /etc/cron.daily/EFA-SA-Update
+
   # Issue #17 Trusted Network Rules
   touch /etc/sysconfig/EFA_trusted_networks
   yum -y install perl-Net-Netmask
