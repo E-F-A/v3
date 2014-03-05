@@ -1,5 +1,8 @@
 EFA Version 3.0.0.3 Changes
 
+03/05/14
+Issue #62 Add perl-Compress-Raw-Zlib to fix failed build in previous versions
+
 03/04/14
 Issue #60 kam.cf.backup parsed by spamassassin
 
