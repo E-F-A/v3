@@ -1,4 +1,12 @@
+############################################################
+EFA Version 3.0.0.4 Changes
+############################################################
+
+
+
+############################################################
 EFA Version 3.0.0.3 Changes
+############################################################
 
 03/05/14
 Issue #62 Add perl-Compress-Raw-Zlib to fix failed build in previous versions
@@ -36,7 +44,9 @@ Automated Backup of MySQL and Settings
 Issue #12 Enhancement
 Improved handling of transport file with EFA-Configure
 
+############################################################
 EFA Version 3.0.0.2 changes
+############################################################
 
 02/03/14
 Issue #44
@@ -45,7 +55,9 @@ Insert EFA database password back into script
 
 No other changes for 3.0.0.2.  Build from scratch is not affected by this bug and can remain on 3.0.0.1 at this time.
 
+############################################################
 EFA Version 3.0.0.1 Changes
+############################################################
 
 01/29/14
 Issue 41

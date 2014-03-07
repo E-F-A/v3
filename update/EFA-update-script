@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20140301
+# Version 20140307
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2014  http://www.efa-project.org
 #
@@ -33,7 +33,6 @@ MAILTO="$ADMINEMAIL"
 MAILSUBJECT="EFA Update Complete For: `hostname`"
 SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
-
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -43,17 +42,42 @@ function get_update_path() {
   get_cversion
   if [[ $CVERSION == "EFA-3.0.0.0" ]]
     then
+      yum_update
       update-3.0.0.1
       update-3.0.0.2
       update-3.0.0.3
+      update-3.0.0.4
+      finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
+      yum_update
       update-3.0.0.2
       update-3.0.0.3
+      update-3.0.0.4
+      finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
+      yum_update
       update-3.0.0.3
+      update-3.0.0.4
+      finalize
+  elif [[ $CVERSION == "EFA-3.0.0.3" ]]
+    then
+      yum_update
+      update-3.0.0.4
+      finalize
   fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.4
+#----------------------------------------------------------------#
+function update-3.0.0.4() {
+
+  echo "Staring update to E.F.A. 3.0.0.4"
+  VERSION="3.0.0.4"
+    
 }
 #----------------------------------------------------------------#
 
@@ -89,9 +113,6 @@ function update-3.0.0.3() {
     rm $TMPMAIL
     exit 1
   fi
-
-  # Upgrade OS to latest version
-  yum_update
 
   # Issue #62 install perl-Compress-Raw-Zlib
   yum -y install perl-Compress-Raw-Zlib
@@ -298,8 +319,6 @@ function update-3.0.0.3() {
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
 
-  echo "EFA-$VERSION" > /etc/EFA-Version
-  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
 }
 #----------------------------------------------------------------#
 
@@ -311,15 +330,10 @@ function update-3.0.0.2() {
   echo "Staring update to E.F.A. 3.0.0.2"
   VERSION="3.0.0.2"
  
-  # Upgrade OS to latest version
-  yum_update
-  
-   # fix issue Urgent: learn-msg.cgi broken #44
+  # fix issue Urgent: learn-msg.cgi broken #44
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
   
-  echo "EFA-$VERSION" > /etc/EFA-Version
-  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
 }
 #----------------------------------------------------------------#
 
@@ -329,9 +343,6 @@ function update-3.0.0.2() {
 function update-3.0.0.1() {
   echo "Staring update to E.F.A. 3.0.0.1"
   VERSION="3.0.0.1"
-  
-  # Upgrade OS to latest version
-  yum_update
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
@@ -352,10 +363,22 @@ function update-3.0.0.1() {
   cd /var/www/cgi-bin
   wget $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   chmod 755 learn-msg.cgi
+  
+}
+#----------------------------------------------------------------#
 
-  # Update Version Number
+#----------------------------------------------------------------#
+# Finalize
+#----------------------------------------------------------------#
+function finalize() {
+
+  # Write the latest version number
   echo "EFA-$VERSION" > /etc/EFA-Version
-  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue  
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
+
+  echo "All done"
+  exit 0
+
 }
 #----------------------------------------------------------------#
 
@@ -365,7 +388,6 @@ function update-3.0.0.1() {
 function yum_update() {
   yum -y --exclude="$yumexclude" update
   # Todo, write some logic that checks any of the yumexclude packages and updates them after testing...
-  
   
 }
 #----------------------------------------------------------------#
