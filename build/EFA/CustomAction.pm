@@ -1,6 +1,6 @@
 #
 # CustomAction.pm 
-# Version 20140119
+# Version 20140309
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2013  http://www.efa-project.org
 #
@@ -57,11 +57,17 @@ sub EFANonSpam {
   if ($clientip =~ /^127/) { 
     return $message; 
   } else {
-    $token = EFACreateToken();
+    $message->MailScanner::Message::IsAReply();
+    if($message->{isreply}) {
+      # Message is a reply, do not sign
+      return $message;
+    } else {
+      $token = EFACreateToken();
  
-    $message->{token} = $token;
+      $message->{token} = $token;
 
-    return SignNonSpam($message);
+      return SignNonSpam($message);
+    }
   }
 }
 

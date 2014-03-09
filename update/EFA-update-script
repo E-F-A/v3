@@ -80,6 +80,10 @@ function update-3.0.0.4() {
    
   #Issue #63 Remove old kam.cf.backup from Spamassassin directory
   rm -f /etc/mail/spamassassin/kam.cf.backup
+
+  #Issue #18 Email signature sanitation
+  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  /usr/bin/wget -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
  
 }
 #----------------------------------------------------------------#
