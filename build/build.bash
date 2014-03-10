@@ -1018,8 +1018,8 @@ func_efarequirements () {
     mkdir -p /var/EFA/backup/KAM
 	
     # pre-create the EFA lib directory
-    mkdir -P /var/EFA/lib
-    mkdir -P /var/EFA/lib/EFA-Configure
+    mkdir -p /var/EFA/lib
+    mkdir -p /var/EFA/lib/EFA-Configure
    
     # pre-create the EFA Trusted Networks Config
     touch /etc/sysconfig/EFA_trusted_networks
