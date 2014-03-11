@@ -84,7 +84,12 @@ function update-3.0.0.4() {
   #Issue #18 Email signature sanitation
   rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   /usr/bin/wget -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
- 
+
+  #Issue #65 Fix EFA-SA-Update file location
+  rm -f /etc/cron.daily/EFA-SA-Update
+  rm -f /usr/local/sbin/EFA-SA-Update
+  /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
+  chmod 755 /usr/local/sbin/EFA-SA-Update
 }
 #----------------------------------------------------------------#
 
