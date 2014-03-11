@@ -90,6 +90,21 @@ function update-3.0.0.4() {
   rm -f /usr/local/sbin/EFA-SA-Update
   /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
   chmod 755 /usr/local/sbin/EFA-SA-Update
+
+  echo "Update to 3.0.0.4 complete." 
+  echo ""
+  echo "Please visit http://www.efa-project.org for more information."
+
+  echo "From: $MAILFROM" > $TMPMAIL
+  echo "To: $MAILTO" >> $TMPMAIL
+  echo "Reply-To: $MAILFROM" >> $TMPMAIL
+  echo "Subject: $MAILSUBJECT" >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "Update to 3.0.0.4 complete." >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
 }
 #----------------------------------------------------------------#
 
