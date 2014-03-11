@@ -2,6 +2,9 @@
 EFA Version 3.0.0.4 Changes
 ############################################################
 
+03/10/14
+Issue #65 Fix EFA-SA-Update file location
+
 03/09/14
 Issue #63 Remove old kam.cf.backup from spamassasin directory
 
