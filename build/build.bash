@@ -21,12 +21,12 @@
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.4-devel"
+version="3.0.0.5-devel"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
-mirrorpath="/build/3.0.0.4"
+mirrorpath="/build/3.0.0.5"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
