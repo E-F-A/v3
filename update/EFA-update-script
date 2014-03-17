@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20140307
+# Version 20140317
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2014  http://www.efa-project.org
 #
@@ -47,6 +47,7 @@ function get_update_path() {
       update-3.0.0.2
       update-3.0.0.3
       update-3.0.0.4
+      update-3.0.0.5
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
@@ -54,22 +55,55 @@ function get_update_path() {
       update-3.0.0.2
       update-3.0.0.3
       update-3.0.0.4
+      update-3.0.0.5
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
       yum_update
       update-3.0.0.3
       update-3.0.0.4
+      update-3.0.0.5
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.3" ]]
     then
       yum_update
       update-3.0.0.4
+      update-3.0.0.5
+      finalize
+  elif [[ $CVERSION == "EFA-3.0.0.4" ]]
+    then
+      yum_update
+      update-3.0.0.5
       finalize
   fi
 }
 #----------------------------------------------------------------#
 
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.5
+#----------------------------------------------------------------#
+function update-3.0.0.5() {
+
+  echo "Staring update to E.F.A. 3.0.0.5"
+  VERSION="3.0.0.5"
+  
+  echo "Update to 3.0.0.5 complete." 
+  echo ""
+  echo "Please visit http://www.efa-project.org for more information."
+
+  echo "From: $MAILFROM" > $TMPMAIL
+  echo "To: $MAILTO" >> $TMPMAIL
+  echo "Reply-To: $MAILFROM" >> $TMPMAIL
+  echo "Subject: $MAILSUBJECT" >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "Update to 3.0.0.5 complete." >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+}
+#----------------------------------------------------------------#
+  
 #----------------------------------------------------------------#
 # Update to EFA-3.0.0.4
 #----------------------------------------------------------------#
@@ -312,7 +346,6 @@ function update-3.0.0.3() {
   rm -rf /usr/src/EFA/*
 
   # Notify admin of update completion and notes
-
   echo ""
   echo "Update to 3.0.0.3 complete. Please note the following."
   echo ""
@@ -345,7 +378,6 @@ function update-3.0.0.3() {
   echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
-
 }
 #----------------------------------------------------------------#
 
@@ -359,8 +391,7 @@ function update-3.0.0.2() {
  
   # fix issue Urgent: learn-msg.cgi broken #44
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
-  sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
-  
+  sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi 
 }
 #----------------------------------------------------------------#
 
@@ -368,6 +399,7 @@ function update-3.0.0.2() {
 # Update to EFA-3.0.0.1 
 #----------------------------------------------------------------#
 function update-3.0.0.1() {
+
   echo "Staring update to E.F.A. 3.0.0.1"
   VERSION="3.0.0.1"
   
@@ -390,7 +422,6 @@ function update-3.0.0.1() {
   cd /var/www/cgi-bin
   wget $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   chmod 755 learn-msg.cgi
-  
 }
 #----------------------------------------------------------------#
 
@@ -398,14 +429,12 @@ function update-3.0.0.1() {
 # Finalize
 #----------------------------------------------------------------#
 function finalize() {
-
   # Write the latest version number
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
 
   echo "All done"
   exit 0
-
 }
 #----------------------------------------------------------------#
 
