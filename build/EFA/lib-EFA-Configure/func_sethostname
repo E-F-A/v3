@@ -1,0 +1,65 @@
+# +---------------------------------------------------+
+# Function to grab the current IP settings.
+# +---------------------------------------------------+
+
+function func_sethostname() {
+  func_echo-header
+
+  # Check if the hostname is valid
+  hncheck=1
+  while [ $hncheck != 0 ]
+   do
+     if [[ $HOSTNAME =~ ^[-a-zA-Z0-9]{2,256}+$ ]]
+      then
+        hncheck=0
+      else
+        echo -e "       $red ERROR: The hostname $HOSTNAME seems to be invalid"
+        echo -e "        ERROR: please re-enter the hostname$clean"
+        echo -e "$green[EFA]$clean What is the hostname of this machine: $cyan(single Word)$clean"
+        echo -e -n "$green[EFA]$clean : "
+        read HOSTNAME
+     fi
+    done
+  
+  # Check if the Domain name is valid  
+  dncheck=1
+  while [ $dncheck != 0 ]
+   do
+     if [[ $DOMAINNAME =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        dncheck=0
+      else
+        echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
+        echo -e "        ERROR: please re-enter the domain$clean"
+        echo -e "$green[EFA]$clean Please enter the domain name for this machine"
+        echo -e -n "$green[EFA]$clean : "
+        read DOMAINNAME
+     fi
+    done  
+  
+  echo -e ""
+  echo -e "Are you sure you want to change the hostname of this machine"
+  echo -e "to $HOSTNAME.$DOMAINNAME ?"
+  pause
+  
+  # Write new hosts file
+  echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+  echo "$IP   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
+  
+  sed -i "/^Hostname =/ c\Hostname = $HOSTNAME.$DOMAINNAME" /etc/MailScanner/MailScanner.conf
+  
+  # Set the hostname for the active system
+  hostname $HOSTNAME
+  
+  # Write change to EFA-Config
+  sed -i "/^HOSTNAME:/ c\HOSTNAME:$HOSTNAME" /etc/EFA-Config
+  sed -i "/^DOMAINNAME:/ c\DOMAINNAME:$DOMAINNAME" /etc/EFA-Config
+  
+  # Change mailscanner config
+  sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
+    
+  
+  echo -e "$red [EFA] Your system will need to reboot now $clean"
+  pause
+  reboot
+}

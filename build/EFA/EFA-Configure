@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA-Configure
-# Version 20140106
+# Version 20140317
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2014  http://www.efa-project.org
 #
@@ -19,8 +19,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
+# +---------------------------------------------------+
+# Load functions
+# +---------------------------------------------------+
+. /var/EFA/lib/EFA-Configure/func_getipsettings
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Enable Extended Globs
+# +---------------------------------------------------+
 shopt -s extglob
+# +---------------------------------------------------+
 
 # +---------------------------------------------------+
 # Display menus
@@ -1258,6 +1267,8 @@ func_ip-settings(){
       echo -e "3) Gateway              :  $GW"
       echo -e "4) Primary DNS          :  $DNS1"
       echo -e "5) Secondary DNS        :  $DNS2"
+      echo -e "6) Hostname             :  $HOSTNAME"
+      echo -e "7) Domain Name          :  $DOMAINNAME"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
@@ -1286,16 +1297,28 @@ func_ip-settings(){
                     func_setipsettings
                     menu=1
                     ;;
-                4)         ipmenu=0
+                4)  ipmenu=0
                     echo ""
                     read -p "Enter your new primary DNS: " DNS1
                     func_setipsettings
                     menu=1
                     ;;
-                5)         ipmenu=0
+                5)  ipmenu=0
                     echo ""
                     read -p "Enter your new secondary DNS: " DNS2
                     func_setipsettings
+                    menu=1
+                    ;;
+                6)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new HOSTNAME: " HOSTNAME
+                    func_sethostname
+                    menu=1
+                    ;;
+                7)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new DOMAIN NAME: " DOMAINNAME
+                    func_sethostname
                     menu=1
                     ;;
                 e) menu=1 && return ;;
@@ -1518,63 +1541,15 @@ func_setipsettings(){
   sed -i "/GATEWAY=/ c\GATEWAY=$GW" /etc/sysconfig/network
   ifup $INTERFACE
   
+  # Write change to EFA-Config
+  sed -i "/^IPADDRESS:/ c\IPADDRESS:$IP" /etc/EFA-Config
+  sed -i "/^NETMASK:/ c\NETMASK:$NM" /etc/EFA-Config
+  sed -i "/^GATEWAY:/ c\GATEWAY:$GW" /etc/EFA-Config
+  sed -i "/^DNS1:/ c\DNS1:$DNS1" /etc/EFA-Config
+  sed -i "/^DNS2:/ c\DNS2:$DNS2" /etc/EFA-Config
+  
   echo -e "All done"
   pause
-}
-# +---------------------------------------------------+
-
-# +---------------------------------------------------+
-# Function to grab the current IP settings.
-# +---------------------------------------------------+
-function func_getipsettings(){
-  nrintf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '} | wc -l`
-  interf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '}`
-  if [ $nrintf -gt 1 ]
-    then
-      func_echo-header
-      echo -e "You seem to have multiple network interfaces"
-      echo -e "Please select the interface you want to configure"
-      echo -e "The interface names on your machine are:"
-      for int in $interf
-        do
-          echo " - $int"
-        done
-
-      echo -e ""
-      echo -e "Enter the primary interface name:"
-      echo -e ""
-      echo -e -n "$green[EFA]$clean : "
-      local choice
-      read choice
-      choice_check=0
-      for int in $interf
-        do
-        if [ $int == $choice ]
-          then
-            choice_check=1
-        fi
-        done
-         
-      # Check if the user typed a interface that exists.
-      if [ $choice_check -eq 0 ]
-        then
-          echo -e "$red [EFA] ERROR, That interface does not exist. $clean"
-          sleep 2
-          func_getipsettings
-          return
-      fi
-      if [ $choice_check -eq 1 ]
-         then
-          INTERFACE=$choice
-        fi
-     else
-        INTERFACE=$interf
-    fi
-    IP="`cat /etc/sysconfig/network-scripts/ifcfg-$INTERFACE | grep IPADDR | sed 's/IPADDR=//;s/"//g'`"
-    NM="`cat /etc/sysconfig/network-scripts/ifcfg-$INTERFACE | grep NETMASK | sed 's/NETMASK=//;s/"//g'`"
-    GW="`cat /etc/sysconfig/network | grep GATEWAY | sed 's/GATEWAY=//'`"
-    DNS1="`cat /etc/resolv.dnsmasq  | grep -v '#' | grep -v 127.0.0.1 | grep nameserver | awk 'NR==1 {print $2}'`"
-    DNS2="`cat /etc/resolv.dnsmasq  | grep -v '#' | grep -v 127.0.0.1 | grep nameserver | awk 'NR==2 {print $2}'`"
 }
 # +---------------------------------------------------+
 
