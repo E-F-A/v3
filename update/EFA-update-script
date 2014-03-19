@@ -114,7 +114,7 @@ function update-3.0.0.5() {
   wget $gitdlurl/EFA/lib-EFA-Configure/libraries-filelist.txt
   for lib in `cat /usr/src/EFA/libraries-filelist.txt`
     do
-      /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/EFA/lib-EFA-Configure/$lib
+      /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/$VERSION/EFA/lib-EFA-Configure/$lib
   done
   
   chmod 700 /usr/local/sbin/EFA-Configure
