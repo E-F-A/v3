@@ -100,7 +100,22 @@ function update-3.0.0.5() {
   sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   /etc/init.d/MailScanner restart
   
-  # Add a mailwatch version to EFA-Config (the previous version so the check in function works.)
+    # grab latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -f /var/EFA/lib/EFA-Configure/*
+  
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure  
+  cd /usr/src/EFA/
+  wget $gitdlurl/EFA/lib-EFA-Configure/libraries-filelist.txt
+  for lib in `cat /usr/src/EFA/libraries-filelist.txt`
+    do
+      /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/EFA/lib-EFA-Configure/$lib
+  done
+  
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
+  
+  # Add a mailwatch version to EFA-Config (the previous version so the check in the new function works.)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
   
   echo "Update to 3.0.0.5 complete." 
@@ -414,12 +429,6 @@ function update-mailwatch() {
   
       # Build new conf.php
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner
-      echo "" >> /var/www/html/mailscanner/conf.php
-      echo "// Enable MailScanner Rule Editor" >> /var/www/html/mailscanner/conf.php
-      echo "// Initially disabled as other config needs to be done to use it" >> /var/www/html/mailscanner/conf.php
-      echo "define('MSRE', false);" >> /var/www/html/mailscanner/conf.php
-      echo "define('MSRE_RELOAD_INTERVAL', 5);" >> /var/www/html/mailscanner/conf.php
-      echo "define('MSRE_RULESET_DIR', \"/etc/MailScanner/rules\");" >> /var/www/html/mailscanner/conf.php
 
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/

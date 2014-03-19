@@ -1,0 +1,2 @@
+func_getipsettings
+func_sethostname

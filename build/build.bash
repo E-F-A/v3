@@ -1035,6 +1035,14 @@ func_efarequirements () {
     /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/EFA/EFA-Backup
     chmod 700 /usr/local/sbin/EFA-Backup
       
+    # Grab the EFA-Configure libraries
+    cd /usr/src/EFA/
+    wget $gitdlurl/EFA/lib-EFA-Configure/libraries-filelist.txt
+    for lib in `cat /usr/src/EFA/libraries-filelist.txt`
+      do
+        /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/EFA/lib-EFA-Configure/$lib
+    done
+    chmod 600 /var/EFA/lib/EFA-Configure/*
  
     # Write SSH banner
     sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config

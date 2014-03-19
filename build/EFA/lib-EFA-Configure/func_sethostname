@@ -1,7 +1,6 @@
 # +---------------------------------------------------+
-# Function to grab the current IP settings.
+# Function to set the new hostname
 # +---------------------------------------------------+
-
 function func_sethostname() {
   func_echo-header
 

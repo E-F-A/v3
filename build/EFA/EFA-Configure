@@ -23,6 +23,7 @@
 # Load functions
 # +---------------------------------------------------+
 . /var/EFA/lib/EFA-Configure/func_getipsettings
+. /var/EFA/lib/EFA-Configure/func_sethostname
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
