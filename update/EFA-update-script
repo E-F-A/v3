@@ -391,9 +391,9 @@ function update-mailwatch() {
       service MailScanner stop
       
       # Backup existing MailWatch
-      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION
+      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
       mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION
-      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION
+      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/
       
       # Fetch new MailWatch
       cd /usr/src/EFA

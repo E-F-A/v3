@@ -39,11 +39,14 @@ function func_sethostname() {
   echo -e ""
   echo -e "Are you sure you want to change the hostname of this machine"
   echo -e "to $HOSTNAME.$DOMAINNAME ?"
+  # Todo add a return item :-)
   pause
   
   # Write new hosts file
   echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
   echo "$IP   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
+  
+  sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
   
   sed -i "/^Hostname =/ c\Hostname = $HOSTNAME.$DOMAINNAME" /etc/MailScanner/MailScanner.conf
   
