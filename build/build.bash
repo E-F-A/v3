@@ -27,6 +27,7 @@ gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.5"
+MAILWATCHVERSION="7874620191"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -410,7 +411,6 @@ func_spam_clamav () {
     
     # and in the end we run sa-update just for the fun of it..
     /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org   
- 
 }
 # +---------------------------------------------------+
 
@@ -515,8 +515,8 @@ func_mailwatch () {
     #unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
     #wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-4139a39d8c.zip
     #unzip -d . MailWatch-1.2.0-master-GIT-4139a39d8c.zip
-    wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-8e1a202895.zip
-    unzip -d . MailWatch-1.2.0-master-GIT-8e1a202895.zip
+    wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+    unzip -d . MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
     cd 1.2.0-master 
 
     # Set php parameters needed
@@ -620,12 +620,6 @@ func_mailwatch () {
     cp other.php other.php.orig
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
 
-    # Fix whitelist this removes 10 lines of code after // Type (line 68) and replaces this with 10 new lines.
-    #sed -i "/\/\/ Type/a\// EFA-REMOVE" lists.php
-    #sed -i "/\/\/ EFA-REMOVE/,+10d" lists.php
-    #sed -i "/\/\/ Type/a\switch(\$_GET['type']) {\n  case 'h':\n   \$from = \$_GET['host'];\n   break;\n  case 'f':\n   \$from = \$_GET['from'];\n   break;\n  default:\n   if(isset(\$_GET['entry'])) { \$from = \$_GET['entry']; }\n }\n " lists.php
-    # Note: this is not needed in beta4 patch 4 anymore... keeping here until we fixed the session issue (in case we need to rollback to the previous version..)
-    
     # Postfix Relay Info
     # Disabled until needed...no front end for data
     #echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
@@ -671,10 +665,6 @@ func_mailwatch () {
 
     # Issue #61 Domain Administrator cannot delete domain only whitelist/blacklist
     sed -i '/^    \$to_domain = \$split\[2\];/{N;s/$/\nelse \{ \$to_domain = \$url_to; \}/}' /var/www/html/mailscanner/lists.php
-
-    # Fix typo in bayes_info.php (uncommented for now, this should be fixed in the latest version (https://github.com/mailwatch/1.2.0/commit/31f5f6ca46144d7392e2c3b200e30765115dcb45)
-    # sed -i "/Number of Spam Messages/ c\\\t\t    echo '<tr><td class=\"heading\">Number of Spam Messages:</td><td align=\"right\">'.number_format(\$regs[3]).'</td></tr>';" /var/www/html/mailscanner/bayes_info.php
-
 }
 # +---------------------------------------------------+
 
