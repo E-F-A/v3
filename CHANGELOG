@@ -1,88 +1,48 @@
 ############################################################
+EFA Version 3.0.0.5 Changes
+############################################################
+
+Issue #57 Enhancement - Alternating background for black/whitelist
+
+############################################################
 EFA Version 3.0.0.4 Changes
 ############################################################
 
-03/10/14
-Issue #65 Fix EFA-SA-Update file location
-
-03/09/14
-Issue #63 Remove old kam.cf.backup from spamassasin directory
-
-Issue #18 Email signature sanitation (avoid duplicate signatures)
+Issue #65 Bug - Fix EFA-SA-Update file location
+Issue #63 Bug - Remove old kam.cf.backup from spamassasin directory
+Issue #18 Bug - Email signature sanitation (avoid duplicate signatures)
 
 ############################################################
 EFA Version 3.0.0.3 Changes
 ############################################################
 
-03/05/14
-Issue #62 Add perl-Compress-Raw-Zlib to fix failed build in previous versions
-
-03/04/14
-Issue #60 kam.cf.backup parsed by spamassassin
-
-Issue #61 Domain Administrator cannot delete domain only whitelist/blacklist
-
-03/02/14
-Issue #30 Filter non-spam from quarantine reports
-
-Issue #56 Add yum update exclusions
-
-02/24/14
-Issue #55 Bug
-Kernel Update from yum update breaks vmware-tools (open-vm-tools)
-
-Issue #48 and #47
-MailWatch update to include lists.php typo and Release All bugs
-
-02/20/14
-Issue #53 Bug
-Fix postfix queue directories after yum update
-
-02/06/14
-Issue #17 Enhancement
-Trusted Networks Support for learn-msg.cgi
-
-02/02/14
-Issue #16 Enhancement
-Automated Backup of MySQL and Settings
-
-02/01/14
-Issue #12 Enhancement
-Improved handling of transport file with EFA-Configure
+Issue #62 Bug - Add perl-Compress-Raw-Zlib to fix failed build in previous versions
+Issue #60 Bug - kam.cf.backup parsed by spamassassin
+Issue #61 Bug - Domain Administrator cannot delete domain only whitelist/blacklist
+Issue #30 Enhancement - Filter non-spam from quarantine reports
+Issue #56 Enhancement - Add yum update exclusions
+Issue #55 Bug - Kernel Update from yum update breaks vmware-tools (open-vm-tools)
+Issue #48 and #47 Bug - MailWatch update to include lists.php typo and Release All bugs
+Issue #53 Bug - Fix postfix queue directories after yum update
+Issue #17 Enhancement - Trusted Networks Support for learn-msg.cgi
+Issue #16 Enhancement - Automated Backup of MySQL and Settings
+Issue #12 Enhancement - Improved handling of transport file with EFA-Configure
 
 ############################################################
 EFA Version 3.0.0.2 changes
 ############################################################
 
-02/03/14
-Issue #44
-Urgent: learn-msg.cgi broken
-Insert EFA database password back into script
-
+Issue #44 Bug - Urgent: learn-msg.cgi broken Insert EFA database password back into script
 No other changes for 3.0.0.2.  Build from scratch is not affected by this bug and can remain on 3.0.0.1 at this time.
 
 ############################################################
 EFA Version 3.0.0.1 Changes
 ############################################################
 
-01/29/14
-Issue 41
-Correct length check for ID in learn-msg.cgi
-
-01/28/14
-Issue 24 
-Disabled cleaned message delivery
-Add option to configure cleaned message delivery
-
-01/27/14
-Issue 23
-Remove cyrus-sasl-ldap and cyrus-sasl-sql packages
-To suppress sql_select option missing and
-auxpropfunc error no mechanism available
-
-Issue 32
-Enable quarantine cleanup
-
-01/25/14
-Issue 25
-Add https/ssl/tls configuration options for Apache
+Issue #41 Bug - Correct length check for ID in learn-msg.cgi
+Issue #24 Enhancement - Disabled cleaned message delivery, Add option to configure cleaned message delivery
+Issue #23 Bug - Remove cyrus-sasl-ldap and cyrus-sasl-sql packages
+                    To suppress sql_select option missing and
+                    auxpropfunc error no mechanism available
+Issue #32 Bug - Enable quarantine cleanup
+Issue #25 Enhancement - Add https/ssl/tls configuration options for Apache
