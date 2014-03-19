@@ -58,7 +58,6 @@ function func_sethostname() {
   # Change mailscanner config
   sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
     
-  
   echo -e "$red [EFA] Your system will need to reboot now $clean"
   pause
   reboot
