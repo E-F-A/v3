@@ -111,7 +111,7 @@ function update-3.0.0.5() {
   
   /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure  
   cd /usr/src/EFA/
-  wget $gitdlurl/EFA/lib-EFA-Configure/libraries-filelist.txt
+  wget $gitdlurl/$VERSION/EFA/lib-EFA-Configure/libraries-filelist.txt
   for lib in `cat /usr/src/EFA/libraries-filelist.txt`
     do
       /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/$VERSION/EFA/lib-EFA-Configure/$lib
