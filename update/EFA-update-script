@@ -44,6 +44,7 @@ function get_update_path() {
   get_cversion
   if [[ $CVERSION == "EFA-3.0.0.0" ]]
     then
+      initialize
       yum_update
       update-3.0.0.1
       update-3.0.0.2
@@ -53,6 +54,7 @@ function get_update_path() {
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
+      initialize
       yum_update
       update-3.0.0.2
       update-3.0.0.3
@@ -61,6 +63,7 @@ function get_update_path() {
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
+      initialize
       yum_update
       update-3.0.0.3
       update-3.0.0.4
@@ -69,6 +72,7 @@ function get_update_path() {
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.3" ]]
     then
+      initialize
       yum_update
       update-3.0.0.4
       update-3.0.0.5
@@ -76,6 +80,7 @@ function get_update_path() {
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
     then
+      initialize
       yum_update
       update-3.0.0.5
       update-mailwatch
@@ -118,20 +123,10 @@ function update-3.0.0.5() {
   # Add a mailwatch version to EFA-Config (the previous version so the check in the new function works.)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
   
-  echo "Update to 3.0.0.5 complete." 
+  echo "Update to $VERSION complete." 
   echo ""
-  echo "Please visit http://www.efa-project.org for more information."
-
-  echo "From: $MAILFROM" > $TMPMAIL
-  echo "To: $MAILTO" >> $TMPMAIL
-  echo "Reply-To: $MAILFROM" >> $TMPMAIL
-  echo "Subject: $MAILSUBJECT" >> $TMPMAIL
   echo "" >> $TMPMAIL
-  echo "Update to 3.0.0.5 complete." >> $TMPMAIL
-  echo "" >> $TMPMAIL
-  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
-  cat $TMPMAIL | $SENDMAIL -t
-  rm $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
   
@@ -142,7 +137,9 @@ function update-3.0.0.4() {
 
   echo "Staring update to E.F.A. 3.0.0.4"
   VERSION="3.0.0.4"
-   
+  # Create backup directory
+  mkdir -p /var/EFA/backup/$VERSION
+  
   #Issue #63 Remove old kam.cf.backup from Spamassassin directory
   rm -f /etc/mail/spamassassin/kam.cf.backup
 
@@ -159,20 +156,10 @@ function update-3.0.0.4() {
   /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
   chmod 755 /usr/local/sbin/EFA-SA-Update
 
-  echo "Update to 3.0.0.4 complete." 
+  echo "Update to $VERSION complete." 
   echo ""
-  echo "Please visit http://www.efa-project.org for more information."
-
-  echo "From: $MAILFROM" > $TMPMAIL
-  echo "To: $MAILTO" >> $TMPMAIL
-  echo "Reply-To: $MAILFROM" >> $TMPMAIL
-  echo "Subject: $MAILSUBJECT" >> $TMPMAIL
   echo "" >> $TMPMAIL
-  echo "Update to 3.0.0.4 complete." >> $TMPMAIL
-  echo "" >> $TMPMAIL
-  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
-  cat $TMPMAIL | $SENDMAIL -t
-  rm $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
 
@@ -268,9 +255,10 @@ function update-3.0.0.3() {
   cd /
   rm -rf /usr/src/EFA/*
 
-  # Notify admin of update completion and notes
+  # Show info to user and populate the e-mail content
+  echo "Update to $VERSION complete." 
   echo ""
-  echo "Update to 3.0.0.3 complete. Please note the following."
+  echo "Please note the following."
   echo ""
   echo "MailWatch has been updated. If you have custom tweaks,"
   echo "please restore those tweaks in the new MailWatch."
@@ -279,15 +267,11 @@ function update-3.0.0.3() {
   echo "The kernel has likely updated."
   echo "If you are using vmware-tools (commercial version)"
   echo "please restart your E.F.A. and install the latest version"
-  echo ""
-  echo "Please visit http://www.efa-project.org for more information." 
-
-  echo "From: $MAILFROM" > $TMPMAIL
-  echo "To: $MAILTO" >> $TMPMAIL
-  echo "Reply-To: $MAILFROM" >> $TMPMAIL
-  echo "Subject: $MAILSUBJECT" >> $TMPMAIL
+  
   echo "" >> $TMPMAIL
-  echo "Update to 3.0.0.3 complete. Please note the following." >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "Please note the following." >> $TMPMAIL
   echo "" >> $TMPMAIL
   echo "MailWatch has been updated. If you have custom tweaks," >> $TMPMAIL
   echo "please restore those tweaks in the new MailWatch." >> $TMPMAIL
@@ -296,11 +280,6 @@ function update-3.0.0.3() {
   echo "The kernel has likely updated." >> $TMPMAIL
   echo "If you are using vmware-tools (commercial version)" >> $TMPMAIL
   echo "please restart your E.F.A. and install the latest version" >> $TMPMAIL
-
-  echo "" >> $TMPMAIL
-  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
-  cat $TMPMAIL | $SENDMAIL -t
-  rm $TMPMAIL
 }
 #----------------------------------------------------------------#
 
@@ -311,10 +290,17 @@ function update-3.0.0.2() {
 
   echo "Staring update to E.F.A. 3.0.0.2"
   VERSION="3.0.0.2"
- 
+  # Create backup directory
+  mkdir -p /var/EFA/backup/$VERSION
+  
   # fix issue Urgent: learn-msg.cgi broken #44
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi 
+  
+  echo "Update to $VERSION complete." 
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
 
@@ -325,6 +311,8 @@ function update-3.0.0.1() {
 
   echo "Staring update to E.F.A. 3.0.0.1"
   VERSION="3.0.0.1"
+  # Create backup directory
+  mkdir -p /var/EFA/backup/$VERSION
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
@@ -345,6 +333,11 @@ function update-3.0.0.1() {
   cd /var/www/cgi-bin
   wget $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   chmod 755 learn-msg.cgi
+  
+  echo "Update to $VERSION complete." 
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
 
@@ -480,13 +473,32 @@ function update-mailwatch() {
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
+# initialize
+#----------------------------------------------------------------#
+function initialize() {
+  # Start the TMPmail file
+  echo "From: $MAILFROM" > $TMPMAIL
+  echo "To: $MAILTO" >> $TMPMAIL
+  echo "Reply-To: $MAILFROM" >> $TMPMAIL
+  echo "Subject: $MAILSUBJECT" >> $TMPMAIL
+  echo "" >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
 # Finalize
 #----------------------------------------------------------------#
 function finalize() {
   # Write the latest version number
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
-
+  
+  # Finalize the mail and send it out
+  echo "" >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+  
   echo "All done"
   exit 0
 }
