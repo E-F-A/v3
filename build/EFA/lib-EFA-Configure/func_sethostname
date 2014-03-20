@@ -37,30 +37,41 @@ function func_sethostname() {
     done  
   
   echo -e ""
+  echo -e "$red Changing your hostname will reboot your server. $clean"
+  echo -e ""
   echo -e "Are you sure you want to change the hostname of this machine"
-  echo -e "to $HOSTNAME.$DOMAINNAME ?"
-  # Todo add a return item :-)
-  pause
+  echo -e -n "$green[EFA]$clean to $HOSTNAME.$DOMAINNAME? (y/N): "
+  local TMPYN
+  read TMPYN
+  if [[ $TMPYN == "y" || $TMPYN == "Y" ]]; then
+    # Write new hosts file
+    echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+    echo "$IP   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
   
-  # Write new hosts file
-  echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
-  echo "$IP   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
+    sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
   
-  sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
+    sed -i "/^Hostname =/ c\Hostname = $HOSTNAME.$DOMAINNAME" /etc/MailScanner/MailScanner.conf
   
-  sed -i "/^Hostname =/ c\Hostname = $HOSTNAME.$DOMAINNAME" /etc/MailScanner/MailScanner.conf
+    # Set the hostname for the active system
+    hostname $HOSTNAME
   
-  # Set the hostname for the active system
-  hostname $HOSTNAME
+    # Write change to EFA-Config
+    sed -i "/^HOSTNAME:/ c\HOSTNAME:$HOSTNAME" /etc/EFA-Config
+    sed -i "/^DOMAINNAME:/ c\DOMAINNAME:$DOMAINNAME" /etc/EFA-Config
   
-  # Write change to EFA-Config
-  sed -i "/^HOSTNAME:/ c\HOSTNAME:$HOSTNAME" /etc/EFA-Config
-  sed -i "/^DOMAINNAME:/ c\DOMAINNAME:$DOMAINNAME" /etc/EFA-Config
-  
-  # Change mailscanner config
-  sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
+    # Change mailscanner config
+    sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
     
-  echo -e "$red [EFA] Your system will need to reboot now $clean"
-  pause
-  reboot
+    echo -e ""
+    echo -e "Hostname changed"
+    echo -e ""
+    echo -e "$red [EFA] Your system will now reboot. $clean"
+    pause
+    reboot
+        
+  elif [[ $TMPSECURE == "n" || $TMPSECURE == "N" || $TMPSECURE="" ]]; then
+    echo -e "No changes made"
+    pause
+    ipmenu=1
+  fi
 }
