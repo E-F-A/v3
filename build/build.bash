@@ -661,7 +661,7 @@ func_mailwatch () {
     echo "apache ALL=NOPASSWD: /usr/sbin/MailScanner --lint" > /etc/sudoers.d/EFA-Services
 
     # Fix menu width
-    sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
+    # sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
 
     # Issue #61 Domain Administrator cannot delete domain only whitelist/blacklist
     sed -i '/^    \$to_domain = \$split\[2\];/{N;s/$/\nelse \{ \$to_domain = \$url_to; \}/}' /var/www/html/mailscanner/lists.php
