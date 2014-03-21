@@ -246,6 +246,15 @@ function update-3.0.0.3() {
   # As users should not upgrade to an specific version but always use the latest
   # E.F.A. version this should not cause any issues.
 
+  # Add the following in one pass for MailWatch to ensure settings are present  
+  echo "" >> /var/www/html/mailscanner/conf.php
+  echo "// Enable MailScanner Rule Editor" >> /var/www/html/mailscanner/conf.php
+  echo "// Initially disabled as other config needs to be done to use it" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE', false);" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE_RELOAD_INTERVAL', 5);" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE_RULESET_DIR', \"/etc/MailScanner/rules\");" >> /var/www/html/mailscanner/conf.php
+
+
   # Update vmtools move to function so it is only run once just like mailwatch
 
   # Issue #30 filter non-spam from quarantine reports
