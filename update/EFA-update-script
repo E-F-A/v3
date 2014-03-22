@@ -355,6 +355,10 @@ function update-3.0.0.1() {
 #----------------------------------------------------------------#
 function update-vmtools() {
   # Issue #55 reapply open-vm-tools, if present and upgrade if new version is available
+  
+  # Check:  Will this potentially remove commercial vmware-tools?
+  # If so, how do we test for open versus commercial versions?
+  
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
     service vmtoolsd stop
     
