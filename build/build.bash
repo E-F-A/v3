@@ -686,7 +686,8 @@ func_sgwi () {
     mv * /var/www/html/sgwi
 
     # add db credential 
-    sed -i "/^\$db_pass/ c\$db_pass	= \"$password\";" /var/www/html/sgwi/includes/config.inc.php
+	# Issue #66 Grab all passwords from EFA-Config
+    sed -i "/^\$db_pass/ c\$efa_array = preg_grep('/^SQLGREYSQLPWD/', file('/etc/EFA-Config'));\nforeach(\$efa_array as \$num => \$line) {\n  if (\$line) {\n    \$db_pass = preg_replace('/^SQLGREYSQLPWD:(.*)/','\$1',\$line);\n  }\n}" /var/www/html/sgwi/includes/config.inc.php
 
     # Add greylist to mailwatch menu
     # hide from non-admins 
@@ -702,8 +703,6 @@ func_sgwi () {
     echo "require('login.function.php');" >> /var/www/html/mailscanner/grey.php
     echo "\$refresh = html_start(\"greylist\",0,false,false);" >> /var/www/html/mailscanner/grey.php
     echo "?>" >> /var/www/html/mailscanner/grey.php
-    # iframe "works" but the vertical concerns me with a growing list...
-    # may end up doing something else...
     echo "<iframe src=\"../sgwi/index.php\" width=\"960px\" height=\"1024px\">" >> /var/www/html/mailscanner/grey.php
     echo " <a href=\"..\sgwi/index.php\">Click here for SQLGrey Web Interface</a>" >> /var/www/html/mailscanner/grey.php
     echo "</iframe>" >> /var/www/html/mailscanner/grey.php
