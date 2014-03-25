@@ -857,6 +857,7 @@ function func_end() {
     
   # +--------------------------------------------------+
   # Write all settings to EFA-Config
+  
   touch /etc/EFA-Config
   echo "HOSTNAME:$HOSTNAME" >> /etc/EFA-Config
   echo "DOMAINNAME:$DOMAINNAME" >> /etc/EFA-Config
@@ -881,6 +882,8 @@ function func_end() {
   else
     echo "AUTOUPDATES:DISABLED" >> /etc/EFA-Config
   fi
+  
+  # Todo:  Apache, MailScanner, etc. will need access to this file
   
   chmod 600 /etc/EFA-Config
   # +--------------------------------------------------+
