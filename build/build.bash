@@ -569,6 +569,8 @@ func_mailwatch () {
     rm -rf docs
     
     cp conf.php.example conf.php
+	# Issue #66 grab all passwords from EFA-Config
+	sed -i "/^define('DB_PASS',/ c\$efa_config = preg_grep('/^MAILWATCHSQLPWD/', file('/etc/EFA-Config'));\nforeach(\$efa_config as \$num => \$line) {\n  if (\$line) {\n    \$db_pass_tmp = preg_replace('/^MAILWATCHSQLPWD:(.*)/','\$1', \$line);\n  }\n}\ndefine('DB_PASS', \$db_pass_tmp);" conf.php
     sed -i "/^define('DB_USER',/ c\define('DB_USER', 'mailwatch');" conf.php
     sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
     sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', 'Etc/UTC');" conf.php

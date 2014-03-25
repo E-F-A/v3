@@ -761,10 +761,11 @@ function func_configure-system() {
   MAILWATCHSQLPWD=$PASSWD
   /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$MAILWATCHSQLPWD') WHERE User='mailwatch';"
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
-  sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
-  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm
-  sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLSpamSettings.pm
-  sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$MAILWATCHSQLPWD');" /var/www/html/mailscanner/conf.php
+  # Issue #66 grab all passwords from /etc/EFA-Config
+  #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
+  #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm
+  #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLSpamSettings.pm
+  #sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$MAILWATCHSQLPWD');" /var/www/html/mailscanner/conf.php
   
   # sqlgrey SQL password
   randompw
@@ -772,7 +773,7 @@ function func_configure-system() {
   /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SQLGREYSQLPWD') WHERE User='sqlgrey';"
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
   sed -i "/db_pass =/ c\db_pass = $SQLGREYSQLPWD" /etc/sqlgrey/sqlgrey.conf
-  sed -i "/^\$db_pass/ c\$db_pass	= \"$SQLGREYSQLPWD\";" /var/www/html/sgwi/includes/config.inc.php
+  #sed -i "/^\$db_pass/ c\$db_pass	= \"$SQLGREYSQLPWD\";" /var/www/html/sgwi/includes/config.inc.php
  
   # efa token SQL password
   randompw
