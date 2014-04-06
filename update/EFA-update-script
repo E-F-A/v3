@@ -95,6 +95,10 @@ function get_update_path() {
 #----------------------------------------------------------------#
 function update-3.0.0.5() {
 
+  # Reapply update-3.0.0.4 due to failed downloads
+  echo "Reapplying Update 3.0.0.4..."
+  update-3.0.0.4
+  
   echo "Staring update to E.F.A. 3.0.0.5"
   VERSION="3.0.0.5"
   # Create backup directory
