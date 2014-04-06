@@ -105,10 +105,10 @@ function update-3.0.0.5() {
   mkdir -p /var/EFA/backup/$VERSION
   
   # Fix the forgotten password from 3.0.0.4
-  # Todo:  Grab PW from /etc/EFA-Config instead
-  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
-  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
-  /etc/init.d/MailScanner restart
+  # Update reapplication will resolve this above
+  #EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  #/etc/init.d/MailScanner restart
   
     # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
