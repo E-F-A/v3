@@ -101,6 +101,7 @@ function update-3.0.0.5() {
   mkdir -p /var/EFA/backup/$VERSION
   
   # Fix the forgotten password from 3.0.0.4
+  # Todo:  Grab PW from /etc/EFA-Config instead
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   /etc/init.d/MailScanner restart
@@ -109,12 +110,12 @@ function update-3.0.0.5() {
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*
   
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure  
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
   cd /usr/src/EFA/
   wget $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt
   for lib in `cat /usr/src/EFA/libraries-filelist.txt`
     do
-      /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib
+      /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib --no-check-certificate
   done
   
   chmod 700 /usr/local/sbin/EFA-Configure
@@ -145,7 +146,7 @@ function update-3.0.0.4() {
 
   #Issue #18 Email signature sanitation
   rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
-  /usr/bin/wget -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+  /usr/bin/wget -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm --no-check-certificate
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   /etc/init.d/MailScanner restart
@@ -153,7 +154,7 @@ function update-3.0.0.4() {
   #Issue #65 Fix EFA-SA-Update file location
   rm -f /etc/cron.daily/EFA-SA-Update
   rm -f /usr/local/sbin/EFA-SA-Update
-  /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
+  /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
   chmod 755 /usr/local/sbin/EFA-SA-Update
 
   echo "Update to $VERSION complete." 
@@ -205,28 +206,28 @@ function update-3.0.0.3() {
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
   chmod 700 /usr/local/sbin/EFA-Configure
 
   # Issue #16 System/db/settings backup
   mkdir -p /var/EFA/backup
-  /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup
+  /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup --no-check-certificate
   chmod 700 /usr/local/sbin/EFA-Backup
-  /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron
+  /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron --no-check-certificate
   chmod 700 /etc/cron.daily/EFA-Backup-cron
 
   # Issue #60 kam.cf.backup parsed by spamassassin
   mkdir -p /var/EFA/backup/KAM
   rm -f /etc/cron.daily/EFA-SA-Update
-  /usr/bin/wget -O /etc/cron.daily/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
+  /usr/bin/wget -O /etc/cron.daily/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
   chmod 755 /etc/cron.daily/EFA-SA-Update
 
   # Issue #17 Trusted Network Rules
   touch /etc/sysconfig/EFA_trusted_networks
   yum -y install perl-Net-Netmask
-  /usr/bin/wget -O /var/www/html/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html
+  /usr/bin/wget -O /var/www/html/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html --no-check-certificate
   rm -f /var/www/cgi-bin/learn-msg.cgi
-  /usr/bin/wget -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  /usr/bin/wget -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi --no-check-certificate
   chmod 755 /var/www/cgi-bin/learn-msg.cgi
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
@@ -325,7 +326,7 @@ function update-3.0.0.1() {
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
   chmod 700 /usr/local/sbin/EFA-Configure
   
   # fix issue 32 clean quarantine not enabled
