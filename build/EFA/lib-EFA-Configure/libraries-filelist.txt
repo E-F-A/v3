@@ -1,3 +1,4 @@
 func_getipsettings
 func_sethostname
 func_apachesettings
+func_mailsettings
