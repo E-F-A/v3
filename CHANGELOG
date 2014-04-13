@@ -9,6 +9,7 @@ Issue #76 Bug -- Processing Attempts Database Bug (temporarily disabled until Ma
 Issue #74 Bug -- EFA-Configure Disable SSL does not disable redirect
 Issue #75 Bug -- EFA-Configure not writing iptables config to /etc/sysconfig/iptables
 Issue #73 Bug -- Admin Email Change Fails to Update MailScanner Values
+Issue #70 Enhancement -- .bashrc EFA-Configure Launch Interactive Only
 	
 ############################################################
 EFA Version 3.0.0.4 Changes

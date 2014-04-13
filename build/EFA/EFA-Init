@@ -848,7 +848,9 @@ function func_end() {
   sed -i "/^\/usr\/local\/sbin\/EFA-Init/d" /root/.bashrc
   
   # Add EFA-Configure to user logon
-  sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /home/$USERNAME/.bashrc
+  #sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /home/$USERNAME/.bashrc
+  #Issue #70 .bashrc EFA-Configure Launch Interactive Only
+  sed -i "1i\if ! [ -z \"\$PS1\" ]; then\n  sudo \/usr\/local\/sbin\/EFA-Configure\nfi" /home/$USERNAME/.bashrc
   
   # Add EFA-Configure to root logon
   # Issue #6: adcc hanging system on start after latest build
