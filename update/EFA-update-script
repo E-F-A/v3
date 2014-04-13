@@ -104,6 +104,9 @@ function update-3.0.0.5() {
   # Create backup directory
   mkdir -p /var/EFA/backup/$VERSION
   
+  # Issue #76 Processing Attempts Database Bug
+  sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
+  
   # Fix the forgotten password from 3.0.0.4
   # Update reapplication will resolve this above
   #EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
