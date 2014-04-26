@@ -84,7 +84,11 @@ function update-3.0.0.4() {
   #Issue #18 Email signature sanitation
   rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   /usr/bin/wget -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm --no-check-certificate
-
+  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  /etc/init.d/MailScanner restart
+  
+  
   #Issue #65 Fix EFA-SA-Update file location
   rm -f /etc/cron.daily/EFA-SA-Update
   rm -f /usr/local/sbin/EFA-SA-Update
