@@ -35,6 +35,7 @@ SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
 MAILWATCHVERSION="7874620191"
 VMTOOLSVERION="9.4.0-1280544"
+STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -95,6 +96,8 @@ function get_update_path() {
 #----------------------------------------------------------------#
 function update-3.0.0.5() {
   
+  # Issue #79 EFA-Update Staging and Error Handling 
+  
   # Apply 3.0.0.4 update fixes (safe to reapply)
   # See http://forum.efa-project.org/viewtopic.php?f=13&t=604 
   # for more info
@@ -103,90 +106,142 @@ function update-3.0.0.5() {
   # BEGIN 3.0.0.4 Update Fixes ###################################
   ################################################################
    
-  echo "Staring fixes for update 3.0.0.2-3.0.0.4..."
+  echo "Staring fixes for updates 3.0.0.2-3.0.0.4..."
+   
+  ##### Staging Phase #####
+  
   VERSION="3.0.0.4"
- 
+  
   #Issue #18 Email signature sanitation
-  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
-  /usr/bin/wget -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm --no-check-certificate
-  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
-  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
-  /etc/init.d/MailScanner restart
-    
+  /usr/bin/wget -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
+  
   #Issue #65 Fix EFA-SA-Update file location
-  rm -f /etc/cron.daily/EFA-SA-Update
-  rm -f /usr/local/sbin/EFA-SA-Update
-  /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
-  chmod 755 /usr/local/sbin/EFA-SA-Update
+  /usr/bin/wget -O $STAGING/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
   
   VERSION="3.0.0.3"
 
   # grab latest version of EFA-Configure
-  rm -f /usr/local/sbin/EFA-Configure
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
-  chmod 700 /usr/local/sbin/EFA-Configure
+  /usr/bin/wget -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
+  
+  # Issue #16 System/db/settings backup
+  /usr/bin/wget -O $STAGING/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
+  /usr/bin/wget -O $STAGING/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
 
+  # Issue #17 Trusted Network Rules
+  /usr/bin/wget -O $STAGING/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
+  /usr/bin/wget -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
+    
+  # Fix vtoolsd init script...
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
+    /usr/bin/wget -O $STAGING/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init --no-check-certificate
+	[[ $? -ne 0 ]] && ( abort )
+  fi
+  
+  ##### Backup Phase #####
+  
+  # Skip for this pseudo-update (fix needs committed first...will use in future updates)
+  
+  ##### Commit Phase #####
+  
+   # Issue #17 Trusted Network Rules (yum update)
+  yum -y install perl-Net-Netmask
+  [[ $? -ne 0 ]] && ( abort )
+  
+  #Issue #18 Email signature sanitation
+  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  mv $STAGING/CustomAction.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  /etc/init.d/MailScanner restart
+  
+  #Issue #65 Fix EFA-SA-Update file location
+  rm -f /etc/cron.daily/EFA-SA-Update
+  rm -f /usr/local/sbin/EFA-SA-Update
+  mv $STAGING/EFA-SA-Update /usr/local/sbin/EFA-SA-Update
+  chmod 755 /usr/local/sbin/EFA-SA-Update
+  
+  # grab latest version of EFA-Configure
+  rm -f /usr/local/sbin/EFA-Configure
+  mv $STAGING/EFA-Configure /usr/local/sbin/EFA-Configure
+  chmod 700 /usr/local/sbin/EFA-Configure
+  
   # Issue #16 System/db/settings backup
   mkdir -p /var/EFA/backup
-  /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup --no-check-certificate
+  mv $STAGING/EFA-Backup /usr/local/sbin/EFA-Backup
   chmod 700 /usr/local/sbin/EFA-Backup
-  /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron --no-check-certificate
+  mv $STAGING/etc/cron.daily/EFA-Backup-cron
   chmod 700 /etc/cron.daily/EFA-Backup-cron
-
+  
   # Issue #60 kam.cf.backup parsed by spamassassin
   mkdir -p /var/EFA/backup/KAM
-  rm -f /etc/cron.daily/EFA-SA-Update
-  /usr/bin/wget -O /etc/cron.daily/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
-  chmod 755 /etc/cron.daily/EFA-SA-Update
-
+  
   # Issue #17 Trusted Network Rules
   touch /etc/sysconfig/EFA_trusted_networks
   yum -y install perl-Net-Netmask
-  /usr/bin/wget -O /var/www/html/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html --no-check-certificate
+  rm -f /var/www/html/denylearned.html
+  mv $STAGING/denylearned.html /var/www/html/denylearned.html
   rm -f /var/www/cgi-bin/learn-msg.cgi
-  /usr/bin/wget -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi --no-check-certificate
+  mv $STAGING/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
   chmod 755 /var/www/cgi-bin/learn-msg.cgi
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi 
   
   # Fix vtoolsd init script...
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
-    /usr/bin/wget -O /etc/init.d/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init --no-check-certificate
+    rm -f /etc/init.d/vmtoolsd
+    mv $STAGING/vmtoolsd /etc/init.d/vmtoolsd
   fi
+  
   ################################################################
   # END 3.0.0.4 Update Fixes #####################################
   ################################################################
   
   echo "Staring update to E.F.A. 3.0.0.5"
   VERSION="3.0.0.5"
+  
+  ##### Staging Phase #####
+  
+  # grab latest version of EFA-Configure with libraries
+  usr/bin/wget -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
+  wget -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt --no-check-certificate
+  [[ $? -ne 0 ]] && ( abort )
+  mkdir -p $STAGING/lib   
+  for lib in `cat $STAGING/libraries-filelist.txt`
+    do
+      /usr/bin/wget -O $STAGING/lib/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib --no-check-certificate
+	  [[ $? -ne 0 ]] && ( abort )
+  done
+  
+  ##### Backup Phase #####
+  
+  /usr/local/sbin/EFA-Backup -backup >> /var/log/EFA/EFA-Backup.log 2>&1
+  
+  ##### Commit Phase #####
+  
   # Create backup directory
   mkdir -p /var/EFA/backup/$VERSION
   
   #Issue #70 .bashrc EFA-Configure Launch Interactive Only
-  LOCALUSER=`grep 501 /etc/passwd | sed 's/:x.*$//'`
+  LOCALUSER=`grep :501: /etc/passwd | sed 's/:x.*$//'`
   sed -i "^/sudo \/usr\/local\/sbin\/EFA-Configure/ c\if ! [ -z \"\$PS1\" ]; then\n  sudo \/usr\/local\/sbin\/EFA-Configure\nfi" /home/$LOCALUSER/.bashrc
   
   # Issue #76 Processing Attempts Database Bug
   sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
   
-  # Fix the forgotten password from 3.0.0.4
-  # Update reapplication will resolve this above
-  #EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
-  #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
-  #/etc/init.d/MailScanner restart
-  
-    # grab latest version of EFA-Configure with libraries
+  # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*
-  
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
-  cd /usr/src/EFA/
-  wget $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt
-  for lib in `cat /usr/src/EFA/libraries-filelist.txt`
-    do
-      /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib --no-check-certificate
-  done
-  
+  mv $STAGING/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  mv $STAGING/lib/* /var/EFA/lib/EFA-Configure  
   chmod 700 /usr/local/sbin/EFA-Configure
   chmod 600 /var/EFA/lib/EFA-Configure/*
   
@@ -565,6 +620,26 @@ function initialize() {
   echo "Reply-To: $MAILFROM" >> $TMPMAIL
   echo "Subject: $MAILSUBJECT" >> $TMPMAIL
   echo "" >> $TMPMAIL
+  
+  mkdir -p $STAGING
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Abort Routine
+#----------------------------------------------------------------#
+function abort() {
+  rm -rf $STAGING
+  
+  echo "" >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+  
+  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Please visit http://www.efa-project.org for more information." 
+  exit 1
 }
 #----------------------------------------------------------------#
 
@@ -572,6 +647,8 @@ function initialize() {
 # Finalize
 #----------------------------------------------------------------#
 function finalize() {
+  rm -rf $STAGING
+
   # Write the latest version number
   echo "EFA-$VERSION" > /etc/EFA-Version
   sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue 
