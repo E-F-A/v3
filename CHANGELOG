@@ -12,6 +12,7 @@ Issue #73 Bug -- Admin Email Change Fails to Update MailScanner Values
 Issue #70 Enhancement -- .bashrc EFA-Configure Launch Interactive Only
 Issue #85 Bug -- ClamAV Update Issue
 Issue #90 Bug -- Reapply 3.0.0.4 Update Fixes
+Issue #79 Enhancement -- EFA-Update Staging and Error Handling 
 
 ############################################################
 EFA Version 3.0.0.4 Changes
