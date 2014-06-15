@@ -632,7 +632,7 @@ function abort() {
   rm -rf $STAGING
   
   echo "" >> $TMPMAIL
-  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
   echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
