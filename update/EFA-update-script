@@ -114,34 +114,34 @@ function update-3.0.0.5() {
   
   #Issue #18 Email signature sanitation
   /usr/bin/wget -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
   
   #Issue #65 Fix EFA-SA-Update file location
   /usr/bin/wget -O $STAGING/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
   
   VERSION="3.0.0.3"
 
   # grab latest version of EFA-Configure
   /usr/bin/wget -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
   
   # Issue #16 System/db/settings backup
   /usr/bin/wget -O $STAGING/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
   /usr/bin/wget -O $STAGING/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
 
   # Issue #17 Trusted Network Rules
   /usr/bin/wget -O $STAGING/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
   /usr/bin/wget -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
     
   # Fix vtoolsd init script...
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
     /usr/bin/wget -O $STAGING/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init --no-check-certificate
-	[[ $? -ne 0 ]] && ( abort )
+	[[ $? -ne 0 ]] && abort
   fi
   
   ##### Backup Phase #####
@@ -152,7 +152,7 @@ function update-3.0.0.5() {
   
    # Issue #17 Trusted Network Rules (yum update)
   yum -y install perl-Net-Netmask
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
   
   #Issue #18 Email signature sanitation
   rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
@@ -210,14 +210,14 @@ function update-3.0.0.5() {
   
   # grab latest version of EFA-Configure with libraries
   /usr/bin/wget -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
   wget -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt --no-check-certificate
-  [[ $? -ne 0 ]] && ( abort )
+  [[ $? -ne 0 ]] && abort
   mkdir -p $STAGING/lib   
   for lib in `cat $STAGING/libraries-filelist.txt`
     do
       /usr/bin/wget -O $STAGING/lib/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib --no-check-certificate
-	  [[ $? -ne 0 ]] && ( abort )
+	  [[ $? -ne 0 ]] && abort
   done
   
   ##### Backup Phase #####
