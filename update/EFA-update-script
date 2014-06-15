@@ -209,7 +209,7 @@ function update-3.0.0.5() {
   ##### Staging Phase #####
   
   # grab latest version of EFA-Configure with libraries
-  usr/bin/wget -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
+  /usr/bin/wget -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
   [[ $? -ne 0 ]] && ( abort )
   wget -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt --no-check-certificate
   [[ $? -ne 0 ]] && ( abort )
