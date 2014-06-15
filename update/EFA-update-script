@@ -231,7 +231,7 @@ function update-3.0.0.5() {
   
   #Issue #70 .bashrc EFA-Configure Launch Interactive Only
   LOCALUSER=`grep :501: /etc/passwd | sed 's/:x.*$//'`
-  sed -i "^/sudo \/usr\/local\/sbin\/EFA-Configure/ c\if ! [ -z \"\$PS1\" ]; then\n  sudo \/usr\/local\/sbin\/EFA-Configure\nfi" /home/$LOCALUSER/.bashrc
+  sed -i "/^sudo \/usr\/local\/sbin\/EFA-Configure/ c\if ! [ -z \"\$PS1\" ]; then\n  sudo \/usr\/local\/sbin\/EFA-Configure\nfi" /home/$LOCALUSER/.bashrc
   
   # Issue #76 Processing Attempts Database Bug
   sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
