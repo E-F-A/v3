@@ -153,7 +153,7 @@ func_postfix () {
     postconf -e "smtp_use_tls = yes"
     postconf -e "smtpd_use_tls = yes"
     postconf -e "smtp_tls_CAfile = /etc/postfix/ssl/smtpd.pem"
-    postconf -e "smtp_tls_session_cache_database = btree:/var/spool/postfix/smtp_tls_session_cache"
+    postconf -e "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache"
     postconf -e "smtp_tls_note_starttls_offer = yes"
     postconf -e "smtpd_tls_key_file = /etc/postfix/ssl/smtpd.pem"
     postconf -e "smtpd_tls_cert_file = /etc/postfix/ssl/smtpd.pem"
@@ -162,7 +162,7 @@ func_postfix () {
     postconf -e "smtpd_tls_received_header = yes"
     postconf -e "smtpd_tls_session_cache_timeout = 3600s"
     postconf -e "tls_random_source = dev:/dev/urandom"
-    postconf -e "smtpd_tls_session_cache_database = btree:/var/spool/postfix/smtpd_tls_session_cache"
+    postconf -e "smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache"
     postconf -e "smtpd_tls_security_level = may"
     # restrictions
     postconf -e "smtpd_helo_restrictions =  check_helo_access hash:/etc/postfix/helo_access, reject_invalid_hostname"

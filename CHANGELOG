@@ -1,7 +1,6 @@
 ############################################################
 EFA Version 3.0.0.5 Changes
 ############################################################
-
 Issue #57 Enhancement - Alternating background for black/whitelist
 Issue #54 Enhancement - Added hostname change to EFA-Configure
 Issue #73 Bug -- Urgent: raw.github.com certificate error fixes
@@ -13,6 +12,7 @@ Issue #70 Enhancement -- .bashrc EFA-Configure Launch Interactive Only
 Issue #85 Bug -- ClamAV Update Issue
 Issue #90 Bug -- Reapply 3.0.0.4 Update Fixes
 Issue #79 Enhancement -- EFA-Update Staging and Error Handling 
+Issue #98 Bug - postfix tlsmgr smtpd_tls_session warnings
 
 ############################################################
 EFA Version 3.0.0.4 Changes
