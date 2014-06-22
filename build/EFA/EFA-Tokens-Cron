@@ -33,6 +33,7 @@ my($db_name) = 'efa';
 my($db_host) = 'localhost';
 my($db_user) = 'efa';
 # Issue #66 Grab Passwords from EFA-Config
+my($fh);
 my($pw_config) = '/etc/EFA-Config';
 open($fh), "<", $pw_config);
 if (!$fh) {
