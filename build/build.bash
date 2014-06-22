@@ -79,13 +79,13 @@ func_mysql () {
     # Source:  https://raw.github.com/endelwar/mailwatch/master/create.sql
     # https://raw.github.com/endelwar/mailwatch/master/tools/create_relay_postfix.sql
     cd /usr/src/EFA
-    /usr/bin/wget $gitdlurl/MYSQL/create.sql
+    /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create.sql 
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
-    /usr/bin/wget $gitdlurl/MYSQL/create_relay_postfix.sql
+    /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create_relay_postfix.sql
     /usr/bin/mysql -u root -p"$password" mailscanner < /usr/src/EFA/create_relay_postfix.sql
 
     # Create and populate efa db
-    /usr/bin/wget $gitdlurl/MYSQL/efatokens.sql
+    /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/efatokens.sql
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/efatokens.sql
 
     # Create the users
@@ -107,13 +107,13 @@ func_mysql () {
     # populate the sa_bayes DB
     # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/bayes_mysql.sql
     cd /usr/src/EFA
-    /usr/bin/wget $gitdlurl/MYSQL/bayes_mysql.sql
+    /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/bayes_mysql.sql
     /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/bayes_mysql.sql
     
     # add the AWL table to sa_bayes
     # source: https://svn.apache.org/repos/asf/spamassassin/trunk/sql/awl_mysql.sql
     cd /usr/src/EFA
-    /usr/bin/wget $gitdlurl/MYSQL/awl_mysql.sql
+    /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/awl_mysql.sql
     /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/awl_mysql.sql
 }
 # +---------------------------------------------------+
@@ -276,24 +276,24 @@ func_mailscanner () {
     
     # Remove all reports except en and modify all texts
     cd /usr/src/EFA/
-    wget $gitdlurl/MailScanner/reports/en/en-reports-filelist.txt
+    wget --no-check-certificate $gitdlurl/MailScanner/reports/en/en-reports-filelist.txt
     rm -rf /etc/MailScanner/reports
     mkdir -p /etc/MailScanner/reports/en
     cd /etc/MailScanner/reports/en
     for report in `cat /usr/src/EFA/en-reports-filelist.txt`
       do
-        wget $gitdlurl/MailScanner/reports/en/$report
+        wget --no-check-certificate $gitdlurl/MailScanner/reports/en/$report
     done
 
     # Add CustomAction.pm for token handling
     cd /usr/lib/MailScanner/MailScanner/CustomFunctions
     # Remove as a copy will throw a mailscanner --lint error
     rm -f CustomAction.pm 
-    wget $gitdlurl/EFA/CustomAction.pm
+    wget --no-check-certificate $gitdlurl/EFA/CustomAction.pm
 
     # Add EFA-Tokens-Cron
     cd /etc/cron.daily
-    wget $gitdlurl/EFA/EFA-Tokens-Cron
+    wget --no-check-certificate $gitdlurl/EFA/EFA-Tokens-Cron
     chmod 700 EFA-Tokens-Cron
 
     # Force mailscanner init to return a code on all failures 
@@ -348,12 +348,12 @@ func_spam_clamav () {
     
     # PDFInfo
     cd /usr/src/EFA
-    /usr/bin/wget -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
-    /usr/bin/wget -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
+    /usr/bin/wget --no-check-certificate -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
+    /usr/bin/wget --no-check-certificate -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
     echo "loadplugin Mail::SpamAssassin::Plugin::PDFInfo">>/etc/mail/spamassassin/v310.pre
  
     # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
-    /usr/bin/wget -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
+    /usr/bin/wget --no-check-certificate -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
     
     # Configure spamassassin bayes and awl DB settings
     echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
@@ -371,7 +371,7 @@ func_spam_clamav () {
     # Add example spam to db
     # source: http://spamassassin.apache.org/gtube/gtube.txt
     cd /usr/src/EFA
-    /usr/bin/wget $gitdlurl/EFA/gtube.txt
+    /usr/bin/wget --no-check-certificate $gitdlurl/EFA/gtube.txt
     /usr/local/bin/sa-learn --spam /usr/src/EFA/gtube.txt
     
     # Enable Auto White Listing
@@ -402,7 +402,7 @@ func_spam_clamav () {
    
     # Add Sought Channel to replace Sare and initialize sa-update
     /usr/local/bin/sa-update
-    /usr/bin/wget -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY
+    /usr/bin/wget --no-check-certificate -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY 
     /usr/local/bin/sa-update --import /usr/src/EFA/GPG.KEY
 
     # Customize sa-update in /etc/sysconfig/update_spamassassin
@@ -460,7 +460,7 @@ func_apache () {
 func_sqlgrey () {
     cd /usr/src/EFA
     useradd sqlgrey -m -d /home/sqlgrey -s /sbin/nologin
-    wget $mirror/$mirrorpath/sqlgrey-1.8.0.tar.gz
+    wget $mirror/$mirrorpath/sqlgrey-1.8.0.tar.gz 
     tar -xvzf sqlgrey-1.8.0.tar.gz
     cd sqlgrey-1.8.0
     make rh-install
@@ -512,10 +512,6 @@ func_mailwatch () {
     
     # Fetch MailWatch
     cd /usr/src/EFA
-    #wget $mirror/$mirrorpath/MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
-    #unzip -d . MailWatch-1.2.0-beta4-update4-GIT-f10d1eca01.zip
-    #wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-4139a39d8c.zip
-    #unzip -d . MailWatch-1.2.0-master-GIT-4139a39d8c.zip
     wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
     unzip -d . MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
     cd 1.2.0-master 
@@ -609,8 +605,8 @@ func_mailwatch () {
 
     # EFA Branding
     cd /var/www/html/mailscanner/images
-    wget $gitdlurl/EFA/EFAlogo-47px.gif
-    wget $gitdlurl/EFA/EFAlogo-79px.png
+    wget --no-check-certificate $gitdlurl/EFA/EFAlogo-47px.gif
+    wget --no-check-certificate $gitdlurl/EFA/EFAlogo-79px.png 
     mv mailwatch-logo.gif mailwatch-logo.gif.orig
     mv mailwatch-logo.png mailwatch-logo.png.orig
     mv mailscannerlogo.gif mailscannerlogo.gif.orig
@@ -642,16 +638,16 @@ func_mailwatch () {
     
     # Place the learn and release scripts
     cd /var/www/cgi-bin
-    wget $gitdlurl/EFA/learn-msg.cgi
-    wget $gitdlurl/EFA/release-msg.cgi
+    wget --no-check-certificate $gitdlurl/EFA/learn-msg.cgi 
+    wget --no-check-certificate $gitdlurl/EFA/release-msg.cgi
     chmod 755 learn-msg.cgi
     chmod 755 release-msg.cgi
     cd /var/www/html
-    wget $gitdlurl/EFA/released.html
-    wget $gitdlurl/EFA/notreleased.html
-    wget $gitdlurl/EFA/learned.html
-    wget $gitdlurl/EFA/notlearned.html    
-    wget $gitdlurl/EFA/denylearned.html
+    wget --no-check-certificate $gitdlurl/EFA/released.html
+    wget --no-check-certificate $gitdlurl/EFA/notreleased.html
+    wget --no-check-certificate $gitdlurl/EFA/learned.html
+    wget --no-check-certificate $gitdlurl/EFA/notlearned.html    
+    wget --no-check-certificate $gitdlurl/EFA/denylearned.html
  
     # MailWatch requires access to /var/spool/postfix/hold & incoming dir's
     chown -R postfix:apache /var/spool/postfix/hold
@@ -1030,23 +1026,23 @@ func_efarequirements () {
     echo "First time login: root/EfaPr0j3ct" >> /etc/issue
     
     # Grab EFA specific scripts/programs
-    /usr/bin/wget -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
+    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
     chmod 700 /usr/local/sbin/EFA-Init
-    /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/EFA/EFA-Configure
+    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Configure $gitdlurl/EFA/EFA-Configure
     chmod 700 /usr/local/sbin/EFA-Configure
-    /usr/bin/wget -O /usr/local/sbin/EFA-Update $gitdlurl/EFA/EFA-Update
+    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Update $gitdlurl/EFA/EFA-Update
     chmod 700 /usr/local/sbin/EFA-Update
-    /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/EFA/EFA-SA-Update
+    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-SA-Update $gitdlurl/EFA/EFA-SA-Update
     chmod 700 /usr/local/sbin/EFA-SA-Update
-    /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/EFA/EFA-Backup
+    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Backup $gitdlurl/EFA/EFA-Backup
     chmod 700 /usr/local/sbin/EFA-Backup
       
     # Grab the EFA-Configure libraries
     cd /usr/src/EFA/
-    wget $gitdlurl/EFA/lib-EFA-Configure/libraries-filelist.txt
+    wget --no-check-certificate $gitdlurl/EFA/lib-EFA-Configure/libraries-filelist.txt
     for lib in `cat /usr/src/EFA/libraries-filelist.txt`
       do
-        /usr/bin/wget -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/EFA/lib-EFA-Configure/$lib
+        /usr/bin/wget --no-check-certificate -O /var/EFA/lib/EFA-Configure/$lib $gitdlurl/EFA/lib-EFA-Configure/$lib
     done
     chmod 600 /var/EFA/lib/EFA-Configure/*
  
@@ -1088,11 +1084,11 @@ EOF
 # Cron settings
 # +---------------------------------------------------+
 func_cron () {
-    /usr/bin/wget -O /etc/cron.daily/EFA-Daily-cron $gitdlurl/EFA/EFA-Daily-cron
+    /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Daily-cron $gitdlurl/EFA/EFA-Daily-cron
     chmod 700 /etc/cron.daily/EFA-Daily-cron
-    /usr/bin/wget -O /etc/cron.monthly/EFA-Monthly-cron  $gitdlurl/EFA/EFA-Monthly-cron
+    /usr/bin/wget --no-check-certificate -O /etc/cron.monthly/EFA-Monthly-cron  $gitdlurl/EFA/EFA-Monthly-cron
     chmod 700 /etc/cron.monthly/EFA-Monthly-cron
-    /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron  $gitdlurl/EFA/EFA-Backup-cron
+    /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Backup-cron  $gitdlurl/EFA/EFA-Backup-cron
     chmod 700 /etc/cron.daily/EFA-Backup-cron
 }
 # +---------------------------------------------------+

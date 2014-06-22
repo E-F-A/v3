@@ -113,34 +113,34 @@ function update-3.0.0.5() {
   VERSION="3.0.0.4"
   
   #Issue #18 Email signature sanitation
-  /usr/bin/wget -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
   [[ $? -ne 0 ]] && abort
   
   #Issue #65 Fix EFA-SA-Update file location
-  /usr/bin/wget -O $STAGING/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update 
   [[ $? -ne 0 ]] && abort
   
   VERSION="3.0.0.3"
 
   # grab latest version of EFA-Configure
-  /usr/bin/wget -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure 
   [[ $? -ne 0 ]] && abort
   
   # Issue #16 System/db/settings backup
-  /usr/bin/wget -O $STAGING/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup 
   [[ $? -ne 0 ]] && abort
-  /usr/bin/wget -O $STAGING/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron
   [[ $? -ne 0 ]] && abort
 
   # Issue #17 Trusted Network Rules
-  /usr/bin/wget -O $STAGING/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html 
   [[ $? -ne 0 ]] && abort
-  /usr/bin/wget -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   [[ $? -ne 0 ]] && abort
     
   # Fix vtoolsd init script...
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
-    /usr/bin/wget -O $STAGING/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init --no-check-certificate
+    /usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init 
 	[[ $? -ne 0 ]] && abort
   fi
   
@@ -209,19 +209,19 @@ function update-3.0.0.5() {
   ##### Staging Phase #####
   
   # grab latest version of EFA-Configure with libraries
-  /usr/bin/wget -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
   [[ $? -ne 0 ]] && abort
-  wget -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt --no-check-certificate
+  wget --no-check-certificate -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt
   [[ $? -ne 0 ]] && abort
   mkdir -p $STAGING/lib   
   for lib in `cat $STAGING/libraries-filelist.txt`
     do
-      /usr/bin/wget -O $STAGING/lib/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib --no-check-certificate
+      /usr/bin/wget --no-check-certificate -O $STAGING/lib/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib
 	  [[ $? -ne 0 ]] && abort
   done
   
   # Issue #87 EFA-Tokens Cron Syntax Wrong 
-  /usr/bin/wget -O $STAGING/EFA-Tokens-Cron $gitdlurl/$VERSION/build/EFA/EFA-Tokens-Cron --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Tokens-Cron $gitdlurl/$VERSION/build/EFA/EFA-Tokens-Cron
   [[ $? -ne 0 ]] && abort
   
   ##### Backup Phase #####
@@ -283,7 +283,7 @@ function update-3.0.0.4() {
 
   #Issue #18 Email signature sanitation
   rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
-  /usr/bin/wget -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   /etc/init.d/MailScanner restart
@@ -291,7 +291,7 @@ function update-3.0.0.4() {
   #Issue #65 Fix EFA-SA-Update file location
   rm -f /etc/cron.daily/EFA-SA-Update
   rm -f /usr/local/sbin/EFA-SA-Update
-  /usr/bin/wget -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
   chmod 755 /usr/local/sbin/EFA-SA-Update
 
   echo "Update to $VERSION complete." 
@@ -343,28 +343,28 @@ function update-3.0.0.3() {
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
   chmod 700 /usr/local/sbin/EFA-Configure
 
   # Issue #16 System/db/settings backup
   mkdir -p /var/EFA/backup
-  /usr/bin/wget -O /usr/local/sbin/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup
   chmod 700 /usr/local/sbin/EFA-Backup
-  /usr/bin/wget -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron
   chmod 700 /etc/cron.daily/EFA-Backup-cron
 
   # Issue #60 kam.cf.backup parsed by spamassassin
   mkdir -p /var/EFA/backup/KAM
   rm -f /etc/cron.daily/EFA-SA-Update
-  /usr/bin/wget -O /etc/cron.daily/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
   chmod 755 /etc/cron.daily/EFA-SA-Update
 
   # Issue #17 Trusted Network Rules
   touch /etc/sysconfig/EFA_trusted_networks
   yum -y install perl-Net-Netmask
-  /usr/bin/wget -O /var/www/html/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /var/www/html/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html
   rm -f /var/www/cgi-bin/learn-msg.cgi
-  /usr/bin/wget -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   chmod 755 /var/www/cgi-bin/learn-msg.cgi
   EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
   sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
@@ -463,7 +463,7 @@ function update-3.0.0.1() {
   
   # grab latest version of EFA-Configure
   rm -f /usr/local/sbin/EFA-Configure
-  /usr/bin/wget -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure --no-check-certificate
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
   chmod 700 /usr/local/sbin/EFA-Configure
   
   # fix issue 32 clean quarantine not enabled
@@ -478,7 +478,7 @@ function update-3.0.0.1() {
   # Download latest learn-msg.cgi (fix issue 41)
   rm -f /var/www/cgi-bin/learn-msg.cgi
   cd /var/www/cgi-bin
-  wget $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  wget --no-check-certificate $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
   chmod 755 learn-msg.cgi
   
   echo "Update to $VERSION complete." 
@@ -520,7 +520,7 @@ function update-vmtools() {
     ./configure --without-x
     make
     make install
-    /usr/bin/wget -O /etc/init.d/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
+    /usr/bin/wget --no-check-certificate -O /etc/init.d/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
     chmod 755 /etc/init.d/vmtoolsd
     # lib adjustment
     ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1
