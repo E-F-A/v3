@@ -13,6 +13,8 @@ Issue #85 Bug -- ClamAV Update Issue
 Issue #90 Bug -- Reapply 3.0.0.4 Update Fixes
 Issue #79 Enhancement -- EFA-Update Staging and Error Handling 
 Issue #98 Bug - postfix tlsmgr smtpd_tls_session warnings
+Issue #87 Bug -- EFA-Tokens-Cron Syntax Wrong
+Issue #66 Enhancement -- EFA-Tokens-Cron pull password from /etc/EFA-Config
 
 ############################################################
 EFA Version 3.0.0.4 Changes
