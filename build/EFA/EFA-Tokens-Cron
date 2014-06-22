@@ -32,7 +32,19 @@ setlogsock('unix');
 my($db_name) = 'efa';
 my($db_host) = 'localhost';
 my($db_user) = 'efa';
-my($db_pass) = 'EfaPr0j3ct';
+# Issue #66 Grab Passwords from EFA-Config
+my($pw_config) = '/etc/EFA-Config';
+open($fh), "<", $pw_config);
+if (!$fh) {
+  openlog($0,'','user');
+  syslog('error', "Unable to retrieve password from /etc/EFA-Config, aborting!");
+  closelog;
+  exit 1;
+}
+my($db_pass) = grep(/^EFASQLPWD/,<$fh>);
+$db_pass =~ s/EFASQLPWD://;
+close($fh);
+
 my($sql,$sth,$dbh);
 
 # Connect to the database
@@ -41,7 +53,7 @@ $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
                       {PrintError => 0});
 
 if ($dbh) {
-  $sql = "DELETE from tokens WHERE datestamp < DATE_SUB(NOW() , INTERVAL 3 DAYS)";
+  $sql = "DELETE from tokens WHERE datestamp < DATE_SUB(NOW() , INTERVAL 3 DAY)";
   $sth = $dbh->prepare($sql);
   $sth->execute;
 

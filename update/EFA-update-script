@@ -220,6 +220,10 @@ function update-3.0.0.5() {
 	  [[ $? -ne 0 ]] && abort
   done
   
+  # Issue #87 EFA-Tokens Cron Syntax Wrong 
+  /usr/bin/wget -O $STAGING/EFA-Tokens-Cron $gitdlurl/$VERSION/build/EFA/EFA-Tokens-Cron --no-check-certificate
+  [[ $? -ne 0 ]] && abort
+  
   ##### Backup Phase #####
   
   /usr/local/sbin/EFA-Backup -backup >> /var/log/EFA/EFA-Backup.log 2>&1
@@ -241,6 +245,10 @@ function update-3.0.0.5() {
   postconf -e "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache"
   service postfix reload
   
+  # Issue #87 EFA-Tokens Cron Syntax Wrong 
+  rm -f /etc/cron.daily/EFA-Tokens-Cron
+  mv $STAGING/EFA-Tokens-Cron /etc/cron.daily/
+    
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*
