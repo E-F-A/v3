@@ -248,7 +248,16 @@ function update-3.0.0.5() {
   # Issue #87 EFA-Tokens Cron Syntax Wrong 
   rm -f /etc/cron.daily/EFA-Tokens-Cron
   mv $STAGING/EFA-Tokens-Cron /etc/cron.daily/EFA-Tokens-Cron
-    
+  
+  # todo: STAGING for this part...
+  # Issue #100 phishing site urls
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-MS-Update $gitdlurl/$VERSION/build/EFA/EFA-MS-Update
+  chmod 700 /usr/local/sbin/EFA-MS-Update
+  /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Daily-cron $gitdlurl/$VERSION/build/EFA/EFA-Daily-cron
+  chmod 700 /etc/cron.daily/EFA-Daily-cron
+  /usr/bin/wget --no-check-certificate -O /etc/cron.monthly/EFA-Monthly-cron  $gitdlurl/$VERSION/build/EFA/EFA-Monthly-cron
+  chmod 700 /etc/cron.monthly/EFA-Monthly-cron
+  
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*

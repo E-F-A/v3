@@ -1034,6 +1034,8 @@ func_efarequirements () {
     chmod 700 /usr/local/sbin/EFA-Update
     /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-SA-Update $gitdlurl/EFA/EFA-SA-Update
     chmod 700 /usr/local/sbin/EFA-SA-Update
+    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-MS-Update $gitdlurl/EFA/EFA-MS-Update
+    chmod 700 /usr/local/sbin/EFA-MS-Update
     /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Backup $gitdlurl/EFA/EFA-Backup
     chmod 700 /usr/local/sbin/EFA-Backup
       
