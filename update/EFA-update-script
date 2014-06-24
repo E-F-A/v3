@@ -238,7 +238,7 @@ function update-3.0.0.5() {
   
   /usr/local/sbin/EFA-Backup -backup >> /var/log/EFA/EFA-Backup.log 2>&1
   
-  # Archive files we replace 
+  # Archive files we replace or remove
   # Note: maybe add all efa specific files to the backup tool?
   mkdir /var/EFA/backup/3.0.0.5
   cp /etc/cron.daily/EFA-Tokens-Cron /var/EFA/backup/3.0.0.5/
@@ -246,6 +246,8 @@ function update-3.0.0.5() {
   cp /etc/cron.monthly/EFA-Monthly-cron /var/EFA/backup/3.0.0.5/
   cp /usr/local/sbin/EFA-Configure /var/EFA/backup/3.0.0.5/
   cp -r /var/EFA/lib/EFA-Configure/ /var/EFA/backup/3.0.0.5/EFA-Configure-libs/
+  
+  cp /etc/cron.daily/update_phishing_sites /var/EFA/backup/3.0.0.5/
   
   ##### Commit Phase #####
   
@@ -284,6 +286,7 @@ function update-3.0.0.5() {
   chmod 700 /usr/local/sbin/EFA-MS-Update
   chmod 700 /etc/cron.daily/EFA-Daily-cron
   chmod 700 /etc/cron.monthly/EFA-Monthly-cron
+  rm -f /etc/cron.daily/update_phishing_sites
   
   # Add a mailwatch version to EFA-Config (the previous version so the check in the new function works.)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config

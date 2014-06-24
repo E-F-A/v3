@@ -301,6 +301,9 @@ func_mailscanner () {
 
     # Enable the quarantine cleanup script
     sed -i '/$disabled = 1;/ c\$disabled = 0;' /etc/cron.daily/clean.quarantine
+	
+	# Remove Mailscanners phishing sites cron (#100, replaced by EFA-MS-Update)
+	rm -f /etc/cron.daily/update_phishing_sites
 }
 # +---------------------------------------------------+
 
