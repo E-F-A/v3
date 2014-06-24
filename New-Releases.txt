@@ -1,0 +1,9 @@
+# To change/check when we create a new version:
+
+build/EFA/EFA-Init
+ [ ] mirrorpath=""
+		
+build/build.bash
+ [ ] Header
+ [ ] Version=""
+ [ ] mirrorpath=""
