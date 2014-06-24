@@ -143,7 +143,7 @@ function update-3.0.0.5() {
     /usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init 
 	[[ $? -ne 0 ]] && abort
   fi
-  
+    
   ##### Backup Phase #####
   
   # Skip for this pseudo-update (fix needs committed first...will use in future updates)
@@ -224,9 +224,28 @@ function update-3.0.0.5() {
   /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Tokens-Cron $gitdlurl/$VERSION/build/EFA/EFA-Tokens-Cron
   [[ $? -ne 0 ]] && abort
   
+  # Issue #100 phishing site urls
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-MS-Update $gitdlurl/$VERSION/build/EFA/EFA-MS-Update
+  [[ $? -ne 0 ]] && abort
+ 
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Daily-cron $gitdlurl/$VERSION/build/EFA/EFA-Daily-cron
+  [[ $? -ne 0 ]] && abort 
+
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Monthly-cron $gitdlurl/$VERSION/build/EFA/EFA-Monthly-cron
+  [[ $? -ne 0 ]] && abort 
+  
   ##### Backup Phase #####
   
   /usr/local/sbin/EFA-Backup -backup >> /var/log/EFA/EFA-Backup.log 2>&1
+  
+  # Archive files we replace 
+  # Note: maybe add all efa specific files to the backup tool?
+  mkdir /var/EFA/backup/3.0.0.5
+  cp /etc/cron.daily/EFA-Tokens-Cron /var/EFA/backup/3.0.0.5/
+  cp /etc/cron.daily/EFA-Daily-cron /var/EFA/backup/3.0.0.5/
+  cp /etc/cron.monthly/EFA-Monthly-cron /var/EFA/backup/3.0.0.5/
+  cp /usr/local/sbin/EFA-Configure /var/EFA/backup/3.0.0.5/
+  cp -r /var/EFA/lib/EFA-Configure/ /var/EFA/backup/3.0.0.5/EFA-Configure-libs/
   
   ##### Commit Phase #####
   
@@ -248,24 +267,23 @@ function update-3.0.0.5() {
   # Issue #87 EFA-Tokens Cron Syntax Wrong 
   rm -f /etc/cron.daily/EFA-Tokens-Cron
   mv $STAGING/EFA-Tokens-Cron /etc/cron.daily/EFA-Tokens-Cron
-  
-  # todo: STAGING for this part...
-  # Issue #100 phishing site urls
-  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-MS-Update $gitdlurl/$VERSION/build/EFA/EFA-MS-Update
-  chmod 700 /usr/local/sbin/EFA-MS-Update
-  /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Daily-cron $gitdlurl/$VERSION/build/EFA/EFA-Daily-cron
-  chmod 700 /etc/cron.daily/EFA-Daily-cron
-  /usr/bin/wget --no-check-certificate -O /etc/cron.monthly/EFA-Monthly-cron  $gitdlurl/$VERSION/build/EFA/EFA-Monthly-cron
-  chmod 700 /etc/cron.monthly/EFA-Monthly-cron
-  
+    
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*
   mv $STAGING/EFA-Configure /usr/local/sbin/EFA-Configure
   mkdir -p /var/EFA/lib/EFA-Configure
-  mv $STAGING/lib/* /var/EFA/lib/EFA-Configure  
+  mv $STAGING/lib/* /var/EFA/lib/EFA-Configure/  
   chmod 700 /usr/local/sbin/EFA-Configure
   chmod 600 /var/EFA/lib/EFA-Configure/*
+
+  # Issue #100 phishing site urls
+  mv -f $STAGING/EFA-MS-Update /usr/local/sbin/EFA-MS-Update
+  mv -f $STAGING/EFA-Daily-cron /etc/cron.daily/EFA-Daily-cron 
+  mv -f $STAGING/EFA-Monthly-cron /etc/cron.monthly/EFA-Monthly-cron 
+  chmod 700 /usr/local/sbin/EFA-MS-Update
+  chmod 700 /etc/cron.daily/EFA-Daily-cron
+  chmod 700 /etc/cron.monthly/EFA-Monthly-cron
   
   # Add a mailwatch version to EFA-Config (the previous version so the check in the new function works.)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
