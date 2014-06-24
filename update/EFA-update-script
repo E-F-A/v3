@@ -240,15 +240,17 @@ function update-3.0.0.5() {
   
   # Archive files we replace or remove
   # Note: maybe add all efa specific files to the backup tool?
-  mkdir /var/EFA/backup/3.0.0.5
-  cp /etc/cron.daily/EFA-Tokens-Cron /var/EFA/backup/3.0.0.5/
-  cp /etc/cron.daily/EFA-Daily-cron /var/EFA/backup/3.0.0.5/
-  cp /etc/cron.monthly/EFA-Monthly-cron /var/EFA/backup/3.0.0.5/
-  cp /usr/local/sbin/EFA-Configure /var/EFA/backup/3.0.0.5/
-  cp -r /var/EFA/lib/EFA-Configure/ /var/EFA/backup/3.0.0.5/EFA-Configure-libs/
+  BACKUPDIR="/var/EFA/backup/3.0.0.5"
+  mkdir $BACKUPDIR
+  chmod 700 $BACKUPDIR
+  cp /etc/cron.daily/EFA-Tokens-Cron $BACKUPDIR
+  cp /etc/cron.daily/EFA-Daily-cron $BACKUPDIR
+  cp /etc/cron.monthly/EFA-Monthly-cron $BACKUPDIR
+  cp /usr/local/sbin/EFA-Configure $BACKUPDIR
+  cp -r /var/EFA/lib/EFA-Configure/ $BACKUPDIR/EFA-Configure-libs/
   
-  cp /etc/cron.daily/update_phishing_sites /var/EFA/backup/3.0.0.5/
-  
+  cp /etc/cron.daily/update_phishing_sites $BACKUPDIR
+  cp /etc/cron.d/raid-check $BACKUPDIR
   ##### Commit Phase #####
   
   # Create backup directory
@@ -287,6 +289,9 @@ function update-3.0.0.5() {
   chmod 700 /etc/cron.daily/EFA-Daily-cron
   chmod 700 /etc/cron.monthly/EFA-Monthly-cron
   rm -f /etc/cron.daily/update_phishing_sites
+  
+  # Issue #102 Remove cron.d/raid-check
+  rm -f /etc/cron.d/raid-check
   
   # Add a mailwatch version to EFA-Config (the previous version so the check in the new function works.)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
