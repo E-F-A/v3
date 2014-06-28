@@ -670,6 +670,9 @@ function func_configure-system() {
   # +--------------------------------------------------+
   # Update clamav and spamassassin rules
   echo -e "$green[EFA]$clean - Updating AV and SA rules"
+  service dnsmasq start
+  sleep 5
+  
   service clamd start
   freshclam
   sa-update
@@ -1060,29 +1063,45 @@ if [ ! -e /etc/EFA-Config ]
     echo -e "$green[EFA]$clean We will ask you a few questions to setup this system."
     echo -e "$green[EFA]$clean Please make sure the system is connected to the internet."
     echo -e "--------------------------------------------------------------"
-    pause
-    func_ask-hostname
-    func_ask-domainname
-    func_ask-adminemail
-    func_ask-ipaddress
-    func_ask-netmask
-    func_ask-gateway
-    func_ask-dns1
-    func_ask-dns2
-    func_ask-username
-    func_ask-userpassword
-    func_ask-rootpassword
-    func_detect-virtual
-    func_ask-timezone
-    func_ask-keyboard
-    func_ask-ianacode
-    func_ask-mailserver
-    func_ask-orgname
-    func_ask-updates
-    func_verify-settings
-    func_configure-system
-    if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
-    func_end
+	echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
+	read StartConf
+	
+	if [[ "$StartConf" == "Y" || "$StartConf" == "y" || "$StartConf" == "" ]]; then 
+        pause
+		func_ask-hostname
+		func_ask-domainname
+		func_ask-adminemail
+		func_ask-ipaddress
+		func_ask-netmask
+		func_ask-gateway
+		func_ask-dns1
+		func_ask-dns2
+		func_ask-username
+		func_ask-userpassword
+		func_ask-rootpassword
+		func_detect-virtual
+		func_ask-timezone
+		func_ask-keyboard
+		func_ask-ianacode
+		func_ask-mailserver
+		func_ask-orgname
+		func_ask-updates
+		func_verify-settings
+		func_configure-system
+		if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
+		func_end
+    elif [[ "$StartConf" == "N" || "$StartConf" == "n" ]]; then 
+		echo -e "$red"
+		echo -e "You are now aborting EFA-Init, your system will not function properly."
+		echo -e "Please run /usr/local/sbin/EFA-Init to start the first-time configuration again."
+		echo -e ""
+		echo -e "Aborting EFA-Init now. $clean"
+		exit 0
+	else
+		echo -e "       $red ERROR: please make an selection.$clean"
+		echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
+		read StartConf
+    fi  
  else
     echo -e "$red         ERROR: EFA is already configured $clean"
     echo -e "$red         Please use EFA-Configure $clean"
