@@ -13,7 +13,9 @@ Issue #76 Bug - Processing Attempts Database Bug (temporarily disabled until Mai
 Issue #79 Enhancement - EFA-Update Staging and Error Handling 
 Issue #85 Bug - ClamAV Update Issue
 Issue #87 Bug - EFA-Tokens-Cron Syntax Wrong
+Issue #89 Bug - Razor errors in MailWatch Gui
 Issue #90 Bug - Reapply 3.0.0.4 Update Fixes
+Issue #93 Bug - Pyzor Errors
 Issue #98 Bug - postfix tlsmgr smtpd_tls_session warnings
 Issue #102 Enhancement - Remove raid-check cron
 Issue #103 Bug - Update EFA-Init mirror path
