@@ -293,6 +293,16 @@ function update-3.0.0.5() {
   # Issue #102 Remove cron.d/raid-check
   rm -f /etc/cron.d/raid-check
   
+  # Issue #93 Pyzor Errors
+  ln -s /var/spool/postfix/.pyzor /var/www/.pyzor
+  chown -R postfix:apache /var/spool/postfix/.pyzor
+  chmod -R ug+rwx /var/spool/postfix/.pyzor
+  
+  # Issue #89 Razor Errors
+  ln -s /var/spool/postfix/.pyzor /var/www/.razor
+  chown -R postfix:apache /var/spool/postfix/.razor
+  chmod -R ug+rwx /var/spool/postfix/.razor
+  
   # Add a mailwatch version to EFA-Config (the previous version so the check in the new function works.)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
   

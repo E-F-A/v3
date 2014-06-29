@@ -816,9 +816,10 @@ func_pyzor () {
     sed -i '/^#!\/usr\/bin\/python/ c\#!\/usr\/bin\/python -Wignore::DeprecationWarning' /usr/bin/pyzor
 
     mkdir /var/spool/postfix/.pyzor
-    chown postfix:postfix /var/spool/postfix/.pyzor
-    # Note: ESVA also has an .pyzor directory in /var/www don't know why..
-  
+	ln -s /var/spool/postfix/.pyzor /var/www/.pyzor
+	chown -R postfix:apache /var/spool/postfix/.pyzor
+	chmod -R ug+rwx /var/spool/postfix/.pyzor    
+      
     # and finally initialize the servers file with an discover.
     su postfix -s /bin/bash -c 'pyzor discover'
 }
@@ -839,7 +840,9 @@ func_razor () {
     make install
     
     mkdir /var/spool/postfix/.razor
-    chown postfix:postfix /var/spool/postfix/.razor
+	ln -s /var/spool/postfix/.pyzor /var/www/.pyzor
+    chown postfix:apache /var/spool/postfix/.razor
+	chmod -R ug+rwx /var/spool/postfix/.pyzor
 }
 # +---------------------------------------------------+
 
