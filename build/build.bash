@@ -895,6 +895,9 @@ func_imagecerberus () {
     ln -s /usr/lib64/libhighgui.so.2.0 /usr/lib64/libhighgui.so.1
     ln -s /usr/lib64/libcxcore.so.2.0 /usr/lib64/libcxcore.so.1
     ln -s /usr/lib64/libcvaux.so.2.0 /usr/lib64/libcvaux.so.1
+    
+    # Issue 67 default ImageCeberus score
+    echo "score ImageCeberus 0.00" >> /etc/MailScanner/spam.assassin.prefs.conf 
 }
 # +---------------------------------------------------+
 

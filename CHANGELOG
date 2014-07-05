@@ -5,6 +5,7 @@ Issue #33 Enhancement - Remove software versions page from mailwatch
 Issue #54 Enhancement - Added hostname change to EFA-Configure
 Issue #57 Enhancement - Alternating background for black/whitelist
 Issue #66 Enhancement - EFA-Tokens-Cron pull password from /etc/EFA-Config
+Issue #67 Enhancement - ImageCeberus default score
 Issue #70 Enhancement - .bashrc EFA-Configure Launch Interactive Only
 Issue #71 Bug - Urgent: raw.github.com certificate error fixes
 Issue #73 Bug - Admin Email Change Fails to Update MailScanner Values

@@ -303,6 +303,9 @@ function update-3.0.0.5() {
   chown -R postfix:apache /var/spool/postfix/.razor
   chmod -R ug+rwx /var/spool/postfix/.razor
   
+  # Issue 67 default ImageCeberus score
+  echo "score ImageCeberus 0.00" >> /etc/MailScanner/spam.assassin.prefs.conf 
+  
   # Add a mailwatch version to EFA-Config (the previous version)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
   
@@ -730,6 +733,8 @@ function finalize() {
   echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
+  
+  serv
   
   echo "All done"
   exit 0
