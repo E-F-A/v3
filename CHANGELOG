@@ -19,6 +19,7 @@ Issue #89 Bug - Razor errors in MailWatch Gui
 Issue #90 Bug - Reapply 3.0.0.4 Update Fixes
 Issue #93 Bug - Pyzor Errors
 Issue #98 Bug - postfix tlsmgr smtpd_tls_session warnings
+Issue #101 Bug - Can't register IDN names (hopefully fixed)
 Issue #102 Enhancement - Remove raid-check cron
 Issue #103 Bug - Update EFA-Init mirror path
 

@@ -87,7 +87,7 @@ func_transport-settings(){
                         DOMAINCHECK=1
                         while [ $DOMAINCHECK != 0 ]
                           do
-                            if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]; then
+                            if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,6}$ ]]; then
                               DOMAINCHECK=0
                             else
                               echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
@@ -148,7 +148,7 @@ func_transport-settings(){
                     DOMAINCHECK=1
                     while [ $DOMAINCHECK != 0 ]
                       do
-                        if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]; then
+                        if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,6}$ ]]; then
                           DOMAINCHECK=0
                         else
                           echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
