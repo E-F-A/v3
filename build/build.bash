@@ -569,8 +569,8 @@ func_mailwatch () {
     rm -rf docs
     
     cp conf.php.example conf.php
-	# Issue #66 grab all passwords from EFA-Config
-	sed -i "/^define('DB_PASS',/ c\$efa_config = preg_grep('/^MAILWATCHSQLPWD/', file('/etc/EFA-Config'));\nforeach(\$efa_config as \$num => \$line) {\n  if (\$line) {\n    \$db_pass_tmp = chop(preg_replace('/^MAILWATCHSQLPWD:(.*)/','\$1', \$line));\n  }\n}\ndefine('DB_PASS', \$db_pass_tmp);" conf.php
+    # Issue #66 grab all passwords from EFA-Config
+    sed -i "/^define('DB_PASS',/ c\$efa_config = preg_grep('/^MAILWATCHSQLPWD/', file('/etc/EFA-Config'));\nforeach(\$efa_config as \$num => \$line) {\n  if (\$line) {\n    \$db_pass_tmp = chop(preg_replace('/^MAILWATCHSQLPWD:(.*)/','\$1', \$line));\n  }\n}\ndefine('DB_PASS', \$db_pass_tmp);" conf.php
     sed -i "/^define('DB_USER',/ c\define('DB_USER', 'mailwatch');" conf.php
     #sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$password');" conf.php
     sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', 'Etc/UTC');" conf.php
@@ -582,9 +582,8 @@ func_mailwatch () {
     sed -i "/^define('MAIL_LOG',/ c\define('MAIL_LOG', '/var/log/maillog');" conf.php
     sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/local/bin/');" conf.php
     sed -i "/^define('SA_RULES_DIR',/ c\define('SA_RULES_DIR', '/etc/mail/spamassassin');" conf.php
-    # Disable virus_info url as it seems to be down.
-    sed -i "/^define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk\/index.php?virus=%s&search=contains&Search=Search\");" conf.php
- 
+    sed -i "/^define('SHOW_SFVERSION',/ c\define('SHOW_SFVERSION', false);" conf.php
+
     # Set up a redirect in web root to MailWatch 
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
@@ -657,10 +656,6 @@ func_mailwatch () {
     chown -R postfix:apache /var/spool/postfix/incoming
     chmod -R 750 /var/spool/postfix/hold
     chmod -R 750 /var/spool/postfix/incoming
-    
-    # Fix MailScanner / MailWatch auto-commit annoyance
-    # Fixed in latest snapshot
-    #sed -i '/$dbh->commit/ c\#$dbh->commit' /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
     
     # Allow apache to sudo and run the MailScanner lint test
     sed -i '/Defaults    requiretty/ c\#Defaults    requiretty' /etc/sudoers

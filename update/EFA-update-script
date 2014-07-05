@@ -303,7 +303,7 @@ function update-3.0.0.5() {
   chown -R postfix:apache /var/spool/postfix/.razor
   chmod -R ug+rwx /var/spool/postfix/.razor
   
-  # Add a mailwatch version to EFA-Config (the previous version so the check in the new function works.)
+  # Add a mailwatch version to EFA-Config (the previous version)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
   
   echo "Update to $VERSION complete." 
@@ -656,6 +656,23 @@ function update-mailwatch() {
         sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
       fi 
 
+      # if updating from below version '3.0.0.5' update the config file
+      if [[ $CVERSION == "EFA-3.0.0.0" || $CVERSION == "EFA-3.0.0.1" || $CVERSION == "EFA-3.0.0.2" || $CVERSION == "EFA-3.0.0.3" || $CVERSION == "EFA-3.0.0.4" ]]
+        then
+          # Add the new software version disable function.
+          echo "" >> /var/www/html/mailscanner/conf.php
+          echo "// Show Software Version tab (only Admins can see it)" >> /var/www/html/mailscanner/conf.php
+          echo "define('SHOW_SFVERSION', false);" >> /var/www/html/mailscanner/conf.php
+          echo "" >> /var/www/html/mailscanner/conf.php
+          
+          # Re-ad the virus_info function          
+          sed -i "/^\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\define('VIRUS_INFO', \"http://www.securelist.com/en/descriptions?words=%s&behavior=&amp;Search=Search&amp;search_type=1\");" /var/www/html/mailscanner/conf.php
+
+          # Delete the FPDF_FONTPATH setting
+          sed -i "/FPDF_FONTPATH/d" /var/www/html/mailscanner/conf.php
+  
+      fi
+          
       # Update the version of mailwatch in EFA-Config
       sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
       
