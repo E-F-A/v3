@@ -33,7 +33,7 @@ MAILTO="$ADMINEMAIL"
 MAILSUBJECT="EFA Update Complete For: `hostname`"
 SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
-MAILWATCHVERSION="7874620191"
+MAILWATCHVERSION="74f18e2742"
 VMTOOLSVERION="9.4.0-1280544"
 STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
@@ -643,9 +643,6 @@ function update-mailwatch() {
       cp other.php other.php.orig
       sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
       cp /var/EFA/backup/$VERSION/mailscanner/mailgraph.php .  
-
-      # Fix menu width -- fixed in MailWatch Code
-      # sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
 
       # Issue #61 Domain Administrator cannot delete domain only whitelist/blacklist
       sed -i '/^    \$to_domain = \$split\[2\];/{N;s/$/\nelse \{ \$to_domain = \$url_to; \}/}' /var/www/html/mailscanner/lists.php

@@ -27,7 +27,7 @@ gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.5"
-MAILWATCHVERSION="7874620191"
+MAILWATCHVERSION="74f18e2742"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
