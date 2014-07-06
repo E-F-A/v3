@@ -35,7 +35,7 @@ my($db_user) = 'efa';
 # Issue #66 Grab Passwords from EFA-Config
 my($fh);
 my($pw_config) = '/etc/EFA-Config';
-open($fh), "<", $pw_config);
+open($fh, "<", $pw_config);
 if (!$fh) {
   openlog($0,'','user');
   syslog('error', "Unable to retrieve password from /etc/EFA-Config, aborting!");
