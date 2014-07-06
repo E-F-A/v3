@@ -53,9 +53,7 @@ function get_update_path() {
       update-3.0.0.3
       update-3.0.0.4
       update-3.0.0.5
-      update-mailwatch
-      update-vmtools
-      update-imageceberus
+      update-software
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
@@ -65,9 +63,7 @@ function get_update_path() {
       update-3.0.0.3
       update-3.0.0.4
       update-3.0.0.5
-      update-mailwatch
-      update-vmtools
-      update-imageceberus
+      update-software
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
@@ -86,18 +82,14 @@ function get_update_path() {
       yum_update
       update-3.0.0.4
       update-3.0.0.5
-      update-mailwatch
-      update-vmtools
-      update-imageceberus
+      update-software
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
     then
       initialize
       yum_update
       update-3.0.0.5
-      update-mailwatch
-      update-vmtools
-      update-imageceberus
+      update-software
       finalize
   fi
 }
@@ -796,6 +788,16 @@ function abort() {
   echo "Update to Version $VERSION FAILED.  Updates cancelled."
   echo "Please visit http://www.efa-project.org for more information." 
   exit 1
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update all software packages
+#----------------------------------------------------------------#
+function update-software() {
+  update-mailwatch
+  update-vmtools
+  update-imageceberus
 }
 #----------------------------------------------------------------#
 
