@@ -28,6 +28,7 @@ password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.5"
 MAILWATCHVERSION="74f18e2742"
+IMAGECEBERUSVERSION="1.1"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -881,9 +882,9 @@ func_dcc () {
 # +---------------------------------------------------+
 func_imagecerberus () {
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/imageCerberus-v1.0.zip
-    unzip imageCerberus-v1.0.zip
-    cd imageCerberus-v1.0
+    wget $mirror/$mirrorpath/imageCerberus-v$IMAGECEBERUSVERSION.zip
+    unzip imageCerberus-v$IMAGECEBERUSVERSION.zip
+    cd imageCerberus-v$IMAGECEBERUSVERSION
     mkdir /etc/spamassassin
     mv spamassassin/imageCerberus /etc/spamassassin/
     rm -f /etc/spamassassin/imageCerberus/imageCerberusEXE
@@ -904,6 +905,9 @@ func_imagecerberus () {
     
     # Issue 67 default ImageCeberus score
     echo "score ImageCeberus 0.00" >> /etc/MailScanner/spam.assassin.prefs.conf 
+    
+    # Add the version to EFA-Config
+    echo "IMAGECEBERUSVERSION:$IMAGECEBERUSVERSION" >> /etc/EFA-Config
 }
 # +---------------------------------------------------+
 

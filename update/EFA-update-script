@@ -34,6 +34,7 @@ MAILSUBJECT="EFA Update Complete For: `hostname`"
 SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
 MAILWATCHVERSION="74f18e2742"
+IMAGECEBERUSVERSION="1.1"
 VMTOOLSVERION="9.4.0-1280544"
 STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
@@ -54,6 +55,7 @@ function get_update_path() {
       update-3.0.0.5
       update-mailwatch
       update-vmtools
+      update-imageceberus
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
@@ -65,6 +67,7 @@ function get_update_path() {
       update-3.0.0.5
       update-mailwatch
       update-vmtools
+      update-imageceberus
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
@@ -75,6 +78,7 @@ function get_update_path() {
       update-3.0.0.5
       update-mailwatch
       update-vmtools
+      update-imageceberus
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.3" ]]
     then
@@ -84,6 +88,7 @@ function get_update_path() {
       update-3.0.0.5
       update-mailwatch
       update-vmtools
+      update-imageceberus
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
     then
@@ -92,6 +97,7 @@ function get_update_path() {
       update-3.0.0.5
       update-mailwatch
       update-vmtools
+      update-imageceberus
       finalize
   fi
 }
@@ -323,6 +329,9 @@ function update-3.0.0.5() {
  
   # Add a mailwatch version to EFA-Config (the previous version)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
+  
+  # Add a ImageCeberus version to EFA-Config (the previous version)
+  echo "IMAGECEBERUSVERSION:1.0" >> /etc/EFA-Config
   
   echo "Update to $VERSION complete." 
   echo ""
@@ -564,10 +573,10 @@ function update-vmtools() {
   
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
     #### Staging Phase ####
-	wget -O $STAGING $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
+	/usr/bin/wget --no-check-certificate -O $STAGING/open-vm-tools-$VMTOOLSVERION.tar.gz $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
 	[[ $? -ne 0 ]] && abort
 	
-	/usr/bin/wget --no-check-certificate -O $STAGING $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
+	/usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd.init $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
 	[[ $? -ne 0 ]] && abort
 	
 	#### Backup Phase #####
@@ -608,6 +617,45 @@ function update-vmtools() {
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
+# Update ImageCeberus function 
+#----------------------------------------------------------------#
+function update-imageceberus() {
+  # Update ImageCeberus if we have a new version available
+  if [[ ! $IMAGECEBERUSVERSION == "`grep IMAGECEBERUSVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+      #### Staging Phase ####
+      /usr/bin/wget --no-check-certificate -O $STAGING/imageCerberus-v$IMAGECEBERUSVERSION.zip $mirror/build/$VERSION/imageCerberus-v$IMAGECEBERUSVERSION.zip
+      [[ $? -ne 0 ]] && abort
+      
+      #### Backup Phase ####
+      mv /etc/spamassassin/imageCerberus /var/EFA/backup/$VERSION/
+      mv /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm /var/EFA/backup/$VERSION/
+      mv /etc/mail/spamassassin/ImageCerberusPLG.cf /var/EFA/backup/$VERSION/
+      
+      #### Commit Phase #####
+      echo -e "Starting installation of new ImageCeberus version"  
+      service MailScanner stop  
+      
+      cd $STAGING
+      unzip imageCerberus-v$IMAGECEBERUSVERSION.zip
+      cd imageCerberus-v$IMAGECEBERUSVERSION
+      mv spamassassin/imageCerberus /etc/spamassassin/
+      rm -f /etc/spamassassin/imageCerberus/imageCerberusEXE
+      mv /etc/spamassassin/imageCerberus/x86_64/imageCerberusEXE /etc/spamassassin/imageCerberus/
+      rm -rf /etc/spamassassin/imageCerberus/x86_64
+      rm -rf /etc/spamassassin/imageCerberus/i386
+ 
+      mv spamassassin/ImageCerberusPLG.pm /usr/local/share/perl5/Mail/SpamAssassin/Plugin/
+      mv spamassassin/ImageCerberusPLG.cf /etc/mail/spamassassin/
+      
+      sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
+
+      service MailScanner start
+  fi
+}
+#----------------------------------------------------------------#    	    
+
+#----------------------------------------------------------------#
 # Update mailwatch function 
 #----------------------------------------------------------------#
 function update-mailwatch() {
@@ -615,11 +663,11 @@ function update-mailwatch() {
   if [[ ! $MAILWATCHVERSION == "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
     then
       #### Staging Phase ####
-	  wget -O $STAGING $mirror/build/$VERSION/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
-	  [[ $? -ne 0 ]] && abort
+      /usr/bin/wget --no-check-certificate -O $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip $mirror/build/$VERSION/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      [[ $? -ne 0 ]] && abort
 	  
-	  #### Backup Phase #####
-	  mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
+      #### Backup Phase #####
+      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
       mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION
       mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/
 	  	  
@@ -628,11 +676,11 @@ function update-mailwatch() {
       service httpd stop
       service MailScanner stop     
 
-	  unzip -d /usr/src/EFA $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      unzip -d /usr/src/EFA $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
       cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
       
-	  # Todo:  Grab Passwords from /etc/EFA-Config here
-	  MAILWATCHSQLPWD=`grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/^.*://'`
+      # Todo:  Grab Passwords from /etc/EFA-Config here
+      MAILWATCHSQLPWD=`grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/^.*://'`
       sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
       sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" MailWatch.pm
 
