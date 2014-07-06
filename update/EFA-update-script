@@ -240,6 +240,10 @@ function update-3.0.0.5() {
   /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Monthly-cron $gitdlurl/$VERSION/build/EFA/EFA-Monthly-cron
   [[ $? -ne 0 ]] && abort 
   
+  # Issue #77 -- EFA MailScanner 0 byte tmp files
+  wget --no-check-certificate -O $STAGING/mailscanner-4.84.6-1.patch $gitdlurl/EFA/mailscanner-4.84.6-1.patch
+  [[ $? -ne 0 ]] && abort 
+
   ##### Backup Phase #####
   
   /usr/local/sbin/EFA-Backup -backup >> /var/log/EFA/EFA-Backup.log 2>&1
@@ -313,6 +317,10 @@ function update-3.0.0.5() {
   # Issue 67 default ImageCeberus score
   echo "score ImageCeberus 0.00" >> /etc/MailScanner/spam.assassin.prefs.conf 
   
+  # Issue #77 -- EFA MailScanner 0 byte tmp files
+  cd /usr/lib/MailScanner
+  patch < $STAGING/mailscanner-4.84.6-1.patch
+ 
   # Add a mailwatch version to EFA-Config (the previous version)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
   

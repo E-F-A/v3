@@ -1,0 +1,47 @@
+-------------- next part --------------
+--- /usr/lib/MailScanner/bitdefender-wrapper.orig	2012-05-22 15:55:44.000000000 -0700
++++ /usr/lib/MailScanner/bitdefender-wrapper	2012-05-22 15:58:48.000000000 -0700
+@@ -55,6 +55,7 @@
+ fi
+ 
+ if [ "x$1" = "x-IsItInstalled" ]; then
++  rm -f $LogFile
+   [ -x ${PackageDir}/$prog ] && exit 0
+   exit 1
+ fi
+--- /usr/lib/MailScanner/clamav-wrapper.orig	2012-05-22 15:54:17.000000000 -0700
++++ /usr/lib/MailScanner/clamav-wrapper	2012-05-22 16:00:31.000000000 -0700
+@@ -132,6 +132,7 @@
+ fi
+ 
+ if [ "x$1" = "x-IsItInstalled" ]; then
++  rm -f ${TempDir}
+   [ -x $ClamScan ] && exit 0
+   exit 1
+ fi
+--- /usr/lib/MailScanner/kaspersky-wrapper.orig	2012-05-22 17:01:21.000000000 -0700
++++ /usr/lib/MailScanner/kaspersky-wrapper	2012-05-22 17:03:27.000000000 -0700
+@@ -45,6 +45,7 @@
+   Report=$(mktemp) || { echo "$0: Cannot create temporary file" >&2; exit 1; }
+   ScanOptions="-xp -i0" # Don't report progress, don't attempt to clean
+   if [ "x$1" = "x-IsItInstalled" ]; then
++    rm -f $Report
+     exit 0
+   fi
+ 
+@@ -64,6 +65,7 @@
+   Report=$(mktemp) || { echo "$0: Cannot create temporary file" >&2; exit 1; }
+   ScanOptions="-xp -i0" # Don't report progress, don't attempt to clean
+   if [ "x$1" = "x-IsItInstalled" ]; then
++    rm -f $Report
+     exit 0
+   fi
+ 
+@@ -83,6 +85,7 @@
+   Report=$(mktemp) || { echo "$0: Cannot create temporary file" >&2; exit 1; }
+   ScanOptions="-xp -i0" # Don't report progress, don't attempt to clean
+   if [ "x$1" = "x-IsItInstalled" ]; then
++    rm -f $Report
+     exit 0
+   fi
+ 

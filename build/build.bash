@@ -304,6 +304,12 @@ func_mailscanner () {
 	
 	# Remove Mailscanners phishing sites cron (#100, replaced by EFA-MS-Update)
 	rm -f /etc/cron.daily/update_phishing_sites
+	
+	# Issue #77 -- EFA MailScanner 0 byte tmp files
+	cd /usr/lib/MailScanner
+	wget --no-check-certificate /$gitdlurl/EFA/mailscanner-4.84.6-1.patch
+	patch < mailscanner-4.84.6-1.patch
+	rm -f mailscanner-4.84.6-1.patch
 }
 # +---------------------------------------------------+
 

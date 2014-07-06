@@ -12,6 +12,7 @@ Issue #73 Bug - Admin Email Change Fails to Update MailScanner Values
 Issue #74 Bug - EFA-Configure Disable SSL does not disable redirect
 Issue #75 Bug - EFA-Configure not writing iptables config to /etc/sysconfig/iptables
 Issue #76 Bug - Processing Attempts Database Bug (temporarily disabled until MailScanner releases fix)
+Issue #77 Bug -- EFA MailScanner 0 byte tmp files (patched until MailScanner releases fix)
 Issue #79 Enhancement - EFA-Update Staging and Error Handling 
 Issue #85 Bug - ClamAV Update Issue
 Issue #87 Bug - EFA-Tokens-Cron Syntax Wrong
@@ -22,6 +23,7 @@ Issue #98 Bug - postfix tlsmgr smtpd_tls_session warnings
 Issue #101 Bug - Can't register IDN names (hopefully fixed)
 Issue #102 Enhancement - Remove raid-check cron
 Issue #103 Bug - Update EFA-Init mirror path
+
 
 ############################################################
 EFA Version 3.0.0.4 Changes
