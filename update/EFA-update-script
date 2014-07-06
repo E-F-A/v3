@@ -552,7 +552,15 @@ function update-vmtools() {
   # If so, how do we test for open versus commercial versions?
   
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
-    service vmtoolsd stop
+    #### Staging Phase ####
+	wget -O $STAGING $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
+	/usr/bin/wget --no-check-certificate -O $STAGING $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
+	
+	#### Backup Phase #####
+	# Nothing to do
+	
+	#### Commit Phase #####
+	service vmtoolsd stop
     
     # Cleanup existing open-vm-tools 
     rm -f /etc/init.d/vmtoolsd
@@ -568,13 +576,14 @@ function update-vmtools() {
     rm -rf /usr/local/include/vmGuestLib
 
     cd /usr/src/EFA
-    wget $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
-    tar xvzf open-vm-tools-$VMTOOLSVERION.tar.gz
+    tar xvzf $STAGING/open-vm-tools-$VMTOOLSVERION.tar.gz -C /usr/src/EFA
     cd open-vm-tools-$VMTOOLSVERION
     ./configure --without-x
     make
     make install
-    /usr/bin/wget --no-check-certificate -O /etc/init.d/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
+    
+    rm -f /etc/init.d/vmtoolsd.init	
+	mv $STAGING/vmtoolsd.init /etc/init.d/vmtoolsd.init
     chmod 755 /etc/init.d/vmtoolsd
     # lib adjustment
     ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1
@@ -591,16 +600,16 @@ function update-mailwatch() {
   # Update mailwatch if we have a new version available
   if [[ ! $MAILWATCHVERSION == "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
     then
-      ####Staging####
+      #### Staging Phase ####
 	  wget -O $STAGING $mirror/build/$VERSION/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
 	  [[ $? -ne 0 ]] && abort
 	  
-	  ####Backup#####
+	  #### Backup Phase #####
 	  mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
       mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION
       mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/
 	  	  
-      ####Commit#####
+      #### Commit Phase #####
       echo -e "Starting installation of new mailwatch version"  
       service httpd stop
       service MailScanner stop     
