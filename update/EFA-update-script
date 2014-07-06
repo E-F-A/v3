@@ -277,6 +277,7 @@ function update-3.0.0.5() {
   # Issue #87 EFA-Tokens Cron Syntax Wrong 
   rm -f /etc/cron.daily/EFA-Tokens-Cron
   mv $STAGING/EFA-Tokens-Cron /etc/cron.daily/EFA-Tokens-Cron
+  chmod 755 /etc/cron.daily/EFA-Tokens-Cron
     
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
