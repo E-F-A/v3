@@ -527,7 +527,7 @@ func_mailwatch () {
     sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
     # Issue #66 grab all passwords from EFA-Config
 	#sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" MailWatch.pm
-	sed -i "/^my(\$db_pass) =/ c\my(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\nclose(\$fh);" MailWatch.pm
+	sed -i "/^my(\$db_pass) =/ c\my(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n$db_pass =~ s/\\n//;\nclose(\$fh);" MailWatch.pm
     mv MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
     
     # Set up SQLBlackWhiteList
