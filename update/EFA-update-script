@@ -52,6 +52,8 @@ function get_update_path() {
       update-3.0.0.3
       update-3.0.0.4
       update-3.0.0.5
+	  update-mailwatch
+      update-vmtools
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
@@ -61,6 +63,8 @@ function get_update_path() {
       update-3.0.0.3
       update-3.0.0.4
       update-3.0.0.5
+	  update-mailwatch
+      update-vmtools
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
@@ -69,6 +73,7 @@ function get_update_path() {
       update-3.0.0.3
       update-3.0.0.4
       update-3.0.0.5
+	  update-mailwatch
       update-vmtools
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.3" ]]
@@ -77,6 +82,7 @@ function get_update_path() {
       yum_update
       update-3.0.0.4
       update-3.0.0.5
+	  update-mailwatch
       update-vmtools
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
