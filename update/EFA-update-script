@@ -35,6 +35,7 @@ SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
 MAILWATCHVERSION="74f18e2742"
 IMAGECEBERUSVERSION="1.1"
+PYZORVERSION="0.7.0"
 VMTOOLSVERION="9.4.0-1280544"
 STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
@@ -322,6 +323,9 @@ function update-3.0.0.5() {
   # Add a ImageCeberus version to EFA-Config (the previous version)
   echo "IMAGECEBERUSVERSION:1.0" >> /etc/EFA-Config
   
+  # Add a Pyzor version to EFA-Config (the previous version)
+  echo "PYZORVERSION:0.5.0" >> /etc/EFA-Config
+  
   echo "Update to $VERSION complete." 
   echo ""
   echo "" >> $TMPMAIL
@@ -601,6 +605,45 @@ function update-vmtools() {
     ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1
     chkconfig vmtoolsd on
     service vmtoolsd start
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update Pyzor function 
+#----------------------------------------------------------------#
+function update-pyzor() {
+  # Update Pyzor if we have a new version available
+  if [[ ! $PYZORVERSION == "`grep PYZORVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+      #### Staging Phase ####
+      /usr/bin/wget --no-check-certificate -O $STAGING/pyzor-$PYZORVERSION.tar.gz $mirror/build/$VERSION/pyzor-$PYZORVERSION.tar.gz
+      [[ $? -ne 0 ]] && abort
+      
+      #### Backup Phase ####
+      mv /var/spool/postfix/.pyzor/servers /var/EFA/backup/$VERSION/
+      
+      #### Commit Phase #####
+      echo -e "Starting installation of new Pyzor version"  
+
+      yum -y install python-setuptools
+      
+      cd $STAGING
+      tar xvzf pyzor-$PYZORVERSION.tar.gz
+      cd pyzor-$PYZORVERSION
+      python setup.py build
+      python setup.py install
+
+      # Fix deprecation warning message
+      sed -i '/^#!\/usr\/bin\/python/ c\#!\/usr\/bin\/python -Wignore::DeprecationWarning' /usr/bin/pyzor
+
+      mkdir /var/spool/postfix/.pyzor
+      ln -s /var/spool/postfix/.pyzor /var/www/.pyzor
+      chown -R postfix:apache /var/spool/postfix/.pyzor
+      chmod -R ug+rwx /var/spool/postfix/.pyzor    
+      
+      # and finally initialize the servers file with an discover.
+      su postfix -s /bin/bash -c 'pyzor discover'
   fi
 }
 #----------------------------------------------------------------#

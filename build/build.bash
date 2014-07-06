@@ -29,6 +29,7 @@ mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.5"
 MAILWATCHVERSION="74f18e2742"
 IMAGECEBERUSVERSION="1.1"
+PYZORVERSION="0.7.0"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -807,10 +808,13 @@ func_mailgraph () {
 # http://downloads.sourceforge.net/project/pyzor/pyzor/0.5.0/pyzor-0.5.0.tar.gz
 # +---------------------------------------------------+
 func_pyzor () {
+
+    yum -y install python-setuptools
+	
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/pyzor-0.5.0.tar.gz
-    tar xvzf pyzor-0.5.0.tar.gz
-    cd pyzor-0.5.0
+    wget $mirror/$mirrorpath/pyzor-$PYZORVERSION.tar.gz
+    tar xvzf pyzor-$PYZORVERSION.tar.gz
+    cd pyzor-$PYZORVERSION
     python setup.py build
     python setup.py install
 
