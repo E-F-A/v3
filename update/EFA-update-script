@@ -551,10 +551,15 @@ function update-vmtools() {
   # Check:  Will this potentially remove commercial vmware-tools?
   # If so, how do we test for open versus commercial versions?
   
+  # Todo:  Version checking for open-vm-tools and flag if installed
+  
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
     #### Staging Phase ####
 	wget -O $STAGING $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
+	[[ $? -ne 0 ]] && abort
+	
 	/usr/bin/wget --no-check-certificate -O $STAGING $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
+	[[ $? -ne 0 ]] && abort
 	
 	#### Backup Phase #####
 	# Nothing to do
