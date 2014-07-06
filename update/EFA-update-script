@@ -734,8 +734,6 @@ function finalize() {
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
   
-  serv
-  
   echo "All done"
   exit 0
 }
