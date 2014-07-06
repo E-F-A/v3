@@ -312,9 +312,6 @@ function update-3.0.0.5() {
   chown -R postfix:apache /var/spool/postfix/.razor
   chmod -R ug+rwx /var/spool/postfix/.razor
   
-  # Issue 67 default ImageCeberus score
-  echo "score ImageCeberus 0.00" >> /etc/MailScanner/spam.assassin.prefs.conf 
-  
   # Issue #77 -- EFA MailScanner 0 byte tmp files
   cd /usr/lib/MailScanner
   patch < $STAGING/mailscanner-4.84.6-1.patch
@@ -642,6 +639,9 @@ function update-imageceberus() {
       
       sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
 
+      # Issue 67 default ImageCeberus score
+      sed -i "/^score     ImageCerberusPLG0/ c\score     ImageCerberusPLG0     0.0  0.0  0.0  0.0" /etc/mail/spamassassin/ImageCerberusPLG.cf
+      
       service MailScanner start
   fi
 }

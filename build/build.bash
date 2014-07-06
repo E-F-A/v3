@@ -904,7 +904,7 @@ func_imagecerberus () {
     ln -s /usr/lib64/libcvaux.so.2.0 /usr/lib64/libcvaux.so.1
     
     # Issue 67 default ImageCeberus score
-    echo "score ImageCeberus 0.00" >> /etc/MailScanner/spam.assassin.prefs.conf 
+    sed -i "/^score     ImageCerberusPLG0/ c\score     ImageCerberusPLG0     0.0  0.0  0.0  0.0" /etc/mail/spamassassin/ImageCerberusPLG.cf
     
     # Add the version to EFA-Config
     echo "IMAGECEBERUSVERSION:$IMAGECEBERUSVERSION" >> /etc/EFA-Config
