@@ -591,21 +591,25 @@ function update-mailwatch() {
   # Update mailwatch if we have a new version available
   if [[ ! $MAILWATCHVERSION == "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
     then
-      echo -e "Starting installation of new mailwatch version"  
-      service httpd stop
-      service MailScanner stop
-      
-      # Backup existing MailWatch
-      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
+      ####Staging####
+	  wget -O $STAGING $mirror/build/$VERSION/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+	  [[ $? -ne 0 ]] && abort
+	  
+	  ####Backup#####
+	  mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
       mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION
       mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/
-      
-      # Fetch new MailWatch
-      cd /usr/src/EFA
-      wget $mirror/build/$VERSION/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
-      unzip -d . MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+	  	  
+      ####Commit#####
+      echo -e "Starting installation of new mailwatch version"  
+      service httpd stop
+      service MailScanner stop     
+
+	  unzip -d /usr/src/EFA $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
       cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
-      MAILWATCHSQLPWD=`grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/^.*://'`
+      
+	  # Todo:  Grab Passwords from /etc/EFA-Config here
+	  MAILWATCHSQLPWD=`grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/^.*://'`
       sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
       sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" MailWatch.pm
 
@@ -637,7 +641,7 @@ function update-mailwatch() {
       cd /var/www/html/mailscanner/images
       cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-47px.gif .
       cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-79px.png .
-      mv mailwatch-logo.gif mailwatch-logo.gif.orig
+      mv mailwatch-logo.gif mailwatch-logo.gif.orig >/dev/null 2>&1
       mv mailwatch-logo.png mailwatch-logo.png.orig
       mv mailscannerlogo.gif mailscannerlogo.gif.orig
       ln -s EFAlogo-79px.png mailwatch-logo.gif
