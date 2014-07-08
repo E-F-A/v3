@@ -319,6 +319,15 @@ function update-3.0.0.5() {
   cd /usr/lib/MailScanner
   patch < $STAGING/mailscanner-4.84.6-1.patch
  
+  # Issue #95 SASL AUthentication database not found
+  # We just create a dummy sasldb2 if it doesn't exist
+  if [[ ! -f /etc/sasldb2 ]]
+    then
+	  echo "creating random sasldb2 file"
+      tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1 | saslpasswd2 -p -c /etc/sasldb2
+      chgrp postfix /etc/sasldb2
+  fi
+ 
   # Add a mailwatch version to EFA-Config (the previous version)
   echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
   

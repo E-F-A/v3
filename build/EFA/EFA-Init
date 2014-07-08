@@ -788,6 +788,13 @@ function func_configure-system() {
   sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
   sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$EFASQLPWD';" /etc/cron.daily/EFA-Tokens-Cron
  
+  # Issue #95 SASL AUthentication database not found
+  # We just create a dummy sasldb2 with a random pwd
+  randompw
+  RANDOMSASLPWD=$PASSWD
+  echo $RANDOMSASLPWD | saslpasswd2 -p -c /etc/sasldb2
+  chgrp postfix /etc/sasldb2
+ 
   # And finally we change the MYSQL root password.
   randompw
   MYSQLROOTPWD=$PASSWD
