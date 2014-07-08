@@ -241,7 +241,7 @@ function update-3.0.0.5() {
   [[ $? -ne 0 ]] && abort 
   
   # Issue #77 -- EFA MailScanner 0 byte tmp files
-  wget --no-check-certificate -O $STAGING/mailscanner-4.84.6-1.patch $gitdlurl/EFA/mailscanner-4.84.6-1.patch
+  wget --no-check-certificate -O $STAGING/mailscanner-4.84.6-1.patch $gitdlurl/$VERSION/build/EFA/mailscanner-4.84.6-1.patch
   [[ $? -ne 0 ]] && abort 
 
   ##### Backup Phase #####
