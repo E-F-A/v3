@@ -300,6 +300,7 @@ function update-3.0.0.5() {
   chmod 700 /etc/cron.daily/EFA-Daily-cron
   chmod 700 /etc/cron.monthly/EFA-Monthly-cron
   rm -f /etc/cron.daily/update_phishing_sites
+  /usr/local/sbin/EFA-MS-Update -update
   
   # Issue #102 Remove cron.d/raid-check
   rm -f /etc/cron.d/raid-check
