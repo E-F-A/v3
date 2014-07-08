@@ -29,6 +29,7 @@ mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.5"
 MAILWATCHVERSION="74f18e2742"
 IMAGECEBERUSVERSION="1.1"
+WEBMINVERSION="1.690-1"
 PYZORVERSION="0.7.0"
 # +---------------------------------------------------+
 
@@ -920,8 +921,8 @@ func_imagecerberus () {
 # +---------------------------------------------------+
 func_webmin () {
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/webmin-1.660-1.noarch.rpm
-    rpm -i webmin-1.660-1.noarch.rpm
+    wget $mirror/$mirrorpath/webmin-$WEBMINVERSION.noarch.rpm
+    rpm -i webmin-$WEBMINVERSION.noarch.rpm
     
     # shoot a hole in webmin so we can change settings
     echo "localauth=/usr/sbin/lsof" >> /etc/webmin/miniserv.conf
