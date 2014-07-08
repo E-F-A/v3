@@ -1,29 +1,33 @@
 ############################################################
 EFA Version 3.0.0.5 Changes
 ############################################################
-Issue #33 Enhancement - Remove software versions page from mailwatch
-Issue #54 Enhancement - Added hostname change to EFA-Configure
-Issue #57 Enhancement - Alternating background for black/whitelist
-Issue #66 Enhancement - EFA-Tokens-Cron pull password from /etc/EFA-Config
-Issue #67 Enhancement - ImageCeberus default score
-Issue #70 Enhancement - .bashrc EFA-Configure Launch Interactive Only
-Issue #71 Bug - Urgent: raw.github.com certificate error fixes
-Issue #73 Bug - Admin Email Change Fails to Update MailScanner Values
-Issue #74 Bug - EFA-Configure Disable SSL does not disable redirect
-Issue #75 Bug - EFA-Configure not writing iptables config to /etc/sysconfig/iptables
-Issue #76 Bug - Processing Attempts Database Bug (temporarily disabled until MailScanner releases fix)
-Issue #77 Bug -- EFA MailScanner 0 byte tmp files (patched until MailScanner releases fix)
-Issue #79 Enhancement - EFA-Update Staging and Error Handling 
-Issue #85 Bug - ClamAV Update Issue
-Issue #87 Bug - EFA-Tokens-Cron Syntax Wrong
-Issue #89 Bug - Razor errors in MailWatch Gui
-Issue #90 Bug - Reapply 3.0.0.4 Update Fixes
-Issue #93 Bug - Pyzor Errors
-Issue #98 Bug - postfix tlsmgr smtpd_tls_session warnings
-Issue #101 Bug - Can't register IDN names (hopefully fixed)
-Issue #102 Enhancement - Remove raid-check cron
-Issue #103 Bug - Update EFA-Init mirror path
-
+Issue #33  Enhancement 	- Remove software versions page from mailwatch
+Issue #54  Enhancement 	- Added hostname change to EFA-Configure
+Issue #57  Enhancement 	- Alternating background for black/whitelist
+Issue #66  Enhancement 	- EFA-Tokens-Cron pull password from /etc/EFA-Config
+Issue #67  Enhancement 	- ImageCeberus default score
+Issue #70  Enhancement 	- .bashrc EFA-Configure Launch Interactive Only
+Issue #71  Bug 			- Urgent: raw.github.com certificate error fixes
+Issue #73  Bug 			- Admin Email Change Fails to Update MailScanner Values
+Issue #74  Bug 			- EFA-Configure Disable SSL does not disable redirect
+Issue #75  Bug 			- EFA-Configure not writing iptables config to /etc/sysconfig/iptables
+Issue #76  Bug 			- Processing Attempts Database Bug (temporarily disabled until MailScanner releases fix)
+Issue #77  Bug 			- EFA MailScanner 0 byte tmp files (patched until MailScanner releases fix)
+Issue #79  Enhancement 	- EFA-Update Staging and Error Handling 
+Issue #85  Bug 			- ClamAV Update Issue
+Issue #87  Bug 			- EFA-Tokens-Cron Syntax Wrong
+Issue #89  Bug 			- Razor errors in MailWatch Gui
+Issue #90  Bug 			- Reapply 3.0.0.4 Update Fixes
+Issue #93  Bug 			- Pyzor Errors
+Issue #98  Bug 			- postfix tlsmgr smtpd_tls_session warnings
+Issue #101 Bug 			- Can't register IDN names (hopefully fixed)
+Issue #102 Enhancement 	- Remove raid-check cron
+Issue #103 Bug 			- Update EFA-Init mirror path
+-----
+Imageceberus updated to version 1.1
+Pyzor updated to version 0.7.0
+Webmin updated to 1.690
+Mailwatch updated to snapshot 74f18e2742
 
 ############################################################
 EFA Version 3.0.0.4 Changes
