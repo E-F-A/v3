@@ -1,0 +1,76 @@
+# +---------------------------------------------------+
+# Option IP_SETTINGS
+# +---------------------------------------------------+
+func_ip-settings(){
+  menu=0
+  ipmenu=1
+  while [ $ipmenu == "1" ]
+    do
+      func_getipsettings
+      func_echo-header
+      echo -e "Current IP settings for $INTERFACE are:"
+      echo -e "1) IP                   :  $IP"
+      echo -e "2) Netmask              :  $NM"
+      echo -e "3) Gateway              :  $GW"
+      echo -e "4) Primary DNS          :  $DNS1"
+      echo -e "5) Secondary DNS        :  $DNS2"
+      echo -e "6) Hostname             :  $HOSTNAME"
+      echo -e "7) Domain Name          :  $DOMAINNAME"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      echo -e ""
+      echo -e "$red Note: Network will reset when changing values.$clean"
+      echo -e ""
+      echo -e "Enter setting you want to change"
+      echo -e -n "$green[EFA]$clean : "
+      local choice
+      read choice
+      case $choice in
+                1)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new IP: " IP
+                    func_setipsettings
+                    menu=1
+                    ;;
+                2)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new netmask: " NM
+                    func_setipsettings
+                    menu=1
+                    ;;
+                3)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new gateway: " GW
+                    func_setipsettings
+                    menu=1
+                    ;;
+                4)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new primary DNS: " DNS1
+                    func_setipsettings
+                    menu=1
+                    ;;
+                5)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new secondary DNS: " DNS2
+                    func_setipsettings
+                    menu=1
+                    ;;
+                6)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new HOSTNAME: " HOSTNAME
+                    func_sethostname
+                    menu=1
+                    ;;
+                7)  ipmenu=0
+                    echo ""
+                    read -p "Enter your new DOMAIN NAME: " DOMAINNAME
+                    func_sethostname
+                    menu=1
+                    ;;
+                e) menu=1 && return ;;
+                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+            esac
+        done
+}
+# +---------------------------------------------------+

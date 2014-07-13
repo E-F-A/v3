@@ -2,3 +2,17 @@ func_getipsettings
 func_sethostname
 func_apachesettings
 func_mailsettings
+func_systemrestore
+func_recovermysql
+func_trustednetworks
+func_spamsettings
+func_virussettings
+func_askcleandeliver
+func_asksigrules
+func_asknonspam
+func_askspam
+func_ipsettings
+func_greylisting
+func_autoupdates
+func_tunables
+func_setipsettings

@@ -1,0 +1,71 @@
+# +---------------------------------------------------+
+# Function to enable/disable greylisting
+# +---------------------------------------------------+
+func_greylisting(){
+  func_echo-header
+  echo -e "$green[EFA]$clean Enable/Disable greylisting"
+  echo -e ""
+  echo -e "$green[EFA]$clean Greylisting will temporarily reject any email from a sender it" 
+  echo -e "$green[EFA]$clean does not recognize. If the mail is legitimate the originating server"
+  echo -e "$green[EFA]$clean will, after a delay, try again and, if sufficient time has elapsed,"
+  echo -e "$green[EFA]$clean the email will be accepted."
+  echo ""
+  echo -e "$green[EFA]$clean This however causes an delay in receiving mail, by default this system"
+  echo -e "$green[EFA]$clean is configured to reject any email for 5 minutes."
+  echo -e "$green[EFA]$clean Not all admin's like this setup so giving you the option to disable"
+  echo -e "$green[EFA]$clean greylisting on this system."
+  echo ""
+  if [[ -n $(cat /etc/postfix/main.cf | grep "check_policy_service inet:127.0.0.1:2501") ]]
+    then
+      # DISABLE greylisting
+      echo -e "$green[EFA]$clean Greylisting is currently $green ENABLED $clean"
+      echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean greylisting? [y/N]: "
+      read TMPGREY
+        if [[ "$TMPGREY" == "Y" || "$TMPGREY" == "y" ]]; then
+          postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_non_fqdn_recipient, reject_unknown_recipient_domain, check_recipient_access hash:/etc/postfix/recipient_access" 
+          postfix reload 
+          service sqlgrey stop 
+          chkconfig sqlgrey off
+
+          # disable Greylist menu item
+          /bin/cp -f /var/www/html/mailscanner/functions.php.orig /var/www/html/mailscanner/functions.php
+
+          echo -e "$green[EFA]$clean Greylisting $red DISABLED $clean"
+          pause
+        elif [[ "$TMPGREY" == "" || "$TMPGREY" == "N" || "$TMPGREY" == "n" ]]; then 
+          echo -e "$green[EFA]$clean No changes made"
+          echo ""
+          pause
+        else
+          echo -e "       $red ERROR: please make an selection.$clean"
+          echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean greylisting? [y/N]: "
+          read TMPGREY
+        fi
+    else
+      # ENABLE Greylisting
+      echo -e "$green[EFA]$clean Greylisting is currently $red DISABLED $clean"
+      echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean greylisting? [y/N]: "
+      read TMPGREY
+        if [[ "$TMPGREY" == "Y" || "$TMPGREY" == "y" ]]; then
+          postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_non_fqdn_recipient, reject_unknown_recipient_domain, check_recipient_access hash:/etc/postfix/recipient_access, check_policy_service inet:127.0.0.1:2501"
+          postfix reload 
+          service sqlgrey start 
+          chkconfig sqlgrey on
+          # Enable Greylist menu item
+          /bin/cp -f /var/www/html/mailscanner/functions.php.orig /var/www/html/mailscanner/functions.php
+          sed -i "/^            \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+
+          echo -e "$green[EFA]$clean Greylisting $green ENABLED $clean"
+          pause
+        elif [[ "$TMPGREY" == "" || "$TMPGREY" == "N" || "$TMPGREY" == "n" ]]; then 
+          echo -e "$green[EFA]$clean No changes made"
+          echo ""
+          pause
+        else
+          echo -e "       $red ERROR: please make an selection.$clean"
+          echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean greylisting? [y/N]: "
+          read TMPGREY
+        fi
+  fi
+}
+# +---------------------------------------------------+

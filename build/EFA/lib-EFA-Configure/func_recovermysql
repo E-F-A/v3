@@ -1,0 +1,75 @@
+# +---------------------------------------------------+
+# Mysql Recovery
+# +---------------------------------------------------+
+function func_recover-mysql() {
+  func_echo-header
+  echo -e ""
+  echo -e "MySQL Daemon and Database Recovery"
+  echo -e ""
+  echo -e "Description:"
+  echo -e "This tool will assist with mysql recovery"
+  echo -e "after a system crash or power failure."
+  echo -e ""
+  echo -e "If recovery fails, it is recommended that"
+  echo -e "you restore your mysql database from a"
+  echo -e "recent backup."
+  echo -e ""
+  echo -e -n "$green[EFA]$clean Do you wish to continue? (y/n): "
+  read MYSQLQ
+    
+  flag=0
+  while [ $flag == "0" ]
+    do
+      if [[ $MYSQLQ == "y" || $MYSQLQ == "Y" ]]; then
+        # Fetch mysql pw
+        MYSQLPW=`grep MYSQLROOTPWD /etc/EFA-Config | awk -F':' '{print $2}'` 
+
+        echo -e ""
+        echo -e "Beginning recovery..."
+
+        echo -e ""
+        echo -e "Stopping MySQL, MailScanner, and sqlgrey"
+        service sqlgrey stop
+        service MailScanner stop
+        service mysqld stop
+        #killall -9 mysqld
+
+        echo -e "Removing socket if present"
+        rm -f /var/lib/mysql/mysql.sock
+
+        echo -e "Performing MyISAM checks"
+        myisamchk --force --fast --update-state --key_buffer_size=64M --sort_buffer_size=64M --read_buffer_size=1M --write_buffer_size=1M /var/lib/mysql/*/*.MYI
+        pause
+
+        echo -e "Attempting to start MySQL"
+        service mysqld start
+
+        echo -e "Performing additional database checks"
+        mysqlcheck -u root -p$MYSQLPW --repair --all-databases
+        pause
+       
+        echo -e "Runing database optimization"
+        mysqlcheck -u root -p$MYSQLPW --optimize --all-databases
+        pause
+
+        echo -e "MailScanner and SQLgrey"
+        service MailScanner start
+        service sqlgrey start
+
+        pause
+
+        flag=1
+      elif [[ $MYSQLQ == "n" || $MYSQLQ == "N" ]]; then
+        echo -e ""
+        echo -e "Exiting..."
+        sleep 2
+        flag=1
+      else
+        echo -e "Choice $green\"$MYSQLQ\"$clean is not a valid choice."
+        echo -e ""
+        echo -e -n "$green[EFA]$clean: "
+        read MYSQLQ
+      fi
+    done
+}
+# +---------------------------------------------------+
