@@ -34,8 +34,9 @@ $db_host = "localhost";
 $db_user = "efa";
 open(FILE, '/etc/EFA-Config');
 #Do not read in entire file at once for better security
-while (my $line = <FILE>) {
+while ($line = <FILE>) {
   if ($line =~ /^EFASQLPWD/) {
+    $db_pass = $line;
     $db_pass =~ s/^EFASQLPWD://;
 	$db_pass =~ s/\n//;
 	break;
@@ -77,7 +78,7 @@ if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/ && $token =~/
        $db_user, $db_pass,
        {PrintError => 0});
 
-    if (!dbh) { die "Error connecting to database" }
+    if (!$dbh) { die "Error connecting to database" }
 
     $sql = "SELECT token from tokens WHERE token=\"$token\"";
     $sth = $dbh->prepare($sql);
