@@ -896,9 +896,8 @@ function func_end() {
     echo "AUTOUPDATES:DISABLED" >> /etc/EFA-Config
   fi
   
-  # Todo:  Apache, MailScanner, etc. will need access to this file
-  
-  chmod 600 /etc/EFA-Config
+  chown root:apache /etc/EFA-Config
+  chmod 640 /etc/EFA-Config
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+  
