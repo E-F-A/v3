@@ -243,6 +243,14 @@ function update-3.0.0.5() {
   # Issue #77 -- EFA MailScanner 0 byte tmp files
   wget --no-check-certificate -O $STAGING/mailscanner-4.84.6-1.patch $gitdlurl/$VERSION/build/EFA/mailscanner-4.84.6-1.patch
   [[ $? -ne 0 ]] && abort 
+  
+  # Issue #66 -- Grab Passwords from EFA-Config
+  wget --no-check-certificate -O $STAGING/release-msg.cgi $gitdlurl/$VERSION/build/EFA/release-msg.cgi
+  [[ $? -ne 0 ]] && abort 
+  wget --no-check-certificate -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  [[ $? -ne 0 ]] && abort
+  wget --no-check-certificate -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+  [[ $? -ne 0 ]] && abort
 
   ##### Backup Phase #####
   
@@ -339,6 +347,12 @@ function update-3.0.0.5() {
   sed -i "/^my(\$db_pass) =/ c\my(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
   sed -i "/^  my(\$db_pass) =/ c\  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm
   sed -i "/^my(\$db_pass) =/ c\my(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLSpamSettings.pm
+  rm -f /var/www/cgi-bin/learn-msg.cgi
+  mv $STAGING/release-msg.cgi /var/www/cgi-bin/learn-msg.cgi
+  rm -f /var/www/cgi-bin/release-msg.cgi
+  mv $STAGING/release-msg.cgi /var/www/cgi-bin/release-msg.cgi
+  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  mv $STAGING/CustomAction.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   
   # Issue #51 -- Redundant Quarantine Clean Scripts Present
   rm -f /etc/cron.daily/clean.quarantine
