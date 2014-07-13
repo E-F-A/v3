@@ -89,21 +89,21 @@ func_transport-settings(){
                           do
                             if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,6}$ ]]; then
                               DUPLICATECHECK = 0
-							  for (( y=0; y<$tLen; y+=2 ));
-							  do
-							    if [[ ${RELAYS[$y]} == $DOMAIN ]]; then
-								  DUPLICATECHECK=1
-								fi
-							  done
-							  if [[ $DUPLICATECHECK == "1" ]]; then
-							    echo -e "       $red ERROR: The domain $DOMAINNAME already exists"
+                              for (( y=0; y<$tLen; y+=2 ));
+                              do
+                                if [[ ${RELAYS[$y]} == $DOMAIN ]]; then
+                                  DUPLICATECHECK=1
+                                fi
+                              done
+                              if [[ $DUPLICATECHECK == "1" ]]; then
+                                echo -e "       $red ERROR: The domain $DOMAINNAME already exists"
                                 echo -e "        ERROR: please re-enter the domain$clean"
                                 echo -e ""
                                 echo -e -n "$green[Domain]$clean : "
                                 read DOMAIN
-							  else
-							    DOMAINCHECK=0
-							  fi
+                              else
+                                DOMAINCHECK=0
+                              fi
                             else
                               echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
                               echo -e "        ERROR: please re-enter the domain$clean"
