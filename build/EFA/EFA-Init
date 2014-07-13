@@ -786,8 +786,8 @@ function func_configure-system() {
   # Issue #66 grab all passwords from /etc/EFA-Config
   #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/release-msg.cgi
-  sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
-  sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$EFASQLPWD';" /etc/cron.daily/EFA-Tokens-Cron
+  #sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
+  #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$EFASQLPWD';" /etc/cron.daily/EFA-Tokens-Cron
  
   # Issue #95 SASL AUthentication database not found
   # We just create a dummy sasldb2 with a random pwd

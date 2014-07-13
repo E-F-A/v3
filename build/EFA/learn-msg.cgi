@@ -32,7 +32,16 @@ $token = param("token");
 $db_name = "efa";
 $db_host = "localhost";
 $db_user = "efa";
-$db_pass = "EfaPr0j3ct";
+open(FILE, '/etc/EFA-Config');
+#Do not read in entire file at once for better security
+while (my $line = <FILE>) {
+  if ($line =~ /^EFASQLPWD/) {
+    $db_pass =~ s/^EFASQLPWD://;
+	$db_pass =~ s/\n//;
+	break;
+  }
+}
+close (FILE);
 
 open(FILE, '/etc/sysconfig/EFA_trusted_networks') or die ("Trusted Networks File Missing");
 @trustednetworks = <FILE>;
