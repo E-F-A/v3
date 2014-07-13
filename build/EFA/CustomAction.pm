@@ -79,8 +79,16 @@ sub EFACreateToken {
   my($db_name) = 'efa';
   my($db_host) = 'localhost';
   my($db_user) = 'efa';
-  my($db_pass) = 'EfaPr0j3ct';
-  
+  my($pw_config) = '/etc/EFA-Config';
+  open($fh, "<", $pw_config);
+  if(!$fh) {
+    MailScanner::Log::WarnLog("Unable to open %s to retrieve password", $pw_config);
+	return;
+  }
+  my($db_pass) = grep(/^MAILWATCHSQLPWD/,<$fh>);
+  $db_pass =~ s/MAILWATCHSQLPWD://;
+  $db_pass =~ s/\n//;
+  close($fh);
   # Connect to the database
   $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
                       $db_user, $db_pass,
