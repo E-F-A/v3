@@ -267,7 +267,7 @@ function func_ask-username() {
   uncheck=1
   while [ $uncheck != 0 ]
    do
-     if [[ $USERNAME =~ ^[a-z_][a-z0-9_-]{1,30}+$ ]]
+     if [[ $USERNAME =~ ^[a-z_][a-z0-9_-]{1,30}+$ && $USERNAME =~ ^(?!root|apache|halt|mail|uucp|operator|games|gopher|ftp|nobody|dbus|vcsa|abrt|haldaemon|ntp|saslauth|postfix|sshd|mysql|tcpdump|clamav|sqlgrey|dnsmasq)$]]
       then
         uncheck=0
       else
