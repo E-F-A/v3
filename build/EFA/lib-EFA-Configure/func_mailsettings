@@ -88,7 +88,7 @@ func_transport-settings(){
                         while [ $DOMAINCHECK != 0 ]
                           do
                             if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,6}$ ]]; then
-                              DUPLICATECHECK = 0
+                              DUPLICATECHECK=0
                               for (( y=0; y<$tLen; y+=2 ));
                               do
                                 if [[ ${RELAYS[$y]} == $DOMAIN ]]; then
