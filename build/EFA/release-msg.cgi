@@ -31,7 +31,17 @@ $token = param("token");
 $db_name = "efa";
 $db_host = "localhost";
 $db_user = "efa";
-$db_pass = "EfaPr0j3ct";
+open(FILE, '/etc/EFA-Config');
+#Do not read in entire file at once for better security
+while ($line = <FILE>) {
+  if ($line =~ /^EFASQLPWD/) {
+    $db_pass = $line;
+    $db_pass =~ s/^EFASQLPWD://;
+	$db_pass =~ s/\n//;
+	break;
+  }
+}
+close (FILE);
 
 # Check if the variables contain data if one of them is not we die and not even check the syntax..
 if ($id eq "" ){
