@@ -2,6 +2,7 @@
 EFA Version 3.0.0.5 Changes
 ############################################################
 Issue #33  Enhancement 	- Remove software versions page from mailwatch
+Issue #51  Enhancement  - Redundant Quarantine Clean Scripts Present
 Issue #54  Enhancement 	- Added hostname change to EFA-Configure
 Issue #57  Enhancement 	- Alternating background for black/whitelist
 Issue #66  Enhancement 	- Pull passwords from /etc/EFA-Config where practical
