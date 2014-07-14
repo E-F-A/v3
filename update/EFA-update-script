@@ -348,7 +348,7 @@ function update-3.0.0.5() {
   sed -i "/^  my(\$db_pass) =/ c\  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm
   sed -i "/^my(\$db_pass) =/ c\my(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLSpamSettings.pm
   rm -f /var/www/cgi-bin/learn-msg.cgi
-  mv $STAGING/release-msg.cgi /var/www/cgi-bin/learn-msg.cgi
+  mv $STAGING/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
   rm -f /var/www/cgi-bin/release-msg.cgi
   mv $STAGING/release-msg.cgi /var/www/cgi-bin/release-msg.cgi
   rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
