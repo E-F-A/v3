@@ -182,7 +182,7 @@ function update-3.0.0.5() {
   mkdir -p /var/EFA/backup
   mv $STAGING/EFA-Backup /usr/local/sbin/EFA-Backup
   chmod 700 /usr/local/sbin/EFA-Backup
-  mv $STAGING/etc/cron.daily/EFA-Backup-cron
+  mv $STAGING/EFA-Backup-cron /etc/cron.daily/EFA-Backup-cron 
   chmod 700 /etc/cron.daily/EFA-Backup-cron
   
   # Issue #60 kam.cf.backup parsed by spamassassin
@@ -638,8 +638,8 @@ function update-vmtools() {
     make
     make install
     
-    rm -f /etc/init.d/vmtoolsd.init	
-	mv $STAGING/vmtoolsd.init /etc/init.d/vmtoolsd.init
+    rm -f /etc/init.d/vmtoolsd
+	mv $STAGING/vmtoolsd.init /etc/init.d/vmtoolsd
     chmod 755 /etc/init.d/vmtoolsd
     # lib adjustment
     ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1

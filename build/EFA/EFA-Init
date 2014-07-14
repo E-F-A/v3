@@ -267,9 +267,18 @@ function func_ask-username() {
   uncheck=1
   while [ $uncheck != 0 ]
    do
-     if [[ $USERNAME =~ ^[a-z_][a-z0-9_-]{1,30}+$ && $USERNAME =~ ^(?!root|apache|halt|mail|uucp|operator|games|gopher|ftp|nobody|dbus|vcsa|abrt|haldaemon|ntp|saslauth|postfix|sshd|mysql|tcpdump|clamav|sqlgrey|dnsmasq)$]]
+     if [[ $USERNAME =~ ^[a-z_][a-z0-9_-]{1,30}+$ ]]
       then
-        uncheck=0
+        if [[ ! $USERNAME =~ ^root|apache|halt|mail|uucp|operator|games|gopher|ftp|nobody|dbus|vcsa|abrt|haldaemon|ntp|saslauth|postfix|sshd|mysql|tcpdump|clamav|sqlgrey|dnsmasq$ ]]
+          then
+            uncheck=0
+          else
+            echo -e "       $red ERROR: The user-name $USERNAME already exists"
+            echo -e "        ERROR: please re-enter the user-name$clean"
+            echo -e "$green[EFA]$clean Please enter the user-name you would like to have."
+            echo -e -n "$green[EFA]$clean : "
+            read USERNAME
+        fi
       else
         echo -e "       $red ERROR: The user-name $USERNAME seems to be invalid"
         echo -e "        ERROR: please re-enter the user-name$clean"
