@@ -79,6 +79,7 @@ sub EFACreateToken {
   my($db_name) = 'efa';
   my($db_host) = 'localhost';
   my($db_user) = 'efa';
+  my($fh);
   my($pw_config) = '/etc/EFA-Config';
   open($fh, "<", $pw_config);
   if(!$fh) {
