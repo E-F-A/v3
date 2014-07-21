@@ -592,7 +592,9 @@ func_mailwatch () {
     sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/local/bin/');" conf.php
     sed -i "/^define('SA_RULES_DIR',/ c\define('SA_RULES_DIR', '/etc/mail/spamassassin');" conf.php
     sed -i "/^define('SHOW_SFVERSION',/ c\define('SHOW_SFVERSION', false);" conf.php
-
+    # Issue #109 Documentation tab present after MailWatch update testing
+	sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" conf.php
+	
     # Set up a redirect in web root to MailWatch 
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
