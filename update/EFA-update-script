@@ -845,9 +845,6 @@ function update-mailwatch() {
       sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
       cp /var/EFA/backup/$VERSION/mailscanner/mailgraph.php .  
 
-      # Issue #61 Domain Administrator cannot delete domain only whitelist/blacklist
-      sed -i '/^    \$to_domain = \$split\[2\];/{N;s/$/\nelse \{ \$to_domain = \$url_to; \}/}' /var/www/html/mailscanner/lists.php
-  
       # Reconfigure Greylisting as previously configured
       cp functions.php functions.php.orig
       cp /var/EFA/backup/$VERSION/mailscanner/grey.php .
