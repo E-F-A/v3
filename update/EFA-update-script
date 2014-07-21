@@ -869,9 +869,22 @@ function update-mailwatch() {
           echo "define('SHOW_SFVERSION', false);" >> /var/www/html/mailscanner/conf.php
           echo "" >> /var/www/html/mailscanner/conf.php
 		  
-		  # Issue #109 Documentation tab present after MailWatch update testing
+          # Issue #109 Documentation tab present after MailWatch update testing
           sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" /var/www/html/mailscanner/conf.php
           
+          # Issue #110 Bring MailWatch conf.php to latest version
+          echo "// can be set to 'proxyaddresses' or 'mail'. Please refer to your LDAP system manual for the right keyword" >> /var/www/html/mailscanner/conf.php
+          echo "define('LDAP_EMAIL_FIELD', 'proxyaddresses');" >> /var/www/html/mailscanner/conf.php
+          echo "" >> /var/www/html/mailscanner/conf.php
+          echo "define('MS_EXECUTABLE_PATH', '/usr/sbin/MailScanner');" >> /var/www/html/mailscanner/conf.php
+		  echo "" >> /var/www/html/mailscanner/conf.php
+		  echo "// RPC port (defaults to 80 if not supplied)" >> /var/www/html/mailscanner/conf.php
+          echo "// define('RPC_PORT', 80);" >> /var/www/html/mailscanner/conf.php
+          echo "// RPC over SSL?? (defaults to port 443 unless RPC_PORT is supplied" >> /var/www/html/mailscanner/conf.php
+		  echo "// define('RPC_SSL', true);" >> /var/www/html/mailscanner/conf.php
+		  echo "" >> /var/www/html/mailscanner/conf.php
+          sed -i "/define('MSEE',/d" /var/www/html/mailscanner/conf.php
+		  
           # Re-ad the virus_info function          
           sed -i "/^\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\define('VIRUS_INFO', \"http://www.securelist.com/en/descriptions?words=%s&behavior=&amp;Search=Search&amp;search_type=1\");" /var/www/html/mailscanner/conf.php
 
