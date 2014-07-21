@@ -870,7 +870,7 @@ function update-mailwatch() {
           echo "" >> /var/www/html/mailscanner/conf.php
 		  
 		  # Issue #109 Documentation tab present after MailWatch update testing
-          sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" conf.php
+          sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" /var/www/html/mailscanner/conf.php
           
           # Re-ad the virus_info function          
           sed -i "/^\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\define('VIRUS_INFO', \"http://www.securelist.com/en/descriptions?words=%s&behavior=&amp;Search=Search&amp;search_type=1\");" /var/www/html/mailscanner/conf.php
