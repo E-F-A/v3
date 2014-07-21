@@ -625,6 +625,11 @@ func_mailwatch () {
     ln -s EFAlogo-79px.png mailwatch-logo.gif
     ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
+	
+	# Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
+	mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig
+	ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
+	sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
     
     # Change the yellow to match website colors..
     sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
