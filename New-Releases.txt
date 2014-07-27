@@ -1,5 +1,8 @@
 # To change/check when we create a new version:
 
+build/ks.cfg
+ [ ] build.bash wget location
+
 build/EFA/EFA-Init
  [ ] mirrorpath=""
 		
