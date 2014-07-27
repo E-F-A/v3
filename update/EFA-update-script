@@ -244,7 +244,8 @@ function update-3.0.0.5() {
   wget --no-check-certificate -O $STAGING/mailscanner-4.84.6-1.patch $gitdlurl/$VERSION/build/EFA/mailscanner-4.84.6-1.patch
   [[ $? -ne 0 ]] && abort 
   
-  # Issue #66 -- Grab Passwords from EFA-Config
+  # Issue #66 Grab Passwords from EFA-Config
+  # Issue #94 Postfix ID Regex Double Check
   wget --no-check-certificate -O $STAGING/release-msg.cgi $gitdlurl/$VERSION/build/EFA/release-msg.cgi
   [[ $? -ne 0 ]] && abort 
   wget --no-check-certificate -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
@@ -336,7 +337,8 @@ function update-3.0.0.5() {
       chgrp postfix /etc/sasldb2
   fi
   
-  # Issue #66 Pull Passwords from /etc/EFA-Config
+  
+  # Issue #66 Pull Passwords from /etc/EFA-Config & Issue #94 Postfix ID Regex Double Check
   chown root:apache /etc/EFA-Config
   chmod 640 /etc/EFA-Config
   # sgwi

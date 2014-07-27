@@ -55,7 +55,7 @@ if ($token eq "" ){
   die "Error variable is empty";
 }
 
-if ($id =~ /^[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
+if ($id =~ /^[A-F0-9]{9}\.[A-F0-9]{5}|[A-F0-9]{10}\.[A-F0-9]{5}|[A-F0-9]{11}\.[A-F0-9]{5}$/ && $token =~/^[0-9a-zA-Z]{32}$/){
   # Is the array empty or not...
   $flag=0;
   # TODO:  May need to test for whitepace in the array
