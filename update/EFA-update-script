@@ -368,6 +368,10 @@ function update-3.0.0.5() {
   # Add a Pyzor version to EFA-Config (the previous version)
   echo "PYZORVERSION:0.5.0" >> /etc/EFA-Config
   
+  # Issue #117 Lower spamassassin score from 10 to 7
+  sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
+  service MailScanner restart
+  
   echo "Update to $VERSION complete." 
   echo ""
   echo "" >> $TMPMAIL

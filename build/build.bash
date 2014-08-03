@@ -263,6 +263,7 @@ func_mailscanner () {
     sed -i "/^Sign Clean Messages =/ c\# EFA Note: CustomAction.pm will Sign Clean Messages instead using the custom(nonspam) action.\nSign Clean Messages = No" /etc/MailScanner/MailScanner.conf
     sed -i "/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No" /etc/MailScanner/MailScanner.conf
     sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
+	sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
 	
     # Match up envelope header (changed at efa-init but usefull for testing)
     sed -i '/^envelope_sender_header / c\envelope_sender_header X-yoursite-MailScanner-EFA-From' /etc/MailScanner/spam.assassin.prefs.conf
