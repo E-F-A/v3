@@ -35,6 +35,7 @@ Issue #110 Bug          - Bring MailWatch conf.php to latest version
 Issue #111 Bug          - MailWatch.pm Errors after adding password fetch code
 Issue #113 Bug 			- Modify EFA-Init to check a variable inside EFA-Config
 Issue #115 Bug			- Greylist option not available in new mailwatch version
+Issue #116 Bug          - Token is missing in 3.0.0.5
 Issue #117 Enhancement	- Lower High spamassassin score from 10 to 7
 
 -----

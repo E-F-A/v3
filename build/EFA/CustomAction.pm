@@ -86,8 +86,8 @@ sub EFACreateToken {
     MailScanner::Log::WarnLog("Unable to open %s to retrieve password", $pw_config);
 	return;
   }
-  my($db_pass) = grep(/^MAILWATCHSQLPWD/,<$fh>);
-  $db_pass =~ s/MAILWATCHSQLPWD://;
+  my($db_pass) = grep(/^EFASQLPWD/,<$fh>);
+  $db_pass =~ s/EFASQLPWD://;
   $db_pass =~ s/\n//;
   close($fh);
   # Connect to the database
