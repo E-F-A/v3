@@ -29,44 +29,58 @@ func_ip-settings(){
                 1)  ipmenu=0
                     echo ""
                     read -p "Enter your new IP: " IP
-                    func_setipsettings
-                    menu=1
+					if [ -z "$IP" ]; then echo "ERROR empty value" && pause && menu=1; else
+                      func_setipsettings
+                      menu=1
+					fi
                     ;;
                 2)  ipmenu=0
                     echo ""
                     read -p "Enter your new netmask: " NM
-                    func_setipsettings
-                    menu=1
+					if [ -z "$NM" ]; then echo "ERROR empty value" && pause && menu=1; else
+                      func_setipsettings
+                      menu=1
+					fi
                     ;;
                 3)  ipmenu=0
                     echo ""
                     read -p "Enter your new gateway: " GW
-                    func_setipsettings
-                    menu=1
+					if [ -z "$GW" ]; then echo "ERROR empty value" && pause && menu=1; else
+                      func_setipsettings
+                      menu=1
+					fi
                     ;;
                 4)  ipmenu=0
                     echo ""
                     read -p "Enter your new primary DNS: " DNS1
-                    func_setipsettings
-                    menu=1
+					if [ -z "$DNS1" ]; then echo "ERROR empty value" && pause && menu=1; else
+                      func_setipsettings
+                      menu=1
+					fi
                     ;;
                 5)  ipmenu=0
                     echo ""
                     read -p "Enter your new secondary DNS: " DNS2
-                    func_setipsettings
-                    menu=1
+					if [ -z "$DNS2" ]; then echo "ERROR empty value" && pause && menu=1; else
+                      func_setipsettings
+                      menu=1
+					fi
                     ;;
                 6)  ipmenu=0
                     echo ""
                     read -p "Enter your new HOSTNAME: " HOSTNAME
-                    func_sethostname
-                    menu=1
+					if [ -z "$HOSTNAME" ]; then echo "ERROR empty value" && pause && menu=1; else
+                      func_sethostname
+                      menu=1
+					fi
                     ;;
                 7)  ipmenu=0
                     echo ""
                     read -p "Enter your new DOMAIN NAME: " DOMAINNAME
-                    func_sethostname
-                    menu=1
+					if [ -z "$DOMAINNAME" ]; then echo "ERROR empty value" && pause && menu=1; else
+                      func_sethostname
+                      menu=1
+					fi
                     ;;
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
