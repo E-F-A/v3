@@ -33,6 +33,7 @@ Issue #108 Bug          - lists.php fails to load after MailWatch update testing
 Issue #109 Bug          - Documentation tab present after MailWatch update testing
 Issue #110 Bug          - Bring MailWatch conf.php to latest version
 Issue #111 Bug          - MailWatch.pm Errors after adding password fetch code
+Issue #113 Bug 			- Modify EFA-Init to check a variable inside EFA-Config
 
 -----
 Imageceberus updated to version 1.1

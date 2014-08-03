@@ -677,6 +677,9 @@ func_mailwatch () {
     sed -i '/Defaults    requiretty/ c\#Defaults    requiretty' /etc/sudoers
     echo "apache ALL=NOPASSWD: /usr/sbin/MailScanner --lint" > /etc/sudoers.d/EFA-Services
 
+	# Add mailwatch version to EFA-Config
+	echo "MAILWATCHVERSION:$MAILWATCHVERSION" >> /etc/EFA-Config
+	
     # Fix menu width
     # sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
 }
@@ -833,6 +836,9 @@ func_pyzor () {
       
     # and finally initialize the servers file with an discover.
     su postfix -s /bin/bash -c 'pyzor discover'
+	
+	# Add version to EFA-Config
+	echo "PYZORVERSION:$PYZORVERSION" >> /etc/EFA-Config
 }
 # +---------------------------------------------------+
 
@@ -948,6 +954,9 @@ func_webmin () {
     sed -i '/referers=/d' /etc/webmin/config
     sed -i '/localauth=\/usr\/sbin\/lsof/d' /etc/webmin/miniserv.conf
     service webmin restart
+	
+	# Add version to EFA-Config
+	echo "WEBMINVERSION:$WEBMINVERSION" >> /etc/EFA-Config
 }
 # +---------------------------------------------------+
 
@@ -1100,6 +1109,9 @@ EOF
     # Compress logs from logrotate
     sed -i "s/#compress/compress/g" /etc/logrotate.conf
     
+	# Set the system as unconfigured
+    sed -i '1i\CONFIGURED:NO' /etc/EFA-Config
+	
     # Set EFA-Init to run at first root login:
     sed -i '1i\\/usr\/local\/sbin\/EFA-Init' /root/.bashrc
 }

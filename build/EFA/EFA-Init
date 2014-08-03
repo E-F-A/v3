@@ -879,8 +879,6 @@ function func_end() {
     
   # +--------------------------------------------------+
   # Write all settings to EFA-Config
-  
-  touch /etc/EFA-Config
   echo "HOSTNAME:$HOSTNAME" >> /etc/EFA-Config
   echo "DOMAINNAME:$DOMAINNAME" >> /etc/EFA-Config
   echo "ADMINEMAIL:$ADMINEMAIL" >> /etc/EFA-Config
@@ -904,6 +902,8 @@ function func_end() {
   else
     echo "AUTOUPDATES:DISABLED" >> /etc/EFA-Config
   fi
+  
+  sed -i "/CONFIGURED:/ c\CONFIGURED:YES" /etc/EFA-Config
   
   chown root:apache /etc/EFA-Config
   chmod 640 /etc/EFA-Config
@@ -1073,7 +1073,8 @@ cyan='\E[00;36m'
 clean='\e[00m'
 
 func_echo-header
-if [ ! -e /etc/EFA-Config ]
+CONFIGURED="`grep CONFIGURED /etc/EFA-Config | sed 's/^.*://'`" 
+if [ $CONFIGURED == "NO" ]
  then
     echo -e "--------------------------------------------------------------"
     echo -e "$green[EFA]$clean We will ask you a few questions to setup this system."
