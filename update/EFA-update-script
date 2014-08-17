@@ -612,20 +612,19 @@ function update-vmtools() {
   
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
     #### Staging Phase ####
-	/usr/bin/wget --no-check-certificate -O $STAGING/open-vm-tools-$VMTOOLSVERION.tar.gz $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
-	[[ $? -ne 0 ]] && abort
+    /usr/bin/wget --no-check-certificate -O $STAGING/open-vm-tools-$VMTOOLSVERION.tar.gz $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
+   [[ $? -ne 0 ]] && abort
 	
-	/usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd.init $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
-	[[ $? -ne 0 ]] && abort
+    /usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd.init $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
+    [[ $? -ne 0 ]] && abort
 	
-	#### Backup Phase #####
-	# Nothing to do
+    #### Backup Phase #####
+    # Nothing to do
 	
-	#### Commit Phase #####
-	service vmtoolsd stop
+    #### Commit Phase #####
+    service vmtoolsd stop
     
     # Cleanup existing open-vm-tools 
-    rm -f /etc/init.d/vmtoolsd
     rm -f /usr/local/lib/libvmtools*
     rm -f /usr/local/lib/libhgfs*
     rm -f /usr/local/lib/libguestlib*
@@ -645,7 +644,7 @@ function update-vmtools() {
     make install
     
     rm -f /etc/init.d/vmtoolsd
-	mv $STAGING/vmtoolsd.init /etc/init.d/vmtoolsd
+    mv $STAGING/vmtoolsd.init /etc/init.d/vmtoolsd
     chmod 755 /etc/init.d/vmtoolsd
     # lib adjustment
     ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1
