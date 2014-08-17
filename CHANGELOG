@@ -38,6 +38,8 @@ Issue #115 Bug			- Greylist option not available in new mailwatch version
 Issue #116 Bug          - Token is missing in 3.0.0.5
 Issue #117 Enhancement	- Lower High spamassassin score from 10 to 7
 Issue #119 Bug          - /etc/init.d/vmtoolsd:  Permission denied
+Issue #120 Bug          - EFA-Configure System Restore showing all files
+
 -----
 Imageceberus updated to version 1.1
 Pyzor updated to version 0.7.0
