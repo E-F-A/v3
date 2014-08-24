@@ -274,6 +274,7 @@ function update-3.0.0.5() {
   
   cp /etc/cron.daily/update_phishing_sites $BACKUPDIR
   cp /etc/cron.d/raid-check $BACKUPDIR
+  
   ##### Commit Phase #####
   
   # Create backup directory
@@ -376,6 +377,17 @@ function update-3.0.0.5() {
   sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
   service MailScanner restart
   
+  # Issue #123 Update mysql, postfix, clamav
+  yum -y update mysql* postfix* clamav* clamd*
+  chown -R postfix:apache /var/spool/postfix/hold
+  chown -R postfix:apache /var/spool/postfix/incoming
+  chmod -R 750 /var/spool/postfix/hold
+  chmod -R 750 /var/spool/postfix/incoming
+  # Remove old clamav db
+  rm -f /var/clamav/main.cvd
+  freshclam
+  
+    
   echo "Update to $VERSION complete." 
   echo ""
   echo "" >> $TMPMAIL
