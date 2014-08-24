@@ -19,6 +19,9 @@
 
 Welcome to EFA Version 3.0.0.5!
 
+Many thanks goes to the developers of EFA and maintainers of all
+3rd party packages!
+
 These release notes will help guide you through the 3.0.0.5 update.
 
 Many fixes and enhancements have been made to EFA.  Please review the
@@ -100,4 +103,4 @@ Please visit https://forum.efa-project.org and report bugs under the
 3.x Bugs forum.  
 
 #######################################################################
-# +--------------------------------------------------------------------
+
