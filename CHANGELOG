@@ -40,6 +40,8 @@ Issue #117 Enhancement	- Lower High spamassassin score from 10 to 7
 Issue #119 Bug          - /etc/init.d/vmtoolsd:  Permission denied
 Issue #120 Bug          - EFA-Configure System Restore showing all files
 Issue #123 Enhancement  - Update Kernel, mysql, postfix, clamav, clamd
+Issue #124 Bug          - MailScanner dies after update to 3.0.0.5
+
 
 -----
 Imageceberus updated to version 1.1

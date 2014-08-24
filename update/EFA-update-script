@@ -827,6 +827,10 @@ function update-imageceberus() {
       sed -i "/^score     ImageCerberusPLG0/ c\score     ImageCerberusPLG0     0.0  0.0  0.0  0.0" /etc/mail/spamassassin/ImageCerberusPLG.cf
       
       service MailScanner start
+	  
+	  # Issue #124 MailScanner dies after update to 3.0.0.5
+	  service MailScanner restart
+	  
   fi
 }
 #----------------------------------------------------------------#    	    
