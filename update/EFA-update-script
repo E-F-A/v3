@@ -828,8 +828,8 @@ function update-imageceberus() {
       
       service MailScanner start
 	  
-	  # Issue #124 MailScanner dies after update to 3.0.0.5
-	  service MailScanner restart
+      # Issue #124 MailScanner dies after update to 3.0.0.5
+      service MailScanner restart
 	  
   fi
 }
