@@ -21,7 +21,7 @@ Issue #87  Bug          - EFA-Tokens-Cron Syntax Wrong
 Issue #89  Bug          - Razor errors in MailWatch Gui
 Issue #90  Bug          - Reapply 3.0.0.4 Update Fixes
 Issue #93  Bug          - Pyzor Errors
-Issue #94  Bug			- Postfix ID Regex Double Check
+Issue #94  Bug          - Postfix ID Regex Double Check
 Issue #95  Bug          - SASL Authentication database not found (dummy file created)
 Issue #98  Bug          - postfix tlsmgr smtpd_tls_session warnings
 Issue #101 Bug          - Can't register IDN names (hopefully fixed)
@@ -33,15 +33,14 @@ Issue #108 Bug          - lists.php fails to load after MailWatch update testing
 Issue #109 Bug          - Documentation tab present after MailWatch update testing
 Issue #110 Bug          - Bring MailWatch conf.php to latest version
 Issue #111 Bug          - MailWatch.pm Errors after adding password fetch code
-Issue #113 Bug 			- Modify EFA-Init to check a variable inside EFA-Config
-Issue #115 Bug			- Greylist option not available in new mailwatch version
+Issue #113 Bug          - Modify EFA-Init to check a variable inside EFA-Config
+Issue #115 Bug          - Greylist option not available in new mailwatch version
 Issue #116 Bug          - Token is missing in 3.0.0.5
 Issue #117 Enhancement	- Lower High spamassassin score from 10 to 7
 Issue #119 Bug          - /etc/init.d/vmtoolsd:  Permission denied
 Issue #120 Bug          - EFA-Configure System Restore showing all files
 Issue #123 Enhancement  - Update Kernel, mysql, postfix, clamav, clamd
 Issue #124 Bug          - MailScanner dies after update to 3.0.0.5
-
 
 -----
 Imageceberus updated to version 1.1
