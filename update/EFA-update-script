@@ -383,11 +383,11 @@ function update-3.0.0.5() {
   chown -R postfix:apache /var/spool/postfix/incoming
   chmod -R 750 /var/spool/postfix/hold
   chmod -R 750 /var/spool/postfix/incoming
-  # Remove old clamav db
+  # Remove old clamav dbs
   rm -f /var/clamav/main.cvd
+  rm -f /var/clamav/daily.cld
   freshclam
-  
-    
+      
   echo "Update to $VERSION complete." 
   echo ""
   echo "" >> $TMPMAIL
