@@ -104,6 +104,10 @@ function update-3.0.0.5() {
 
   # Issue #123 Update Kernel
   VERSION="3.0.0.5"
+  
+  # Push version to 3.0.0.4
+  echo "EFA-3.0.0.4" > /etc/EFA-Version
+  
   update-kernel
   
   # Issue #79 EFA-Update Staging and Error Handling 
