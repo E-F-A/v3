@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.5 build without ks version 20140727
+# EFA 3.0.0.5 build without ks version 20140824
 #
 # Purpose:
 #		This script will 'baseline' an existing CentOS installation
