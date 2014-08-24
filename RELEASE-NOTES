@@ -1,0 +1,101 @@
+######################################################################
+# EFA 3.0.0.5 RELEASE NOTES
+######################################################################
+# Copyright (C) 2014  http://www.efa-project.org
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#######################################################################
+
+Welcome to EFA Version 3.0.0.5!
+
+These release notes will help guide you through the 3.0.0.5 update.
+
+Many fixes and enhancements have been made to EFA.  Please review the
+CHANGELOG for further information.
+
+https://raw.githubusercontent.com/E-F-A/v3/3.0.0.5/CHANGELOG
+
+#######################How To Update###################################
+
+Run 
+
+sudo /usr/local/sbin/EFA-Update -check
+sudo /usr/local/sbin/EFA-Update -update
+
+The first time you run this update, the kernel may update. If this
+happens, the script will halt to give you an opportunity to restart.
+After restarting and booting to the new kernel, rerun EFA-Update to
+continue the update process to 3.0.0.5.
+
+EFA-Update will not proceed until you are running on the latest
+kernel.  This is to ensure that open-vm-tools updates appropriately
+if present.
+
+#######################################################################
+
+#################Important Info -- Custom Tweaks ######################
+
+Many EFA users have modified their EFA installations and made tweaks
+that may "disappear" after an update to 3.0.0.5.
+
+Updated files have been automatically backed up to the following
+location:
+
+/var/EFA/backup/
+
+(Other versions may be present if updating from an older version)
+
+You may need to re-implement customizations after update to 3.0.0.5.
+For example, if you are using Active Directory integration,
+this will need to be turned back on (see MailWatch Changes below)
+
+In future updates, the EFA backup tool will start including these
+files automatically in the backup tarballs.
+
+#######################################################################
+
+#######################MailWatch Changes###############################
+
+1) MailWatch Active Directory integration has changed slightly and
+supports proxyaddresses or mail field via the conf.php
+
+The how-to on the forums will be updated to reflect these changes.
+
+2) MailScanner Rule Editor (MSRE) is now available.
+
+Modify /var/www/html/mailscanner/conf.php and change the following
+
+define('MSRE', true)
+
+You will get a new entry under Tools/Links called
+"Edit MailScanner Rulesets"
+
+No further configuration is needed to use it despite the notes
+in the config file.
+
+#######################################################################
+
+###########################Known Issues################################
+
+1)  If you are running commercial VMware-Tools, open-vm-tools may
+install itself after updating to 3.0.0.5.  Reapply VMware-Tools
+after updating to 3.0.0.5 to overwrite open-vm-tools, if desired.
+
+#######################################################################
+
+
+
+
+
+# +--------------------------------------------------------------------
