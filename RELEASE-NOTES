@@ -73,7 +73,7 @@ files automatically in the backup tarballs.
 1) MailWatch Active Directory integration has changed slightly and
 supports proxyaddresses or mail field via the conf.php
 
-The how-to on the forums will be updated to reflect these changes.
+See Known Issues below for more information.
 
 2) MailScanner Rule Editor (MSRE) is now available.
 
@@ -93,7 +93,25 @@ in the config file.
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
 install itself after updating to 3.0.0.5.  Reapply VMware-Tools
-after updating to 3.0.0.5 to overwrite open-vm-tools, if desired.
+after updating to 3.0.0.5 to overwrite open-vm-tools, if desired.\\
+
+2) Error, "could not search" when logging into MailWatch after
+updating to 3.0.0.5
+
+This occurs when Active Directory integration is enabled.
+
+Check /var/www/html/mailscanner/conf.php
+
+Change the following line to 'mail' from 'proxyaddresses', if needed...
+define('LDAP_EMAIL_FIELD', 'proxyaddresses');
+
+Add the following lines back to /var/www/html/mailscanner/functions.php
+
+In function ldap_authenticate (near line 2280), immediately before
+$ds = ldap_connect...
+
+ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
+ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
 
 #######################################################################
 
