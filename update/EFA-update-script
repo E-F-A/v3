@@ -362,6 +362,11 @@ function update-3.0.0.5() {
   mv $STAGING/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
   rm -f /var/www/cgi-bin/release-msg.cgi
   mv $STAGING/release-msg.cgi /var/www/cgi-bin/release-msg.cgi
+ 
+ # Issue #125 Internal Server Error learn-msg.cgi and release-msg.cgi
+  chmod 755 /var/www/cgi-bin/learn-msg.cgi
+  chmod 755 /var/www/cgi-bin/release-msg.cgi
+
   rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   mv $STAGING/CustomAction.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   
