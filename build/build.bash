@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.5 build script version 20140307
+# EFA 3.0.0.6 build script version 20140922
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013  http://www.efa-project.org
 #
@@ -21,12 +21,12 @@
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.5-devel"
+version="3.0.0.6-devel"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
-mirrorpath="/build/3.0.0.5"
+mirrorpath="/build/3.0.0.6"
 MAILWATCHVERSION="770efead45"
 IMAGECEBERUSVERSION="1.1"
 WEBMINVERSION="1.690-1"
