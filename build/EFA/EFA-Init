@@ -813,7 +813,7 @@ function func_configure-system() {
   # Change watermark secret
   randompw
   WATERMARK=$PASSWD
-  sed -i "/^Watermark Secret =/ c\Watermark Secret = %orgname%-$WATERMARK" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Watermark Secret =/ c\Watermark Secret = %org-name%-$WATERMARK" /etc/MailScanner/MailScanner.conf
 }
 # +---------------------------------------------------+
 
