@@ -902,6 +902,7 @@ function update-mailwatch() {
       service httpd stop
       service MailScanner stop     
 
+	  rm -rf /usr/src/EFA/1.2.0-master
       unzip -d /usr/src/EFA $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
       cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
       
@@ -1000,6 +1001,9 @@ function update-mailwatch() {
           sed -i "/FPDF_FONTPATH/d" /var/www/html/mailscanner/conf.php
   
       fi
+	  
+	  # Cleanup
+	  rm -rf /usr/src/EFA/1.2.0-master
           
       # Update the version of mailwatch in EFA-Config
       sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
