@@ -25,7 +25,7 @@
 debug="0"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 mirror="http://dl.efa-project.org"
-mirrorpath="/build/3.0.0.5"
+mirrorpath="/build/3.0.0.6"
 initpassword="EfaPr0j3ct"
 # +---------------------------------------------------+
 
