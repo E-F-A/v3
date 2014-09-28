@@ -2,6 +2,7 @@
 EFA Version 3.0.0.6 Changes
 ############################################################
 
+Issue #127  Bug			- Greylisting not toggling on 3.0.0.5
 Issue #130  Bug         - Quarantine report problems after 3.0.0.5 upgrade
 Issue #131  Bug         - Undefined index %orgname%
 
