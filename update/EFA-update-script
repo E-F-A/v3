@@ -117,16 +117,15 @@ function update-3.0.0.6() {
   ##### Staging Phase #####
   VERSION="3.0.0.6"
   
-  # Single update file (currently a dummy!)
-  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-UPDATE-3.0.0.5-3.0.0.6.tar.gz $mirror/build/$VERSION/EFA-UPDATE-3.0.0.5-3.0.0.6.tar.gz
-  [[ $? -ne 0 ]] && abort
-  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   
   ##### Commit Phase #####
   cd $STAGING
   tar -xvzf EFA-UPDATE-3.0.0.5-3.0.0.6.tar.gz
+  
+  # Issue #129 increase max spam check size to 2 MB
+  sed -i '/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k' /etc/MailScanner/MailScanner.conf
   
   # Issue #131 Undefined index %orgname%
   sed -i "s/^Watermark Secret = %orgname%-\(.*\)$/Watermark Secret = %org-name%-\1/" /etc/MailScanner/MailScanner.conf

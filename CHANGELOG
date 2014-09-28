@@ -3,8 +3,11 @@ EFA Version 3.0.0.6 Changes
 ############################################################
 
 Issue #127  Bug			- Greylisting not toggling on 3.0.0.5
+Issue #129	Enhancement	- Increase max spam check size to 2 MB
 Issue #130  Bug         - Quarantine report problems after 3.0.0.5 upgrade
 Issue #131  Bug         - Undefined index %orgname%
+
+Mailwatch updated to snapshot 7f6858df83
 
 ############################################################
 EFA Version 3.0.0.5 Changes
