@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA-Init
-# Version 20140624
+# Version 20141115
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2014  http://www.efa-project.org
 #
@@ -108,16 +108,14 @@ function func_ask-ipaddress() {
   # Get the primary interface
   func_interfaces
  
-  # Display current IP
+  # Display current IP and ask for new, then validate the IP.
+  CIPADDRESS=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $2}' | awk -F':' '{print $2}'`
   echo -e "" 
-  echo -e "$green[EFA]$clean Your current IP address is:"
-  ifconfig $INTERFACE | grep inet\ addr | awk '{print $2}' | awk -F':' '{print $2}'
-
-  # Get the IP and validate it
+  echo -e "$green[EFA]$clean Your current IP address is: $CIPADDRESS"
   echo -e ""
   echo -e "$green[EFA]$clean Please enter the IP address"
   echo -e -n "$green[EFA]$clean : "
-  read IPADDRESS
+  read -i "$CIPADDRESS" -e IPADDRESS
   ipcheck=1
   while [ $ipcheck != 0 ]
    do
@@ -139,16 +137,14 @@ function func_ask-ipaddress() {
 function func_ask-netmask() {
   func_echo-header
 
-  # Display current netmask
+  # Display current netmask and ask for new, then validate the netmask
+  CNETMASK=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $4}' | awk -F':' '{print $2}'`
   echo -e "" 
-  echo -e "$green[EFA]$clean Your current netmask is:"
-  ifconfig $INTERFACE | grep inet\ addr | awk '{print $4}' | awk -F':' '{print $2}'
+  echo -e "$green[EFA]$clean Your current netmask is: $CNETMASK"
   echo -e ""
- 
   echo -e "$green[EFA]$clean Please enter the NETMASK"
-  
   echo -e -n "$green[EFA]$clean : "
-  read NETMASK
+  read -i "$CNETMASK" -e NETMASK
   nmcheck=1
   while [ $nmcheck != 0 ]
    do
@@ -171,14 +167,13 @@ function func_ask-gateway() {
   func_echo-header
   
   # Display current gateway
+  CGATEWAY=`route -n | grep 0.0.0.0 | awk '{print $2}' | grep -v 0.0.0.0`
   echo -e "" 
-  echo -e "$green[EFA]$clean Your current default gateway is:"
-  route -n | grep 0.0.0.0 | awk '{print $2}' | grep -v 0.0.0.0
+  echo -e "$green[EFA]$clean Your current default gateway is: $CGATEWAY"
   echo -e ""
-  
   echo -e "$green[EFA]$clean Please enter the default gateway address"
   echo -e -n "$green[EFA]$clean : "
-  read GATEWAY
+  read -i "$CGATEWAY" -e GATEWAY
   gwcheck=1
   while [ $gwcheck != 0 ]
    do
@@ -201,14 +196,13 @@ function func_ask-dns1() {
   func_echo-header
   
   # Display current primary dns
+  CDNS1=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p`
   echo -e "" 
-  echo -e "$green[EFA]$clean Your current primary dns is:"
-  grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p
+  echo -e "$green[EFA]$clean Your current primary dns is: $CDNS1"
   echo -e ""
-  
   echo -e "$green[EFA]$clean Please enter the primary DNS server address"
   echo -e -n "$green[EFA]$clean : "
-  read DNS1
+  read -i "$CDNS1" -e DNS1
   dns1check=1
   while [ $dns1check != 0 ]
    do
@@ -231,14 +225,13 @@ function func_ask-dns2() {
   func_echo-header
   
   # Display current secondary dns
+  CDNS2=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p`
   echo -e "" 
-  echo -e "$green[EFA]$clean Your current secondary dns is:"
-  grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p
+  echo -e "$green[EFA]$clean Your current secondary dns is: $CDNS2"
   echo -e ""
-  
   echo -e "$green[EFA]$clean Please enter the secondary DNS server address"
   echo -e -n "$green[EFA]$clean : "
-  read DNS2
+  read -i "$CDNS2" -i DNS2
   dns2check=1
   while [ $dns2check != 0 ]
    do
