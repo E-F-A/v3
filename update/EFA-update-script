@@ -726,10 +726,57 @@ function update-3.0.0.1() {
 function update-spamassassin(){
 	if [[ ! $SPAMASSASSINVERSION == "`grep SPAMASSASSINVERSION /etc/EFA-Config | sed 's/^.*://'`" ]] {
 		#### Staging Phase ####
-	
+		mkdir -p $STAGING
+		 /usr/bin/wget --no-check-certificate -O $STAGING/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz $mirror/build/$VERSION/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
+		[[ $? -ne 0 ]] && abort
+		
 	    #### Backup Phase #####
+		BACKUPDIR="/var/EFA/backup/$VERSION"
+		
+		# Back up old SA (excludes man pages)
+		mkdir -p $BACKUPDIR/spamassassin-etc
+		cp -r /etc/mail/spamassassin $BACKUPDIR/spamassassin-etc
+		mkdir -p $BACKUPDIR/spamassassin-var
+		cp -r /var/lib/spamassassin $BACKUPDIR/spamassassin-var
+		mkdir -p $BACKUPDIR/spamassassin-usr
+		cp -r /usr/local/share/perl5/Mail/SpamAssassin $BACKUPDIR/spamassassin-usr
+		cp /usr/local/share/perl5/spamassassin-run.pod $BACKUPDIR/spamassassin-usr
+		mkdir -p $BACKUPDIR/spamassassin-bin
+		cp /usr/local/bin/sa-awl $BACKUPDIR/spamassassin-bin
+		cp /usr/local/bin/spamassassin $BACKUPDIR/spamassassin-bin
+		cp /usr/local/bin/sa-compile $BACKUPDIR/spamassassin-bin
+		cp /usr/local/bin/spamc $BACKUPDIR/spamassassin-bin
+		cp /usr/local/bin/spamd $BACKUPDIR/spamassassin-bin
+		cp /usr/local/bin/sa-update $BACKUPDIR/spamassassin-bin
+		cp /usr/local/bin/sa-check_spamd $BACKUPDIR/spamassassin-bin
+		cp /usr/local/bin/sa-learn $BACKUPDIR/spamassassin-bin
 		
 		#### Commit Phase #####
+		service MailScanner stop
+		
+		# Remove old Spamassassin definitions
+		rm -rf /var/lib/spamassassin
+		
+		# Bypass noexec on /tmp...compile in /usr/src instead
+		mv $STAGING Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
+		cd /usr/src/EFA
+		tar xzvf Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
+		cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
+		# Installation meta-script...add a little modularity to future spamassassin upgrades
+		chmod 755 install.sh
+		./install.sh
+
+		# Grab new definitions
+		/usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
+		/usr/local/bin/sa-compile
+		
+		service MailScanner start
+		
+		# Cleanup
+		rm -rf /usr/src/EFA/Spamassassin*
+		
+		# Update the version of spamassassin in EFA-Config
+		sed -i "/SPAMASSASSINVERSION:/ c\SPAMASSASSINVERSION:$SPAMASSASSINVERSION" /etc/EFA-Config
 	}
 }
 #----------------------------------------------------------------#
