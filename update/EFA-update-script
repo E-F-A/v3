@@ -57,6 +57,7 @@ function get_update_path() {
       update-3.0.0.4
       update-3.0.0.5
 	  update-3.0.0.6
+	  update-3.0.0.7
       update-software
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
@@ -68,6 +69,7 @@ function get_update_path() {
       update-3.0.0.4
       update-3.0.0.5
 	  update-3.0.0.6
+	  update-3.0.0.7
       update-software
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
@@ -78,6 +80,7 @@ function get_update_path() {
       update-3.0.0.4
       update-3.0.0.5
 	  update-3.0.0.6
+	  update-3.0.0.7
       update-mailwatch
       update-vmtools
       update-imageceberus
@@ -89,6 +92,7 @@ function get_update_path() {
       update-3.0.0.4
       update-3.0.0.5
 	  update-3.0.0.6
+	  update-3.0.0.7
       update-software
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
@@ -97,6 +101,7 @@ function get_update_path() {
       yum_update
       update-3.0.0.5
 	  update-3.0.0.6
+	  update-3.0.0.7
       update-software
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.5" ]]
@@ -104,6 +109,14 @@ function get_update_path() {
       initialize
       yum_update
       update-3.0.0.6
+	  update-3.0.0.7
+      update-software
+      finalize
+  elif [[ $CVERSION == "EFA-3.0.0.6" ]]
+    then
+      initialize
+      yum_update
+      update-3.0.0.7
       update-software
       finalize
   fi
@@ -1115,6 +1128,7 @@ function update-software() {
   update-mailwatch
   update-vmtools
   update-imageceberus
+  update-spamassassin
 }
 #----------------------------------------------------------------#
 
