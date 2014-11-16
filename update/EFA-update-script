@@ -35,6 +35,7 @@ SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
 MAILWATCHVERSION="7f6858df83"
 IMAGECEBERUSVERSION="1.1"
+SPAMASSASSINVERSION="3.4.0"
 PYZORVERSION="0.7.0"
 VMTOOLSVERION="9.4.0-1280544"
 WEBMINVERSION="1.690-1"
@@ -106,6 +107,29 @@ function get_update_path() {
       update-software
       finalize
   fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.7
+#----------------------------------------------------------------#
+function update-3.0.0.7() {
+
+  ##### Staging Phase #####
+  VERSION="3.0.0.7"
+  
+  ##### Backup Phase #####
+  /usr/local/sbin/EFA-Backup -backup
+  
+  ##### Commit Phase #####
+  
+  # Add a spamassassin version to EFA-Config (the previous version)
+  echo "SPAMASSASSINVERSION:3.3.1" >> /etc/EFA-Config
+  
+  echo "Update to $VERSION complete." 
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
 
@@ -680,6 +704,20 @@ function update-3.0.0.1() {
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update SpamAssassin function
+#----------------------------------------------------------------#
+function update-spamassassin(){
+	if [[ ! $SPAMASSASSINVERSION == "`grep SPAMASSASSINVERSION /etc/EFA-Config | sed 's/^.*://'`" ]] {
+		#### Staging Phase ####
+	
+	    #### Backup Phase #####
+		
+		#### Commit Phase #####
+	}
 }
 #----------------------------------------------------------------#
 
