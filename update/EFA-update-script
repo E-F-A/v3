@@ -37,7 +37,7 @@ MAILWATCHVERSION="7f6858df83"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0"
 PYZORVERSION="0.7.0"
-VMTOOLSVERION="9.4.0-1280544"
+VMTOOLSVERSION="9.4.0-1280544"
 WEBMINVERSION="1.690-1"
 STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
@@ -828,8 +828,14 @@ function update-vmtools() {
   # Todo:  Version checking for open-vm-tools and flag if installed
   
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
+  
+    # Add a vmware-tools version if needed
+    if [[ -z "`grep VMTOOLSVERSION /etc/EFA-Config`" ]]; then
+	  echo "VMTOOLSVERSION:9.4.0-1280544" >> /etc/EFA-Config
+    fi
+    
     #### Staging Phase ####
-    /usr/bin/wget --no-check-certificate -O $STAGING/open-vm-tools-$VMTOOLSVERION.tar.gz $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
+    /usr/bin/wget --no-check-certificate -O $STAGING/open-vm-tools-$VMTOOLSVERSION.tar.gz $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERSION.tar.gz
    [[ $? -ne 0 ]] && abort
 	
     /usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd.init $mirror/build/$VERSION/vmtoolsd.init
@@ -854,8 +860,8 @@ function update-vmtools() {
     rm -rf /usr/local/include/vmGuestLib
 
     cd /usr/src/EFA
-    tar xvzf $STAGING/open-vm-tools-$VMTOOLSVERION.tar.gz -C /usr/src/EFA
-    cd open-vm-tools-$VMTOOLSVERION
+    tar xvzf $STAGING/open-vm-tools-$VMTOOLSVERSION.tar.gz -C /usr/src/EFA
+    cd open-vm-tools-$VMTOOLSVERSION
     ./configure --without-x
     make
     make install
@@ -867,6 +873,8 @@ function update-vmtools() {
     ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1
     chkconfig vmtoolsd on
     service vmtoolsd start
+	
+    sed -i "/VMTOOLSVERSION:/ c\VMTOOLSVERSION:$VMTOOLSVERSION" /etc/EFA-Config
   fi
 }
 #----------------------------------------------------------------#
