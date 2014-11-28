@@ -724,7 +724,7 @@ function update-3.0.0.1() {
 # Update SpamAssassin function
 #----------------------------------------------------------------#
 function update-spamassassin(){
-	if [[ ! $SPAMASSASSINVERSION == "`grep SPAMASSASSINVERSION /etc/EFA-Config | sed 's/^.*://'`" ]] {
+	if [[ $SPAMASSASSINVERSION != "`grep SPAMASSASSINVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]; then
 		#### Staging Phase ####
 		mkdir -p $STAGING
 		 /usr/bin/wget --no-check-certificate -O $STAGING/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz $mirror/build/$VERSION/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
@@ -777,7 +777,7 @@ function update-spamassassin(){
 		
 		# Update the version of spamassassin in EFA-Config
 		sed -i "/SPAMASSASSINVERSION:/ c\SPAMASSASSINVERSION:$SPAMASSASSINVERSION" /etc/EFA-Config
-	}
+	fi
 }
 #----------------------------------------------------------------#
 
