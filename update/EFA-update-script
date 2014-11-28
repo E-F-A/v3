@@ -760,7 +760,7 @@ function update-spamassassin(){
     rm -rf /var/lib/spamassassin
 
     # Bypass noexec on /tmp...compile in /usr/src instead
-    mv $STAGING Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
+    mv $STAGING/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
     cd /usr/src/EFA
     tar xzvf Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
     cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
