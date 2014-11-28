@@ -827,7 +827,7 @@ function update-vmtools() {
   
   # Todo:  Version checking for open-vm-tools and flag if installed
   
-  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" && $VMTOOLSVERSION != "`grep VMTOOLSVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]; then
   
     # Add a vmware-tools version if needed
     if [[ -z "`grep VMTOOLSVERSION /etc/EFA-Config`" ]]; then
