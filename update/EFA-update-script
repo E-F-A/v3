@@ -830,7 +830,7 @@ function update-vmtools() {
     /usr/bin/wget --no-check-certificate -O $STAGING/open-vm-tools-$VMTOOLSVERION.tar.gz $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERION.tar.gz
    [[ $? -ne 0 ]] && abort
 	
-    /usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd.init $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
+    /usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd.init $mirror/build/$VERSION/vmtoolsd.init
     [[ $? -ne 0 ]] && abort
 	
     #### Backup Phase #####
