@@ -136,11 +136,6 @@ function update-3.0.0.7() {
   
   ##### Commit Phase #####
   
-  # Add a spamassassin version to EFA-Config (the previous version)
-  if [[ -z "`grep SPAMASSASSINVERSION /etc/EFA-Config`" ]]; then
-	echo "SPAMASSASSINVERSION:3.3.1" >> /etc/EFA-Config
-  fi
-  
   echo "Update to $VERSION complete." 
   echo ""
   echo "" >> $TMPMAIL
@@ -726,60 +721,65 @@ function update-3.0.0.1() {
 # Update SpamAssassin function
 #----------------------------------------------------------------#
 function update-spamassassin(){
-	if [[ $SPAMASSASSINVERSION != "`grep SPAMASSASSINVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]; then
-		#### Staging Phase ####
-		mkdir -p $STAGING
-		 /usr/bin/wget --no-check-certificate -O $STAGING/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz $mirror/build/$VERSION/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
-		[[ $? -ne 0 ]] && abort
-		
-	    #### Backup Phase #####
-		BACKUPDIR="/var/EFA/backup/$VERSION"
-		
-		# Back up old SA (excludes man pages)
-		mkdir -p $BACKUPDIR/spamassassin-etc
-		cp -r /etc/mail/spamassassin $BACKUPDIR/spamassassin-etc
-		mkdir -p $BACKUPDIR/spamassassin-var
-		cp -r /var/lib/spamassassin $BACKUPDIR/spamassassin-var
-		mkdir -p $BACKUPDIR/spamassassin-usr
-		cp -r /usr/local/share/perl5/Mail/SpamAssassin $BACKUPDIR/spamassassin-usr
-		cp /usr/local/share/perl5/spamassassin-run.pod $BACKUPDIR/spamassassin-usr
-		mkdir -p $BACKUPDIR/spamassassin-bin
-		cp /usr/local/bin/sa-awl $BACKUPDIR/spamassassin-bin
-		cp /usr/local/bin/spamassassin $BACKUPDIR/spamassassin-bin
-		cp /usr/local/bin/sa-compile $BACKUPDIR/spamassassin-bin
-		cp /usr/local/bin/spamc $BACKUPDIR/spamassassin-bin
-		cp /usr/local/bin/spamd $BACKUPDIR/spamassassin-bin
-		cp /usr/local/bin/sa-update $BACKUPDIR/spamassassin-bin
-		cp /usr/local/bin/sa-check_spamd $BACKUPDIR/spamassassin-bin
-		cp /usr/local/bin/sa-learn $BACKUPDIR/spamassassin-bin
-		
-		#### Commit Phase #####
-		service MailScanner stop
-		
-		# Remove old Spamassassin definitions
-		rm -rf /var/lib/spamassassin
-		
-		# Bypass noexec on /tmp...compile in /usr/src instead
-		mv $STAGING Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
-		cd /usr/src/EFA
-		tar xzvf Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
-		cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
-		# Installation meta-script...add a little modularity to future spamassassin upgrades
-		chmod 755 install.sh
-		./install.sh
+  if [[ $SPAMASSASSINVERSION != "`grep SPAMASSASSINVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]; then
+    # Add a spamassassin version to EFA-Config if needed
+    if [[ -z "`grep SPAMASSASSINVERSION /etc/EFA-Config`" ]]; then
+      echo "SPAMASSASSINVERSION:" >> /etc/EFA-Config
+    fi
 
-		# Grab new definitions
-		/usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
-		/usr/local/bin/sa-compile
-		
-		service MailScanner start
-		
-		# Cleanup
-		rm -rf /usr/src/EFA/Spamassassin*
-		
-		# Update the version of spamassassin in EFA-Config
-		sed -i "/SPAMASSASSINVERSION:/ c\SPAMASSASSINVERSION:$SPAMASSASSINVERSION" /etc/EFA-Config
-	fi
+    #### Staging Phase ####
+    mkdir -p $STAGING
+    /usr/bin/wget --no-check-certificate -O $STAGING/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz $mirror/build/$VERSION/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
+    [[ $? -ne 0 ]] && abort
+
+    #### Backup Phase #####
+    BACKUPDIR="/var/EFA/backup/$VERSION"
+
+    # Back up old SA (excludes man pages)
+    mkdir -p $BACKUPDIR/spamassassin-etc
+    cp -r /etc/mail/spamassassin $BACKUPDIR/spamassassin-etc
+    mkdir -p $BACKUPDIR/spamassassin-var
+    cp -r /var/lib/spamassassin $BACKUPDIR/spamassassin-var
+    mkdir -p $BACKUPDIR/spamassassin-usr
+    cp -r /usr/local/share/perl5/Mail/SpamAssassin $BACKUPDIR/spamassassin-usr
+    cp /usr/local/share/perl5/spamassassin-run.pod $BACKUPDIR/spamassassin-usr
+    mkdir -p $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-awl $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamassassin $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-compile $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamc $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamd $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-update $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-check_spamd $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-learn $BACKUPDIR/spamassassin-bin
+
+    #### Commit Phase #####
+    service MailScanner stop
+
+    # Remove old Spamassassin definitions
+    rm -rf /var/lib/spamassassin
+
+    # Bypass noexec on /tmp...compile in /usr/src instead
+    mv $STAGING Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
+    cd /usr/src/EFA
+    tar xzvf Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
+    cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
+    # Installation meta-script...add a little modularity to future spamassassin upgrades
+    chmod 755 install.sh
+    ./install.sh
+
+    # Grab new definitions
+    /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
+    /usr/local/bin/sa-compile
+
+    service MailScanner start
+
+    # Cleanup
+    rm -rf /usr/src/EFA/Spamassassin*
+
+    # Update the version of spamassassin in EFA-Config
+    sed -i "/SPAMASSASSINVERSION:/ c\SPAMASSASSINVERSION:$SPAMASSASSINVERSION" /etc/EFA-Config
+  fi
 }
 #----------------------------------------------------------------#
 
@@ -831,7 +831,7 @@ function update-vmtools() {
   
     # Add a vmware-tools version if needed
     if [[ -z "`grep VMTOOLSVERSION /etc/EFA-Config`" ]]; then
-	  echo "VMTOOLSVERSION:9.4.0-1280544" >> /etc/EFA-Config
+	  echo "VMTOOLSVERSION:" >> /etc/EFA-Config
     fi
     
     #### Staging Phase ####
@@ -886,6 +886,10 @@ function update-webmin() {
   # Update webmin if we have a new version available
   if [[ ! $WEBMINVERSION == "`yum list installed | grep -i webmin | awk {' print $2 '}`" ]]
     then
+      if [[ -z "`grep WEBMINVERSION /etc/EFA-Config`" ]]; then
+        echo "WEBMINVERSION:" >> /etc/EFA-Config
+      fi
+	
 	  #### Staging Phase ####
 	  /usr/bin/wget --no-check-certificate -O $STAGING/webmin-$WEBMINVERSION.noarch.rpm $mirror/build/$VERSION/webmin-$WEBMINVERSION.noarch.rpm
 	  [[ $? -ne 0 ]] && abort
@@ -920,6 +924,8 @@ function update-webmin() {
       sed -i '/referers=/d' /etc/webmin/config
       sed -i '/localauth=\/usr\/sbin\/lsof/d' /etc/webmin/miniserv.conf
       service webmin restart
+	  
+	  sed -i "/WEBMINVERSION:/ c\WEBMINVERSION:$WEBMINVERSION" /etc/EFA-Config
   fi
 }
 #----------------------------------------------------------------#	
@@ -931,6 +937,11 @@ function update-pyzor() {
   # Update Pyzor if we have a new version available
   if [[ ! $PYZORVERSION == "`grep PYZORVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
     then
+	
+      if [[ -z "`grep PYZORVERSION /etc/EFA-Config`" ]]; then
+        echo "PYZORVERSION:" >> /etc/EFA-Config
+      fi
+	  
       #### Staging Phase ####
       /usr/bin/wget --no-check-certificate -O $STAGING/pyzor-$PYZORVERSION.tar.gz $mirror/build/$VERSION/pyzor-$PYZORVERSION.tar.gz
       [[ $? -ne 0 ]] && abort
@@ -957,6 +968,8 @@ function update-pyzor() {
       
       # and finally initialize the servers file with an discover.
       su postfix -s /bin/bash -c 'pyzor discover'
+	  
+	  sed -i "/PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
   fi
 }
 #----------------------------------------------------------------#
@@ -968,6 +981,11 @@ function update-imageceberus() {
   # Update ImageCeberus if we have a new version available
   if [[ ! $IMAGECEBERUSVERSION == "`grep IMAGECEBERUSVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
     then
+       # Make sure version is present in EFA-Config
+	   if [[ -z "`grep IMAGECEBERUSVERSION /etc/EFA-Config`" ]]; then
+	     echo "IMAGECEBERUSVERSION:" >> /etc/EFA-Config
+       fi
+	
       #### Staging Phase ####
       /usr/bin/wget --no-check-certificate -O $STAGING/imageCerberus-v$IMAGECEBERUSVERSION.zip $mirror/build/$VERSION/imageCerberus-v$IMAGECEBERUSVERSION.zip
       [[ $? -ne 0 ]] && abort
@@ -1002,6 +1020,8 @@ function update-imageceberus() {
 	  
       # Issue #124 MailScanner dies after update to 3.0.0.5
       service MailScanner restart
+	  
+	  sed -i "/IMAGECEBERUSVERSION:/ c\IMAGECEBERUSVERSION:$IMAGECEBERUSVERSION" /etc/EFA-Config
 	  
   fi
 }
