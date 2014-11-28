@@ -137,7 +137,9 @@ function update-3.0.0.7() {
   ##### Commit Phase #####
   
   # Add a spamassassin version to EFA-Config (the previous version)
-  echo "SPAMASSASSINVERSION:3.3.1" >> /etc/EFA-Config
+  if [[ -z "`grep SPAMASSASSINVERSION /etc/EFA-Config`" ]]; then
+	echo "SPAMASSASSINVERSION:3.3.1" >> /etc/EFA-Config
+  fi
   
   echo "Update to $VERSION complete." 
   echo ""
