@@ -351,7 +351,7 @@ func_spam_clamav () {
     wget $mirror/$mirrorpath/Spamassassin-3.4.0-EFA-Upgrade.tar.gz
     tar -xvzf Spamassassin-3.4.0-EFA-Upgrade.tar.gz
     cd Spamassassin-3.4.0-EFA-Upgrade
-	chmod 755 install.sh
+    chmod 755 install.sh
     ./install.sh
     cd /usr/src/EFA
     rm -rf Spamassassin-3.4.0-EFA-Upgrade
@@ -423,14 +423,14 @@ func_spam_clamav () {
     sed -i '/^SACOMPILE=/ c\SACOMPILE=/usr/local/bin/sa-compile' /etc/sysconfig/update_spamassassin
     sed -i '/^SAUPDATEARGS=/ c\SAUPDATEARGS=" --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org"' /etc/sysconfig/update_spamassassin
 	
-	# Issue #82 re2c spamassassin rule complilation
-	sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
+    # Issue #82 re2c spamassassin rule complilation
+    sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
     
     # and in the end we run sa-update just for the fun of it..
     /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
-	/usr/local/bin/sa-compile
+    /usr/local/bin/sa-compile
 	
-	echo "SPAMASSASSINVERSION:$SPAMASSASSINVERSION" >> /etc/EFA-Config
+    echo "SPAMASSASSINVERSION:$SPAMASSASSINVERSION" >> /etc/EFA-Config
 }
 # +---------------------------------------------------+
 
