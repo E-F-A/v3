@@ -767,14 +767,15 @@ function update-spamassassin(){
     # Installation meta-script...add a little modularity to future spamassassin upgrades
     chmod 755 install.sh
     ./install.sh
+	
+	# Issue #82 re2c spamassassin rule complilation
+	yum -y install re2c
+	sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
 
     # Grab new definitions
     /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
     /usr/local/bin/sa-compile
 	
-	# Issue #82 re2c spamassassin rule complilation
-	sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
-
     service MailScanner start
 
     # Cleanup
