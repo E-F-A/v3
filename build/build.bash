@@ -21,12 +21,12 @@
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.6"
+version="3.0.0.7"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
-mirrorpath="/build/3.0.0.6"
+mirrorpath="/build/3.0.0.7"
 MAILWATCHVERSION="7f6858df83"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0"
@@ -57,7 +57,7 @@ func_upgradeOS () {
 func_repoforge () {
     rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
     rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-    yum install -y unrar tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df Perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-Net-LDAP perl-File-Tail perl-Mail-ClamAV perl-Net-Netmask perl-NetAddr-IP perl-Compress-Raw-Zlib
+    yum install -y unrar tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df Perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-Net-LDAP perl-File-Tail perl-Mail-ClamAV perl-Net-Netmask perl-NetAddr-IP perl-Compress-Raw-Zlib re2c
 }
 # +---------------------------------------------------+
 
@@ -346,16 +346,15 @@ func_spam_clamav () {
     sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
     
-    #Use the MailScanner packaged version. Answer no to install clam.
+    # Use the EFA packaged version.
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/install-Clam-SA-latest.tar.gz
-    tar -xvzf install-Clam-SA-latest.tar.gz
-    cd install-Clam*
-    echo 'n'>answers.txt
-    echo ''>>answers.txt
-    cat answers.txt|./install.sh
+    wget $mirror/$mirrorpath/Spamassassin-3.4.0-EFA-Upgrade.tar.gz
+    tar -xvzf Spamassassin-3.4.0-EFA-Upgrade.tar.gz
+    cd Spamassassin-3.4.0-EFA-Upgrade
+	chmod 755 install.sh
+    ./install.sh
     cd /usr/src/EFA
-    rm -rf install-Clam*
+    rm -rf Spamassassin-3.4.0-EFA-Upgrade
         
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
@@ -423,9 +422,15 @@ func_spam_clamav () {
     sed -i '/^SAUPDATE=/ c\SAUPDATE=/usr/local/bin/sa-update' /etc/sysconfig/update_spamassassin
     sed -i '/^SACOMPILE=/ c\SACOMPILE=/usr/local/bin/sa-compile' /etc/sysconfig/update_spamassassin
     sed -i '/^SAUPDATEARGS=/ c\SAUPDATEARGS=" --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org"' /etc/sysconfig/update_spamassassin
+	
+	# Issue #82 re2c spamassassin rule complilation
+	sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
     
     # and in the end we run sa-update just for the fun of it..
-    /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org   
+    /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
+	/usr/local/bin/sa-compile
+	
+	echo "SPAMASSASSINVERSION:$SPAMASSASSINVERSION" >> /etc/EFA-Config
 }
 # +---------------------------------------------------+
 
