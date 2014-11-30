@@ -627,7 +627,7 @@ func_mailwatch () {
     cd /var/www/html/mailscanner/images
     wget --no-check-certificate $gitdlurl/EFA/EFAlogo-47px.gif
     wget --no-check-certificate $gitdlurl/EFA/EFAlogo-79px.png 
-    mv mailwatch-logo.gif mailwatch-logo.gif.orig
+    #mv mailwatch-logo.gif mailwatch-logo.gif.orig
     mv mailwatch-logo.png mailwatch-logo.png.orig
     mv mailscannerlogo.gif mailscannerlogo.gif.orig
     # png image looks much better -- linking to png instead
