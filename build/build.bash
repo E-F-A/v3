@@ -23,7 +23,7 @@
 # +---------------------------------------------------+
 version="3.0.0.7"
 logdir="/var/log/EFA"
-gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
+gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.7"
@@ -80,8 +80,8 @@ func_mysql () {
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sqlgrey"
    
     # Create and populate the mailscanner db
-    # Source:  https://raw.github.com/endelwar/mailwatch/master/create.sql
-    # https://raw.github.com/endelwar/mailwatch/master/tools/create_relay_postfix.sql
+    # Source:  https://raw.githubusercontent.com/endelwar/mailwatch/master/create.sql
+    # https://raw.githubusercontent.com/endelwar/mailwatch/master/tools/create_relay_postfix.sql
     cd /usr/src/EFA
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create.sql 
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
