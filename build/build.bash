@@ -312,7 +312,7 @@ func_mailscanner () {
 	
 	# Issue #77 -- EFA MailScanner 0 byte tmp files
 	cd /usr/lib/MailScanner
-	wget --no-check-certificate /$gitdlurl/EFA/mailscanner-4.84.6-1.patch
+	wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
 	patch < mailscanner-4.84.6-1.patch
 	rm -f mailscanner-4.84.6-1.patch
 }
