@@ -231,7 +231,7 @@ function func_ask-dns2() {
   echo -e ""
   echo -e "$green[EFA]$clean Please enter the secondary DNS server address"
   echo -e -n "$green[EFA]$clean : "
-  read -i "$CDNS2" -i DNS2
+  read -i "$CDNS2" -e DNS2
   dns2check=1
   while [ $dns2check != 0 ]
    do
