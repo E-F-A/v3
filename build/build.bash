@@ -271,6 +271,7 @@ func_mailscanner () {
     
     touch /etc/MailScanner/rules/sig.html.rules
     touch /etc/MailScanner/rules/sig.text.rules
+	touch /etc/MailScanner/phishing.safe.sites.conf
     rm -rf /var/spool/MailScanner/incoming
     mkdir /var/spool/MailScanner/incoming
     echo "none /var/spool/MailScanner/incoming tmpfs noatime 0 0">>/etc/fstab
@@ -354,7 +355,7 @@ func_spam_clamav () {
     chmod 755 install.sh
     ./install.sh
     cd /usr/src/EFA
-    rm -rf Spamassassin-3.4.0-EFA-Upgrade
+    rm -rf Spamassassin-3.4.0-EFA-Upgrade*
         
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
