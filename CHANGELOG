@@ -3,6 +3,7 @@ EFA Version 3.0.0.7 Changes
 ############################################################
 
 Issue #82  Enhancement  - re2c spamassassin rule complilation support
+Issue #133 Enhancement  - Upgrade spamassassin to 3.4.0
 
 ############################################################
 EFA Version 3.0.0.6 Changes
