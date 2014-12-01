@@ -767,7 +767,9 @@ function update-spamassassin(){
     cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
     # Installation meta-script...add a little modularity to future spamassassin upgrades
     chmod 755 install.sh
-    ./install.sh
+	# Run install without testing each module during compile
+	# Some tests would fail in remote environments due to external factors
+    ./install.sh --skiptests
     if [[ $? -ne 0 ]]; then
       cd /usr/src/EFA
       rm -rf /usr/src/EFA/Spamassassin*
