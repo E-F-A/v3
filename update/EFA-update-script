@@ -136,7 +136,8 @@ function update-3.0.0.7() {
   
   ##### Commit Phase #####
   
-  echo "Update to $VERSION complete." 
+  echo "$VERSION specific updates are complete, proceeding to"
+  echo "individual component updates..."
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
@@ -767,7 +768,12 @@ function update-spamassassin(){
     # Installation meta-script...add a little modularity to future spamassassin upgrades
     chmod 755 install.sh
     ./install.sh
-	
+    if [[ $? -ne 0 ]]; then
+      cd /usr/src/EFA
+      rm -rf /usr/src/EFA/Spamassassin*
+      abort
+    fi
+	 
 	# Issue #82 re2c spamassassin rule complilation
 	yum -y install re2c
 	sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
