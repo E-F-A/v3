@@ -356,6 +356,10 @@ func_spam_clamav () {
     ./install.sh
     cd /usr/src/EFA
     rm -rf Spamassassin-3.4.0-EFA-Upgrade*
+	
+	# Symlink for Geo::IP 
++	mkdir -p /usr/local/share/GeoIP
++	ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
         
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
