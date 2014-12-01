@@ -775,8 +775,12 @@ function update-spamassassin(){
       rm -rf /usr/src/EFA/Spamassassin*
       abort
     fi
-	 
-	# Issue #82 re2c spamassassin rule complilation
+	
+	# Symlink for Geo::IP 
+	mkdir -p /usr/local/share/GeoIP
+	ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
+	
+	# Issue #82 re2c spamassassin rule compilation
 	yum -y install re2c
 	sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
 
