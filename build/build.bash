@@ -581,7 +581,10 @@ func_mailwatch () {
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
     chmod +x /etc/cron.daily/mailwatch
-        
+    
+    # Issue #30 filter non-spam from quarantine reports (regression fix)
+    sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+    
     # Move MailWatch into web root and configure
     mv mailscanner /var/www/html
     cd /var/www/html/mailscanner

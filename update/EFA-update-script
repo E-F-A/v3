@@ -142,6 +142,9 @@ function update-3.0.0.7() {
   # Issue #139 SSLv3 POODLE Vulnerability
   sed -i "/^SSLProtocol/ c\SSLProtocol all -SSLv2 -SSLv3" /etc/httpd/conf.d/ssl.conf
   
+  # Issue #30 filter non-spam from quarantine reports (regression fix)
+  sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+  
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."
   echo ""
@@ -1098,6 +1101,9 @@ function update-mailwatch() {
       chown root:apache temp
       chmod ug+rwx temp
       rm -rf docs
+	  
+      # Issue #30 filter non-spam from quarantine reports (regression fix)
+      sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
   
       # Build new conf.php
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner
