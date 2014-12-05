@@ -87,7 +87,7 @@ func_transport-settings(){
                         DOMAINCHECK=1
                         while [ $DOMAINCHECK != 0 ]
                           do
-                            if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,6}$ ]]; then
+                            if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,63}$ ]]; then
                               DUPLICATECHECK=0
                               for (( y=0; y<$tLen; y+=2 ));
                               do
@@ -126,7 +126,7 @@ func_transport-settings(){
                             then
                               # If $DEST looks to be an valid IP we are ok.
                               DESTCHECK=0
-                            elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]; then
+                            elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,63}$ ]]; then
                               # If $DEST looks like an valid domain name we are ok.
                               DESTCHECK=0
                             else
@@ -165,7 +165,7 @@ func_transport-settings(){
                     DOMAINCHECK=1
                     while [ $DOMAINCHECK != 0 ]
                       do
-                        if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,6}$ ]]; then
+                        if [[ $DOMAIN =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,63}$ ]]; then
                           DUPLICATECHECK=0
                           for (( y=0; y<$tLen; y+=2 ));
                             do
@@ -204,7 +204,7 @@ func_transport-settings(){
                           then
                             # If $DEST looks to be an valid IP we are ok.
                             DESTCHECK=0
-                          elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]; then
+                          elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,63}$ ]]; then
                             # If $DEST looks like an valid domain name we are ok.
                             DESTCHECK=0
                           else

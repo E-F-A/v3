@@ -131,10 +131,31 @@ function update-3.0.0.7() {
   ##### Staging Phase #####
   VERSION="3.0.0.7"
   
+  # grab latest version of EFA-Configure with libraries
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  [[ $? -ne 0 ]] && abort
+  wget --no-check-certificate -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt
+  [[ $? -ne 0 ]] && abort
+  mkdir -p $STAGING/lib   
+  for lib in `cat $STAGING/libraries-filelist.txt`
+    do
+      /usr/bin/wget --no-check-certificate -O $STAGING/lib/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib
+	  [[ $? -ne 0 ]] && abort
+  done
+  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   
   ##### Commit Phase #####
+  
+  # grab latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -f /var/EFA/lib/EFA-Configure/*
+  mv $STAGING/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  mv $STAGING/lib/* /var/EFA/lib/EFA-Configure/  
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
   
   # Issue #136 Disable Notify Senders by default in MailScanner
   sed -i "/^Notify Senders/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
