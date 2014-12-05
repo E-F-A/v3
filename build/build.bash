@@ -266,6 +266,9 @@ func_mailscanner () {
     sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
 	sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
 	
+    # Issue #136 Disable Notify Senders by default in MailScanner
+    sed -i "/^Notify Senders/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
+	
     # Match up envelope header (changed at efa-init but usefull for testing)
     sed -i '/^envelope_sender_header / c\envelope_sender_header X-yoursite-MailScanner-EFA-From' /etc/MailScanner/spam.assassin.prefs.conf
     
@@ -358,8 +361,8 @@ func_spam_clamav () {
     rm -rf Spamassassin-3.4.0-EFA-Upgrade*
 	
 	# Symlink for Geo::IP 
-+	mkdir -p /usr/local/share/GeoIP
-+	ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
+	mkdir -p /usr/local/share/GeoIP
+	ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
         
     # fix socket file in mailscanner.conf
     sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf

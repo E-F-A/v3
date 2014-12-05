@@ -136,6 +136,9 @@ function update-3.0.0.7() {
   
   ##### Commit Phase #####
   
+  # Issue #136 Disable Notify Senders by default in MailScanner
+  sed -i "/^Notify Senders/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
+  
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."
   echo ""
