@@ -15,4 +15,6 @@ func_ipsettings
 func_greylisting
 func_autoupdates
 func_tunables
+func_tunables_children
+func_tunables_procdb
 func_setipsettings
