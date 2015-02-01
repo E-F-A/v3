@@ -143,6 +143,9 @@ function update-3.0.0.7() {
 	  [[ $? -ne 0 ]] && abort
   done
   
+  # Issue #141 Exclude Whitelisted Emails from Report as Spam Link
+  /usr/bin/wget --no-check-certificate -O $STAGING $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   
@@ -165,6 +168,10 @@ function update-3.0.0.7() {
   
   # Issue #30 filter non-spam from quarantine reports (regression fix)
   sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+  
+  # Issue #141 Exclude Whitelisted Emails from Report as Spam Link
+  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  mv $STAGING/CustomAction.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."

@@ -8,6 +8,7 @@ Issue #133 Enhancement  - Upgrade spamassassin to 3.4.0
 Issue #136 Enhancement  - Disable Notify Senders by default in MailScanner
 Issue #139 Bug          - SSLv3 POODLE Vulnerability
 Issue #145 Bug          - Modify Domain TLD Constraint
+Issue #141 Enhancement  - Exclude Whitelisted Emails from Report as Spam Link
 
 ############################################################
 EFA Version 3.0.0.6 Changes

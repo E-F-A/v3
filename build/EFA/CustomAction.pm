@@ -53,8 +53,9 @@ sub EFANonSpam {
   
   # Generate Token/Sign unless message is originates from localhost
   my($clientip) = $message->{clientip};
+  my($spamwhitelisted) = $message->{spamwhitelisted};
   
-  if ($clientip =~ /^127/) { 
+  if ($clientip =~ /^127/ || $spamwhitelisted eq "1") { 
     return $message; 
   } else {
     $message->MailScanner::Message::IsAReply();
