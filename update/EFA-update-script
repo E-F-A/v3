@@ -144,7 +144,11 @@ function update-3.0.0.7() {
   done
   
   # Issue #141 Exclude Whitelisted Emails from Report as Spam Link
-  /usr/bin/wget --no-check-certificate -O $STAGING $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+  /usr/bin/wget --no-check-certificate -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+  
+  # Issue #147 Message Learn/Release Rejecting 8 digit ID prefix
+  /usr/bin/wget --no-check-certificate -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  /usr/bin/wget --no-check-certificate -O $STAGING/release-msg.cgi $gitdlurl/$VERSION/build/EFA/release-msg.cgi
   
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
@@ -173,6 +177,16 @@ function update-3.0.0.7() {
   rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   mv $STAGING/CustomAction.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
   
+  # Issue #147 Message Learn/Release Rejecting 8 digit ID prefix
+  rm -f /var/www/cgi-bin/learn-msg.cgi
+  rm -f /var/www/cgi-bin/release-msg.cgi
+  mv $STAGING/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
+  mv $STAGING/release-msg.cgi /var/www/cgi-bin/release-msg.cgi
+  chown apache:apache /var/www/cgi-bin/learn-msg.cgi
+  chown apache:apache /var/www/cgi-bin/release-msg.cgi 
+  chmod ugo+x /var/www/cgi-bin/learn-msg.cgi
+  chmod ugo+x /var/www/cgi-bin/release-msg.cgi
+ 
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."
   echo ""

@@ -10,6 +10,7 @@ Issue #139 Bug          - SSLv3 POODLE Vulnerability
 Issue #138 Enhancement  - Maximum Processing Attempts Database Adjustments
 Issue #141 Enhancement  - Exclude Whitelisted Emails from Report as Spam Link
 Issue #145 Bug          - Modify Domain TLD Constraint
+Issue #147 Bug          - Message Learn/Release Rejecting 8 digit ID prefix
 
 ############################################################
 EFA Version 3.0.0.6 Changes
