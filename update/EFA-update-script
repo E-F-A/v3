@@ -186,6 +186,14 @@ function update-3.0.0.7() {
   chown apache:apache /var/www/cgi-bin/release-msg.cgi 
   chmod ugo+x /var/www/cgi-bin/learn-msg.cgi
   chmod ugo+x /var/www/cgi-bin/release-msg.cgi
+  
+  # Issue #149 Disable SSL in Postfix
+  postconf -e "smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3"
+  postconf -e "smtp_tls_mandatory_protocols = !SSLv2,!SSLv3"
+  postconf -e "smtpd_tls_protocols = !SSLv2,!SSLv3"
+  postconf -e "smtp_tls_protocols = !SSLv2,!SSLv3"
+  
+  service MailScanner restart
  
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."

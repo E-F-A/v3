@@ -168,6 +168,11 @@ func_postfix () {
     postconf -e "tls_random_source = dev:/dev/urandom"
     postconf -e "smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache"
     postconf -e "smtpd_tls_security_level = may"
+	# Issue #149 Disable SSL in Postfix
+	postconf -e "smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3"
+	postconf -e "smtp_tls_mandatory_protocols = !SSLv2,!SSLv3"
+	postconf -e "smtpd_tls_protocols = !SSLv2,!SSLv3"
+	postconf -e "smtp_tls_protocols = !SSLv2,!SSLv3"
     # restrictions
     postconf -e "smtpd_helo_restrictions =  check_helo_access hash:/etc/postfix/helo_access, reject_invalid_hostname"
     postconf -e "smtpd_sender_restrictions = permit_sasl_authenticated, check_sender_access hash:/etc/postfix/sender_access, reject_non_fqdn_sender, reject_unknown_sender_domain"
