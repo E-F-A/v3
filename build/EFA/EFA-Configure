@@ -45,6 +45,8 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_greylisting
 . /var/EFA/lib/EFA-Configure/func_autoupdates
 . /var/EFA/lib/EFA-Configure/func_tunables
+. /var/EFA/lib/EFA-Configure/func_tunables_children
+. /var/EFA/lib/EFA-Configure/func_tunables_procdb
 . /var/EFA/lib/EFA-Configure/func_setipsettings
 
 # +---------------------------------------------------+
