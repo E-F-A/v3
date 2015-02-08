@@ -23,7 +23,7 @@
 # +---------------------------------------------------+
 version="3.0.0.7-beta"
 logdir="/var/log/EFA"
-gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/master/build"
+gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/3.0.0.7-beta/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.7-beta"
