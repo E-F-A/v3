@@ -50,18 +50,25 @@ sub CustomAction {
 sub EFANonSpam {
   my($message) = @_;
   my($token);
+  my($file);
+  my($spamwhitelisted);
   
-  # Generate Token/Sign unless message is originates from localhost
+  # Generate Token/Sign unless message is originates from localhost or is inbound and whitelisted
   my($clientip) = $message->{clientip};
-  my($spamwhitelisted) = $message->{spamwhitelisted};
-  
-  if ($clientip =~ /^127/ || $spamwhitelisted eq "1") { 
+   
+  if ($clientip =~ /^127/) { 
     return $message; 
   } else {
     $message->MailScanner::Message::IsAReply();
+	# Is inbound or outbound signature being applied?
+	$file = MailScanner::Config::Value("inlinetextsig", $message);
+	$spamwhitelisted = $message->{spamwhitelisted};
     if($message->{isreply}) {
       # Message is a reply, do not sign
       return $message;
+    } else if ($file =~ /inline.sig.in.txt/ && $spamwhitelisted eq "1") {
+	  # Message is inbound and whitelisted, do not sign
+	  return $message;
     } else {
       $token = EFACreateToken();
  
