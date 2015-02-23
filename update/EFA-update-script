@@ -193,6 +193,9 @@ function update-3.0.0.7() {
   postconf -e "smtpd_tls_protocols = !SSLv2,!SSLv3"
   postconf -e "smtp_tls_protocols = !SSLv2,!SSLv3"
   
+  # Issue #153 Reply signature behavior not functional
+  sed -i "/^Dont Sign HTML If Headers Exist =/ c\Dont Sign HTML If Headers Exist = In-Reply-To: References:" /etc/MailScanner/MailScanner.conf
+  
   service MailScanner restart
  
   echo "$VERSION specific updates are complete, proceeding to"
