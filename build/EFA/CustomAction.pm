@@ -66,7 +66,7 @@ sub EFANonSpam {
     if($message->{isreply}) {
       # Message is a reply, do not sign
       return $message;
-    } else if ($file =~ /inline.sig.in.txt/ && $spamwhitelisted eq "1") {
+    } elsif ($file =~ /inline.sig.in.txt/ && $spamwhitelisted eq "1") {
 	  # Message is inbound and whitelisted, do not sign
 	  return $message;
     } else {
