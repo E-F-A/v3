@@ -12,6 +12,7 @@ Issue #141 Enhancement  - Exclude Whitelisted Emails from Report as Spam Link
 Issue #145 Bug          - Modify Domain TLD Constraint
 Issue #147 Bug          - Message Learn/Release Rejecting 8 digit ID prefix
 Issue #149 Bug          - Disable SSL in Postfix (POODLE)
+Issue #152 Bug          - Fix for Issue #136 fix
 
 ############################################################
 EFA Version 3.0.0.6 Changes
