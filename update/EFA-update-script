@@ -165,7 +165,7 @@ function update-3.0.0.7() {
   chmod 600 /var/EFA/lib/EFA-Configure/*
   
   # Issue #136 Disable Notify Senders by default in MailScanner
-  sed -i "/^Notify Senders/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Notify Senders =/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
   
   # Issue #139 SSLv3 POODLE Vulnerability
   sed -i "/^SSLProtocol/ c\SSLProtocol all -SSLv2 -SSLv3" /etc/httpd/conf.d/ssl.conf
