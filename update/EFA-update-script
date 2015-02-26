@@ -196,6 +196,14 @@ function update-3.0.0.7() {
   # Issue #153 Reply signature behavior not functional
   sed -i "/^Dont Sign HTML If Headers Exist =/ c\Dont Sign HTML If Headers Exist = In-Reply-To: References:" /etc/MailScanner/MailScanner.conf
   
+  # Issue #128 Adjust Treat Invalid Watermarks With No Sender as Spam
+  # Only modify if it is "high-scoring spam"
+  # Any other value indicates customization by end user
+  TEST=$(grep '^Treat Invalid Watermarks With No Sender as Spam = high-scoring spam' /etc/MailScanner/MailScanner.conf)
+  if [[ -n $TEST ]]; then
+    sed -i "/^Treat Invalid Watermarks With No Sender as Spam =/ c\Treat Invalid Watermarks With No Sender as Spam = 2" /etc/MailScanner/MailScanner.conf
+  fi
+  
   service MailScanner restart
  
   echo "$VERSION specific updates are complete, proceeding to"

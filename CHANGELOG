@@ -3,7 +3,8 @@ EFA Version 3.0.0.7 Changes
 ############################################################
 
 Issue #30  Enhancement  - Filter out nonspam in quarantine reports (regression fix)
-Issue #82  Enhancement  - re2c spamassassin rule complilation support
+Issue #82  Enhancement  - re2c spamassassin rule complilation support\
+Issue #128 Enhancement  - Adjust Treat Invalid Watermarks With No Sender as Spam (build only)
 Issue #133 Enhancement  - Upgrade spamassassin to 3.4.0
 Issue #136 Enhancement  - Disable Notify Senders by default in MailScanner
 Issue #139 Bug          - SSLv3 POODLE Vulnerability
