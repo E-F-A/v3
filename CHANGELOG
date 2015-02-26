@@ -15,6 +15,7 @@ Issue #149 Bug          - Disable SSL in Postfix (POODLE)
 Issue #151 Bug          - Fix for issue #141 for inbound whitelisted emails only
 Issue #152 Bug          - Fix for Issue #136 fix
 Issue #153 Bug          - Reply signature behavior not functional
+Issue #154 Bug          - Fix Razor typos in build.bash
 
 ############################################################
 EFA Version 3.0.0.6 Changes

@@ -886,9 +886,9 @@ func_razor () {
     make install
     
     mkdir /var/spool/postfix/.razor
-	ln -s /var/spool/postfix/.pyzor /var/www/.pyzor
+	ln -s /var/spool/postfix/.razor /var/www/razor
     chown postfix:apache /var/spool/postfix/.razor
-	chmod -R ug+rwx /var/spool/postfix/.pyzor
+	chmod -R ug+rwx /var/spool/postfix/razor
 }
 # +---------------------------------------------------+
 
