@@ -332,8 +332,6 @@ func_mailscanner () {
 
 # +---------------------------------------------------+
 # Install and configure spamassassin & clamav
-# http://www.mailscanner.info/files/4/install-Clam-SA-latest.tar.gz
-# (ClamAV 0.96.5 and SpamAssassin 3.3.1 easy installation package)
 # +---------------------------------------------------+
 func_spam_clamav () {
     # install clamav and clamd.
