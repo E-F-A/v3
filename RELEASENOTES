@@ -31,11 +31,10 @@ https://raw.githubusercontent.com/E-F-A/v3/3.0.0.7/CHANGELOG
 
 ###################### How To Update ##################################
 
-It is recommended that you suspend your EFA services and snapshot prior
+It is recommended that you suspend your mail flow and snapshot prior
 to updating or to back up the entire appliance.
 
-1) Stop mail flow 
-sudo service MailScanner stop
+1) Stop mail flow temporarily (at firewalls/mailservers)
 2) Snapshot your VM and its memory using your hypervisor tools
 3) If the update fails for any reason, immediately roll back to snapshot
 4) Report failure at https:/forum.efa-project.org
