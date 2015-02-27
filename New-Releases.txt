@@ -9,4 +9,8 @@ build/EFA/EFA-Init
 build/build.bash
  [ ] Header
  [ ] Version=""
+ [ ] gitdlurl=""
  [ ] mirrorpath=""
+
+build/prepare-build-without-ks.bash
+ [ ] line 226
