@@ -5,6 +5,7 @@ build/ks.cfg
 
 build/EFA/EFA-Init
  [ ] mirrorpath=""
+ [ ] gitdlurl=""
 		
 build/build.bash
  [ ] Header
