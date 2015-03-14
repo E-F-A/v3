@@ -667,6 +667,14 @@ function func_configure-system() {
   su postfix -s /bin/bash -c 'razor-admin -create'
   su postfix -s /bin/bash -c 'razor-admin -register'
   sed -i '/^debuglevel/ c\debuglevel             = 0' /var/spool/postfix/.razor/razor-agent.conf
+  
+  # Issue #157 Razor failing after registration of service
+  chown -R postfix:apache /var/spool/postfix/.razor
+  chmod ug+rwx /var/spool/postfix/.razor
+  # setgid to lock in apache group for new files
+  chmod g+s /var/spool/postfix/.razor
+  chmod ug+rw /var/spool/postfix/.razor/*
+  
   # +--------------------------------------------------+
   
   # +--------------------------------------------------+

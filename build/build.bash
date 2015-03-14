@@ -890,6 +890,10 @@ func_razor () {
 	ln -s /var/spool/postfix/.razor /var/www/.razor
     chown postfix:apache /var/spool/postfix/.razor
 	chmod -R ug+rwx /var/spool/postfix/.razor
+	
+	# Issue #157 Razor failing after registration of service
+	# Use setgid bit
+	chmod g+s /var/spool/postfix/.razor
 }
 # +---------------------------------------------------+
 

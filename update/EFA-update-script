@@ -159,6 +159,14 @@ function update-3.0.0.8() {
     sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
   fi
   
+  # Issue #157 Razor failing after registration of service
+  # Reapply perms for new builds
+  # Setgid
+  chown -R postfix:apache /var/spool/postfix/.razor
+  chmod g+s /var/spool/postfix/.razor
+  chmod ug+rwx /var/spool/postfix/.razor
+  chmod ug+rw /var/spool/postfix/.razor
+   
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."
   echo ""
