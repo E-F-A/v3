@@ -158,6 +158,9 @@ function update-3.0.0.8() {
 	  [[ $? -ne 0 ]] && abort
   done
   
+  # Issue #156 -- GeoIP Bug
+  /usr/bin/wget --no-check-certificate -O $STAGING/geoip-5fc9611.tar.gz $mirror/build/$VERSION/geoip-5fc9611.tar.gz
+  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   
@@ -187,7 +190,17 @@ function update-3.0.0.8() {
   chmod g+s /var/spool/postfix/.razor
   chmod ug+rwx /var/spool/postfix/.razor
   chmod ug+rw /var/spool/postfix/.razor
-   
+  
+  # Issue #156 -- GeoIP Bug
+  mv $STAGING/geoip-5fc9611.tar.gz /usr/src/EFA
+  tar xzvf /usr/src/EFA/geoip-5fc9611.tar.gz
+  cd /usr/src/EFA/geoip-api-perl
+  perl Makefile.PL
+  make
+  make install
+  cd ~
+  rm -rf /usr/src/EFA/geoip*
+     
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."
   echo ""
