@@ -29,7 +29,7 @@ mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.7"
 MAILWATCHVERSION="7f6858df83"
 IMAGECEBERUSVERSION="1.1"
-SPAMASSASSINVERSION="3.4.0"
+SPAMASSASSINVERSION="3.4.0a"
 WEBMINVERSION="1.690-1"
 PYZORVERSION="0.7.0"
 # +---------------------------------------------------+
