@@ -38,14 +38,13 @@ func_transport-settings(){
   tpmenu=1
   while [ $tpmenu == "1" ]
     do
-      TRANSPORTS=`cat /etc/postfix/transport | sed '/^\#/d;/^$/d' | grep smtp:`
       func_echo-header
       echo -e ""
       echo -e "Description:"
       echo -e "All mail domains for which this system accepts mail need an destination server."
       echo -e "Below is the list of current smtp mail domains on this system."
       echo -e ""
-      RELAYS=( `cat /etc/postfix/transport | grep smtp: | sed '/^\#/d;/^$/d;s/smtp:\[//;s/\]//'` )
+      RELAYS=( `cat /etc/postfix/transport | grep smtp: | sort | sed '/^\#/d;/^$/d;s/smtp:\[//;s/\]//'` )
       tLen=${#RELAYS[@]}
       padding="                        "
       for (( y=0; y<$tLen; y+=2 ));
