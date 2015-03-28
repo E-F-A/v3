@@ -5,6 +5,7 @@ EFA Version 3.0.0.8 Changes
 Issue #132 Enhancement  - Increase sa-learn and spamassassin max message size limits
 Issue #157 Bug          - Razor failing after registration of service
 Issue #158 Enhancement  - Sort transport domain list in EFA-Configure
+Issue #161 Enhancement  - Increase MailScanner thread limit in EFA-Configure
 
 ############################################################
 EFA Version 3.0.0.7 Changes
