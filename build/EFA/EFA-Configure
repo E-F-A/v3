@@ -48,6 +48,7 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_tunables_children
 . /var/EFA/lib/EFA-Configure/func_tunables_procdb
 . /var/EFA/lib/EFA-Configure/func_setipsettings
+. /var/EFA/lib/EFA-Configure/func_askmaxsize
 
 # +---------------------------------------------------+
 
