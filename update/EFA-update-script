@@ -200,6 +200,10 @@ function update-3.0.0.8() {
   make install
   cd ~
   rm -rf /usr/src/EFA/geoip*
+  
+  # Issue #45 Add ScamNailer Ruleset
+  # todo:  Host this on dl.efa-project.org
+  echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
      
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."
