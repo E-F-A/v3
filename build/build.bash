@@ -359,10 +359,10 @@ func_spam_clamav () {
     sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
 	
-	# Issue #45 ScamNailer ClamAV ruleset
-	# todo: host this on dl.efa-project.org
-	# http://www.scamnailer.info/
-	echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
+    # Issue #45 ScamNailer ClamAV ruleset
+    # todo: host this on dl.efa-project.org
+    # http://www.scamnailer.info/
+    echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
     
     # Use the EFA packaged version.
     cd /usr/src/EFA
