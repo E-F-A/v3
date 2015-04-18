@@ -201,6 +201,9 @@ function update-3.0.0.8() {
   cd ~
   rm -rf /usr/src/EFA/geoip*
   
+  # Issue #166 MailWatch cron job not executing contents
+  sed -i "/^#/bin/sh$/ c\#/bin/bash" /etc/cron.daily/mailwatch
+  
   # Issue #45 Add ScamNailer Ruleset
   # todo:  Host this on dl.efa-project.org
   echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf

@@ -9,6 +9,7 @@ Issue #157 Bug          - Razor failing after registration of service
 Issue #156 Bug          - GeoIP Bug Fix
 Issue #158 Enhancement  - Sort transport domain list in EFA-Configure
 Issue #161 Enhancement  - Increase MailScanner thread limit in EFA-Configure
+Issue #166 Bug          - MailWatch cron job not executing contents
 
 ############################################################
 EFA Version 3.0.0.7 Changes

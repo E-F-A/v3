@@ -590,7 +590,8 @@ func_mailwatch () {
     rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
     chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
     touch /etc/cron.daily/mailwatch
-    echo "#!/bin/sh" > /etc/cron.daily/mailwatch
+	# Issue #166 MailWatch cron job not executing contents
+	echo "#!/bin/bash" > /etc/cron.daily/mailwatch
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
     echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
