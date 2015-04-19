@@ -3,7 +3,7 @@
 # EFA update script
 # Version 20150410
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2015  http://www.efa-project.org
+# Copyright (C) 2012~2015 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,6 +33,10 @@ MAILTO="$ADMINEMAIL"
 MAILSUBJECT="EFA Update Complete For: `hostname`"
 SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
+
+#----------------------------------------------------------------#
+# List of current version numbers for the software we use
+#----------------------------------------------------------------#
 MAILWATCHVERSION="7f6858df83"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0"
@@ -42,7 +46,7 @@ WEBMINVERSION="1.690-1"
 STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 
-
+#----------------------------------------------------------------#
 # test setup:
 # EFA update scripts fetches .tar.gz file from dl.efa-project.org
 # tar.gz file contains all files needed to update (previous from git and dl.efa-project.org)
@@ -58,3 +62,90 @@ STAGING="/tmp/EFA-Staging"
 # this script runs MD5 checksum for the tar.gz. file
 # this script unpacks the tar.gz file to /tmp/EFA-Staging
 # this script runs the EFA-Version-Upgrade script
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# get-update path
+#----------------------------------------------------------------#
+function get_update_path() {
+  get_cversion
+  if [[ $CVERSION == "EFA-3.0.0.0" ]]
+    then
+      # do stuff
+  elif [[ $CVERSION == "EFA-3.0.0.1" ]]
+    then
+      # do stuff
+  elif [[ $CVERSION == "EFA-3.0.0.2" ]]
+    then
+    # do stuff
+  elif [[ $CVERSION == "EFA-3.0.0.3" ]]
+    then
+    # do stuff
+  elif [[ $CVERSION == "EFA-3.0.0.4" ]]
+    then
+    # do stuff
+  elif [[ $CVERSION == "EFA-3.0.0.5" ]]
+    then
+    # do stuff
+  elif [[ $CVERSION == "EFA-3.0.0.6" ]]
+    then
+    # do stuff
+  elif [[ $CVERSION == "EFA-3.0.0.7" ]]
+    then
+    # do stuff
+  fi
+}
+#----------------------------------------------------------------#
+
+
+#----------------------------------------------------------------#
+# Function get current version number
+#----------------------------------------------------------------#
+function get_cversion() {
+  if [ -f /etc/EFA-Version ]
+    then
+      CVERSION="`head -1 /etc/EFA-Version`"
+    else
+      echo "ERROR: No valid version file found on this system."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+
+  # Check if we run an beta version
+  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}-beta$ ]]
+    then
+      echo "ERROR: You seem to be running an beta version, no upgrade possible."
+      echo "ERROR: please look at http://www.efa-project.org for more information."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+
+  # Check if CVERSION is an valid Version file
+  if ! [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}$ ]]
+    then
+      echo "ERROR: The version file on your system does not seem to be valid."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Check if we are root
+#----------------------------------------------------------------#
+function user_check() {
+  if [ `whoami` == root ]
+    then
+      echo "[EFA] Good you are root"
+  else
+    echo "[EFA] Please become root to run this update"
+    exit 0
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Where to start
+#----------------------------------------------------------------#
+user_check
+get_update_path
