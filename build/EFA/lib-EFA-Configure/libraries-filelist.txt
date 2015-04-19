@@ -19,3 +19,5 @@ func_tunables_children
 func_tunables_procdb
 func_setipsettings
 func_askmaxsize
+func_mailwatchsettings
+func_resetadmin

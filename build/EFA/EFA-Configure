@@ -49,6 +49,8 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_tunables_procdb
 . /var/EFA/lib/EFA-Configure/func_setipsettings
 . /var/EFA/lib/EFA-Configure/func_askmaxsize
+. /var/EFA/lib/EFA-Configure/func_mailwatchsettings
+. /var/EFA/lib/EFA-Configure/func_resetadmin
 
 # +---------------------------------------------------+
 
@@ -68,7 +70,7 @@ show_menu() {
       echo -e "3) Halt system                        10) Mysql Recovery"
       echo -e "4) IP Settings                        11) Apache Settings" 
       echo -e "5) Tunables                           12) Virus Settings"
-      echo -e "6) Greylisting                        13) System Restore"
+      echo -e "6) MailWatch Settings                 13) System Restore"
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
@@ -80,7 +82,7 @@ show_menu() {
                     3) func_halt ;;
                     4) func_ip-settings ;;
                     5) func_tunables ;;
-                    6) func_greylisting ;;
+                    6) func_mailwatch-settings ;;
                     7) func_autoupdates ;;                    
                     8) func_mail-settings ;;
                     9) func_spam-settings ;;
