@@ -3,7 +3,7 @@
 # EFA release spam message script version 20140105
 # This script is an modification of the previous ESVA release-msg.cgi
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013  http://www.efa-project.org
+# Copyright (C) 2013~2015 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,22 +59,22 @@ if ($id =~ /^[A-F0-9]{8}\.[A-F0-9]{5}|[A-F0-9]{9}\.[A-F0-9]{5}|[A-F0-9]{10}\.[A-
   if ($datenumber =~ /^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$/){
     if ($token =~ /^[0-9a-zA-Z]{32}$/){
       # All are ok
-      
+
       # Verify if token is present in db
       $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
          $db_user, $db_pass,
          {PrintError => 0});
-      
+
       if (!$dbh) { die "Error connecting to database" }
-      
+
       $sql = "SELECT token from tokens WHERE token=\"$token\"";
       $sth = $dbh->prepare($sql);
       $sth->execute;
       @results = $sth->fetchrow;
-      if (!$results[0]) { 
+      if (!$results[0]) {
         $sth->finish();
-        $dbh->disconnect();  
- 
+        $dbh->disconnect();
+
         # redirect to failure page
         print "<meta http-equiv=\"refresh\" content=\"0;URL=/notreleased.html\">";
       } else {
@@ -88,10 +88,10 @@ if ($id =~ /^[A-F0-9]{8}\.[A-F0-9]{5}|[A-F0-9]{9}\.[A-F0-9]{5}|[A-F0-9]{10}\.[A-
         $sql = "DELETE from tokens WHERE token=\"$token\"";
         $sth = $dbh->prepare($sql);
         $sth->execute;
-     
+
         $sth->finish();
-        $dbh->disconnect();  
- 
+        $dbh->disconnect();
+
         # redirect to success page
         print "<meta http-equiv=\"refresh\" content=\"0;URL=/released.html\">";
       }

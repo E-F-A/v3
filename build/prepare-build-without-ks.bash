@@ -1,10 +1,10 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.6 build without ks version 20141115
+# EFA 3.0.0.8 build without ks version 20150419
 #
 # Purpose:
 #		This script will 'baseline' an existing CentOS installation
-#		to start the build.bash script ONLY use this script if you 
+#		to start the build.bash script ONLY use this script if you
 #		are unable to use the kickstart methode.
 #
 # Prerequirements:
@@ -12,7 +12,7 @@
 #		Working internet connection
 #
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013~2014  http://www.efa-project.org
+# Copyright (C) 2013~2015 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -75,10 +75,10 @@ echo -n "Are you sure you want to continue? (y/N):"
 read YN
 flag=1
 while [ $flag != "0" ]
-    do 
-      if [[ "$YN" == "Y" || "$YN" == "y" ]]; then 
+    do
+      if [[ "$YN" == "Y" || "$YN" == "y" ]]; then
         flag=0
-      elif [[ "$YN" == "" || "$YN" == "N" || "$YN" == "n" ]]; then 
+      elif [[ "$YN" == "" || "$YN" == "N" || "$YN" == "n" ]]; then
 		echo "Aborting this setup"
         exit 1
       else
@@ -242,11 +242,11 @@ echo -n "Do you want to start the build script? (y/N):"
 read YN
 flag=1
 while [ $flag != "0" ]
-    do 
+    do
       if [[ "$YN" == "Y" || "$YN" == "y" ]]; then
 	    logsave /var/log/EFA/build.log /usr/src/EFA/build.bash
         flag=0
-      elif [[ "$YN" == "" || "$YN" == "N" || "$YN" == "n" ]]; then 
+      elif [[ "$YN" == "" || "$YN" == "N" || "$YN" == "n" ]]; then
 		echo ""
 		echo "Please don't forget to run the build script"
         exit 1

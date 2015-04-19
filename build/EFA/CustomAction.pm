@@ -1,8 +1,8 @@
 #
-# CustomAction.pm 
+# CustomAction.pm
 # Version 20140309
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2013  http://www.efa-project.org
+# Copyright (C) 2012~2015 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,19 +45,19 @@ sub CustomAction {
 }
 
 #
-# EFA Non Spam Modification Token Generation, 
+# EFA Non Spam Modification Token Generation,
 #
 sub EFANonSpam {
   my($message) = @_;
   my($token);
   my($file);
   my($spamwhitelisted);
-  
+
   # Generate Token/Sign unless message is originates from localhost or is inbound and whitelisted
   my($clientip) = $message->{clientip};
-   
-  if ($clientip =~ /^127/) { 
-    return $message; 
+
+  if ($clientip =~ /^127/) {
+    return $message;
   } else {
     $message->MailScanner::Message::IsAReply();
 	# Is inbound or outbound signature being applied?
@@ -71,7 +71,7 @@ sub EFANonSpam {
 	  return $message;
     } else {
       $token = EFACreateToken();
- 
+
       $message->{token} = $token;
 
       return SignNonSpam($message);
@@ -101,7 +101,7 @@ sub EFACreateToken {
   # Connect to the database
   $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
                       $db_user, $db_pass,
-                      {PrintError => 0}); 
+                      {PrintError => 0});
 
   # Check if connection was successfull - if it isn't
   # then generate a warning and continue processing.
@@ -117,12 +117,12 @@ sub EFACreateToken {
   $sth = $dbh->prepare($sql);
   $sth->execute;
 
-  # Close connections  
+  # Close connections
   $sth->finish();
   $dbh->disconnect();
 
   # Return $token
-  return $token; 
+  return $token;
 }
 
 #
@@ -134,13 +134,13 @@ sub EFASpamNotify {
 
   $token = EFACreateToken();
   #if (!$token) { return; }
- 
+
   $message->{token} = $token;
- 
-  # Notify user 
+
+  # Notify user
   HandleSpamNotify($message);
 
-  return 0; 
+  return 0;
 }
 
 # +---------------------------------------------------+
@@ -159,7 +159,7 @@ sub randomtoken {
 # Send a message to the recipients which has the local postmaster as
 # the sender.
 sub HandleSpamNotify {
-  my($message) = @_; 
+  my($message) = @_;
   my($from,$to,$subject,$date,$spamreport,$hostname,$day,$month,$year);
   my($emailmsg, $line, $messagefh, $filename, $localpostmaster, $id);
   my($postmastername);
@@ -205,7 +205,7 @@ sub HandleSpamNotify {
   #$year += 1900;
   #my $datenumber = sprintf("%04d%02d%02d", $year, $month, $day);
   my $datenumber = $message->{datenumber};
-  
+
 
   my($to, %tolist);
   foreach $to (@{$message->{to}}) {
@@ -249,14 +249,14 @@ sub HandleSpamNotify {
 sub SignNonSpam {
   my($message) = @_;
   my($from);
-  return if $message->{infected}; # Double-check! 
+  return if $message->{infected}; # Double-check!
 
   $from = $message->{from};
 
   # Don't ever send a message to "" or "<>"
   return if $from eq "" || $from eq "<>";
 
-  my($entity, $scannerheader, $clientip); 
+  my($entity, $scannerheader, $clientip);
 
   # Use the presence of an X-MailScanner: header to decide if the
   # message will have already been signed by another MailScanner server.
@@ -264,7 +264,7 @@ sub SignNonSpam {
   $scannerheader =~ tr/://d;
 
   # EFA
-  # Change Signing Behavior do not sign messages from localhost 
+  # Change Signing Behavior do not sign messages from localhost
   $clientip = $message->{clientip};
   if ($clientip =~ /^127/) { return $message; }
 
@@ -397,19 +397,19 @@ sub AppendSignCleanEntity {
     $io->print("\n$signature\n") unless $FoundSigMark;
   }
   $io->close;
-  
+
   # Add Image Attachment from Mail Scanner, unless there already is one
   if (MailScanner::Config::Value('attachimage', $message) =~ /1/ && !$message->{sigimagepresent}) {
     #print STDERR "Adding image signature\n";
     my $attach = MailScanner::Config::Value('attachimagetohtmlonly', $message);
     if (($html && $attach =~ /1/) || $attach =~ /0/) {
-      my $filename = MailScanner::Config::Value('attachimagename', $message);  
+      my $filename = MailScanner::Config::Value('attachimagename', $message);
       my $ext = 'unknown';
       $ext = $1 if $filename =~ /\.([a-z]{3,4})$/;
       $ext = 'jpeg' if $ext =~ /jpg/i;
       my $internalname =  MailScanner::Config::Value('attachimageinternalname', $message);
       if (length($filename) && -f $filename) {
-        my $newentity = MIME::Entity->build(Path => $filename, 
+        my $newentity = MIME::Entity->build(Path => $filename,
                                             Top => 0,
                                             Type => "image/$ext",
                                             Encoding => "base64",
@@ -486,7 +486,7 @@ sub ReadVirusWarning {
   $subject = $message->{subject};
   my($token) = $message->{token};
   my($hostname) = MailScanner::Config::Value('hostname', $message);
-  
+
   my $result = "";
   while (<$fh>) {
     chomp;
