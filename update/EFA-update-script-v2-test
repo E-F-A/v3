@@ -54,8 +54,8 @@ STAGING="/tmp/EFA-Staging"
 # EFA-Update-<previous version>-<new version>.tar.gz:
 #   EFA-Update-3.0.0.7-3.0.0.8.tar.gz
 #      /EFA-Version-Upgrade   				<- script that should be launched from this file.
-#		/Files/										<- Directory containing binary files
-#      /Scripts/									<- Directory containing update scripts (previous git scripts)
+#		   /Files/										    <- Directory containing binary files
+#      /Scripts/									    <- Directory containing update scripts (previous git scripts)
 #
 # Update methode:
 # this script downloads the latest EFA-Update.XXXX-XXXX.tar.gz file
@@ -71,10 +71,18 @@ function get_update_path() {
   get_cversion
   if [[ $CVERSION == "EFA-3.0.0.0" ]]
     then
-      # do stuff
+      UPDATE="EFA-Update-3.0.0.0-3.0.0.1.tar.gz"
+      download_update $UPDATE
+      check_md5 $UPDATE
+      unpack_update $UPDATE
+      run_update $UPDATE
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
-      # do stuff
+      UPDATE="EFA-Update-3.0.0.1-3.0.0.2.tar.gz"
+      download_update $UPDATE
+      check_md5 $UPDATE
+      unpack_update $UPDATE
+      run_update $UPDATE
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
     # do stuff
@@ -97,6 +105,37 @@ function get_update_path() {
 }
 #----------------------------------------------------------------#
 
+#----------------------------------------------------------------#
+# Function to start the update procedure
+#----------------------------------------------------------------#
+function run_update() {
+  echo "todo.."
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to download file
+#----------------------------------------------------------------#
+function download_update() {
+  echo "todo.."
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to unpack update
+#----------------------------------------------------------------#
+function unpack_update() {
+  echo "todo.."
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to check the MD5
+#----------------------------------------------------------------#
+function check_md5() {
+  echo "todo.."
+}
+#----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
 # Function get current version number
