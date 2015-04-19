@@ -1,9 +1,9 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA Project Mailscanner rules update script 
+# EFA Project Mailscanner rules update script
 # Version 20140623
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2014  http://www.efa-project.org
+# Copyright (C) 2012~2015 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ function update_bad()
                 reload=0
         fi
   fi
-    
+
   # Reload MailScanner only if we need to.
   if [ "$reload" = "1" ]; then
         /etc/init.d/MailScanner reload #> /dev/null 2>&1
@@ -167,7 +167,7 @@ function update_safe()
                 reload=0
         fi
   fi
-    
+
   # Reload MailScanner only if we need to.
   if [ "$reload" = "1" ]; then
         /etc/init.d/MailScanner reload #> /dev/null 2>&1
@@ -216,7 +216,7 @@ function show_usage()
   echo "-cron"
   echo "   run from cron"
   echo ""
-  
+
 }
 #----------------------------------------------------------------#
 

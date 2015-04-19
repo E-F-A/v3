@@ -12,6 +12,8 @@ Issue #161 Enhancement  - Increase MailScanner thread limit in EFA-Configure
 Issue #164 Enhancement  - Add MailWatch Password Reset to EFA-Configure 
 Issue #166 Bug          - MailWatch cron job not executing contents
 
+Add 4GB Swap partition to new builds.
+
 ############################################################
 EFA Version 3.0.0.7 Changes
 ############################################################
@@ -53,7 +55,7 @@ Issue #54  Enhancement  - Added hostname change to EFA-Configure
 Issue #57  Enhancement  - Alternating background for black/whitelist
 Issue #66  Enhancement  - Pull passwords from /etc/EFA-Config where practical
 Issue #67  Enhancement  - ImageCeberus default score
-Issue #69  Bug          - Filter out reserved words from user account creation 
+Issue #69  Bug          - Filter out reserved words from user account creation
 Issue #70  Enhancement  - .bashrc EFA-Configure Launch Interactive Only
 Issue #71  Bug          - Urgent: raw.github.com certificate error fixes
 Issue #73  Bug          - Admin Email Change Fails to Update MailScanner Values
@@ -61,7 +63,7 @@ Issue #74  Bug          - EFA-Configure Disable SSL does not disable redirect
 Issue #75  Bug          - EFA-Configure not writing iptables config to /etc/sysconfig/iptables
 Issue #76  Bug          - Processing Attempts Database Bug (temporarily disabled until MailScanner releases fix)
 Issue #77  Bug          - EFA MailScanner 0 byte tmp files (patched until MailScanner releases fix)
-Issue #79  Enhancement  - EFA-Update Staging and Error Handling 
+Issue #79  Enhancement  - EFA-Update Staging and Error Handling
 Issue #85  Bug          - ClamAV Update Issue
 Issue #87  Bug          - EFA-Tokens-Cron Syntax Wrong
 Issue #89  Bug          - Razor errors in MailWatch Gui

@@ -3,7 +3,7 @@
 # EFA-Init
 # Version 20141115
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2014  http://www.efa-project.org
+# Copyright (C) 2012~2015 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -107,10 +107,10 @@ function func_ask-ipaddress() {
   func_echo-header
   # Get the primary interface
   func_interfaces
- 
+
   # Display current IP and ask for new, then validate the IP.
   CIPADDRESS=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $2}' | awk -F':' '{print $2}'`
-  echo -e "" 
+  echo -e ""
   echo -e "$green[EFA]$clean Your current IP address is: $CIPADDRESS"
   echo -e ""
   echo -e "$green[EFA]$clean Please enter the IP address"
@@ -139,7 +139,7 @@ function func_ask-netmask() {
 
   # Display current netmask and ask for new, then validate the netmask
   CNETMASK=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $4}' | awk -F':' '{print $2}'`
-  echo -e "" 
+  echo -e ""
   echo -e "$green[EFA]$clean Your current netmask is: $CNETMASK"
   echo -e ""
   echo -e "$green[EFA]$clean Please enter the NETMASK"
@@ -165,10 +165,10 @@ function func_ask-netmask() {
 # +---------------------------------------------------+
 function func_ask-gateway() {
   func_echo-header
-  
+
   # Display current gateway
   CGATEWAY=`route -n | grep 0.0.0.0 | awk '{print $2}' | grep -v 0.0.0.0`
-  echo -e "" 
+  echo -e ""
   echo -e "$green[EFA]$clean Your current default gateway is: $CGATEWAY"
   echo -e ""
   echo -e "$green[EFA]$clean Please enter the default gateway address"
@@ -194,10 +194,10 @@ function func_ask-gateway() {
 # +---------------------------------------------------+
 function func_ask-dns1() {
   func_echo-header
-  
+
   # Display current primary dns
   CDNS1=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p`
-  echo -e "" 
+  echo -e ""
   echo -e "$green[EFA]$clean Your current primary dns is: $CDNS1"
   echo -e ""
   echo -e "$green[EFA]$clean Please enter the primary DNS server address"
@@ -223,10 +223,10 @@ function func_ask-dns1() {
 # +---------------------------------------------------+
 function func_ask-dns2() {
   func_echo-header
-  
+
   # Display current secondary dns
   CDNS2=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p`
-  echo -e "" 
+  echo -e ""
   echo -e "$green[EFA]$clean Your current secondary dns is: $CDNS2"
   echo -e ""
   echo -e "$green[EFA]$clean Please enter the secondary DNS server address"
@@ -299,7 +299,7 @@ function func_ask-userpassword() {
      if [[ $efauserpwd = "$efauserpwd2" ]]
           then
             efauserpwdcheck=0
-         else 
+         else
             echo -e ""
             echo -e "       $red ERROR: The passwords do not seem to match"
             echo -e "        ERROR: Please try again$clean"
@@ -334,7 +334,7 @@ function func_ask-rootpassword() {
      if [[ $efarootpwd = "$efarootpwd2" ]]
           then
             efarootpwdcheck=0
-         else 
+         else
             echo -e ""
             echo -e "       $red ERROR: The passwords do not seem to match"
             echo -e "        ERROR: Please try again$clean"
@@ -387,7 +387,7 @@ function func_ask-timezone() {
   func_echo-header
   echo -e -n "$green[EFA]$clean Is the host set to UTC time? [Y/n]: "
   read TMPUTC
-  if [[ "$TMPUTC" == "" || "$TMPUTC" == "Y" || "$TMPUTC" == "y" ]]; then 
+  if [[ "$TMPUTC" == "" || "$TMPUTC" == "Y" || "$TMPUTC" == "y" ]]; then
     ISUTC=true
   else
     ISUTC=false
@@ -474,7 +474,7 @@ function func_ask-orgname() {
 function func_ask-updates() {
   func_echo-header
   echo -e "$green[EFA]$clean Auto Updates:"
-  echo -e "$green[EFA]$clean With auto updates you can make sure this system is always up to date." 
+  echo -e "$green[EFA]$clean With auto updates you can make sure this system is always up to date."
   echo -e "$green[EFA]$clean by default we $red DISABLE $clean auto updates as it might not match your"
   echo -e "$green[EFA]$clean company update policy."
   echo -e "$green[EFA]$clean If you choose to keep auto updates DISABLED you will receive mails on your"
@@ -490,11 +490,11 @@ function func_ask-updates() {
   read TMPUPDATES
   updatescheck=1
   while [ $updatescheck != 0 ]
-    do 
-      if [[ "$TMPUPDATES" == "Y" || "$TMPUPDATES" == "y" ]]; then 
+    do
+      if [[ "$TMPUPDATES" == "Y" || "$TMPUPDATES" == "y" ]]; then
         enableupdates=1
         updatescheck=0
-      elif [[ "$TMPUPDATES" == "" || "$TMPUPDATES" == "N" || "$TMPUPDATES" == "n" ]]; then 
+      elif [[ "$TMPUPDATES" == "" || "$TMPUPDATES" == "N" || "$TMPUPDATES" == "n" ]]; then
         enableupdates=0
         updatescheck=0
       else
@@ -597,9 +597,9 @@ function func_verify-settings() {
 function func_configure-system() {
   func_echo-header
   echo -e "$green[EFA]$clean Configuring system"
-  
+
   # +--------------------------------------------------+
-  # Start mysql Daemon 
+  # Start mysql Daemon
   service mysqld start
 
   # +--------------------------------------------------+
@@ -617,7 +617,7 @@ function func_configure-system() {
   echo -e "$green[EFA]$clean - Setting IP settings"
   ifdown $INTERFACE
   # Use ipcalc to get the broadcast & network id's
-  BROADCAST="`/bin/ipcalc -b $IPADDRESS $NETMASK`" 
+  BROADCAST="`/bin/ipcalc -b $IPADDRESS $NETMASK`"
   NETWORK="`/bin/ipcalc -n $IPADDRESS $NETMASK`"
   echo "DEVICE=$INTERFACE" > /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
   echo "BOOTPROTO=none" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
@@ -629,17 +629,17 @@ function func_configure-system() {
   echo "GATEWAY=$GATEWAY" >> /etc/sysconfig/network
   ifup $INTERFACE
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # User settings
   echo -e "$green[EFA]$clean - Creating user"
   useradd -m -d /home/$USERNAME -s /bin/bash $USERNAME
   echo "$USERNAME:$efauserpwd" | chpasswd --md5 $USERNAME
-  
+
   echo -e "$green[EFA]$clean - Changing root password"
   echo "root:$efarootpwd" | chpasswd --md5 root
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Generating SSH Host keys"
   rm -f /etc/ssh/ssh_host_rsa_key
@@ -647,7 +647,7 @@ function func_configure-system() {
   ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
   ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configure timezone"
   rm -f /etc/localtime
@@ -656,38 +656,38 @@ function func_configure-system() {
   echo "ARC=false">>/etc/sysconfig/clock
   echo "ZONE=$TZONE">>/etc/sysconfig/clock
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Write ianacode to freshclam config.
   sed -i "/^#DatabaseMirror / c\DatabaseMirror db.$IANACODE.clamav.net" /etc/freshclam.conf
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring razor"
   su postfix -s /bin/bash -c 'razor-admin -create'
   su postfix -s /bin/bash -c 'razor-admin -register'
   sed -i '/^debuglevel/ c\debuglevel             = 0' /var/spool/postfix/.razor/razor-agent.conf
-  
+
   # Issue #157 Razor failing after registration of service
   chown -R postfix:apache /var/spool/postfix/.razor
   chmod ug+rwx /var/spool/postfix/.razor
   # setgid to lock in apache group for new files
   chmod g+s /var/spool/postfix/.razor
   chmod ug+rw /var/spool/postfix/.razor/*
-  
+
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Update clamav and spamassassin rules
   echo -e "$green[EFA]$clean - Updating AV and SA rules"
   service dnsmasq start
   sleep 5
-  
+
   service clamd start
   freshclam
   sa-update
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Add the domain of this system to transports
   echo -e "$green[EFA]$clean - Allow the current to receive mails"
@@ -697,12 +697,12 @@ function func_configure-system() {
   rm -f /etc/postfix/transport.db
   postmap /etc/postfix/transport
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Add admin email to receive root mails
   echo "root: $ADMINEMAIL" >> /etc/aliases
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring spamassassin"
   sed -i '/bayes_ignore_header/d' /etc/MailScanner/spam.assassin.prefs.conf
@@ -712,7 +712,7 @@ function func_configure-system() {
   echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-Information">>/etc/MailScanner/spam.assassin.prefs.conf
   sed -i "/^envelope_sender_header / c\envelope_sender_header X-$ORGNAME-MailScanner-EFA-From" /etc/MailScanner/spam.assassin.prefs.conf
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring MailScanner"
   sed -i "/^%org-name% =/ c\%org-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
@@ -730,34 +730,34 @@ function func_configure-system() {
   echo -e "To: default /etc/MailScanner/reports/en/inline.sig.out.txt" >> /etc/MailScanner/rules/sig.text.rules
 
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring MailWatch"
   sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
   sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', '$TZONE');" /var/www/html/mailscanner/conf.php
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Give user sudo permissions
   echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers.d/EFA-users
   echo "$USERNAME ALL=(ALL) NOPASSWD: /usr/local/sbin/EFA-Configure" >> /etc/sudoers.d/EFA-users
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # create the mailwatch user
   /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO users SET username = '$USERNAME', password = md5('$efauserpwd'), fullname = 'Administrator', type ='A'"
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Whitelist localhost in mysql for mail releasing etc..
   /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO whitelist SET to_address = 'default', to_domain = '', from_address = '127.0.0.1'"
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Set timezone in php.ini
   sed -i "/^;date.timezone =/ c\date.timezone = $TZONE" /etc/php.ini
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Set the random passwords
   # sa_user SQL password
@@ -768,7 +768,7 @@ function func_configure-system() {
   sed -i "/bayes_sql_password/ c\bayes_sql_password              $SAUSERSQLPWD" /etc/MailScanner/spam.assassin.prefs.conf
   sed -i "/user_awl_sql_password/ c\user_awl_sql_password           $SAUSERSQLPWD" /etc/MailScanner/spam.assassin.prefs.conf
   sed -i "/\usr\/bin\/mysql -usa_user / c\\/usr\/bin\/mysql -usa_user -p$SAUSERSQLPWD < \/etc\/trim-awl.sql" /usr/sbin/trim-awl
-  
+
   # mailwatch SQL password
   randompw
   MAILWATCHSQLPWD=$PASSWD
@@ -779,7 +779,7 @@ function func_configure-system() {
   #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm
   #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLSpamSettings.pm
   #sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$MAILWATCHSQLPWD');" /var/www/html/mailscanner/conf.php
-  
+
   # sqlgrey SQL password
   randompw
   SQLGREYSQLPWD=$PASSWD
@@ -787,7 +787,7 @@ function func_configure-system() {
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
   sed -i "/db_pass =/ c\db_pass = $SQLGREYSQLPWD" /etc/sqlgrey/sqlgrey.conf
   #sed -i "/^\$db_pass/ c\$db_pass	= \"$SQLGREYSQLPWD\";" /var/www/html/sgwi/includes/config.inc.php
- 
+
   # efa token SQL password
   randompw
   EFASQLPWD=$PASSWD
@@ -798,14 +798,14 @@ function func_configure-system() {
   #sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/release-msg.cgi
   #sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
   #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$EFASQLPWD';" /etc/cron.daily/EFA-Tokens-Cron
- 
+
   # Issue #95 SASL AUthentication database not found
   # We just create a dummy sasldb2 with a random pwd
   randompw
   RANDOMSASLPWD=$PASSWD
   echo $RANDOMSASLPWD | saslpasswd2 -p -c /etc/sasldb2
   chgrp postfix /etc/sasldb2
- 
+
   # And finally we change the MYSQL root password.
   randompw
   MYSQLROOTPWD=$PASSWD
@@ -858,26 +858,26 @@ function func_end() {
   echo -e "$green[EFA]$clean for postfix, please answer all answers."
   pause
   cd /etc/postfix/ssl
-  openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650 
+  openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650
   # +--------------------------------------------------+
-  
-  # +--------------------------------------------------+  
+
+  # +--------------------------------------------------+
   # Remove the first time login message from console.
-  sed -i "/^First time login: /d" /etc/issue    
-  
+  sed -i "/^First time login: /d" /etc/issue
+
   # Remove EFA-Init from console
   sed -i "/^\/usr\/local\/sbin\/EFA-Init/d" /root/.bashrc
-  
+
   # Add EFA-Configure to user logon
   #sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /home/$USERNAME/.bashrc
   #Issue #70 .bashrc EFA-Configure Launch Interactive Only
   sed -i "1i\if ! [ -z \"\$PS1\" ]; then\n  sudo \/usr\/local\/sbin\/EFA-Configure\nfi" /home/$USERNAME/.bashrc
-  
+
   # Add EFA-Configure to root logon
   # Issue #6: adcc hanging system on start after latest build
   # sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /root/.bashrc
   # +--------------------------------------------------+
-    
+
   # +--------------------------------------------------+
   # Write all settings to EFA-Config
   echo "HOSTNAME:$HOSTNAME" >> /etc/EFA-Config
@@ -898,19 +898,19 @@ function func_end() {
   echo "EFASQLPWD:$EFASQLPWD" >> /etc/EFA-Config
   echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
 
-  if [[ "$enableupdates" -eq 1 ]]; then 
+  if [[ "$enableupdates" -eq 1 ]]; then
     echo "AUTOUPDATES:ENABLED" >> /etc/EFA-Config
   else
     echo "AUTOUPDATES:DISABLED" >> /etc/EFA-Config
   fi
-  
+
   sed -i "/CONFIGURED:/ c\CONFIGURED:YES" /etc/EFA-Config
-  
+
   chown root:apache /etc/EFA-Config
   chmod 640 /etc/EFA-Config
   # +--------------------------------------------------+
-  
-  # +--------------------------------------------------+  
+
+  # +--------------------------------------------------+
   # Enable services at boot
   chkconfig MailScanner on
   chkconfig httpd on
@@ -925,21 +925,21 @@ function func_end() {
   chkconfig webmin on
   chkconfig ntpd on
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # Synchronize time
   ntpdate 0.centos.pool.ntp.org
-  hwclock --systohc  
+  hwclock --systohc
   # +--------------------------------------------------+
-  
+
   # +--------------------------------------------------+
   # set nameserver to local dnsmasq
   echo "nameserver 127.0.0.1" > /etc/resolv.conf
   # +--------------------------------------------------+
-  
-  # Cleanup /var/log/EFA 
+
+  # Cleanup /var/log/EFA
   rm -f /var/log/EFA/*
-  
+
   # And the end.. we are done.. whooo!
   func_echo-header
   echo -e "$green[EFA]$clean All settings applied rebooting when you press enter."
@@ -970,7 +970,7 @@ func_interfaces(){
           echo -e -n "$green[EFA]$clean : "
       read choice
           choice_check=0
-          
+
       for int in $interf
         do
           if [ $int == $choice ]
@@ -1074,7 +1074,7 @@ cyan='\E[00;36m'
 clean='\e[00m'
 
 func_echo-header
-CONFIGURED="`grep CONFIGURED /etc/EFA-Config | sed 's/^.*://'`" 
+CONFIGURED="`grep CONFIGURED /etc/EFA-Config | sed 's/^.*://'`"
 if [ $CONFIGURED == "NO" ]
  then
     echo -e "--------------------------------------------------------------"
@@ -1083,8 +1083,8 @@ if [ $CONFIGURED == "NO" ]
     echo -e "--------------------------------------------------------------"
 	echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
 	read StartConf
-	
-	if [[ "$StartConf" == "Y" || "$StartConf" == "y" || "$StartConf" == "" ]]; then 
+
+	if [[ "$StartConf" == "Y" || "$StartConf" == "y" || "$StartConf" == "" ]]; then
         pause
 		func_ask-hostname
 		func_ask-domainname
@@ -1108,7 +1108,7 @@ if [ $CONFIGURED == "NO" ]
 		func_configure-system
 		if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
 		func_end
-    elif [[ "$StartConf" == "N" || "$StartConf" == "n" ]]; then 
+    elif [[ "$StartConf" == "N" || "$StartConf" == "n" ]]; then
 		echo -e "$red"
 		echo -e "You are now aborting EFA-Init, your system will not function properly."
 		echo -e "Please run /usr/local/sbin/EFA-Init to start the first-time configuration again."
@@ -1119,7 +1119,7 @@ if [ $CONFIGURED == "NO" ]
 		echo -e "       $red ERROR: please make an selection.$clean"
 		echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
 		read StartConf
-    fi  
+    fi
  else
     echo -e "$red         ERROR: EFA is already configured $clean"
     echo -e "$red         Please use EFA-Configure $clean"

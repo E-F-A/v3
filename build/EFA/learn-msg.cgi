@@ -3,7 +3,7 @@
 # EFA learn spam message script version 20140105
 # This script is an modification of the previous ESVA learn-msg.cgi
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013  http://www.efa-project.org
+# Copyright (C) 2013~2015 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ if ($id =~ /^[A-F0-9]{8}\.[A-F0-9]{5}|[A-F0-9]{9}\.[A-F0-9]{5}|[A-F0-9]{10}\.[A-
     }
   } else {
     $flag=1;
-  }  
+  }
 
   if ($flag) {
     $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host",
@@ -84,11 +84,11 @@ if ($id =~ /^[A-F0-9]{8}\.[A-F0-9]{5}|[A-F0-9]{9}\.[A-F0-9]{5}|[A-F0-9]{10}\.[A-
     $sth = $dbh->prepare($sql);
     $sth->execute;
     @results = $sth->fetchrow;
-    if (!$results[0]) { 
- 
+    if (!$results[0]) {
+
       $sth->finish();
-      $dbh->disconnect();  
-    
+      $dbh->disconnect();
+
       # redirect to failure page
       print "<meta http-equiv=\"refresh\" content=\"0;URL=/notlearned.html\">";
     } else {
@@ -103,9 +103,9 @@ if ($id =~ /^[A-F0-9]{8}\.[A-F0-9]{5}|[A-F0-9]{9}\.[A-F0-9]{5}|[A-F0-9]{10}\.[A-
       $sql = "DELETE from tokens WHERE token=\"$token\"";
       $sth = $dbh->prepare($sql);
       $sth->execute;
-  
+
       $sth->finish();
-      $dbh->disconnect();  
+      $dbh->disconnect();
 
       # redirect to success page
       print "<meta http-equiv=\"refresh\" content=\"0;URL=/learned.html\">";
@@ -113,7 +113,7 @@ if ($id =~ /^[A-F0-9]{8}\.[A-F0-9]{5}|[A-F0-9]{9}\.[A-F0-9]{5}|[A-F0-9]{10}\.[A-
   } else {
       # redirect to denial page
       print "<meta http-equiv=\"refresh\" content=\"0;URL=/denylearned.html\">";
-  }  
+  }
 }else{
     die "Error in id or token syntax";
 }

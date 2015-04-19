@@ -1,9 +1,9 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA Project update script 
+# EFA Project update script
 # Version 20131227
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2013  http://www.efa-project.org
+# Copyright (C) 2012~2015 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ function start_update()
       echo "[EFA] Starting update to $LVERSION"
       cd /var/EFA/update
       if [ -f /var/EFA/update/EFA-update-script ]
-        then 
+        then
           rm /var/EFA/update/EFA-update-script
       fi
       wget -q $MIRROR/update/EFA-update-script
@@ -87,10 +87,10 @@ function cron_check()
 {
   get_cversion
   get_lversion
-  
+
   # Call in our current version number for statistics.
   wget -qO- $MIRROR/versioncheck/`cat /etc/EFA-Version`.txt $> /dev/null
-  
+
   if [ "$CVERSION" == "$LVERSION" ]
     then
       exit 0
@@ -122,13 +122,13 @@ function get_cversion()
 {
   if [ -f /etc/EFA-Version ]
     then
-      CVERSION="`head -1 /etc/EFA-Version`" 
+      CVERSION="`head -1 /etc/EFA-Version`"
     else
-      echo "ERROR: No valid version file found on this system." 
+      echo "ERROR: No valid version file found on this system."
       echo "ERROR: exiting now"
       exit 0
   fi
-  
+
   # Check if we run an beta version
   if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}-beta$ ]]
     then
@@ -137,7 +137,7 @@ function get_cversion()
       echo "ERROR: exiting now"
       exit 0
   fi
-  
+
   # Check if CVERSION is an valid Version file
   if ! [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}$ ]]
     then
@@ -158,11 +158,11 @@ function get_lversion()
     then
       rm /tmp/EFA-Version
   fi
-  
+
   wget -q $MIRROR/update/EFA-Version
   if [ -f /tmp/EFA-Version ]
     then
-      LVERSION="`head -1 /tmp/EFA-Version`" 
+      LVERSION="`head -1 /tmp/EFA-Version`"
   fi
 
   # Check if LVERSION is an valid Version file
