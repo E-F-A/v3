@@ -206,6 +206,11 @@ function update-3.0.0.8() {
   # Issue #45 Add ScamNailer Ruleset
   # todo:  Host this on dl.efa-project.org
   echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
+  
+  # Issue #169 Clean up clamav-unoffical-sigs script
+  sed -i '/^mbl_dbs="/ c\#mbl_dbs="' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^#mbl_dbs="/ {n; s/.*/#  mbl.ndb/}' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^#mbl_dbs="/ {n;n; s/.*/#"/}' /usr/local/etc/clamav-unofficial-sigs.conf
 
   echo "$VERSION specific updates are complete, proceeding to"
   echo "individual component updates..."

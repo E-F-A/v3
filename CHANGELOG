@@ -11,6 +11,7 @@ Issue #158 Enhancement  - Sort transport domain list in EFA-Configure
 Issue #161 Enhancement  - Increase MailScanner thread limit in EFA-Configure
 Issue #164 Enhancement  - Add MailWatch Password Reset to EFA-Configure 
 Issue #166 Bug          - MailWatch cron job not executing contents
+Issue #169 Enhancement  - Clean up clamav-unoffical-sigs script
 
 Add 4GB Swap partition to new builds.
 

@@ -359,6 +359,11 @@ func_spam_clamav () {
     sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
 
+    # Issue #169 Clean up clamav-unoffical-sigs script
+    sed -i '/^mbl_dbs="/ c\#mbl_dbs="' /usr/local/etc/clamav-unofficial-sigs.conf
+    sed -i '/^#mbl_dbs="/ {n; s/.*/#  mbl.ndb/}' /usr/local/etc/clamav-unofficial-sigs.conf
+    sed -i '/^#mbl_dbs="/ {n;n; s/.*/#"/}' /usr/local/etc/clamav-unofficial-sigs.conf
+    
     # Issue #45 ScamNailer ClamAV ruleset
     # todo: host this on dl.efa-project.org
     # http://www.scamnailer.info/
