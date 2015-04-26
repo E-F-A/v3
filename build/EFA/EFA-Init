@@ -1085,29 +1085,29 @@ if [ $CONFIGURED == "NO" ]
 	read StartConf
 
 	if [[ "$StartConf" == "Y" || "$StartConf" == "y" || "$StartConf" == "" ]]; then
-        pause
-		func_ask-hostname
-		func_ask-domainname
-		func_ask-adminemail
-		func_ask-ipaddress
-		func_ask-netmask
-		func_ask-gateway
-		func_ask-dns1
-		func_ask-dns2
-		func_ask-username
-		func_ask-userpassword
-		func_ask-rootpassword
-		func_detect-virtual
-		func_ask-timezone
-		func_ask-keyboard
-		func_ask-ianacode
-		func_ask-mailserver
-		func_ask-orgname
-		func_ask-updates
-		func_verify-settings
-		func_configure-system
-		if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
-		func_end
+      pause
+      func_ask-keyboard
+      func_ask-hostname
+      func_ask-domainname
+      func_ask-adminemail
+      func_ask-ipaddress
+      func_ask-netmask
+      func_ask-gateway
+      func_ask-dns1
+      func_ask-dns2
+      func_ask-username
+      func_ask-userpassword
+      func_ask-rootpassword
+      func_detect-virtual
+      func_ask-timezone
+      func_ask-ianacode
+      func_ask-mailserver
+      func_ask-orgname
+      func_ask-updates
+      func_verify-settings
+      func_configure-system
+      if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
+      func_end
     elif [[ "$StartConf" == "N" || "$StartConf" == "n" ]]; then
 		echo -e "$red"
 		echo -e "You are now aborting EFA-Init, your system will not function properly."
