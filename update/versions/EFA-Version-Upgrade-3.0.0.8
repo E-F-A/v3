@@ -35,11 +35,11 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
-# List of current version numbers for the software we use
+# List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
 MAILWATCHVERSION="7f6858df83"
 IMAGECEBERUSVERSION="1.1"
-SPAMASSASSINVERSION="3.4.0"
+SPAMASSASSINVERSION="3.4.0a"
 PYZORVERSION="0.7.0"
 VMTOOLSVERSION="9.4.0-1280544"
 WEBMINVERSION="1.690-1"
@@ -52,12 +52,13 @@ function run_update() {
   echo "Starting update to E.F.A. 3.0.0.8"
 
   # To package for this update:
-  # /EFA-Version-Upgrade                  <- This file in the root, renamed!
-  # /Files/										            <- Directory (containing binary files)
-  # /Files/geoip-5fc9611.tar.gz           <- GeoIP update files
-  # /Scripts/									            <- Directory (containing update scripts (previous git scripts))
-  # /Scripts/lib-EFA-Configure            <- Complete EFA-Configure dir with all files
-  # /Scripts/EFA-Configure                <- EFA-Configure script
+  # /EFA-Version-Upgrade                              <- This file in the root, renamed!
+  # /Files/										                        <- Directory (containing binary files)
+  # /Files/geoip-5fc9611.tar.gz                       <- GeoIP update files
+  # /Files/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz     <- Spamassassin update files
+  # /Scripts/									                        <- Directory (containing update scripts (previous git scripts))
+  # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
+  # /Scripts/EFA-Configure                            <- EFA-Configure script
 
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
@@ -110,10 +111,90 @@ function run_update() {
   sed -i '/^#mbl_dbs="/ {n; s/.*/#  mbl.ndb/}' /usr/local/etc/clamav-unofficial-sigs.conf
   sed -i '/^#mbl_dbs="/ {n;n; s/.*/#"/}' /usr/local/etc/clamav-unofficial-sigs.conf
 
+  # Update spamassassin
+  update-spamassassin
+
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update SpamAssassin function
+#----------------------------------------------------------------#
+function update-spamassassin(){
+  if [[ $SPAMASSASSINVERSION != "`grep SPAMASSASSINVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]; then
+    # Add a spamassassin version to EFA-Config if needed
+    if [[ -z "`grep SPAMASSASSINVERSION /etc/EFA-Config`" ]]; then
+      echo "SPAMASSASSINVERSION:" >> /etc/EFA-Config
+    fi
+
+    #### Backup Phase #####
+    BACKUPDIR="/var/EFA/backup/$VERSION"
+
+    # Back up old SA (excludes man pages)
+    mkdir -p $BACKUPDIR/spamassassin-etc
+    cp -r /etc/mail/spamassassin $BACKUPDIR/spamassassin-etc
+    mkdir -p $BACKUPDIR/spamassassin-var
+    cp -r /var/lib/spamassassin $BACKUPDIR/spamassassin-var
+    mkdir -p $BACKUPDIR/spamassassin-usr
+    cp -r /usr/local/share/perl5/Mail/SpamAssassin $BACKUPDIR/spamassassin-usr
+    cp /usr/local/share/perl5/spamassassin-run.pod $BACKUPDIR/spamassassin-usr
+    mkdir -p $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-awl $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamassassin $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-compile $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamc $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamd $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-update $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-check_spamd $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-learn $BACKUPDIR/spamassassin-bin
+
+    #### Commit Phase #####
+    service MailScanner stop
+
+    # Remove old Spamassassin definitions
+    rm -rf /var/lib/spamassassin
+
+    # Bypass noexec on /tmp...compile in /usr/src instead
+    mv $STAGING/Files/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
+    cd /usr/src/EFA
+    tar xzvf Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
+    cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
+    # Installation meta-script...add a little modularity to future spamassassin upgrades
+    chmod 755 install.sh
+	  # Run install without testing each module during compile
+	  # Some tests would fail in remote environments due to external factors
+    ./install.sh --skiptests
+    if [[ $? -ne 0 ]]; then
+      cd /usr/src/EFA
+      rm -rf /usr/src/EFA/Spamassassin*
+      abort
+    fi
+
+	  # Symlink for Geo::IP
+	  mkdir -p /usr/local/share/GeoIP
+	  ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
+
+	  # Issue #82 re2c spamassassin rule compilation
+	  yum -y install re2c
+	  sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
+
+    # Grab new definitions
+    /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
+    /usr/local/bin/sa-compile
+
+    # Restart mailscanner
+    service MailScanner start
+
+    # Cleanup
+    rm -rf /usr/src/EFA/Spamassassin*
+
+    # Update the version of spamassassin in EFA-Config
+    sed -i "/SPAMASSASSINVERSION:/ c\SPAMASSASSINVERSION:$SPAMASSASSINVERSION" /etc/EFA-Config
+  fi
 }
 #----------------------------------------------------------------#
 
