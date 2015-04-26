@@ -1,0 +1,1371 @@
+#!/bin/bash
+# +--------------------------------------------------------------------+
+# EFA update script
+# Version 20150426
+# +--------------------------------------------------------------------+
+# Copyright (C) 2012~2015  http://www.efa-project.org
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# +--------------------------------------------------------------------+
+
+#----------------------------------------------------------------#
+# Variables
+#----------------------------------------------------------------#
+logdir="/var/log/EFA"
+gitdlurl="https://raw.githubusercontent.com/E-F-A/v3"
+mirror="http://dl.efa-project.org"
+mirrorpath="update"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd*"
+ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
+MAILFROM="$ADMINEMAIL"
+MAILTO="$ADMINEMAIL"
+MAILSUBJECT="EFA Update Complete For: `hostname`"
+SENDMAIL="/usr/lib/sendmail"
+TMPMAIL="/tmp/tempmail"
+MAILWATCHVERSION="7f6858df83"
+IMAGECEBERUSVERSION="1.1"
+SPAMASSASSINVERSION="3.4.0"
+PYZORVERSION="0.7.0"
+VMTOOLSVERSION="9.4.0-1280544"
+WEBMINVERSION="1.690-1"
+STAGING="/tmp/EFA-Staging"
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# get-update path
+#----------------------------------------------------------------#
+function get_update_path() {
+  get_cversion
+  if [[ $CVERSION == "EFA-3.0.0.0" ]]
+    then
+      yum_update
+      update-3.0.0.1
+      update-3.0.0.2
+      update-3.0.0.3
+      update-3.0.0.4
+      update-3.0.0.5
+	    update-3.0.0.6
+	    update-3.0.0.7
+	    update-software
+  elif [[ $CVERSION == "EFA-3.0.0.1" ]]
+    then
+      yum_update
+      update-3.0.0.2
+      update-3.0.0.3
+      update-3.0.0.4
+      update-3.0.0.5
+	    update-3.0.0.6
+	    update-3.0.0.7
+      update-software
+  elif [[ $CVERSION == "EFA-3.0.0.2" ]]
+    then
+      yum_update
+      update-3.0.0.3
+      update-3.0.0.4
+      update-3.0.0.5
+	    update-3.0.0.6
+	    update-3.0.0.7
+      update-mailwatch
+      update-vmtools
+      update-imageceberus
+  elif [[ $CVERSION == "EFA-3.0.0.3" ]]
+    then
+      yum_update
+      update-3.0.0.4
+      update-3.0.0.5
+	    update-3.0.0.6
+	    update-3.0.0.7
+      update-software
+  elif [[ $CVERSION == "EFA-3.0.0.4" ]]
+    then
+      yum_update
+      update-3.0.0.5
+	    update-3.0.0.6
+	    update-3.0.0.7
+      update-software
+  elif [[ $CVERSION == "EFA-3.0.0.5" ]]
+    then
+      yum_update
+      update-3.0.0.6
+	    update-3.0.0.7
+      update-software
+  elif [[ $CVERSION == "EFA-3.0.0.6" ]]
+    then
+      yum_update
+      update-3.0.0.7
+	    update-software
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.7
+#----------------------------------------------------------------#
+function update-3.0.0.7() {
+
+  ##### Staging Phase #####
+  VERSION="3.0.0.7"
+
+  # grab latest version of EFA-Configure with libraries
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  [[ $? -ne 0 ]] && abort
+  wget --no-check-certificate -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt
+  [[ $? -ne 0 ]] && abort
+  mkdir -p $STAGING/lib
+  for lib in `cat $STAGING/libraries-filelist.txt`
+    do
+      /usr/bin/wget --no-check-certificate -O $STAGING/lib/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib
+	  [[ $? -ne 0 ]] && abort
+  done
+
+  # Issue #141 Exclude Whitelisted Emails from Report as Spam Link
+  /usr/bin/wget --no-check-certificate -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+
+  # Issue #147 Message Learn/Release Rejecting 8 digit ID prefix
+  /usr/bin/wget --no-check-certificate -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  /usr/bin/wget --no-check-certificate -O $STAGING/release-msg.cgi $gitdlurl/$VERSION/build/EFA/release-msg.cgi
+
+  ##### Backup Phase #####
+  /usr/local/sbin/EFA-Backup -backup
+
+  ##### Commit Phase #####
+
+  # grab latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -f /var/EFA/lib/EFA-Configure/*
+  mv $STAGING/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  mv $STAGING/lib/* /var/EFA/lib/EFA-Configure/
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
+
+  # Issue #136 Disable Notify Senders by default in MailScanner
+  sed -i "/^Notify Senders =/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
+
+  # Issue #139 SSLv3 POODLE Vulnerability
+  sed -i "/^SSLProtocol/ c\SSLProtocol all -SSLv2 -SSLv3" /etc/httpd/conf.d/ssl.conf
+
+  # Issue #30 filter non-spam from quarantine reports (regression fix)
+  sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+
+  # Issue #141 Exclude Whitelisted Emails from Report as Spam Link
+  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  mv $STAGING/CustomAction.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+
+  # Issue #147 Message Learn/Release Rejecting 8 digit ID prefix
+  rm -f /var/www/cgi-bin/learn-msg.cgi
+  rm -f /var/www/cgi-bin/release-msg.cgi
+  mv $STAGING/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
+  mv $STAGING/release-msg.cgi /var/www/cgi-bin/release-msg.cgi
+  chown apache:apache /var/www/cgi-bin/learn-msg.cgi
+  chown apache:apache /var/www/cgi-bin/release-msg.cgi
+  chmod ugo+x /var/www/cgi-bin/learn-msg.cgi
+  chmod ugo+x /var/www/cgi-bin/release-msg.cgi
+
+  # Issue #149 Disable SSL in Postfix
+  postconf -e "smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3"
+  postconf -e "smtp_tls_mandatory_protocols = !SSLv2,!SSLv3"
+  postconf -e "smtpd_tls_protocols = !SSLv2,!SSLv3"
+  postconf -e "smtp_tls_protocols = !SSLv2,!SSLv3"
+
+  # Issue #153 Reply signature behavior not functional
+  sed -i "/^Dont Sign HTML If Headers Exist =/ c\Dont Sign HTML If Headers Exist = In-Reply-To: References:" /etc/MailScanner/MailScanner.conf
+
+  # Issue #128 Adjust Treat Invalid Watermarks With No Sender as Spam
+  # Only modify if it is "high-scoring spam"
+  # Any other value indicates customization by end user
+  TEST=$(grep '^Treat Invalid Watermarks With No Sender as Spam = high-scoring spam' /etc/MailScanner/MailScanner.conf)
+  if [[ -n $TEST ]]; then
+    sed -i "/^Treat Invalid Watermarks With No Sender as Spam =/ c\Treat Invalid Watermarks With No Sender as Spam = 2" /etc/MailScanner/MailScanner.conf
+  fi
+
+  service MailScanner restart
+
+  echo "$VERSION specific updates are complete, proceeding to"
+  echo "individual component updates..."
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+
+  rm -rf $STAGING/*
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.6
+#----------------------------------------------------------------#
+function update-3.0.0.6() {
+
+  ##### Staging Phase #####
+  VERSION="3.0.0.6"
+
+  # grab latest version of EFA-Configure with libraries
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  [[ $? -ne 0 ]] && abort
+  wget --no-check-certificate -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt
+  [[ $? -ne 0 ]] && abort
+  mkdir -p $STAGING/lib
+  for lib in `cat $STAGING/libraries-filelist.txt`
+    do
+      /usr/bin/wget --no-check-certificate -O $STAGING/lib/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib
+	  [[ $? -ne 0 ]] && abort
+  done
+
+  ##### Backup Phase #####
+  /usr/local/sbin/EFA-Backup -backup
+
+  ##### Commit Phase #####
+
+  # grab latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -f /var/EFA/lib/EFA-Configure/*
+  mv $STAGING/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  mv $STAGING/lib/* /var/EFA/lib/EFA-Configure/
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
+
+  # Issue #129 increase max spam check size to 2 MB
+  sed -i '/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k' /etc/MailScanner/MailScanner.conf
+
+  # Issue #131 Undefined index %orgname%
+  sed -i "s/^Watermark Secret = %orgname%-\(.*\)$/Watermark Secret = %org-name%-\1/" /etc/MailScanner/MailScanner.conf
+
+  echo "Update to $VERSION complete."
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+
+  rm -rf $STAGING/*
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.5
+#----------------------------------------------------------------#
+function update-3.0.0.5() {
+
+  # Issue #123 Update Kernel
+  VERSION="3.0.0.5"
+
+  # Push version to 3.0.0.4
+  echo "EFA-3.0.0.4" > /etc/EFA-Version
+
+  update-kernel
+
+  # Issue #79 EFA-Update Staging and Error Handling
+
+  # Apply 3.0.0.4 update fixes (safe to reapply)
+  # See http://forum.efa-project.org/viewtopic.php?f=13&t=604
+  # for more info
+
+  ################################################################
+  # BEGIN 3.0.0.4 Update Fixes ###################################
+  ################################################################
+
+  echo "Staring fixes for updates 3.0.0.2-3.0.0.4..."
+
+  ##### Staging Phase #####
+
+  VERSION="3.0.0.4"
+
+  #Issue #18 Email signature sanitation
+  /usr/bin/wget --no-check-certificate -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+  [[ $? -ne 0 ]] && abort
+
+  #Issue #65 Fix EFA-SA-Update file location
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
+  [[ $? -ne 0 ]] && abort
+
+  VERSION="3.0.0.3"
+
+  # grab latest version of EFA-Configure
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  [[ $? -ne 0 ]] && abort
+
+  # Issue #16 System/db/settings backup
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup
+  [[ $? -ne 0 ]] && abort
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron
+  [[ $? -ne 0 ]] && abort
+
+  # Issue #17 Trusted Network Rules
+  /usr/bin/wget --no-check-certificate -O $STAGING/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html
+  [[ $? -ne 0 ]] && abort
+  /usr/bin/wget --no-check-certificate -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  [[ $? -ne 0 ]] && abort
+
+  # Fix vtoolsd init script...
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
+    /usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd $gitdlurl/$VERSION/build/EFA/vmtoolsd.init
+	[[ $? -ne 0 ]] && abort
+  fi
+
+  ##### Backup Phase #####
+
+  # Skip for this pseudo-update (fix needs committed first...will use in future updates)
+
+  ##### Commit Phase #####
+
+   # Issue #17 Trusted Network Rules (yum update)
+  yum -y install perl-Net-Netmask
+  [[ $? -ne 0 ]] && abort
+
+  #Issue #18 Email signature sanitation
+  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  mv $STAGING/CustomAction.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  /etc/init.d/MailScanner restart
+
+  #Issue #65 Fix EFA-SA-Update file location
+  rm -f /etc/cron.daily/EFA-SA-Update
+  rm -f /usr/local/sbin/EFA-SA-Update
+  mv $STAGING/EFA-SA-Update /usr/local/sbin/EFA-SA-Update
+  chmod 755 /usr/local/sbin/EFA-SA-Update
+
+  # grab latest version of EFA-Configure
+  rm -f /usr/local/sbin/EFA-Configure
+  mv $STAGING/EFA-Configure /usr/local/sbin/EFA-Configure
+  chmod 700 /usr/local/sbin/EFA-Configure
+
+  # Issue #16 System/db/settings backup
+  mkdir -p /var/EFA/backup
+  mv $STAGING/EFA-Backup /usr/local/sbin/EFA-Backup
+  chmod 700 /usr/local/sbin/EFA-Backup
+  mv $STAGING/EFA-Backup-cron /etc/cron.daily/EFA-Backup-cron
+  chmod 700 /etc/cron.daily/EFA-Backup-cron
+
+  # Issue #60 kam.cf.backup parsed by spamassassin
+  mkdir -p /var/EFA/backup/KAM
+
+  # Issue #17 Trusted Network Rules
+  touch /etc/sysconfig/EFA_trusted_networks
+  yum -y install perl-Net-Netmask
+  rm -f /var/www/html/denylearned.html
+  mv $STAGING/denylearned.html /var/www/html/denylearned.html
+  rm -f /var/www/cgi-bin/learn-msg.cgi
+  mv $STAGING/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
+  chmod 755 /var/www/cgi-bin/learn-msg.cgi
+  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
+
+  # Fix vtoolsd init script...
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
+    rm -f /etc/init.d/vmtoolsd
+    mv $STAGING/vmtoolsd /etc/init.d/vmtoolsd
+  fi
+
+  ################################################################
+  # END 3.0.0.4 Update Fixes #####################################
+  ################################################################
+
+  echo "Staring update to E.F.A. 3.0.0.5"
+  VERSION="3.0.0.5"
+
+  ##### Staging Phase #####
+
+  # grab latest version of EFA-Configure with libraries
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  [[ $? -ne 0 ]] && abort
+  wget --no-check-certificate -O $STAGING/libraries-filelist.txt $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/libraries-filelist.txt
+  [[ $? -ne 0 ]] && abort
+  mkdir -p $STAGING/lib
+  for lib in `cat $STAGING/libraries-filelist.txt`
+    do
+      /usr/bin/wget --no-check-certificate -O $STAGING/lib/$lib $gitdlurl/$VERSION/build/EFA/lib-EFA-Configure/$lib
+	  [[ $? -ne 0 ]] && abort
+  done
+
+  # Issue #87 EFA-Tokens Cron Syntax Wrong
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Tokens-Cron $gitdlurl/$VERSION/build/EFA/EFA-Tokens-Cron
+  [[ $? -ne 0 ]] && abort
+
+  # Issue #100 phishing site urls
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-MS-Update $gitdlurl/$VERSION/build/EFA/EFA-MS-Update
+  [[ $? -ne 0 ]] && abort
+
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Daily-cron $gitdlurl/$VERSION/build/EFA/EFA-Daily-cron
+  [[ $? -ne 0 ]] && abort
+
+  /usr/bin/wget --no-check-certificate -O $STAGING/EFA-Monthly-cron $gitdlurl/$VERSION/build/EFA/EFA-Monthly-cron
+  [[ $? -ne 0 ]] && abort
+
+  # Issue #77 -- EFA MailScanner 0 byte tmp files
+  wget --no-check-certificate -O $STAGING/mailscanner-4.84.6-1.patch $gitdlurl/$VERSION/build/EFA/mailscanner-4.84.6-1.patch
+  [[ $? -ne 0 ]] && abort
+
+  # Issue #66 Grab Passwords from EFA-Config
+  # Issue #94 Postfix ID Regex Double Check
+  wget --no-check-certificate -O $STAGING/release-msg.cgi $gitdlurl/$VERSION/build/EFA/release-msg.cgi
+  [[ $? -ne 0 ]] && abort
+  wget --no-check-certificate -O $STAGING/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  [[ $? -ne 0 ]] && abort
+  wget --no-check-certificate -O $STAGING/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+  [[ $? -ne 0 ]] && abort
+
+  ##### Backup Phase #####
+
+  /usr/local/sbin/EFA-Backup -backup >> /var/log/EFA/EFA-Backup.log 2>&1
+
+  # Archive files we replace or remove
+  # Note: maybe add all efa specific files to the backup tool?
+  BACKUPDIR="/var/EFA/backup/3.0.0.5"
+  mkdir $BACKUPDIR
+  chmod 700 $BACKUPDIR
+  cp /etc/cron.daily/EFA-Tokens-Cron $BACKUPDIR
+  cp /etc/cron.daily/EFA-Daily-cron $BACKUPDIR
+  cp /etc/cron.monthly/EFA-Monthly-cron $BACKUPDIR
+  cp /usr/local/sbin/EFA-Configure $BACKUPDIR
+  cp -r /var/EFA/lib/EFA-Configure/ $BACKUPDIR/EFA-Configure-libs/
+
+  cp /etc/cron.daily/update_phishing_sites $BACKUPDIR
+  cp /etc/cron.d/raid-check $BACKUPDIR
+
+  ##### Commit Phase #####
+
+  # Create backup directory
+  mkdir -p /var/EFA/backup/$VERSION
+
+  #Issue #70 .bashrc EFA-Configure Launch Interactive Only
+  LOCALUSER=`grep :501: /etc/passwd | sed 's/:x.*$//'`
+  sed -i "/^sudo \/usr\/local\/sbin\/EFA-Configure/ c\if ! [ -z \"\$PS1\" ]; then\n  sudo \/usr\/local\/sbin\/EFA-Configure\nfi" /home/$LOCALUSER/.bashrc
+
+  # Issue #76 Processing Attempts Database Bug
+  sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
+
+  # Issue #98 postfix tlsmgr smtpd_tls_session warnings
+  postconf -e "smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache"
+  postconf -e "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache"
+  service postfix reload
+
+  # Issue #87 EFA-Tokens Cron Syntax Wrong
+  rm -f /etc/cron.daily/EFA-Tokens-Cron
+  mv $STAGING/EFA-Tokens-Cron /etc/cron.daily/EFA-Tokens-Cron
+  chmod 755 /etc/cron.daily/EFA-Tokens-Cron
+
+  # grab latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -f /var/EFA/lib/EFA-Configure/*
+  mv $STAGING/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  mv $STAGING/lib/* /var/EFA/lib/EFA-Configure/
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
+
+  # Issue #100 phishing site urls
+  mv -f $STAGING/EFA-MS-Update /usr/local/sbin/EFA-MS-Update
+  mv -f $STAGING/EFA-Daily-cron /etc/cron.daily/EFA-Daily-cron
+  mv -f $STAGING/EFA-Monthly-cron /etc/cron.monthly/EFA-Monthly-cron
+  chmod 700 /usr/local/sbin/EFA-MS-Update
+  chmod 700 /etc/cron.daily/EFA-Daily-cron
+  chmod 700 /etc/cron.monthly/EFA-Monthly-cron
+  rm -f /etc/cron.daily/update_phishing_sites
+  /usr/local/sbin/EFA-MS-Update -update
+
+  # Issue #102 Remove cron.d/raid-check
+  rm -f /etc/cron.d/raid-check
+
+  # Issue #93 Pyzor Errors
+  ln -s /var/spool/postfix/.pyzor /var/www/.pyzor
+  chown -R postfix:apache /var/spool/postfix/.pyzor
+  chmod -R ug+rwx /var/spool/postfix/.pyzor
+
+  # Issue #89 Razor Errors
+  ln -s /var/spool/postfix/.pyzor /var/www/.razor
+  chown -R postfix:apache /var/spool/postfix/.razor
+  chmod -R ug+rwx /var/spool/postfix/.razor
+
+  # Issue #77 -- EFA MailScanner 0 byte tmp files
+  cd /usr/lib/MailScanner
+  patch < $STAGING/mailscanner-4.84.6-1.patch
+
+  # Issue #95 SASL AUthentication database not found
+  # We just create a dummy sasldb2 if it doesn't exist
+  if [[ ! -f /etc/sasldb2 ]]
+    then
+	  echo "creating random sasldb2 file"
+      tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1 | saslpasswd2 -p -c /etc/sasldb2
+      chgrp postfix /etc/sasldb2
+  fi
+
+
+  # Issue #66 Pull Passwords from /etc/EFA-Config & Issue #94 Postfix ID Regex Double Check
+  chown root:apache /etc/EFA-Config
+  chmod 640 /etc/EFA-Config
+  # sgwi
+  sed -i "/^\$db_pass/ c\$efa_array = preg_grep('/^SQLGREYSQLPWD/', file('/etc/EFA-Config'));\nforeach(\$efa_array as \$num => \$line) {\n  if (\$line) {\n    \$db_pass = chop(preg_replace('/^SQLGREYSQLPWD:(.*)/','\$1',\$line));\n  }\n}" /var/www/html/sgwi/includes/config.inc.php
+  # MailWatch
+  sed -i "/^define('DB_PASS',/ c\$efa_config = preg_grep('/^MAILWATCHSQLPWD/', file('/etc/EFA-Config'));\nforeach(\$efa_config as \$num => \$line) {\n  if (\$line) {\n    \$db_pass_tmp = chop(preg_replace('/^MAILWATCHSQLPWD:(.*)/','\$1', \$line));\n  }\n}\ndefine('DB_PASS', \$db_pass_tmp);" /var/www/html/mailscanner/conf.php
+  # MailWatch Tools
+  sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
+  sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm
+  sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLSpamSettings.pm
+  rm -f /var/www/cgi-bin/learn-msg.cgi
+  mv $STAGING/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
+  rm -f /var/www/cgi-bin/release-msg.cgi
+  mv $STAGING/release-msg.cgi /var/www/cgi-bin/release-msg.cgi
+
+  # Issue #125 Internal Server Error learn-msg.cgi and release-msg.cgi
+  chmod 755 /var/www/cgi-bin/learn-msg.cgi
+  chmod 755 /var/www/cgi-bin/release-msg.cgi
+
+  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  mv $STAGING/CustomAction.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+
+  # Issue #51 -- Redundant Quarantine Clean Scripts Present
+  rm -f /etc/cron.daily/clean.quarantine
+
+  # Add a mailwatch version to EFA-Config (the previous version)
+  echo "MAILWATCHVERSION:8e1a202895" >> /etc/EFA-Config
+
+  # Add a ImageCeberus version to EFA-Config (the previous version)
+  echo "IMAGECEBERUSVERSION:1.0" >> /etc/EFA-Config
+
+  # Add a Pyzor version to EFA-Config (the previous version)
+  echo "PYZORVERSION:0.5.0" >> /etc/EFA-Config
+
+  # Issue #117 Lower spamassassin score from 10 to 7
+  sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
+  service MailScanner restart
+
+  # Issue #123 Update mysql, postfix, clamav
+  yum -y update mysql* postfix* clamav* clamd*
+  chown -R postfix:apache /var/spool/postfix/hold
+  chown -R postfix:apache /var/spool/postfix/incoming
+  chmod -R 750 /var/spool/postfix/hold
+  chmod -R 750 /var/spool/postfix/incoming
+  # Remove old clamav dbs
+  rm -f /var/clamav/main.cvd
+  rm -f /var/clamav/daily.cld
+  freshclam
+
+  echo "Update to $VERSION complete."
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+
+  rm -rf $STAGING/*
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.4
+#----------------------------------------------------------------#
+function update-3.0.0.4() {
+
+  echo "Staring update to E.F.A. 3.0.0.4"
+  VERSION="3.0.0.4"
+  # Create backup directory
+  mkdir -p /var/EFA/backup/$VERSION
+
+  #Issue #63 Remove old kam.cf.backup from Spamassassin directory
+  rm -f /etc/mail/spamassassin/kam.cf.backup
+
+  #Issue #18 Email signature sanitation
+  rm -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  /usr/bin/wget --no-check-certificate -O /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm $gitdlurl/$VERSION/build/EFA/CustomAction.pm
+  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  /etc/init.d/MailScanner restart
+
+  #Issue #65 Fix EFA-SA-Update file location
+  rm -f /etc/cron.daily/EFA-SA-Update
+  rm -f /usr/local/sbin/EFA-SA-Update
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
+  chmod 755 /usr/local/sbin/EFA-SA-Update
+
+  echo "Update to $VERSION complete."
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+
+  rm -rf $STAGING/*
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.3
+#----------------------------------------------------------------#
+function update-3.0.0.3() {
+
+  echo "Staring update to E.F.A. 3.0.0.3"
+  VERSION="3.0.0.3"
+  mkdir -p /var/EFA/backup/$VERSION
+  # Kernel update check
+  # If the kernel has updated in a previous update, and
+  # the system has not rebooted, do not proceed until running
+  # on latest kernel
+  CURRENTKERNEL="`uname -r`"
+  LATESTKERNEL="`grep -m 1 CentOS /boot/grub/menu.lst | sed 's/.*(//' | sed 's/)//'`"
+  if [[ $CURRENTKERNEL != $LATESTKERNEL ]]; then
+    echo "Your system has an updated kernel, but you are not running"
+    echo "on the latest kernel.  Please restart your system and run"
+    echo "EFA-Update after restart."
+
+    echo "From: $MAILFROM" > $TMPMAIL
+    echo "To: $MAILTO" >> $TMPMAIL
+    echo "Reply-To: $MAILFROM" >> $TMPMAIL
+    echo "Subject: Restart needed to update to 3.0.0.3 " >> $TMPMAIL
+    echo "" >> $TMPMAIL
+    echo "Update to 3.0.0.3 is pending." >> $TMPMAIL
+    echo "Your system has an updated kernel, but you are not running" >> $TMPMAIL
+    echo "on the latest kernel.  Please restart your system and run" >> $TMPMAIL
+    echo "EFA-Update after restart." >> $TMPMAIL
+    cat $TMPMAIL | $SENDMAIL -t
+    rm $TMPMAIL
+    exit 1
+  fi
+
+  # Issue #62 install perl-Compress-Raw-Zlib
+  yum -y install perl-Compress-Raw-Zlib
+
+  # Create /var/EFA/lib
+  mkdir /var/EFA/lib
+  mkdir /var/EFA/lib/EFA-Configure
+
+  # grab latest version of EFA-Configure
+  rm -f /usr/local/sbin/EFA-Configure
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  chmod 700 /usr/local/sbin/EFA-Configure
+
+  # Issue #16 System/db/settings backup
+  mkdir -p /var/EFA/backup
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Backup $gitdlurl/$VERSION/build/EFA/EFA-Backup
+  chmod 700 /usr/local/sbin/EFA-Backup
+  /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Backup-cron $gitdlurl/$VERSION/build/EFA/EFA-Backup-cron
+  chmod 700 /etc/cron.daily/EFA-Backup-cron
+
+  # Issue #60 kam.cf.backup parsed by spamassassin
+  mkdir -p /var/EFA/backup/KAM
+  rm -f /etc/cron.daily/EFA-SA-Update
+  /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-SA-Update $gitdlurl/$VERSION/build/EFA/EFA-SA-Update
+  chmod 755 /etc/cron.daily/EFA-SA-Update
+
+  # Issue #17 Trusted Network Rules
+  touch /etc/sysconfig/EFA_trusted_networks
+  yum -y install perl-Net-Netmask
+  /usr/bin/wget --no-check-certificate -O /var/www/html/denylearned.html $gitdlurl/$VERSION/build/EFA/denylearned.html
+  rm -f /var/www/cgi-bin/learn-msg.cgi
+  /usr/bin/wget --no-check-certificate -O /var/www/cgi-bin/learn-msg.cgi $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  chmod 755 /var/www/cgi-bin/learn-msg.cgi
+  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
+
+  #  Issue #50, clean sqlgrey source files
+  rm -rf /etc/cron.weekly/sqlgrey-1.8.0*
+
+  #  Issue #53, fix postfix queues after yum update
+  chown postfix:apache /var/spool/postfix/incoming
+  chown postfix:apache /var/spool/postfix/hold
+  chmod 740 /var/spool/postfix/incoming
+  chmod 740 /var/spool/postfix/hold
+
+  # Skipping Mailwatch upgrade in this version, handled by function from now on.
+  # This prevents multiple upgrades in a single update batch (3.0.0.1 -> 3.0.0.5)
+  # saving time.
+  # As users should not upgrade to an specific version but always use the latest
+  # E.F.A. version this should not cause any issues.
+
+  # Add the following in one pass for MailWatch to ensure settings are present
+  echo "" >> /var/www/html/mailscanner/conf.php
+  echo "// Enable MailScanner Rule Editor" >> /var/www/html/mailscanner/conf.php
+  echo "// Initially disabled as other config needs to be done to use it" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE', false);" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE_RELOAD_INTERVAL', 5);" >> /var/www/html/mailscanner/conf.php
+  echo "define('MSRE_RULESET_DIR', \"/etc/MailScanner/rules\");" >> /var/www/html/mailscanner/conf.php
+
+
+  # Update vmtools move to function so it is only run once just like mailwatch
+
+  # Issue #30 filter non-spam from quarantine reports
+  sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+
+  # Cleanup
+  cd /
+  rm -rf /usr/src/EFA/*
+
+  # Show info to user and populate the e-mail content
+  echo "Update to $VERSION complete."
+  echo ""
+  echo "Please note the following."
+  echo ""
+  echo "MailWatch has been updated. If you have custom tweaks,"
+  echo "please restore those tweaks in the new MailWatch."
+  echo "Look in /var/EFA/backup/3.0.0.2 for backed up files."
+  echo ""
+  echo "The kernel has likely updated."
+  echo "If you are using vmware-tools (commercial version)"
+  echo "please restart your E.F.A. and install the latest version"
+
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "Please note the following." >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "MailWatch has been updated. If you have custom tweaks," >> $TMPMAIL
+  echo "please restore those tweaks in the new MailWatch." >> $TMPMAIL
+  echo "Look in /var/EFA/backup/3.0.0.2 for backed up files." >> $TMPMAIL
+  echo "" >> $TMPMAIL
+  echo "The kernel has likely updated." >> $TMPMAIL
+  echo "If you are using vmware-tools (commercial version)" >> $TMPMAIL
+  echo "please restart your E.F.A. and install the latest version" >> $TMPMAIL
+
+  rm -rf $STAGING/*
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.2
+#----------------------------------------------------------------#
+function update-3.0.0.2() {
+
+  echo "Staring update to E.F.A. 3.0.0.2"
+  VERSION="3.0.0.2"
+  # Create backup directory
+  mkdir -p /var/EFA/backup/$VERSION
+
+  # fix issue Urgent: learn-msg.cgi broken #44
+  EFASQLPWD=`grep EFASQLPWD /etc/EFA-Config | sed 's/^.*://'`
+  sed -i "/^\$db_pass =/ c\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
+
+  echo "Update to $VERSION complete."
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+
+  rm -rf $STAGING/*
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to EFA-3.0.0.1
+#----------------------------------------------------------------#
+function update-3.0.0.1() {
+
+  echo "Staring update to E.F.A. 3.0.0.1"
+  VERSION="3.0.0.1"
+  # Create backup directory
+  mkdir -p /var/EFA/backup/$VERSION
+
+  # grab latest version of EFA-Configure
+  rm -f /usr/local/sbin/EFA-Configure
+  /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Configure $gitdlurl/$VERSION/build/EFA/EFA-Configure
+  chmod 700 /usr/local/sbin/EFA-Configure
+
+  # fix issue 32 clean quarantine not enabled
+  sed -i '/$disabled = 1;/ c\$disabled = 0;' /etc/cron.daily/clean.quarantine
+
+  # fix issue 23
+  yum -y remove cyrus-sasl-sql cyrus-sasl-ldap
+
+  # fix issue 24 Disable Deliver Cleaned Messages
+  sed -i '/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No' /etc/MailScanner/MailScanner.conf
+
+  # Download latest learn-msg.cgi (fix issue 41)
+  rm -f /var/www/cgi-bin/learn-msg.cgi
+  cd /var/www/cgi-bin
+  wget --no-check-certificate $gitdlurl/$VERSION/build/EFA/learn-msg.cgi
+  chmod 755 learn-msg.cgi
+
+  echo "Update to $VERSION complete."
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+
+  rm -rf $STAGING/*
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update SpamAssassin function
+#----------------------------------------------------------------#
+function update-spamassassin(){
+  if [[ $SPAMASSASSINVERSION != "`grep SPAMASSASSINVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]; then
+    # Add a spamassassin version to EFA-Config if needed
+    if [[ -z "`grep SPAMASSASSINVERSION /etc/EFA-Config`" ]]; then
+      echo "SPAMASSASSINVERSION:" >> /etc/EFA-Config
+    fi
+
+    #### Staging Phase ####
+    mkdir -p $STAGING
+    /usr/bin/wget --no-check-certificate -O $STAGING/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz $mirror/build/$VERSION/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
+    [[ $? -ne 0 ]] && abort
+
+    #### Backup Phase #####
+    BACKUPDIR="/var/EFA/backup/$VERSION"
+
+    # Back up old SA (excludes man pages)
+    mkdir -p $BACKUPDIR/spamassassin-etc
+    cp -r /etc/mail/spamassassin $BACKUPDIR/spamassassin-etc
+    mkdir -p $BACKUPDIR/spamassassin-var
+    cp -r /var/lib/spamassassin $BACKUPDIR/spamassassin-var
+    mkdir -p $BACKUPDIR/spamassassin-usr
+    cp -r /usr/local/share/perl5/Mail/SpamAssassin $BACKUPDIR/spamassassin-usr
+    cp /usr/local/share/perl5/spamassassin-run.pod $BACKUPDIR/spamassassin-usr
+    mkdir -p $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-awl $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamassassin $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-compile $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamc $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/spamd $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-update $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-check_spamd $BACKUPDIR/spamassassin-bin
+    cp /usr/local/bin/sa-learn $BACKUPDIR/spamassassin-bin
+
+    #### Commit Phase #####
+    service MailScanner stop
+
+    # Remove old Spamassassin definitions
+    rm -rf /var/lib/spamassassin
+
+    # Bypass noexec on /tmp...compile in /usr/src instead
+    mv $STAGING/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
+    cd /usr/src/EFA
+    tar xzvf Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
+    cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
+    # Installation meta-script...add a little modularity to future spamassassin upgrades
+    chmod 755 install.sh
+	# Run install without testing each module during compile
+	# Some tests would fail in remote environments due to external factors
+    ./install.sh --skiptests
+    if [[ $? -ne 0 ]]; then
+      cd /usr/src/EFA
+      rm -rf /usr/src/EFA/Spamassassin*
+      abort
+    fi
+
+	# Symlink for Geo::IP
+	mkdir -p /usr/local/share/GeoIP
+	ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
+
+	# Issue #82 re2c spamassassin rule compilation
+	yum -y install re2c
+	sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
+
+    # Grab new definitions
+    /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
+    /usr/local/bin/sa-compile
+
+    service MailScanner start
+
+    # Cleanup
+    rm -rf /usr/src/EFA/Spamassassin*
+
+    # Update the version of spamassassin in EFA-Config
+    sed -i "/SPAMASSASSINVERSION:/ c\SPAMASSASSINVERSION:$SPAMASSASSINVERSION" /etc/EFA-Config
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update Kernel function
+#----------------------------------------------------------------#
+function update-kernel(){
+  yum -y update kernel*
+
+  # Kernel update check
+  # If the kernel has updated in a previous update, and
+  # the system has not rebooted, do not proceed until running
+  # on latest kernel
+  CURRENTKERNEL="`uname -r`"
+  LATESTKERNEL="`grep -m 1 CentOS /boot/grub/menu.lst | sed 's/.*(//' | sed 's/)//'`"
+  if [[ $CURRENTKERNEL != $LATESTKERNEL ]]; then
+    echo "Your system has an updated kernel, but you are not running"
+    echo "on the latest kernel.  Please restart your system and run"
+    echo "EFA-Update after restart."
+
+    echo "From: $MAILFROM" > $TMPMAIL
+    echo "To: $MAILTO" >> $TMPMAIL
+    echo "Reply-To: $MAILFROM" >> $TMPMAIL
+    echo "Subject: Restart needed to update to $VERSION" >> $TMPMAIL
+    echo "" >> $TMPMAIL
+    echo "Update to $VERSION is pending." >> $TMPMAIL
+    echo "Your system has an updated kernel, but you are not running" >> $TMPMAIL
+    echo "on the latest kernel.  Please restart your system and run" >> $TMPMAIL
+    echo "EFA-Update after restart." >> $TMPMAIL
+    cat $TMPMAIL | $SENDMAIL -t
+    rm $TMPMAIL
+    exit 1
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update vmtools function
+#----------------------------------------------------------------#
+function update-vmtools() {
+  # Issue #55 reapply open-vm-tools, if present and upgrade if new version is available
+
+  # Check:  Will this potentially remove commercial vmware-tools?
+  # If so, how do we test for open versus commercial versions?
+
+  # Todo:  Version checking for open-vm-tools and flag if installed
+
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" && $VMTOOLSVERSION != "`grep VMTOOLSVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]; then
+
+    # Add a vmware-tools version if needed
+    if [[ -z "`grep VMTOOLSVERSION /etc/EFA-Config`" ]]; then
+	  echo "VMTOOLSVERSION:" >> /etc/EFA-Config
+    fi
+
+    #### Staging Phase ####
+    /usr/bin/wget --no-check-certificate -O $STAGING/open-vm-tools-$VMTOOLSVERSION.tar.gz $mirror/build/$VERSION/open-vm-tools-$VMTOOLSVERSION.tar.gz
+   [[ $? -ne 0 ]] && abort
+
+    /usr/bin/wget --no-check-certificate -O $STAGING/vmtoolsd.init $mirror/build/$VERSION/vmtoolsd.init
+    [[ $? -ne 0 ]] && abort
+
+    #### Backup Phase #####
+    # Nothing to do
+
+    #### Commit Phase #####
+    service vmtoolsd stop
+
+    # Cleanup existing open-vm-tools
+    rm -f /usr/local/lib/libvmtools*
+    rm -f /usr/local/lib/libhgfs*
+    rm -f /usr/local/lib/libguestlib*
+    rm -rf /usr/local/lib/open-vm-tools
+    rm -f /usr/local/bin/vmware*
+    rm -f /usr/local/bin/vmtoolsd
+    rm -f /usr/local/sbin/mount.vmhgfs
+    rm -rf /etc/vmware-tools
+    rm -f /usr/local/include/vmci_sockets.h
+    rm -rf /usr/local/include/vmGuestLib
+
+    cd /usr/src/EFA
+    tar xvzf $STAGING/open-vm-tools-$VMTOOLSVERSION.tar.gz -C /usr/src/EFA
+    cd open-vm-tools-$VMTOOLSVERSION
+    ./configure --without-x
+    make
+    make install
+
+    rm -f /etc/init.d/vmtoolsd
+    mv $STAGING/vmtoolsd.init /etc/init.d/vmtoolsd
+    chmod 755 /etc/init.d/vmtoolsd
+    # lib adjustment
+    ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1
+    chkconfig vmtoolsd on
+    service vmtoolsd start
+
+    sed -i "/VMTOOLSVERSION:/ c\VMTOOLSVERSION:$VMTOOLSVERSION" /etc/EFA-Config
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update webmin function
+#----------------------------------------------------------------#
+function update-webmin() {
+  # Update webmin if we have a new version available
+  if [[ ! $WEBMINVERSION == "`yum list installed | grep -i webmin | awk {' print $2 '}`" ]]
+    then
+      if [[ -z "`grep WEBMINVERSION /etc/EFA-Config`" ]]; then
+        echo "WEBMINVERSION:" >> /etc/EFA-Config
+      fi
+
+	  #### Staging Phase ####
+	  /usr/bin/wget --no-check-certificate -O $STAGING/webmin-$WEBMINVERSION.noarch.rpm $mirror/build/$VERSION/webmin-$WEBMINVERSION.noarch.rpm
+	  [[ $? -ne 0 ]] && abort
+
+	  #### Backup Phase ####
+      cp /etc/webmin.config /var/EFA/backup/$VERSION/
+
+      #### Commit Phase #####
+      echo -e "Starting installation of new webmin version"
+
+	  service webmin stop
+
+	  cd $STAGING
+	  rpm -U webmin-$WEBMINVERSION.noarch.rpm
+	  # shoot a hole in webmin so we can change settings
+      echo "localauth=/usr/sbin/lsof" >> /etc/webmin/miniserv.conf
+      echo "referer=1" >> /etc/webmin/config
+      echo "referers=" >> /etc/webmin.config
+      sed -i '/^referers_none=1/ c\referers_none=0' /etc/webmin/config
+      service webmin restart
+
+      # Remove modules we don't need.
+      curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=adsl-client&mod=bacula-backup&mod=burner&mod=pserver&mod=cluster-copy&mod=exim&mod=shorewall6&mod=sendmail&confirm=Delete&acls=1&nodeps="
+      curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=cluster-webmin&mod=bandwidth&mod=cluster-passwd&mod=cluster-cron&mod=cluster-shell&mod=cluster-usermin&mod=cluster-useradmin&confirm=Delete&acls=1&nodeps="
+      curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=cfengine&mod=dhcpd&mod=dovecot&mod=fetchmail&mod=filter&mod=frox&mod=tunnel&mod=heartbeat&mod=ipsec&mod=jabber&mod=krb5&confirm=Delete&acls=1&nodeps="
+      curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=ldap-client&mod=ldap-server&mod=ldap-useradmin&mod=firewall&mod=mon&mod=majordomo&mod=exports&mod=openslp&mod=pap&mod=ppp-client&mod=pptp-client&mod=pptp-server&mod=postgresql&confirm=Delete&acls=1&nodeps="
+      curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=lpadmin&mod=proftpd&mod=procmail&mod=qmailadmin&mod=smart-status&mod=samba&mod=shorewall&mod=sarg&mod=squid&mod=usermin&mod=vgetty&mod=wuftpd&mod=webalizer&confirm=Delete&acls=1&nodeps="
+
+      # fix the holes again
+      sed -i '/^referers_none=0/ c\referers_none=1' /etc/webmin/config
+      sed -i '/referer=1/d' /etc/webmin/config
+      sed -i '/referers=/d' /etc/webmin/config
+      sed -i '/localauth=\/usr\/sbin\/lsof/d' /etc/webmin/miniserv.conf
+      service webmin restart
+
+	  sed -i "/WEBMINVERSION:/ c\WEBMINVERSION:$WEBMINVERSION" /etc/EFA-Config
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update Pyzor function
+#----------------------------------------------------------------#
+function update-pyzor() {
+  # Update Pyzor if we have a new version available
+  if [[ ! $PYZORVERSION == "`grep PYZORVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+
+      if [[ -z "`grep PYZORVERSION /etc/EFA-Config`" ]]; then
+        echo "PYZORVERSION:" >> /etc/EFA-Config
+      fi
+
+      #### Staging Phase ####
+      /usr/bin/wget --no-check-certificate -O $STAGING/pyzor-$PYZORVERSION.tar.gz $mirror/build/$VERSION/pyzor-$PYZORVERSION.tar.gz
+      [[ $? -ne 0 ]] && abort
+
+      #### Backup Phase ####
+      mv /var/spool/postfix/.pyzor/servers /var/EFA/backup/$VERSION/
+
+      #### Commit Phase #####
+      echo -e "Starting installation of new Pyzor version"
+
+      yum -y install python-setuptools
+
+      cd $STAGING
+      tar xvzf pyzor-$PYZORVERSION.tar.gz
+      cd pyzor-$PYZORVERSION
+      python setup.py build
+      python setup.py install
+
+      # Fix deprecation warning message
+      sed -i '/^#!\/usr\/bin\/python/ c\#!\/usr\/bin\/python -Wignore::DeprecationWarning' /usr/bin/pyzor
+
+      chown -R postfix:apache /var/spool/postfix/.pyzor
+      chmod -R ug+rwx /var/spool/postfix/.pyzor
+
+      # and finally initialize the servers file with an discover.
+      su postfix -s /bin/bash -c 'pyzor discover'
+
+	  sed -i "/PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update ImageCeberus function
+#----------------------------------------------------------------#
+function update-imageceberus() {
+  # Update ImageCeberus if we have a new version available
+  if [[ ! $IMAGECEBERUSVERSION == "`grep IMAGECEBERUSVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+       # Make sure version is present in EFA-Config
+	   if [[ -z "`grep IMAGECEBERUSVERSION /etc/EFA-Config`" ]]; then
+	     echo "IMAGECEBERUSVERSION:" >> /etc/EFA-Config
+       fi
+
+      #### Staging Phase ####
+      /usr/bin/wget --no-check-certificate -O $STAGING/imageCerberus-v$IMAGECEBERUSVERSION.zip $mirror/build/$VERSION/imageCerberus-v$IMAGECEBERUSVERSION.zip
+      [[ $? -ne 0 ]] && abort
+
+      #### Backup Phase ####
+      mv /etc/spamassassin/imageCerberus /var/EFA/backup/$VERSION/
+      mv /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm /var/EFA/backup/$VERSION/
+      mv /etc/mail/spamassassin/ImageCerberusPLG.cf /var/EFA/backup/$VERSION/
+
+      #### Commit Phase #####
+      echo -e "Starting installation of new ImageCeberus version"
+      service MailScanner stop
+
+      cd $STAGING
+      unzip imageCerberus-v$IMAGECEBERUSVERSION.zip
+      cd imageCerberus-v$IMAGECEBERUSVERSION
+      mv spamassassin/imageCerberus /etc/spamassassin/
+      rm -f /etc/spamassassin/imageCerberus/imageCerberusEXE
+      mv /etc/spamassassin/imageCerberus/x86_64/imageCerberusEXE /etc/spamassassin/imageCerberus/
+      rm -rf /etc/spamassassin/imageCerberus/x86_64
+      rm -rf /etc/spamassassin/imageCerberus/i386
+
+      mv spamassassin/ImageCerberusPLG.pm /usr/local/share/perl5/Mail/SpamAssassin/Plugin/
+      mv spamassassin/ImageCerberusPLG.cf /etc/mail/spamassassin/
+
+      sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
+
+      # Issue 67 default ImageCeberus score
+      sed -i "/^score     ImageCerberusPLG0/ c\score     ImageCerberusPLG0     0.0  0.0  0.0  0.0" /etc/mail/spamassassin/ImageCerberusPLG.cf
+
+      service MailScanner start
+
+      # Issue #124 MailScanner dies after update to 3.0.0.5
+      service MailScanner restart
+
+	  sed -i "/IMAGECEBERUSVERSION:/ c\IMAGECEBERUSVERSION:$IMAGECEBERUSVERSION" /etc/EFA-Config
+
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update mailwatch function
+#----------------------------------------------------------------#
+function update-mailwatch() {
+  # Update mailwatch if we have a new version available
+  if [[ ! $MAILWATCHVERSION == "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+      #### Staging Phase ####
+      /usr/bin/wget --no-check-certificate -O $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip $mirror/build/$VERSION/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      [[ $? -ne 0 ]] && abort
+
+      #### Backup Phase #####
+	  mkdir /var/EFA/backup/$VERSION/
+      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
+      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION
+	  mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/
+
+      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/
+
+      #### Commit Phase #####
+      echo -e "Starting installation of new mailwatch version"
+      service httpd stop
+      service MailScanner stop
+
+	  rm -rf /usr/src/EFA/1.2.0-master
+      unzip -d /usr/src/EFA $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
+
+      # Issue #66  Grab Passwords from /etc/EFA-Config
+      sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+      sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+      sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
+	  sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
+
+	  mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+	  cd /usr/src/EFA/1.2.0-master
+      mv tools /usr/local/bin/mailwatch
+      rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
+      chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
+      mv mailscanner /var/www/html
+      cd /var/www/html/mailscanner
+      chown root:apache images
+      chmod ug+rwx images
+      chown root:apache images/cache
+      chmod ug+rwx images/cache
+      chown root:apache temp
+      chmod ug+rwx temp
+      rm -rf docs
+
+      # Issue #30 filter non-spam from quarantine reports (regression fix)
+      sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+
+      # Build new conf.php
+      cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner
+
+      # Add favicons back
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images/favicon.png
+
+      # Add back EFA Branding
+      cd /var/www/html/mailscanner/images
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-47px.gif .
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-79px.png .
+      mv mailwatch-logo.gif mailwatch-logo.gif.orig >/dev/null 2>&1
+      mv mailwatch-logo.png mailwatch-logo.png.orig
+      mv mailscannerlogo.gif mailscannerlogo.gif.orig
+
+	  # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
+	  mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig
+	  ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
+	  sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
+
+      ln -s EFAlogo-79px.png mailwatch-logo.gif
+      ln -s EFAlogo-79px.png mailwatch-logo.png
+      ln -s EFAlogo-47px.gif mailscannerlogo.gif
+
+      # Alter color scheme
+      sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
+
+      # Add back Mailgraph link
+      cd /var/www/html/mailscanner
+      cp other.php other.php.orig
+      sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+      cp /var/EFA/backup/$VERSION/mailscanner/mailgraph.php .
+
+      # Reconfigure Greylisting as previously configured
+      cp functions.php functions.php.orig
+      cp /var/EFA/backup/$VERSION/mailscanner/grey.php .
+
+      # Is greylisting enabled?  Add back menu item...
+      if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
+        sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+      fi
+
+      # if updating from below version '3.0.0.5' update the config file
+      if [[ $CVERSION == "EFA-3.0.0.0" || $CVERSION == "EFA-3.0.0.1" || $CVERSION == "EFA-3.0.0.2" || $CVERSION == "EFA-3.0.0.3" || $CVERSION == "EFA-3.0.0.4" ]]
+        then
+          # Add the new software version disable function.
+          echo "" >> /var/www/html/mailscanner/conf.php
+          echo "// Show Software Version tab (only Admins can see it)" >> /var/www/html/mailscanner/conf.php
+          echo "define('SHOW_SFVERSION', false);" >> /var/www/html/mailscanner/conf.php
+          echo "" >> /var/www/html/mailscanner/conf.php
+
+          # Issue #109 Documentation tab present after MailWatch update testing
+          sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" /var/www/html/mailscanner/conf.php
+
+          # Issue #110 Bring MailWatch conf.php to latest version
+          echo "// can be set to 'proxyaddresses' or 'mail'. Please refer to your LDAP system manual for the right keyword" >> /var/www/html/mailscanner/conf.php
+          echo "define('LDAP_EMAIL_FIELD', 'proxyaddresses');" >> /var/www/html/mailscanner/conf.php
+          echo "" >> /var/www/html/mailscanner/conf.php
+          echo "define('MS_EXECUTABLE_PATH', '/usr/sbin/MailScanner');" >> /var/www/html/mailscanner/conf.php
+		  echo "" >> /var/www/html/mailscanner/conf.php
+		  echo "// RPC port (defaults to 80 if not supplied)" >> /var/www/html/mailscanner/conf.php
+          echo "// define('RPC_PORT', 80);" >> /var/www/html/mailscanner/conf.php
+          echo "// RPC over SSL?? (defaults to port 443 unless RPC_PORT is supplied" >> /var/www/html/mailscanner/conf.php
+		  echo "// define('RPC_SSL', true);" >> /var/www/html/mailscanner/conf.php
+		  echo "" >> /var/www/html/mailscanner/conf.php
+          sed -i "/define('MSEE',/d" /var/www/html/mailscanner/conf.php
+
+          # Re-ad the virus_info function
+          sed -i "/^\/\/ define('VIRUS_INFO', \"http:\/\/www.rainingfrogs.co.uk/ c\define('VIRUS_INFO', \"http://www.securelist.com/en/descriptions?words=%s&behavior=&amp;Search=Search&amp;search_type=1\");" /var/www/html/mailscanner/conf.php
+
+          # Delete the FPDF_FONTPATH setting
+          sed -i "/FPDF_FONTPATH/d" /var/www/html/mailscanner/conf.php
+
+      fi
+
+	  # Cleanup
+	  rm -rf /usr/src/EFA/1.2.0-master
+
+      # Update the version of mailwatch in EFA-Config
+      sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
+
+      service httpd start
+      service MailScanner start
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# initialize
+#----------------------------------------------------------------#
+function initialize() {
+  # Start the TMPmail file
+  echo "From: $MAILFROM" > $TMPMAIL
+  echo "To: $MAILTO" >> $TMPMAIL
+  echo "Reply-To: $MAILFROM" >> $TMPMAIL
+  echo "Subject: $MAILSUBJECT" >> $TMPMAIL
+  echo "" >> $TMPMAIL
+
+  mkdir -p $STAGING
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Abort Routine
+#----------------------------------------------------------------#
+function abort() {
+  rm -rf $STAGING
+
+  echo "" >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+
+  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Please visit http://www.efa-project.org for more information."
+  exit 1
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update all software packages
+#----------------------------------------------------------------#
+function update-software() {
+  update-mailwatch
+  update-vmtools
+  update-imageceberus
+  update-spamassassin
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Finalize
+#----------------------------------------------------------------#
+function finalize() {
+  rm -rf $STAGING
+
+  # Write the latest version number
+  echo "EFA-$VERSION" > /etc/EFA-Version
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
+
+  # Finalize the mail and send it out
+  echo "" >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+
+  echo "All done"
+  echo "If your system does not return to a command prompt"
+  echo "you can now safely press ctrl-c to abort logsave"
+  echo "Thank you for using E.F.A."
+  exit 0
+  exit 0
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update system with yum
+#----------------------------------------------------------------#
+function yum_update() {
+  yum -y --exclude="$yumexclude" update
+  # Todo, write some logic that checks any of the yumexclude packages and updates them after testing...
+
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function get current version number
+#----------------------------------------------------------------#
+function get_cversion() {
+  if [ -f /etc/EFA-Version ]
+    then
+      CVERSION="`head -1 /etc/EFA-Version`"
+    else
+      echo "ERROR: No valid version file found on this system."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+
+  # Check if we run an beta version
+  if [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}-beta$ ]]
+    then
+      echo "ERROR: You seem to be running an beta version, no upgrade possible."
+      echo "ERROR: please look at http://www.efa-project.org for more information."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+
+  # Check if CVERSION is an valid Version file
+  if ! [[ $CVERSION =~ ^EFA\-[0-9]{1}\.[0-9]{1}\.[0-9]{1}\.[0-9]{1}$ ]]
+    then
+      echo "ERROR: The version file on your system does not seem to be valid."
+      echo "ERROR: exiting now"
+      exit 0
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Where to start
+#----------------------------------------------------------------#
+get_update_path
