@@ -113,11 +113,37 @@ function run_update() {
 
   # Update spamassassin
   update-spamassassin
+  
+  # Issue #171 Update clamav -- fix any clamav discrepancies
+  # Enabling EPEL Repo...
+  rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
+  yum install epel-release -y
+  
+  update-clamav
 
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update ClamAV function
+#----------------------------------------------------------------#
+function update-clamav(){
+  yum -y update clam*
+  
+  # Reverse changes from EPEL version of clamd
+  sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
+  sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
+  rm -rf /var/lib/clamav
+  userdel clam
+  chown clamav:clamav /var/run/clamav
+  service clamd start
+  
+  # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
+  rm -f /etc/cron.daily/freshclam
 }
 #----------------------------------------------------------------#
 

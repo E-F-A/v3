@@ -62,6 +62,15 @@ func_repoforge () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# add epel repository
+# +---------------------------------------------------+
+func_epelrepo () {
+   rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
+   yum install epel-release -y
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # configure MySQL
 # +---------------------------------------------------+
 func_mysql () {
@@ -339,6 +348,18 @@ func_mailscanner () {
 func_spam_clamav () {
     # install clamav and clamd.
     yum -y install clamav clamd
+    
+    # Issue #171 Update clamav -- fix any clamav discrepancies
+    
+    # Reverse changes from EPEL version of clamd
+    sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
+    sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
+    rm -rf /var/lib/clamav
+    userdel clam
+    chown clamav:clamav /var/run/clamav
+    
+    # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
+    rm -f /etc/cron.daily/freshclam
 
     # Sane security scripts
     # http://sanesecurity.co.uk/usage/linux-scripts/
@@ -1268,6 +1289,7 @@ func_cleanup () {
 func_prebuild
 func_upgradeOS
 func_repoforge
+func_epelrepo
 func_mysql
 func_postfix
 func_mailscanner
