@@ -145,7 +145,14 @@ function run_update() {
 
   # Update spamassassin
   update-spamassassin
- 
+  
+  # Issue #174 Adjust Maximum Archive Depth
+  # Don't change if already set to non-zero value
+  TEST=$(grep '^Maximum Archive Depth = 0' /etc/MailScanner/MailScanner.conf)
+  if [[ -n $TEST ]]; then
+    sed -i "/^Maximum Archive Depth =/ c\Maximum Archive Depth = 3" /etc/MailScanner/MailScanner.conf
+  fi
+  
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL

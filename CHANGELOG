@@ -14,6 +14,7 @@ Issue #164 Enhancement  - Add MailWatch Password Reset to EFA-Configure
 Issue #166 Bug          - MailWatch cron job not executing contents
 Issue #169 Enhancement  - Clean up clamav-unoffical-sigs script
 Issue #171 Bug          - Update clamav -- fix any clamav discrepancies
+Issue #174 Enhancement  - Adjust Maximum Archive Depth (to 3 levels)
 Issue #175 Enhancement  - Set keyboard layout at beginning of EFA-Init
 
 EPEL Repository is now enabled
