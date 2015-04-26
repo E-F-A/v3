@@ -262,7 +262,7 @@ function func_ask-username() {
    do
      if [[ $USERNAME =~ ^[a-z_][a-z0-9_-]{1,30}+$ ]]
       then
-        if [[ ! $USERNAME =~ ^root|apache|halt|mail|uucp|operator|games|gopher|ftp|nobody|dbus|vcsa|abrt|haldaemon|ntp|saslauth|postfix|sshd|mysql|tcpdump|clamav|sqlgrey|dnsmasq$ ]]
+        if [[ ! $USERNAME =~ ^root|apache|halt|mail|uucp|operator|games|gopher|ftp|nobody|dbus|vcsa|abrt|haldaemon|ntp|saslauth|postfix|sshd|mysql|tcpdump|clamav|sqlgrey|unbound$ ]]
           then
             uncheck=0
           else
@@ -611,9 +611,15 @@ function func_configure-system() {
   hostname $HOSTNAME
 
   echo -e "$green[EFA]$clean - Setting DNS Servers"
-  echo "nameserver $DNS1" > /etc/resolv.dnsmasq
-  echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
-
+  # old dnsmasq stuff...
+  #echo "nameserver $DNS1" > /etc/resolv.dnsmasq
+  #echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
+  # new unbound stuff... 
+  echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
+  echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
+  echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
+  echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
+  
   echo -e "$green[EFA]$clean - Setting IP settings"
   ifdown $INTERFACE
   # Use ipcalc to get the broadcast & network id's
@@ -680,7 +686,7 @@ function func_configure-system() {
   # +--------------------------------------------------+
   # Update clamav and spamassassin rules
   echo -e "$green[EFA]$clean - Updating AV and SA rules"
-  service dnsmasq start
+  service unbound start
   sleep 5
 
   service clamd start
@@ -915,7 +921,7 @@ function func_end() {
   chkconfig MailScanner on
   chkconfig httpd on
   chkconfig mysqld on
-  chkconfig dnsmasq on
+  chkconfig unbound on
   chkconfig saslauthd on
   chkconfig crond on
   chkconfig clamd on
@@ -933,7 +939,7 @@ function func_end() {
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
-  # set nameserver to local dnsmasq
+  # set nameserver to local unbound
   echo "nameserver 127.0.0.1" > /etc/resolv.conf
   # +--------------------------------------------------+
 

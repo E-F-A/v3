@@ -65,6 +65,38 @@ function run_update() {
 
   ##### Commit Phase #####
 
+  # Issue #171 Update clamav -- fix any clamav discrepancies
+  # Enabling EPEL Repo...
+  # Do this early in case it fails...
+  rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
+  [[ $? -ne 0 ]] && abort
+  yum install epel-release -y 
+  [[ $? -ne 0 ]] && abort
+  
+  # Issue #150 URIBL_BLOCKED using dnsmasq
+  # disable dnsmasq but leave running
+  # do this early in case it fails...
+  yum -y install unbound
+  [[ $? -ne 0 ]] && abort
+  chkconfig dnsmasq off
+  # disable ipv6 support in unbound
+  sed -i "/^\t# do-ip6: yes/ c\\\tdo-ip6: no" /etc/unbound/unbound.conf
+  # copy dnsmasq resolvers to unbound
+  resolvips=$(cat /etc/resolv.dnsmasq | awk '{print $2}')
+  IFS1=$IFS
+  IFS="\n"
+  echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
+  echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
+  for i in $resolvips; do
+    echo "  forward-addr: $i" >> /etc/unbound/conf.d/forwarders.conf
+  done
+  IFS=$IFS1
+  # shut down dnsmasq
+  service dnsmasq stop
+  # start unbound
+  service unbound start
+  chkconfig unbound on
+  
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*
@@ -113,14 +145,7 @@ function run_update() {
 
   # Update spamassassin
   update-spamassassin
-  
-  # Issue #171 Update clamav -- fix any clamav discrepancies
-  # Enabling EPEL Repo...
-  rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
-  yum install epel-release -y
-  
-  update-clamav
-
+ 
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
@@ -133,6 +158,7 @@ function run_update() {
 #----------------------------------------------------------------#
 function update-clamav(){
   yum -y update clam*
+  [[ $? -ne 0 ]] && abort
   
   # Reverse changes from EPEL version of clamd
   sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf

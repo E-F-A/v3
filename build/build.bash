@@ -1026,23 +1026,31 @@ func_webmin () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Dnsmasq
+# Unbound (replaces dnsmasq)
 # +---------------------------------------------------+
-func_dnsmasq () {
-    groupadd -r dnsmasq
-    useradd -r -g dnsmasq dnsmasq
-    sed -i '/#listen-address=/ c\listen-address=127.0.0.1' /etc/dnsmasq.conf
-    sed -i '/#user=/ c\user=dnsmasq' /etc/dnsmasq.conf
-    sed -i '/#group=/ c\group=dnsmasq' /etc/dnsmasq.conf
-    sed -i '/#bind-interfaces/ c\bind-interfaces' /etc/dnsmasq.conf
-    sed -i '/#domain-needed/ c\domain-needed' /etc/dnsmasq.conf
-    sed -i '/#bogus-priv/ c\bogus-priv' /etc/dnsmasq.conf
-    sed -i '/#cache-size=/ c\cache-size=1500' /etc/dnsmasq.conf
-    sed -i '/#no-poll/ c\no-poll' /etc/dnsmasq.conf
-    sed -i '/#resolv-file=/ c\resolv-file=/etc/resolv.dnsmasq' /etc/dnsmasq.conf
-    touch /etc/resolv.dnsmasq
-    echo "nameserver 8.8.8.8" >> /etc/resolv.dnsmasq
-    echo "nameserver 8.8.4.4" >> /etc/resolv.dnsmasq
+func_unbound () {
+    # old dnsmasq stuff
+    #groupadd -r dnsmasq
+    #useradd -r -g dnsmasq dnsmasq
+    #sed -i '/#listen-address=/ c\listen-address=127.0.0.1' /etc/dnsmasq.conf
+    #sed -i '/#user=/ c\user=dnsmasq' /etc/dnsmasq.conf
+    #sed -i '/#group=/ c\group=dnsmasq' /etc/dnsmasq.conf
+    #sed -i '/#bind-interfaces/ c\bind-interfaces' /etc/dnsmasq.conf
+    #sed -i '/#domain-needed/ c\domain-needed' /etc/dnsmasq.conf
+    #sed -i '/#bogus-priv/ c\bogus-priv' /etc/dnsmasq.conf
+    #sed -i '/#cache-size=/ c\cache-size=1500' /etc/dnsmasq.conf
+    #sed -i '/#no-poll/ c\no-poll' /etc/dnsmasq.conf
+    #sed -i '/#resolv-file=/ c\resolv-file=/etc/resolv.dnsmasq' /etc/dnsmasq.conf
+    #touch /etc/resolv.dnsmasq
+    #echo "nameserver 8.8.8.8" >> /etc/resolv.dnsmasq
+    #echo "nameserver 8.8.4.4" >> /etc/resolv.dnsmasq
+    yum -y install unbound
+    # disable ipv6 support in unbound
+    sed -i "/^\t# do-ip6: yes/ c\\\tdo-ip6: no" /etc/unbound/unbound.conf
+    echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
+    echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
+    echo "  forward-addr: 8.8.8.8" >> /etc/unbound/conf.d/forwarders.conf
+    echo "  forward-addr: 8.8.4.4" >> /etc/unbound/conf.d/forwarders.conf
 }
 # +---------------------------------------------------+
 
@@ -1087,7 +1095,7 @@ func_services () {
     chkconfig mailgraph-init off
     chkconfig adcc off
     chkconfig webmin off
-    chkconfig dnsmasq off
+    chkconfig unbound off
 }
 # +---------------------------------------------------+
 
@@ -1304,7 +1312,7 @@ func_razor
 func_dcc
 func_imagecerberus
 func_webmin
-func_dnsmasq
+func_unbound
 func_kernsettings
 func_services
 func_efarequirements
