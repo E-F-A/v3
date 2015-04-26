@@ -138,9 +138,9 @@ function update-3.0.0.8() {
 # Function to download file
 #----------------------------------------------------------------#
 function download_update() {
-  /usr/bin/wget $MIRROR/update/$UPDATE
+  /usr/bin/wget -O $STAGING/$UPDATE $MIRROR/update/$UPDATE
   [[ $? -ne 0 ]] && abort
-  /usr/bin/wget $MIRROR/update/$UPDATE.md5
+  /usr/bin/wget -O $STAGING/$UPDATE.md5 $MIRROR/update/$UPDATE.md5
   [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
@@ -149,7 +149,14 @@ function download_update() {
 # Function to check the MD5
 #----------------------------------------------------------------#
 function check_md5() {
-  echo "todo.."
+  # Grab md5 from file
+  checksum1=$(cat $STAGING/$UPDATE.md5 | awk '{print $1}')
+  # Calculate md5
+  checksum2=$(md5sum $STAGING/$UPDATE | awk '{print $1}')
+  if [[ "$checksum1" != "$checksum2" ]]; then
+    echo "Fatal:  $UPDATE md5 checksum does not match!  Aborting..."
+    abort
+  fi
 }
 #----------------------------------------------------------------#
 
