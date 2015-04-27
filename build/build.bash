@@ -386,10 +386,10 @@ func_spam_clamav () {
     sed -i '/^#mbl_dbs="/ {n; s/.*/#  mbl.ndb/}' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/^#mbl_dbs="/ {n;n; s/.*/#"/}' /usr/local/etc/clamav-unofficial-sigs.conf
     
-    # Issue #45 ScamNailer ClamAV ruleset
+    # Issue #45 ScamNailer ClamAV ruleset (superceded -- moved to unofficial-sigs)
     # todo: host this on dl.efa-project.org
     # http://www.scamnailer.info/
-    echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
+    # echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
 
     # Use the EFA packaged version.
     cd /usr/src/EFA
