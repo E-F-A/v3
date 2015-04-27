@@ -139,10 +139,10 @@ function run_update() {
   # todo:  Host this on dl.efa-project.org
   # echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
 
-  # Issue #169 Clean up clamav-unoffical-sigs script
-  sed -i '/^mbl_dbs="/ c\#mbl_dbs="' /usr/local/etc/clamav-unofficial-sigs.conf
-  sed -i '/^#mbl_dbs="/ {n; s/.*/#  mbl.ndb/}' /usr/local/etc/clamav-unofficial-sigs.conf
-  sed -i '/^#mbl_dbs="/ {n;n; s/.*/#"/}' /usr/local/etc/clamav-unofficial-sigs.conf
+  # Issue #169 Clean up clamav-unoffical-sigs script (superceded)
+  # sed -i '/^mbl_dbs="/ c\#mbl_dbs="' /usr/local/etc/clamav-unofficial-sigs.conf
+  # sed -i '/^#mbl_dbs="/ {n; s/.*/#  mbl.ndb/}' /usr/local/etc/clamav-unofficial-sigs.conf
+  # sed -i '/^#mbl_dbs="/ {n;n; s/.*/#"/}' /usr/local/etc/clamav-unofficial-sigs.conf
 
   # Update spamassassin
   update-spamassassin
@@ -154,7 +154,7 @@ function run_update() {
     sed -i "/^Maximum Archive Depth =/ c\Maximum Archive Depth = 3" /etc/MailScanner/MailScanner.conf
   fi
   
-  # Issues #45 (Superceded) #170 #172 #173 
+  # Issues #45 (Superceded) #169 (Superceded) #170 #172 #173 
   rm -f /usr/local/bin/clamav-unofficial-sigs.sh
   rm -f /usr/local/etc/clamav-unofficial-sigs.conf
   tar -xvzf $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
