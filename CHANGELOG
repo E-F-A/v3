@@ -16,7 +16,6 @@ Issue #169 Enhancement  - Clean up clamav-unoffical-sigs script (superceded by i
 Issue #171 Bug          - Update clamav -- fix any clamav discrepancies
 Issue #172 Enhancement  - Review sanesecurity signatures for inclusion in EFA
 Issue #173 Enhancement  - Securiteinfo.com support removed from unofficial-sigs
-Issue #174 Enhancement  - Adjust Maximum Archive Depth (to 3 levels)
 Issue #175 Enhancement  - Set keyboard layout at beginning of EFA-Init
 
 EPEL Repository is now enabled

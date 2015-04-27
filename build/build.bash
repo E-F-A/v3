@@ -282,8 +282,7 @@ func_mailscanner () {
     sed -i "/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No" /etc/MailScanner/MailScanner.conf
     sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
 	sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
-    sed -i "/^Maximum Archive Depth =/ c\Maximum Archive Depth = 3" /etc/MailScanner/MailScanner.conf
-
+   
 	# Issue #132 Increase sa-learn and spamassassin max message size limits
 	sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
 
