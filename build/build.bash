@@ -18,6 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------
 
+# TODO: Use update v2 method for packaging in build.bash 
+#   update entire script
+
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
@@ -365,7 +368,7 @@ func_spam_clamav () {
     # Sane security scripts
     # http://sanesecurity.co.uk/usage/linux-scripts/
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/clamav-unofficial-sigs-3.7.2.tar.gz
+    wget $mirror/$mirrorpath/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
     tar -xvzf clamav-unofficial-sigs-3.7.2.tar.gz
     cd clamav-unofficial-sigs-3.7.2
     cp clamav-unofficial-sigs.sh /usr/local/bin/

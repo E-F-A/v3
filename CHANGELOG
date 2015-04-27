@@ -2,7 +2,7 @@
 EFA Version 3.0.0.8 Changes
 ############################################################
 
-Issue #45  Enhancement  - Add ScamNailer ClamAV ruleset (superceded)
+Issue #45  Enhancement  - Add ScamNailer ClamAV ruleset (superceded by issue #172)
 Issue #49  Enhancement  - Add max spam check size to EFA-Configure
 Issue #132 Enhancement  - Increase sa-learn and spamassassin max message size limits
 Issue #150 Bug          - Replace dnsmasq with unbound (URIBL_BLOCKED using dnsmasq)
@@ -12,8 +12,10 @@ Issue #158 Enhancement  - Sort transport domain list in EFA-Configure
 Issue #161 Enhancement  - Increase MailScanner thread limit in EFA-Configure
 Issue #164 Enhancement  - Add MailWatch Password Reset to EFA-Configure 
 Issue #166 Bug          - MailWatch cron job not executing contents
-Issue #169 Enhancement  - Clean up clamav-unoffical-sigs script
+Issue #169 Enhancement  - Clean up clamav-unoffical-sigs script (superceded by issue #170)
 Issue #171 Bug          - Update clamav -- fix any clamav discrepancies
+Issue #172 Enhancement  - Review sanesecurity signatures for inclusion in EFA
+Issue #173 Enhancement  - Securiteinfo.com support removed from unofficial-sigs
 Issue #174 Enhancement  - Adjust Maximum Archive Depth (to 3 levels)
 Issue #175 Enhancement  - Set keyboard layout at beginning of EFA-Init
 

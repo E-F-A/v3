@@ -53,10 +53,11 @@ function run_update() {
 
   # To package for this update:
   # /EFA-Version-Upgrade                              <- This file in the root, renamed!
-  # /Files/										                        <- Directory (containing binary files)
+  # /Files/									          <- Directory (containing binary files)
   # /Files/geoip-5fc9611.tar.gz                       <- GeoIP update files
   # /Files/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz     <- Spamassassin update files
-  # /Scripts/									                        <- Directory (containing update scripts (previous git scripts))
+  # /Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar   <- Clamav-unofficial-sigs update files
+  # /Scripts/								          <- Directory (containing update scripts (previous git scripts))
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
 
@@ -153,6 +154,14 @@ function run_update() {
     sed -i "/^Maximum Archive Depth =/ c\Maximum Archive Depth = 3" /etc/MailScanner/MailScanner.conf
   fi
   
+  # Issues #45 (Superceded) #170 #172 #173 
+  rm -f /usr/local/bin/clamav-unofficial-sigs.sh
+  rm -f /usr/local/etc/clamav-unofficial-sigs.conf
+  tar -xvzf $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
+  cd $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0
+  cp clamav-unofficial-sigs.sh /usr/local/bin/
+  cp clamav-unofficial-sigs.conf /usr/local/etc/
+   
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
