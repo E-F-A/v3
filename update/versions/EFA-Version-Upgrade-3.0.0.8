@@ -37,7 +37,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="7f6858df83"
+MAILWATCHVERSION="66344f93f7"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
 PYZORVERSION="0.7.0"
@@ -53,11 +53,12 @@ function run_update() {
 
   # To package for this update:
   # /EFA-Version-Upgrade                              <- This file in the root, renamed!
-  # /Files/									          <- Directory (containing binary files)
+  # /Files/									                          <- Directory (containing binary files)
   # /Files/geoip-5fc9611.tar.gz                       <- GeoIP update files
   # /Files/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz     <- Spamassassin update files
   # /Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar   <- Clamav-unofficial-sigs update files
-  # /Scripts/								          <- Directory (containing update scripts (previous git scripts))
+  # /Files/MailWatch-1.2.0-master-GIT-66344f93f7.zip  <- Mailwatch
+  # /Scripts/								                          <- Directory (containing update scripts (previous git scripts))
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
 
@@ -71,9 +72,9 @@ function run_update() {
   # Do this early in case it fails...
   rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
   [[ $? -ne 0 ]] && abort
-  yum install epel-release -y 
+  yum install epel-release -y
   [[ $? -ne 0 ]] && abort
-  
+
   # Issue #150 URIBL_BLOCKED using dnsmasq
   # disable dnsmasq but leave running
   # do this early in case it fails...
@@ -97,7 +98,7 @@ function run_update() {
   # start unbound
   service unbound start
   chkconfig unbound on
-  
+
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*
@@ -146,15 +147,18 @@ function run_update() {
 
   # Update spamassassin
   update-spamassassin
-  
-  # Issues #45 (Superceded) #169 (Superceded) #170 #172 #173 
+
+  # Update MailWatch to latest version
+  update-mailwatch
+
+  # Issues #45 (Superceded) #169 (Superceded) #170 #172 #173
   rm -f /usr/local/bin/clamav-unofficial-sigs.sh
   rm -f /usr/local/etc/clamav-unofficial-sigs.conf
   tar -xvzf $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
   cd $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0
   cp clamav-unofficial-sigs.sh /usr/local/bin/
   cp clamav-unofficial-sigs.conf /usr/local/etc/
-   
+
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
@@ -168,7 +172,7 @@ function run_update() {
 function update-clamav(){
   yum -y update clam*
   [[ $? -ne 0 ]] && abort
-  
+
   # Reverse changes from EPEL version of clamd
   sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
   sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
@@ -176,7 +180,7 @@ function update-clamav(){
   userdel clam
   chown clamav:clamav /var/run/clamav
   service clamd start
-  
+
   # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
   rm -f /etc/cron.daily/freshclam
 }
@@ -258,6 +262,114 @@ function update-spamassassin(){
   fi
 }
 #----------------------------------------------------------------#
+
+
+#----------------------------------------------------------------#
+# Update mailwatch function
+#----------------------------------------------------------------#
+function update-mailwatch() {
+  # Update mailwatch if we have a new version available
+  if [[ ! $MAILWATCHVERSION == "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+
+      #### Backup Phase #####
+      mkdir /var/EFA/backup/$VERSION/
+      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
+      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION
+      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/
+
+      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/
+
+      #### Commit Phase #####
+      echo -e "Starting installation of new mailwatch version"
+      service httpd stop
+      service MailScanner stop
+
+      rm -rf /usr/src/EFA/1.2.0-master
+      unzip -d /usr/src/EFA $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
+
+      # Issue #66  Grab Passwords from /etc/EFA-Config
+      sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+      sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+      sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
+      sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
+
+      mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      cd /usr/src/EFA/1.2.0-master
+      mv tools /usr/local/bin/mailwatch
+      rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
+      chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
+      mv mailscanner /var/www/html
+      cd /var/www/html/mailscanner
+      chown root:apache images
+      chmod ug+rwx images
+      chown root:apache images/cache
+      chmod ug+rwx images/cache
+      chown root:apache temp
+      chmod ug+rwx temp
+      rm -rf docs
+
+      # Issue #30 filter non-spam from quarantine reports (regression fix)
+      sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+
+      # Build new conf.php
+      cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner
+
+      # Add favicons back
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images/favicon.png
+
+      # Add back EFA Branding
+      cd /var/www/html/mailscanner/images
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-47px.gif .
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-79px.png .
+      mv mailwatch-logo.gif mailwatch-logo.gif.orig >/dev/null 2>&1
+      mv mailwatch-logo.png mailwatch-logo.png.orig
+      mv mailscannerlogo.gif mailscannerlogo.gif.orig
+
+      # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
+      mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig
+      ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
+      sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
+
+      ln -s EFAlogo-79px.png mailwatch-logo.gif
+      ln -s EFAlogo-79px.png mailwatch-logo.png
+      ln -s EFAlogo-47px.gif mailscannerlogo.gif
+
+      # Alter color scheme
+      sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
+
+      # Add back Mailgraph link
+      cd /var/www/html/mailscanner
+      cp other.php other.php.orig
+      sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+      cp /var/EFA/backup/$VERSION/mailscanner/mailgraph.php .
+
+      # Reconfigure Greylisting as previously configured
+      cp functions.php functions.php.orig
+      cp /var/EFA/backup/$VERSION/mailscanner/grey.php .
+
+      # Is greylisting enabled?  Add back menu item...
+      if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
+        sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+      fi
+
+      # Cleanup
+      rm -rf /usr/src/EFA/1.2.0-master
+
+      # Update the version of mailwatch in EFA-Config
+      sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
+
+      service httpd start
+      service MailScanner start
+  fi
+}
+#----------------------------------------------------------------#
+
+
 
 #----------------------------------------------------------------#
 # Function to update system with yum

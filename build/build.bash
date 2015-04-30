@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------
 
-# TODO: Use update v2 method for packaging in build.bash 
+# TODO: Use update v2 method for packaging in build.bash
 #   update entire script
 
 # +---------------------------------------------------+
@@ -30,7 +30,7 @@ gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/master/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.8"
-MAILWATCHVERSION="7f6858df83"
+MAILWATCHVERSION="66344f93f7"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
 WEBMINVERSION="1.690-1"
@@ -282,7 +282,7 @@ func_mailscanner () {
     sed -i "/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No" /etc/MailScanner/MailScanner.conf
     sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
 	sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
-   
+
 	# Issue #132 Increase sa-learn and spamassassin max message size limits
 	sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
 
@@ -351,16 +351,16 @@ func_mailscanner () {
 func_spam_clamav () {
     # install clamav and clamd.
     yum -y install clamav clamd
-    
+
     # Issue #171 Update clamav -- fix any clamav discrepancies
-    
+
     # Reverse changes from EPEL version of clamd
     sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
     sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
     rm -rf /var/lib/clamav
     userdel clam
     chown clamav:clamav /var/run/clamav
-    
+
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
     rm -f /etc/cron.daily/freshclam
 
@@ -387,7 +387,7 @@ func_spam_clamav () {
     # sed -i '/^mbl_dbs="/ c\#mbl_dbs="' /usr/local/etc/clamav-unofficial-sigs.conf
     # sed -i '/^#mbl_dbs="/ {n; s/.*/#  mbl.ndb/}' /usr/local/etc/clamav-unofficial-sigs.conf
     # sed -i '/^#mbl_dbs="/ {n;n; s/.*/#"/}' /usr/local/etc/clamav-unofficial-sigs.conf
-    
+
     # Issue #45 ScamNailer ClamAV ruleset (superceded -- moved to unofficial-sigs)
     # todo: host this on dl.efa-project.org
     # http://www.scamnailer.info/
