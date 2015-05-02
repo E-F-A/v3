@@ -314,9 +314,24 @@ function update-mailwatch() {
       # Issue #30 filter non-spam from quarantine reports (regression fix)
       sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
 
-      # Build new conf.php
+      # Merge conf.php and conf.php.example changes
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner
+      
+      # Licensing update
+      sed -i "/^ GNU General Public License for more details./ a\\\n In addition, as a special exception, the copyright holder gives permission to link the code of this program\n with those files in the PEAR library that are licensed under the PHP License (or with modified versions of those\n files that use the same license as those files), and distribute linked combinations including the two.\n You must obey the GNU General Public License in all respects for all of the code used other than those files in the\n PEAR library that are licensed under the PHP License. If you modify this program, you may extend this exception to\n your version of the program, but you are not obligated to do so.\n If you do not wish to do so, delete this exception statement from your version.\n As a special exception, you have permission to link this program with the JpGraph library and\n distribute executables, as long as you follow the requirements of the GNU GPL in regard to all of the software\n in the executable aside from JpGraph.\n" /var/www/html/mailscanner/conf.php
 
+      # older EFA installations are missing this
+      LDAPFIELDPRESENT=`grep define\(\'LDAP_EMAIL_FIELD\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $LDAPFIELDPRESENT ]]; then
+        sed -i "/^define('LDAP_SITE'/ a\// can be set to 'proxyaddresses' or 'mail'. Please refer to your LDAP system manual for the right keyword\ndefine('LDAP_EMAIL_FIELD', 'proxyaddresses');" /var/www/html/mailscanner/conf.php
+      fi
+
+      # Issue #132 Increase sa-learn and spamassassin max message size limits
+      MAXSIZEPRESENT=`grep define\(\'SA_MAXSIZE\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $MAXSIZEPRESENT ]]; then
+        sed -i "/^define('MSRE_RULESET_DIR'/ a\\\n// Spamassassin sa-learn max message size (Spamassassin Version >= 3.4.0)\n// Size is in bytes\ndefine('SA_MAXSIZE', 0);" /var/www/html/mailscanner/conf.php
+      fi
+      
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
