@@ -1052,6 +1052,7 @@ func_unbound () {
     sed -i "/^\t# do-ip6: yes/ c\\\tdo-ip6: no" /etc/unbound/unbound.conf
     
     # disable validator
+    sed -i "/^\tmodule-config:/ c\\\tmodule-config: \"iterator\"" /etc/unbound/unbound.conf
   
     echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
     echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
