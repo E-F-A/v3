@@ -1050,6 +1050,9 @@ func_unbound () {
     yum -y install unbound
     # disable ipv6 support in unbound
     sed -i "/^\t# do-ip6: yes/ c\\\tdo-ip6: no" /etc/unbound/unbound.conf
+    
+    # disable validator
+  
     echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
     echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
     echo "  forward-addr: 8.8.8.8" >> /etc/unbound/conf.d/forwarders.conf
