@@ -75,7 +75,18 @@ function run_update() {
   [[ $? -ne 0 ]] && abort
   yum install epel-release -y
   [[ $? -ne 0 ]] && abort
-
+  
+  # Issue #177 Correct EFA to new clamav paths using EPEL
+  update-clamav
+  userdel clamav
+  mv -f /var/clamav/* /var/lib/clamav
+  chown -R clam:clam /var/lib/clamav 
+  rm -rf /var/clamav
+  sed -i '/^Incoming Work Group =/ c\Incoming Work Group = clam' /etc/MailScanner/MailScanner.conf
+  sed -i '/^Clamd Socket =/ c\Clamd Socket = /var/run/clamav/clamd.sock' /etc/MailScanner/MailScanner.conf
+  sed -i "^/clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
+  sed -i "^/clamd\t\t\/bin\/false c\ clamd\t\t/bin/false\t\t\t\t/usr" /etc/MailScanner/virus.scanners.conf
+  
   # Issue #150 URIBL_BLOCKED using dnsmasq
   # disable dnsmasq but leave running
   # do this early in case it fails...
@@ -153,7 +164,19 @@ function run_update() {
 
   # Update MailWatch to latest version
   update-mailwatch
-
+ 
+  # Issue #178 EFA MailWatch Unicode Support 
+  mysql --user=mailwatch --password=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/MAILWATCHSQLPWD://') --database=mailscanner < /usr/local/bin/tools/Cron_jobs/UTF8_Database/upgrade_mysql_db_to_utf8.sql
+ 
+  # Issue #72 EFA MSRE Support
+  sed -i "^/define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
+  chgrp -R apache /etc/MailScanner/rules
+  chmod g+rwxs /etc/MailScanner/rules
+  chmod g+rw /etc/MailScanner/rules/*.rules
+  ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.cond /etc/cron.d/msre_reload.crond
+  ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
+  chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
+ 
   # Issues #45 (Superceded) #169 (Superceded) #170 #172 #173
   rm -f /usr/local/bin/clamav-unofficial-sigs.sh
   rm -f /usr/local/etc/clamav-unofficial-sigs.conf
@@ -161,6 +184,14 @@ function run_update() {
   cd $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0
   cp clamav-unofficial-sigs.sh /usr/local/bin/
   cp clamav-unofficial-sigs.conf /usr/local/etc/
+  
+  # Issue #177 Correct EFA to new clamav paths using EPEL
+  sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
+     
+  sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
   
   # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
   chmod 0600 /etc/postfix/sasl_passwd
@@ -183,14 +214,14 @@ function update-clamav(){
   yum -y update clam*
   [[ $? -ne 0 ]] && abort
 
-  # Reverse changes from EPEL version of clamd
-  sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
-  sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
-  rm -rf /var/lib/clamav
-  userdel clam
-  chown clamav:clamav /var/run/clamav
-  service clamd start
-
+  # Reverse changes from EPEL version of clamd (superceded by Issue #177)
+  #sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
+  #sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
+  #rm -rf /var/lib/clamav
+  #userdel clam
+  #chown clamav:clamav /var/run/clamav
+  #service clamd start
+     
   # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
   rm -f /etc/cron.daily/freshclam
 }
@@ -287,7 +318,6 @@ function update-mailwatch() {
       mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
       mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION
       mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/
-
       mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/
 
       #### Commit Phase #####
@@ -328,9 +358,15 @@ function update-mailwatch() {
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner
       
       # Licensing update
-      sed -i '/^ Copyright (C) 2011  Garrod Alwood (garrod.alwood@lorodoes.com)/ a\ Copyright (C) 2014-2015  MailWatch Team (https://github.com/orgs/mailwatch/teams/team-stable)' /var/www/html/mailscanner/conf.php
-      sed -i "/^ GNU General Public License for more details./ a\\\n In addition, as a special exception, the copyright holder gives permission to link the code of this program\n with those files in the PEAR library that are licensed under the PHP License (or with modified versions of those\n files that use the same license as those files), and distribute linked combinations including the two.\n You must obey the GNU General Public License in all respects for all of the code used other than those files in the\n PEAR library that are licensed under the PHP License. If you modify this program, you may extend this exception to\n your version of the program, but you are not obligated to do so.\n If you do not wish to do so, delete this exception statement from your version.\n As a special exception, you have permission to link this program with the JpGraph library and\n distribute executables, as long as you follow the requirements of the GNU GPL in regard to all of the software\n in the executable aside from JpGraph.\n" /var/www/html/mailscanner/conf.php
-
+      COPYRIGHTPRESENT=$(grep " Copyright (C) 2014-2015  MailWatch Team" /var/www/html/mailscanner/conf.php)
+      if [[ -z $COPYRIGHTPRESENT ]]; then
+        sed -i '/^ Copyright (C) 2011  Garrod Alwood (garrod.alwood@lorodoes.com)/ a\ Copyright (C) 2014-2015  MailWatch Team (https://github.com/orgs/mailwatch/teams/team-stable)' /var/www/html/mailscanner/conf.php
+      fi
+      LICENSEPRESENT=$(grep " In addition, as a special exception," /var/www/html/mailscanner/conf.php)
+      if [[ -z $LICENSEPRESENT ]]; then
+        sed -i "/^ GNU General Public License for more details./ a\\\n In addition, as a special exception, the copyright holder gives permission to link the code of this program\n with those files in the PEAR library that are licensed under the PHP License (or with modified versions of those\n files that use the same license as those files), and distribute linked combinations including the two.\n You must obey the GNU General Public License in all respects for all of the code used other than those files in the\n PEAR library that are licensed under the PHP License. If you modify this program, you may extend this exception to\n your version of the program, but you are not obligated to do so.\n If you do not wish to do so, delete this exception statement from your version.\n As a special exception, you have permission to link this program with the JpGraph library and\n distribute executables, as long as you follow the requirements of the GNU GPL in regard to all of the software\n in the executable aside from JpGraph.\n" /var/www/html/mailscanner/conf.php
+      fi
+        
       # older EFA installations are missing this
       LDAPFIELDPRESENT=`grep define\(\'LDAP_EMAIL_FIELD\' /var/www/html/mailscanner/conf.php`
       if [[ -z $LDAPFIELDPRESENT ]]; then
@@ -382,18 +418,6 @@ function update-mailwatch() {
       if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
         sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
       fi
-      
-      # Issue #72 EFA MSRE Support
-      sed -i "^/define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
-      chgrp -R apache /etc/MailScanner/rules
-      chmod g+rwxs /etc/MailScanner/rules
-      chmod g+rw /etc/MailScanner/rules/*.rules
-      ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.cond /etc/cron.d/msre_reload.crond
-      ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
-      chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
-      
-      # Issue #178 EFA MailWatch Unicode Support 
-      mysql --user=mailwatch --password=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/MAILWATCHSQLPWD://') --database=mailscanner < /usr/local/bin/tools/Cron_jobs/UTF8_Database/upgrade_mysql_db_to_utf8.sql
       
       # Cleanup
       rm -rf /usr/src/EFA/1.2.0-master

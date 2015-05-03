@@ -243,7 +243,8 @@ func_mailscanner () {
     sed -i '/^Incoming Queue Dir =/ c\Incoming Queue Dir = \/var\/spool\/postfix\/hold' /etc/MailScanner/MailScanner.conf
     sed -i '/^Outgoing Queue Dir =/ c\Outgoing Queue Dir = \/var\/spool\/postfix\/incoming' /etc/MailScanner/MailScanner.conf
     sed -i '/^MTA =/ c\MTA = postfix' /etc/MailScanner/MailScanner.conf
-    sed -i '/^Incoming Work Group =/ c\Incoming Work Group = clamav' /etc/MailScanner/MailScanner.conf
+    # Issue #177 Correct EFA to new clamav paths using EPEL
+    sed -i '/^Incoming Work Group =/ c\Incoming Work Group = clam' /etc/MailScanner/MailScanner.conf
     sed -i '/^Incoming Work Permissions =/ c\Incoming Work Permissions = 0644' /etc/MailScanner/MailScanner.conf
     sed -i '/^Quarantine User =/ c\Quarantine User = postfix' /etc/MailScanner/MailScanner.conf
     sed -i '/^Quarantine Group =/ c\Quarantine Group = apache' /etc/MailScanner/MailScanner.conf
@@ -281,7 +282,8 @@ func_mailscanner () {
     sed -i '/^Detailed Spam Report =/ c\Detailed Spam Report = yes' /etc/MailScanner/MailScanner.conf
     sed -i '/^Include Scores In SpamAssassin Report =/ c\Include Scores In SpamAssassin Report = yes' /etc/MailScanner/MailScanner.conf
     sed -i '/^Always Looked Up Last =/ c\Always Looked Up Last = &MailWatchLogging' /etc/MailScanner/MailScanner.conf
-    sed -i '/^Clamd Socket =/ c\Clamd Socket = /tmp/clamd.socket' /etc/MailScanner/MailScanner.conf
+    # Issue #177 Correct EFA to new clamav paths using EPEL
+    sed -i '/^Clamd Socket =/ c\Clamd Socket = /var/run/clamav/clamd.sock' /etc/MailScanner/MailScanner.conf
     sed -i '/^Log SpamAssassin Rule Actions =/ c\Log SpamAssassin Rule Actions = no' /etc/MailScanner/MailScanner.conf
     sed -i "/^Sign Clean Messages =/ c\# EFA Note: CustomAction.pm will Sign Clean Messages instead using the custom(nonspam) action.\nSign Clean Messages = No" /etc/MailScanner/MailScanner.conf
     sed -i "/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No" /etc/MailScanner/MailScanner.conf
@@ -347,6 +349,10 @@ func_mailscanner () {
 	wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
 	patch < mailscanner-4.84.6-1.patch
 	rm -f mailscanner-4.84.6-1.patch
+    
+    # Issue #177 Correct EFA to new clamav paths using EPEL
+    sed -i "^/clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "^/clamd\t\t\/bin\/false c\ clamd\t\t/bin/false\t\t\t\t/usr" /etc/MailScanner/virus.scanners.conf
 }
 # +---------------------------------------------------+
 
@@ -359,12 +365,12 @@ func_spam_clamav () {
 
     # Issue #171 Update clamav -- fix any clamav discrepancies
 
-    # Reverse changes from EPEL version of clamd
-    sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
-    sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
-    rm -rf /var/lib/clamav
-    userdel clam
-    chown clamav:clamav /var/run/clamav
+    # Reverse changes from EPEL version of clamd (superceded by issue #177)
+    #sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
+    #sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
+    #rm -rf /var/lib/clamav
+    #userdel clam
+    #chown clamav:clamav /var/run/clamav
 
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
     rm -f /etc/cron.daily/freshclam
@@ -382,7 +388,9 @@ func_spam_clamav () {
     cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
     sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log 2>&1" /etc/cron.d/clamav-unofficial-sigs-cron
 
-    sed -i '/clam_dbs=/ c\clam_dbs="/var/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
+    # Issue #177 Correct EFA to new clamav paths using EPEL
+    sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
+    
     sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -411,9 +419,6 @@ func_spam_clamav () {
 	# Symlink for Geo::IP
 	mkdir -p /usr/local/share/GeoIP
 	ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
-
-    # fix socket file in mailscanner.conf
-    sed -i '/^Clamd Socket/ c\Clamd Socket = \/var\/run\/clamav\/clamd.sock' /etc/MailScanner/MailScanner.conf
 
     # PDFInfo
     cd /usr/src/EFA
