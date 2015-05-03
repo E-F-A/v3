@@ -20,6 +20,7 @@
 
 # TODO: Use update v2 method for packaging in build.bash
 #   update entire script
+# TODO:  update mailwatch db create sql scripts to new versions for utf8
 
 # +---------------------------------------------------+
 # Variables
