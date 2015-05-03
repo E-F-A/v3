@@ -29,7 +29,7 @@ func_ask-maxsizemailwatch(){
    done
 
   # Set mailwatch sa-learn size
-  sed -i "/^define('SA_MAXSIZE'/ c\^define('SA_MAXSIZE', $MWMAXSIZE);" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('SA_MAXSIZE'/ c\define('SA_MAXSIZE', $MWMAXSIZE);" /var/www/html/mailscanner/conf.php
   echo -e "Mailwatch reconfigured to use $MWMAXSIZE bytes sa-learn max size."
   pause
 
