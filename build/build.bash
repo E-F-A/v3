@@ -487,7 +487,7 @@ func_spam_clamav () {
     wget $mirror/$mirrorpath/RegistrarBoundaries.pm
     rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
     mv RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
-
+    
     # and in the end we run sa-update just for the fun of it..
     /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
     /usr/local/bin/sa-compile
@@ -752,7 +752,16 @@ func_mailwatch () {
     sed -i '/Defaults    requiretty/ c\#Defaults    requiretty' /etc/sudoers
     echo "apache ALL=NOPASSWD: /usr/sbin/MailScanner --lint" > /etc/sudoers.d/EFA-Services
 
-	# Add mailwatch version to EFA-Config
+    # Issue #72 EFA MSRE Support
+    sed -i "^/define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
+    chgrp -R apache /etc/MailScanner/rules
+    chmod g+rwxs /etc/MailScanner/rules
+    chmod g+rw /etc/MailScanner/rules/*.rules
+    ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.cond /etc/cron.d/msre_reload.crond
+    ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
+    chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
+	
+    # Add mailwatch version to EFA-Config
 	echo "MAILWATCHVERSION:$MAILWATCHVERSION" >> /etc/EFA-Config
 
     # Fix menu width

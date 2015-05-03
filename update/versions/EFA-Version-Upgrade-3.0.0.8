@@ -382,7 +382,16 @@ function update-mailwatch() {
       if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
         sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
       fi
-
+      
+      # Issue #72 EFA MSRE Support
+      sed -i "^/define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
+      chgrp -R apache /etc/MailScanner/rules
+      chmod g+rwxs /etc/MailScanner/rules
+      chmod g+rw /etc/MailScanner/rules/*.rules
+      ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.cond /etc/cron.d/msre_reload.crond
+      ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
+      chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
+             
       # Cleanup
       rm -rf /usr/src/EFA/1.2.0-master
 
