@@ -487,7 +487,7 @@ func_spam_clamav () {
     wget $mirror/$mirrorpath/RegistrarBoundaries.pm
     rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
     mv RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
-    
+
     # and in the end we run sa-update just for the fun of it..
     /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
     /usr/local/bin/sa-compile
