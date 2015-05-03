@@ -206,6 +206,10 @@ func_postfix () {
     postmap /etc/postfix/sender_access
     postmap /etc/postfix/recipient_access
     postmap /etc/postfix/sasl_passwd
+
+    # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
+    chmod 0600 /etc/postfix/sasl_passwd
+    
     echo "pwcheck_method: auxprop">/usr/lib64/sasl2/smtpd.conf
     echo "auxprop_plugin: sasldb">>/usr/lib64/sasl2/smtpd.conf
     echo "mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5">>/usr/lib64/sasl2/smtpd.conf

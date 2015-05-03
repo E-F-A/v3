@@ -160,6 +160,9 @@ function run_update() {
   cd $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0
   cp clamav-unofficial-sigs.sh /usr/local/bin/
   cp clamav-unofficial-sigs.conf /usr/local/etc/
+  
+  # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
+  chmod 0600 /etc/postfix/sasl_passwd
 
   echo "$VERSION update is complete"
   echo ""
