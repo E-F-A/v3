@@ -762,7 +762,7 @@ func_mailwatch () {
     chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
     
     # Issue #178 EFA MailWatch Unicode Support 
-    mysql --user=mailwatch --password=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/MAILWATCHSQLPWD://') --database=mailscanner < /usr/local/bin/tools/Cron_jobs/UTF8_Database/upgrade_mysql_db_to_utf8.sql
+    mysql --user=root --password=$password --database=mailscanner < /usr/local/bin/tools/Cron_jobs/UTF8_Database/upgrade_mysql_db_to_utf8.sql
 	
     # Add mailwatch version to EFA-Config
 	echo "MAILWATCHVERSION:$MAILWATCHVERSION" >> /etc/EFA-Config
