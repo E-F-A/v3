@@ -5,7 +5,7 @@ func_ask-maxsize(){
   func_echo-header
   echo -e "$green[EFA]$clean MailScanner Max Spam Check Size"
   echo -e ""
-  msmaxsize="`cat /etc/MailScanner/MailScanner.conf | grep -e '^Max Spam Check Size' | awk -F'=' '{print $2}' | tr -d '[:blank:]' | tr -d 'k'`"
+  msmaxsize="`grep -e '^Max Spam Check Size' /etc/MailScanner/MailScanner.conf | awk -F'=' '{print $2}' | tr -d '[:blank:]' | tr -d 'k'`"
   echo -e "$green[EFA]$clean Mailscanner is currently set to use $msmaxsize kilobytes."
   echo -e "" 
   echo -e -n "$green[EFA]$clean : Mailscanner max spam check size in kilobytes: (min 200/default 2048/max 999999):"
@@ -13,7 +13,7 @@ func_ask-maxsize(){
   msflag=1
   while [ $msflag != "0" ]
    do
-     if [[ $MSMAXSIZE = "" ]]
+     if [[ -z $MSMAXSIZE ]]
       then
         MSMAXSIZE="2048"
      fi

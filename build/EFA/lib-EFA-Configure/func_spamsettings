@@ -14,6 +14,7 @@ function func_spam-settings() {
       echo -e "3) Inline Signature Rules"
       echo -e "4) Trusted Networks"
       echo -e "5) MailScanner Max Message Size"
+      echo -e "6) Mailwatch sa-learn Max Message Size"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
@@ -26,6 +27,7 @@ function func_spam-settings() {
                 3) func_ask-sigrules;;
                 4) func_ask-trustednets;;
                 5) func_ask-maxsize;;
+                6) func_ask-maxsizemailwatch;;
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
