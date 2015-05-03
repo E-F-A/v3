@@ -323,6 +323,7 @@ function update-mailwatch() {
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner
       
       # Licensing update
+      sed -i '/^ Copyright (C) 2011  Garrod Alwood (garrod.alwood@lorodoes.com)/ a\ Copyright (C) 2014-2015  MailWatch Team (https://github.com/orgs/mailwatch/teams/team-stable)' /var/www/html/mailscanner/conf.php
       sed -i "/^ GNU General Public License for more details./ a\\\n In addition, as a special exception, the copyright holder gives permission to link the code of this program\n with those files in the PEAR library that are licensed under the PHP License (or with modified versions of those\n files that use the same license as those files), and distribute linked combinations including the two.\n You must obey the GNU General Public License in all respects for all of the code used other than those files in the\n PEAR library that are licensed under the PHP License. If you modify this program, you may extend this exception to\n your version of the program, but you are not obligated to do so.\n If you do not wish to do so, delete this exception statement from your version.\n As a special exception, you have permission to link this program with the JpGraph library and\n distribute executables, as long as you follow the requirements of the GNU GPL in regard to all of the software\n in the executable aside from JpGraph.\n" /var/www/html/mailscanner/conf.php
 
       # older EFA installations are missing this
