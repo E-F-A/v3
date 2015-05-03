@@ -13,6 +13,7 @@ Issue #161 Enhancement  - Increase MailScanner thread limit in EFA-Configure
 Issue #164 Enhancement  - Add MailWatch Password Reset to EFA-Configure 
 Issue #166 Bug          - MailWatch cron job not executing contents
 Issue #167 Enhancement  - Change perms on /etc/postfix/sasl_passwd to 600
+Issue #168 Enhancement  - Start regular updates on RegistrarBoundaries.pm 
 Issue #169 Enhancement  - Clean up clamav-unoffical-sigs script (superceded by issue #170)
 Issue #171 Bug          - Update clamav -- fix any clamav discrepancies
 Issue #172 Enhancement  - Review sanesecurity signatures for inclusion in EFA

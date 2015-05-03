@@ -480,6 +480,13 @@ func_spam_clamav () {
 
     # Issue #82 re2c spamassassin rule complilation
     sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
+    
+    # Issue #168 Start regular updates on RegistrarBoundaries.pm 
+    # next 2 lines temp until everything is packaged
+    cd /usr/src/EFA
+    wget $mirror/$mirrorpath/RegistrarBoundaries.pm
+    rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
+    mv RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
 
     # and in the end we run sa-update just for the fun of it..
     /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org

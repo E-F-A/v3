@@ -58,6 +58,7 @@ function run_update() {
   # /Files/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz     <- Spamassassin update files
   # /Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar   <- Clamav-unofficial-sigs update files
   # /Files/MailWatch-1.2.0-master-GIT-66344f93f7.zip  <- Mailwatch
+  # /Files/RegistrarBoundaries.pm                     <- TLD Update for SA 3.4.0
   # /Scripts/								                          <- Directory (containing update scripts (previous git scripts))
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
@@ -163,6 +164,10 @@ function run_update() {
   
   # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
   chmod 0600 /etc/postfix/sasl_passwd
+  
+  # Issue #168 Start regular updates on RegistrarBoundaries.pm 
+  rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
+  mv $STAGING/Files/RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
 
   echo "$VERSION update is complete"
   echo ""
