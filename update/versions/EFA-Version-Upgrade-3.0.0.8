@@ -37,7 +37,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="66344f93f7"
+MAILWATCHVERSION="7482fe0831"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
 PYZORVERSION="0.7.0"
@@ -57,7 +57,7 @@ function run_update() {
   # /Files/geoip-5fc9611.tar.gz                       <- GeoIP update files
   # /Files/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz     <- Spamassassin update files
   # /Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar   <- Clamav-unofficial-sigs update files
-  # /Files/MailWatch-1.2.0-master-GIT-66344f93f7.zip  <- Mailwatch
+  # /Files/MailWatch-1.2.0-master-GIT-7482fe0831.zip  <- Mailwatch
   # /Files/RegistrarBoundaries.pm                     <- TLD Update for SA 3.4.0
   # /Scripts/								                          <- Directory (containing update scripts (previous git scripts))
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
@@ -377,6 +377,12 @@ function update-mailwatch() {
       MAXSIZEPRESENT=`grep define\(\'SA_MAXSIZE\' /var/www/html/mailscanner/conf.php`
       if [[ -z $MAXSIZEPRESENT ]]; then
         sed -i "/^define('MSRE_RULESET_DIR'/ a\\\n// Spamassassin sa-learn max message size (Spamassassin Version >= 3.4.0)\n// Size is in bytes\ndefine('SA_MAXSIZE', 0);" /var/www/html/mailscanner/conf.php
+      fi
+      
+      # Issue #40 Extend MailWatch to hide high spam from regular users 
+      HIGHSPAMPRESENT=`grep define\(\'HIDE_HIGH_SPAM\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $HIGHSPAMPRESENT ]]; then
+        sed -i "/^define('SA_MAXSIZE'/ a\\\n// Hide High Spam and high mcp from regular users\n// Prevent regular users from seeing high spam and high mcp\ndefine('HIDE_HIGH_SPAM', false);" /var/www/html/mailscanner/conf.php      
       fi
       
       # Add favicons back

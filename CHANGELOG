@@ -2,6 +2,7 @@
 EFA Version 3.0.0.8 Changes
 ############################################################
 
+Issue #40  Enhancement  - Extend MailWatch to hide high spam from regular users
 Issue #45  Enhancement  - Add ScamNailer ClamAV ruleset (superceded by issue #172)
 Issue #49  Enhancement  - Add max spam check size to EFA-Configure
 Issue #72  Enhancement  - EFA MSRE Support

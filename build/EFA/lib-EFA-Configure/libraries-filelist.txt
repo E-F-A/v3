@@ -22,3 +22,4 @@ func_askmaxsize
 func_mailwatchsettings
 func_resetadmin
 func_askmaxsizemailwatch
+func_askhighspammailwatch
