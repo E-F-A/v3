@@ -17,6 +17,7 @@ Issue #166 Bug          - MailWatch cron job not executing contents
 Issue #167 Enhancement  - Change perms on /etc/postfix/sasl_passwd to 600
 Issue #168 Enhancement  - Start regular updates on RegistrarBoundaries.pm 
 Issue #169 Enhancement  - Clean up clamav-unoffical-sigs script (superceded by issue #170)
+Issue #170 Enhancement  - Add support to MalwarePatrol to EFA-Configure
 Issue #171 Bug          - Update clamav -- fix any clamav discrepancies
 Issue #172 Enhancement  - Review sanesecurity signatures for inclusion in EFA
 Issue #173 Enhancement  - Securiteinfo.com support removed from unofficial-sigs
