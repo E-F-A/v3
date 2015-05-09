@@ -179,20 +179,40 @@ function run_update() {
  
   # Issues #45 (Superceded) #169 (Superceded) #170 #172 #173
   rm -f /usr/local/bin/clamav-unofficial-sigs.sh
-  rm -f /usr/local/etc/clamav-unofficial-sigs.conf
   tar -xvzf $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
   cd $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0
   cp clamav-unofficial-sigs.sh /usr/local/bin/
-  cp clamav-unofficial-sigs.conf /usr/local/etc/
   
-  # Issue #177 Correct EFA to new clamav paths using EPEL
-  sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
+  # Issue #177 Correct EFA to new clamav paths using EPEL ()for clamav-unoffical-sigs)
+  sed -i '/^clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^clam_user=/ c\clam_user="clam"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^clam_group=/ c\clam_group="clam"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
+  
+  # Misc settings
+  sed -i '/^reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^user_configuration_complete=/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
+  sed -i '/^mbl_update_hours=/ c\mbl_update_hours="60"' /usr/local/etc/clamav-unoffical-sigs.conf
+    
+  TESTMALWAREHASH=$(grep "malwarehash\.hsb" /usr/local/etc/clamav-unofficial-sigs.conf)
+  if [[ -z $TESTMALWAREHASH ]]; then
+    sed -i '/^ss_dbs="/ a\   malwarehash.hsb' /usr/local/etc/clamav-unofficial-sigs.conf
+  fi
+  TESTSCAMNAILER=$(grep "scamnailer\.ndb" /usr/local/etc/clamav-unofficial-sigs.conf)
+  if [[ -z $TESTSCAMNAILER ]]; then
+    sed -i '/^ss_dbs="/ a\   scamnailer.ndb' /usr/local/etc/clamav-unofficial-sigs.conf
+  fi
+  TESTEFANOTICE=$(grep "^# EFA Notice for SecuriteInfo:" /usr/local/etc/clamav-unofficial-sigs.conf)
+  if [[ -z $TESTEFANOTICE ]]; then
+    sed -i '/^# SecuriteInfo Database(s)/{N;s/$/\n# EFA Notice for SecuriteInfo:\n# Public download of SecuriteInfo sigs no longer supported\n# Sign up for a free subscription and follow instructions to integrate\n# sigs into clamav in \/etc\/freshclam.conf instead/}' /usr/local/etc/clamav-unofficial-sigs.conf
+  fi
+  TESTMBLRECEIPT=$(grep "^mbl_receipt=" /usr/local/etc/clamav-unoffical-sigs.conf)
+  if [[ -z $TESTMBLRECEIPT ]]; then
+    sed -i '/^mbl_update_hours=/ a\\\n# MalwarePatrol Subscription\n# Add subscription receipt password here\nmbl_receipt=""' /usr/local/etc/clamav-unoffical-sigs.conf
+  fi  
      
-  sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
-  sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
-  sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
-  sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
-  
   # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
   chmod 0600 /etc/postfix/sasl_passwd
   

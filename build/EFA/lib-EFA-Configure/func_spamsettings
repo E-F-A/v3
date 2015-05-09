@@ -16,6 +16,7 @@ function func_spam-settings() {
       echo -e "5) MailScanner Max Message Size"
       echo -e "6) Mailwatch sa-learn Max Message Size"
       echo -e "7) Mailwatch hide high spam/mcp"
+      echo -e "8) MalwarePatrol Key Code"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
@@ -30,6 +31,7 @@ function func_spam-settings() {
                 5) func_ask-maxsize;;
                 6) func_ask-maxsizemailwatch;;
                 7) func_ask-highspammailwatch;;
+                8) func_ask-malwarepatrol;;
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac

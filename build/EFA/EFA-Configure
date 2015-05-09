@@ -53,6 +53,7 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_resetadmin
 . /var/EFA/lib/EFA-Configure/func_askmaxsizemailwatch
 . /var/EFA/lib/EFA-Configure/func_askhighspammailwatch
+. /var/EFA/lib/EFA-Configure/func_askmalwarepatrol
 
 # +---------------------------------------------------+
 
