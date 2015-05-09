@@ -22,7 +22,7 @@ function func_ask-highspammailwatch() {
         sed -i "/^define('HIDE_HIGH_SPAM'/ c\Sdefine('HIDE_HIGH_SPAM', true);" /var/www/html/mailscanner/conf.php
         echo -e "$green[EFA]$clean Hide High Spam (and High MCP) $green ENABLED $clean"
         spamcheck=0
-      elif [[ "$TMPDELIVERSPAM" == "" || "$TMPDELIVERSPAM" == "N" || "$TMPDELIVERSPAM" == "n" ]]; then 
+      elif [[ "x$TMPHIDESPAM" == "x" || "$TMPHIDESPAM" == "N" || "$TMPHIDESPAM" == "n" ]]; then 
         sed -i "/^define('HIDE_HIGH_SPAM'/ c\Sdefine('HIDE_HIGH_SPAM', false);" /var/www/html/mailscanner/conf.php
         echo -e "$green[EFA]$clean Hide High Spam (and High MCP) $green DISABLE $clean"
         spamcheck=0
