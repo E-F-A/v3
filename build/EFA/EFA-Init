@@ -833,18 +833,7 @@ func_Install-VmwareTools(){
   echo -e "$green[EFA]$clean Depending on the speed of your system this"
   echo -e "$green[EFA]$clean might take a while."
   pause
-  cd /usr/src/EFA
-  yum -y install glib2-devel pam-devel libdnet-devel gcc-c++ libicu-devel
-  wget $mirror/$mirrorpath/open-vm-tools-9.4.0-1280544.tar.gz
-  tar xvzf open-vm-tools-9.4.0-1280544.tar.gz
-  cd open-vm-tools-9.4.0-1280544
-  ./configure --without-x
-  make
-  make install
-  /usr/bin/wget -O /etc/init.d/vmtoolsd $gitdlurl/EFA/vmtoolsd.init
-  chmod 755 /etc/init.d/vmtoolsd
-  # lib adjustment
-  ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1
+  yum -y install glib2-devel pam-devel libdnet-devel gcc-c++ libicu-devel open-vm-tools
   chkconfig vmtoolsd on
   service vmtoolsd start
   func_echo-header

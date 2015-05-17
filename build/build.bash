@@ -20,17 +20,16 @@
 
 # TODO: Use update v2 method for packaging in build.bash
 #   update entire script
-# TODO:  update mailwatch db create sql scripts to new versions for utf8
 
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.8"
+version="3.0.0.8-beta"
 logdir="/var/log/EFA"
-gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/master/build"
+gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8-beta/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
-mirrorpath="/build/3.0.0.8"
+mirrorpath="/build/3.0.0.8-beta"
 MAILWATCHVERSION="7482fe0831"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
@@ -210,7 +209,7 @@ func_postfix () {
 
     # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
     chmod 0600 /etc/postfix/sasl_passwd
-    
+
     echo "pwcheck_method: auxprop">/usr/lib64/sasl2/smtpd.conf
     echo "auxprop_plugin: sasldb">>/usr/lib64/sasl2/smtpd.conf
     echo "mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5">>/usr/lib64/sasl2/smtpd.conf
@@ -287,7 +286,7 @@ func_mailscanner () {
     sed -i '/^Log SpamAssassin Rule Actions =/ c\Log SpamAssassin Rule Actions = no' /etc/MailScanner/MailScanner.conf
     sed -i "/^Sign Clean Messages =/ c\# EFA Note: CustomAction.pm will Sign Clean Messages instead using the custom(nonspam) action.\nSign Clean Messages = No" /etc/MailScanner/MailScanner.conf
     sed -i "/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No" /etc/MailScanner/MailScanner.conf
-    sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 0" /etc/MailScanner/MailScanner.conf
+    sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 2" /etc/MailScanner/MailScanner.conf
 	sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
 
 	# Issue #132 Increase sa-learn and spamassassin max message size limits
@@ -351,8 +350,10 @@ func_mailscanner () {
 	rm -f mailscanner-4.84.6-1.patch
     
     # Issue #177 Correct EFA to new clamav paths using EPEL
-    sed -i "^/clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
-    sed -i "^/clamd\t\t\/bin\/false c\ clamd\t\t/bin/false\t\t\t\t/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
+    # Future proofing for next MailScanner version...
+    sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/share/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamd\t\t\/bin\/false c\ clamd\t\t/bin/false\t\t\t\t/usr" /etc/MailScanner/virus.scanners.conf
 }
 # +---------------------------------------------------+
 
@@ -390,7 +391,7 @@ func_spam_clamav () {
 
     # Issue #177 Correct EFA to new clamav paths using EPEL
     sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
-    
+
     sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
     sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -408,13 +409,13 @@ func_spam_clamav () {
 
     # Use the EFA packaged version.
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/Spamassassin-3.4.0-EFA-Upgrade.tar.gz
-    tar -xvzf Spamassassin-3.4.0-EFA-Upgrade.tar.gz
-    cd Spamassassin-3.4.0-EFA-Upgrade
+    wget $mirror/$mirrorpath/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
+    tar -xvzf Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
+    cd Spamassassin*
     chmod 755 install.sh
     ./install.sh
     cd /usr/src/EFA
-    rm -rf Spamassassin-3.4.0-EFA-Upgrade*
+    rm -rf Spamassassin*
 
 	# Symlink for Geo::IP
 	mkdir -p /usr/local/share/GeoIP
@@ -710,7 +711,7 @@ func_mailwatch () {
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
 
 	# Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
-	mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig
+	mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
 	ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
 	sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
 
@@ -763,13 +764,28 @@ func_mailwatch () {
     chgrp -R apache /etc/MailScanner/rules
     chmod g+rwxs /etc/MailScanner/rules
     chmod g+rw /etc/MailScanner/rules/*.rules
-    ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.cond /etc/cron.d/msre_reload.crond
+    ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.crond /etc/cron.d/msre_reload.crond
     ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
     chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
-    
-    # Issue #178 EFA MailWatch Unicode Support 
-    mysql --user=root --password=$password --database=mailscanner < /usr/local/bin/tools/Cron_jobs/UTF8_Database/upgrade_mysql_db_to_utf8.sql
-	
+
+    # Issue #156 -- GeoIP Bug
+    cd /usr/src/EFA
+    wget $mirror/$mirrorpath/geoip-5fc9611.tar.gz
+    tar xzvf geoip-5fc9611.tar.gz
+    cd geoip-api-perl
+    perl Makefile.PL
+    make
+    make install
+
+    # Install Encoding:FixLatin perl module for mailwatch UTF8 support
+    cd /usr/src/EFA
+    wget $mirror/$mirrorpath/Encoding-FixLatin-1.04.tar.gz 
+    tar xzvf /usr/src/EFA/Encoding-FixLatin-1.04.tar.gz
+    cd /usr/src/EFA/Encoding*
+    perl Makefile.PL
+    make
+    make install
+
     # Add mailwatch version to EFA-Config
 	echo "MAILWATCHVERSION:$MAILWATCHVERSION" >> /etc/EFA-Config
 
@@ -956,7 +972,7 @@ func_razor () {
 
 	# Issue #157 Razor failing after registration of service
 	# Use setgid bit
-	chmod g+s /var/spool/postfix/.razor
+	chmod ug+s /var/spool/postfix/.razor
 }
 # +---------------------------------------------------+
 
@@ -1083,7 +1099,7 @@ func_unbound () {
     # disable validator
     sed -i "/^\tmodule-config:/ c\\\tmodule-config: \"iterator\"" /etc/unbound/unbound.conf
   
-    echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
+    echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
     echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
     echo "  forward-addr: 8.8.8.8" >> /etc/unbound/conf.d/forwarders.conf
     echo "  forward-addr: 8.8.4.4" >> /etc/unbound/conf.d/forwarders.conf
