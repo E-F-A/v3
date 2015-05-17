@@ -329,7 +329,13 @@ function update-spamassassin(){
     # Grab new definitions
     /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
     /usr/local/bin/sa-compile
-
+    
+    # Restore original mailscanner.cf and local.cf
+    rm -f /etc/mail/spamassassin/mailscanner.cf
+    cp $BACKUPDIR/spamassassin-etc/mailscanner.cf /etc/mail/spamassassin/mailscanner.cf
+    rm -f /etc/mail/spamassassin/local.cf
+    cp $BACKUPDIR/spamassassin-etc/local.cf /etc/mail/spamassassin/local.cf
+    
     # Restart mailscanner
     service MailScanner start
 
