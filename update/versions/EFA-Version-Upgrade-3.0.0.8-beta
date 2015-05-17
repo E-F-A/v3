@@ -22,7 +22,7 @@
 #----------------------------------------------------------------#
 # Variables
 #----------------------------------------------------------------#
-VERSION="3.0.0.8"
+VERSION="3.0.0.8-beta"
 logdir="/var/log/EFA"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd*"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
@@ -32,6 +32,7 @@ MAILSUBJECT="EFA Update Complete For: `hostname`"
 SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
 STAGING="/tmp/EFA-Staging"
+UPDATE="EFA-Version-Upgrade-$VERSION"
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -49,20 +50,30 @@ WEBMINVERSION="1.690-1"
 # Function where we do all our magic
 #----------------------------------------------------------------#
 function run_update() {
-  echo "Starting update to E.F.A. 3.0.0.8"
+  echo "Starting update to E.F.A. $VERSION"
 
   # To package for this update:
   # /EFA-Version-Upgrade                              <- This file in the root, renamed!
-  # /Files/									                          <- Directory (containing binary files)
+  # /Files/                                           <- Directory (containing binary files)
   # /Files/geoip-5fc9611.tar.gz                       <- GeoIP update files
   # /Files/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz     <- Spamassassin update files
   # /Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar   <- Clamav-unofficial-sigs update files
   # /Files/MailWatch-1.2.0-master-GIT-7482fe0831.zip  <- Mailwatch
   # /Files/RegistrarBoundaries.pm                     <- TLD Update for SA 3.4.0
-  # /Scripts/								                          <- Directory (containing update scripts (previous git scripts))
+  # /Scripts/                                         <- Directory (containing update scripts (previous git scripts))
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
 
+  check_disk_space
+  download_update
+  check_md5
+  
+  # Unpack update
+  # Is staging area clean?
+  [[ -n $STAGING ]] && rm -rf $STAGING/*
+  tar xzvf $STAGING/$UPDATE
+  [[ $? -ne 0 ]] && abort
+  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
 
@@ -131,9 +142,9 @@ function run_update() {
 
   # Issue #157 Razor failing after registration of service
   # Reapply perms for new builds
-  # Setgid
+  # Setuid and Setgid
   chown -R postfix:apache /var/spool/postfix/.razor
-  chmod g+s /var/spool/postfix/.razor
+  chmod ug+s /var/spool/postfix/.razor
   chmod ug+rwx /var/spool/postfix/.razor
   chmod ug+rw /var/spool/postfix/.razor
 
@@ -183,7 +194,7 @@ function run_update() {
   cd $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0
   cp clamav-unofficial-sigs.sh /usr/local/bin/
   
-  # Issue #177 Correct EFA to new clamav paths using EPEL ()for clamav-unoffical-sigs)
+  # Issue #177 Correct EFA to new clamav paths using EPEL (for clamav-unoffical-sigs)
   sed -i '/^clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
   sed -i '/^clam_user=/ c\clam_user="clam"' /usr/local/etc/clamav-unofficial-sigs.conf
   sed -i '/^clam_group=/ c\clam_group="clam"' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -291,8 +302,8 @@ function update-spamassassin(){
     cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
     # Installation meta-script...add a little modularity to future spamassassin upgrades
     chmod 755 install.sh
-	  # Run install without testing each module during compile
-	  # Some tests would fail in remote environments due to external factors
+    # Run install without testing each module during compile
+    # Some tests would fail in remote environments due to external factors
     ./install.sh --skiptests
     if [[ $? -ne 0 ]]; then
       cd /usr/src/EFA
@@ -457,7 +468,77 @@ function update-mailwatch() {
 }
 #----------------------------------------------------------------#
 
+#----------------------------------------------------------------#
+# Function to download file
+#----------------------------------------------------------------#
+function download_update() {
+  /usr/bin/wget -O $STAGING/$UPDATE $MIRROR/update/$UPDATE
+  [[ $? -ne 0 ]] && abort
+  /usr/bin/wget -O $STAGING/$UPDATE.md5 $MIRROR/update/$UPDATE.md5
+  [[ $? -ne 0 ]] && abort
+}
+#----------------------------------------------------------------#
 
+#----------------------------------------------------------------#
+# Function to check the MD5
+#----------------------------------------------------------------#
+function check_md5() {
+  # Grab md5 from file
+  checksum1=$(cat $STAGING/$UPDATE.md5 | awk '{print $1}')
+  # Calculate md5
+  checksum2=$(md5sum $STAGING/$UPDATE | awk '{print $1}')
+  if [[ "$checksum1" != "$checksum2" ]]; then
+    echo "Fatal:  $UPDATE md5 checksum does not match!  Aborting..."
+    abort
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Abort Routine
+#----------------------------------------------------------------#
+function abort() {
+  [[ -n $STAGING ]] && rm -rf $STAGING
+
+  echo "" >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+
+  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Please visit http://www.efa-project.org for more information."
+  exit 1
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Disk Space Check Routine
+#----------------------------------------------------------------#
+function check_disk_space() {
+  # Abort update if disk space is low >= 95%
+  THRESHOLD="95"
+  DISKUSE=$(df -hP -t ext4 --local | awk '{print $5}' | grep [0-9] | tr -d "%")
+  IFS1=$IFS
+  IFS=" "
+   for i in $DISKUSE; do
+     if [[ $i -ge $THRESHOLD]]; then 
+        
+        echo "FATAL:  Update aborted.  Low disk space <=5% detected on one" >> $TMPMAIL 
+        echo "or more local ext4 filesystems!" >> $TMPMAIL
+        echo "Free up disk space before continuing."  >> $TMPMAIL
+        echo "Please visit https://forums.efa-project.org for assistance." >> $TMPMAIL
+        
+        echo "FATAL:  Update aborted.  Low disk space <=5% detected on one"
+        echo "or more local ext4 filesystems!"
+        echo "Free up disk space before continuing."
+        echo "Please visit https://forums.efa-project.org for assistance." 
+              
+        abort
+     fi
+  done
+  IFS=$IFS1
+}
 
 #----------------------------------------------------------------#
 # Function to update system with yum
