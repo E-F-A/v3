@@ -141,8 +141,11 @@ function update-3.0.0.8() {
   # Unpack update
   tar xzvf $STAGING/$UPDATE
   [[ $? -ne 0 ]] && abort
-  chmod 700 $STAGING/EFA-Version-Upgrade
-  $STAGING/EFA-Version-Upgrade
+  # Bypass noexec in /tmp
+  rm -f /var/EFA/update/EFA-Version-Upgrade
+  cp $STAGING/EFA-Version-Update /var/EFA/update
+  chmod 700 /var/EFA/update/EFA-Version-Upgrade
+  /var/EFA/update/EFA-Version-Upgrade
 }
 #----------------------------------------------------------------#
 
@@ -194,6 +197,7 @@ function initialize() {
 function finalize() {
   cd /tmp
   rm -rf $STAGING
+  rm -f /var/EFA/update/EFA-Version-Upgrade
 
   # Finalize the mail and send it out
   echo "" >> $TMPMAIL
