@@ -524,7 +524,7 @@ function finalize() {
 
   # Finalize the mail
   echo "" >> $TMPMAIL
-  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  echo "Please visit https://efa-project.org for more information." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
 
