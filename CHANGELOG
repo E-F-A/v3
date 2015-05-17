@@ -25,6 +25,7 @@ Issue #175 Enhancement  - Set keyboard layout at beginning of EFA-Init
 Issue #177 Enhancement  - Correct EFA to new clamav paths using EPEL
 Issue #178 Enhancement  - EFA MailWatch Unicode Support
 
+EFA-Update enhanced fault tolerance
 EPEL Repository is now enabled
 Add 4GB Swap partition to new builds.
 
