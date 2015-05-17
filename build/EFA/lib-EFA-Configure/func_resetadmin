@@ -70,8 +70,8 @@ func_resetadmin() {
     fi
   fi
   
-  echo -e "$green[EFA]$cleanAdministrator account username: $ADMINUSER"
-  echo -en "$green[EFA]$cleanReset password (Y/n):  "
+  echo -e "$green[EFA]$clean Administrator account username: $ADMINUSER"
+  echo -en "$green[EFA]$clean Reset password (Y/n):  "
   read YESNO
   echo -e ""
 

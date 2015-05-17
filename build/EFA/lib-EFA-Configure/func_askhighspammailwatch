@@ -19,13 +19,13 @@ function func_ask-highspammailwatch() {
     do 
       if [[ "$TMPHIDESPAM" == "Y" || "$TMPHIDESPAM" == "y" ]]; then 
         # Set spam hiding behavior
-        sed -i "/^define('HIDE_HIGH_SPAM'/ c\Sdefine('HIDE_HIGH_SPAM', true);" /var/www/html/mailscanner/conf.php
+        sed -i "/^define('HIDE_HIGH_SPAM'/ c\define('HIDE_HIGH_SPAM', true);" /var/www/html/mailscanner/conf.php
         echo -e "$green[EFA]$clean Hide High Spam (and High MCP) $green ENABLED $clean"
-        spamcheck=0
+        hidecheck=0
       elif [[ "x$TMPHIDESPAM" == "x" || "$TMPHIDESPAM" == "N" || "$TMPHIDESPAM" == "n" ]]; then 
-        sed -i "/^define('HIDE_HIGH_SPAM'/ c\Sdefine('HIDE_HIGH_SPAM', false);" /var/www/html/mailscanner/conf.php
+        sed -i "/^define('HIDE_HIGH_SPAM'/ c\define('HIDE_HIGH_SPAM', false);" /var/www/html/mailscanner/conf.php
         echo -e "$green[EFA]$clean Hide High Spam (and High MCP) $green DISABLE $clean"
-        spamcheck=0
+        hidecheck=0
       else
         echo -e "       $red ERROR: please make an selection.$clean"
         echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N]: "

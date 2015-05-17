@@ -82,14 +82,18 @@ function run_update() {
 
   # Issue #177 Correct EFA to new clamav paths using EPEL
   update-clamav
+  service clamd stop
   userdel clamav
-  mv -f /var/clamav/* /var/lib/clamav
+  mv -f /var/clamav/* /var/lib/clamav > /dev/null 2>&1
   chown -R clam:clam /var/lib/clamav 
   rm -rf /var/clamav
+  chown clam:clam /var/log/clamav/clamd.log
   sed -i '/^Incoming Work Group =/ c\Incoming Work Group = clam' /etc/MailScanner/MailScanner.conf
   sed -i '/^Clamd Socket =/ c\Clamd Socket = /var/run/clamav/clamd.sock' /etc/MailScanner/MailScanner.conf
-  sed -i "^/clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
-  sed -i "^/clamd\t\t\/bin\/false c\ clamd\t\t/bin/false\t\t\t\t/usr" /etc/MailScanner/virus.scanners.conf
+  sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
+  # Future proofing for next MailScanner version...
+  sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/share/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
+  sed -i "/^clamd\t\t\/bin\/false c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
 
   # Issue #150 URIBL_BLOCKED using dnsmasq
   # disable dnsmasq but leave running
@@ -103,14 +107,11 @@ function run_update() {
   sed -i "/^\tmodule-config:/ c\\\tmodule-config: \"iterator\"" /etc/unbound/unbound.conf
   # copy dnsmasq resolvers to unbound
   resolvips=$(cat /etc/resolv.dnsmasq | awk '{print $2}')
-  IFS1=$IFS
-  IFS="\n"
-  echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
+  echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
   echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
   for i in $resolvips; do
     echo "  forward-addr: $i" >> /etc/unbound/conf.d/forwarders.conf
   done
-  IFS=$IFS1
   # shut down dnsmasq
   service dnsmasq stop
   # start unbound
@@ -120,9 +121,9 @@ function run_update() {
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*
-  mv $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
+  cp $STAGING/Scripts/EFA-Configure/* /usr/local/sbin/EFA-Configure
   mkdir -p /var/EFA/lib/EFA-Configure
-  mv $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
+  cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
   chmod 700 /usr/local/sbin/EFA-Configure
   chmod 600 /var/EFA/lib/EFA-Configure/*
 
@@ -142,9 +143,10 @@ function run_update() {
   chmod ug+rw /var/spool/postfix/.razor
 
   # Issue #156 -- GeoIP Bug
-  mv $STAGING/Files/geoip-5fc9611.tar.gz /usr/src/EFA
-  tar xzvf /usr/src/EFA/geoip-5fc9611.tar.gz
-  cd /usr/src/EFA/geoip-api-perl
+  cp $STAGING/Files/geoip-5fc9611.tar.gz /usr/src/EFA/geoip-5fc9611.tar.gz
+  cd /usr/src/EFA
+  tar xzvf geoip-5fc9611.tar.gz
+  cd geoip-api-perl
   perl Makefile.PL
   make
   make install
@@ -152,7 +154,7 @@ function run_update() {
   rm -rf /usr/src/EFA/geoip*
 
   # Issue #166 MailWatch cron job not executing contents
-  sed -i "/^#!/bin/sh$/ c\#!/bin/bash" /etc/cron.daily/mailwatch
+  sed -i "/^#!\/bin\/sh$/ c\#!\/bin\/bash" /etc/cron.daily/mailwatch
 
   # Issue #45 Add ScamNailer Ruleset (superceded -- moved to unofficial-sigs)
   # todo:  Host this on dl.efa-project.org
@@ -168,25 +170,34 @@ function run_update() {
 
   # Update MailWatch to latest version
   update-mailwatch
- 
+  
+  # Install Encoding:FixLatin perl module for mailwatch UTF8 support
+  cp $STAGING/Files/Encoding-FixLatin-1.04.tar.gz /usr/src/EFA/Encoding-FixLatin-1.04.tar.gz
+  tar xzvf /usr/src/EFA/Encoding-FixLatin-1.04.tar.gz
+  cd /usr/src/EFA/Encoding*
+  perl Makefile.PL
+  make
+  make install
+  
   # Issue #178 EFA MailWatch Unicode Support 
-  mysql --user=mailwatch --password=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/MAILWATCHSQLPWD://') --database=mailscanner < /usr/local/bin/tools/Cron_jobs/UTF8_Database/upgrade_mysql_db_to_utf8.sql
- 
+  mysql --user=mailwatch --password=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/MAILWATCHSQLPWD://') --database=mailscanner < /usr/local/bin/mailwatch/tools/UTF8_Database/upgrade_mysql_db_to_utf8.sql
   # Issue #72 EFA MSRE Support
-  sed -i "^/define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
+
+  sed -i "/^define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
   chgrp -R apache /etc/MailScanner/rules
   chmod g+rwxs /etc/MailScanner/rules
   chmod g+rw /etc/MailScanner/rules/*.rules
-  ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.cond /etc/cron.d/msre_reload.crond
+  ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.crond /etc/cron.d/msre_reload.crond
   ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
   chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
- 
+
   # Issues #45 (Superceded) #169 (Superceded) #170 #172 #173
   rm -f /usr/local/bin/clamav-unofficial-sigs.sh
-  tar -xvzf $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
-  cd $STAGING/Files/clamav-unofficial-sigs-3.7.2-EFA-1.0
+  cd $STAGING/Files
+  tar xvzf clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
+  cd clamav-unofficial-sigs-3.7.2-EFA-1.0
   cp clamav-unofficial-sigs.sh /usr/local/bin/
-  
+
   # Issue #177 Correct EFA to new clamav paths using EPEL (for clamav-unoffical-sigs)
   sed -i '/^clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
   sed -i '/^clam_user=/ c\clam_user="clam"' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -194,12 +205,12 @@ function run_update() {
   sed -i '/^clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
   sed -i '/^clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
   sed -i '/^#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
-  
+
   # Misc settings
   sed -i '/^reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
   sed -i '/^user_configuration_complete=/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
-  sed -i '/^mbl_update_hours=/ c\mbl_update_hours="60"' /usr/local/etc/clamav-unoffical-sigs.conf
-    
+  sed -i '/^mbl_update_hours=/ c\mbl_update_hours="60"' /usr/local/etc/clamav-unofficial-sigs.conf
+
   TESTMALWAREHASH=$(grep "malwarehash\.hsb" /usr/local/etc/clamav-unofficial-sigs.conf)
   if [[ -z $TESTMALWAREHASH ]]; then
     sed -i '/^ss_dbs="/ a\   malwarehash.hsb' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -212,17 +223,19 @@ function run_update() {
   if [[ -z $TESTEFANOTICE ]]; then
     sed -i '/^# SecuriteInfo Database(s)/{N;s/$/\n# EFA Notice for SecuriteInfo:\n# Public download of SecuriteInfo sigs no longer supported\n# Sign up for a free subscription and follow instructions to integrate\n# sigs into clamav in \/etc\/freshclam.conf instead/}' /usr/local/etc/clamav-unofficial-sigs.conf
   fi
-  TESTMBLRECEIPT=$(grep "^mbl_receipt=" /usr/local/etc/clamav-unoffical-sigs.conf)
+  TESTMBLRECEIPT=$(grep "^mbl_receipt=" /usr/local/etc/clamav-unofficial-sigs.conf)
   if [[ -z $TESTMBLRECEIPT ]]; then
-    sed -i '/^mbl_update_hours=/ a\\\n# MalwarePatrol Subscription\n# Add subscription receipt password here\nmbl_receipt=""' /usr/local/etc/clamav-unoffical-sigs.conf
+    sed -i '/^mbl_update_hours=/ a\\n# MalwarePatrol Subscription\n# Add subscription receipt password here\nmbl_receipt=""' /usr/local/etc/clamav-unofficial-sigs.conf
   fi  
-     
+
   # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
   chmod 0600 /etc/postfix/sasl_passwd
-  
+
   # Issue #168 Start regular updates on RegistrarBoundaries.pm 
   rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
-  mv $STAGING/Files/RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
+  cp $STAGING/Files/RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
+
+  service clamd start
 
   echo "$VERSION update is complete"
   echo ""
@@ -289,10 +302,10 @@ function update-spamassassin(){
     rm -rf /var/lib/spamassassin
 
     # Bypass noexec on /tmp...compile in /usr/src instead
-    mv $STAGING/Files/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
+    cp $STAGING/Files/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
     cd /usr/src/EFA
     tar xzvf Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
-    cd Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade
+    cd Spamassassin*
     # Installation meta-script...add a little modularity to future spamassassin upgrades
     chmod 755 install.sh
     # Run install without testing each module during compile
@@ -310,6 +323,7 @@ function update-spamassassin(){
 
     # Issue #82 re2c spamassassin rule compilation
     yum -y install re2c
+    [[ $? -ne 0 ]] && abort 
     sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
 
     # Grab new definitions
@@ -334,15 +348,15 @@ function update-spamassassin(){
 #----------------------------------------------------------------#
 function update-mailwatch() {
   # Update mailwatch if we have a new version available
-  if [[ ! $MAILWATCHVERSION == "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+  if [[ $MAILWATCHVERSION != "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
     then
 
       #### Backup Phase #####
       mkdir /var/EFA/backup/$VERSION/
-      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/
-      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION
-      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/
-      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/
+      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
+      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/ > /dev/null 2>&1
 
       #### Commit Phase #####
       echo -e "Starting installation of new mailwatch version"
@@ -350,7 +364,7 @@ function update-mailwatch() {
       service MailScanner stop
 
       rm -rf /usr/src/EFA/1.2.0-master
-      unzip -d /usr/src/EFA $STAGING/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
       cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
@@ -379,7 +393,7 @@ function update-mailwatch() {
       sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
 
       # Merge conf.php and conf.php.example changes
-      cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner
+      cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
       
       # Licensing update
       COPYRIGHTPRESENT=$(grep " Copyright (C) 2014-2015  MailWatch Team" /var/www/html/mailscanner/conf.php)
@@ -423,7 +437,7 @@ function update-mailwatch() {
       mv mailscannerlogo.gif mailscannerlogo.gif.orig
 
       # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
-      mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig
+      mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
       ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
       sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
 
