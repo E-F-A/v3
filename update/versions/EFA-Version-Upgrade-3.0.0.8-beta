@@ -32,7 +32,6 @@ MAILSUBJECT="EFA Update Complete For: `hostname`"
 SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
 STAGING="/tmp/EFA-Staging"
-UPDATE="EFA-Version-Upgrade-$VERSION"
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -64,21 +63,11 @@ function run_update() {
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
 
-  check_disk_space
-  download_update
-  check_md5
-  
-  # Unpack update
-  # Is staging area clean?
-  [[ -n $STAGING ]] && rm -rf $STAGING/*
-  tar xzvf $STAGING/$UPDATE
-  [[ $? -ne 0 ]] && abort
-  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
 
   ##### Commit Phase #####
-
+  
   # Issue #171 Update clamav -- fix any clamav discrepancies
   # Enabling EPEL Repo...
   # Do this early in case it fails...
@@ -86,7 +75,9 @@ function run_update() {
   [[ $? -ne 0 ]] && abort
   yum install epel-release -y
   [[ $? -ne 0 ]] && abort
-  
+ 
+  yum_update
+ 
   # Issue #177 Correct EFA to new clamav paths using EPEL
   update-clamav
   userdel clamav
@@ -513,38 +504,11 @@ function abort() {
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
-# Disk Space Check Routine
-#----------------------------------------------------------------#
-function check_disk_space() {
-  # Abort update if disk space is low >= 95%
-  THRESHOLD="95"
-  DISKUSE=$(df -hP -t ext4 --local | awk '{print $5}' | grep [0-9] | tr -d "%")
-  IFS1=$IFS
-  IFS=" "
-   for i in $DISKUSE; do
-     if [[ $i -ge $THRESHOLD]]; then 
-        
-        echo "FATAL:  Update aborted.  Low disk space <=5% detected on one" >> $TMPMAIL 
-        echo "or more local ext4 filesystems!" >> $TMPMAIL
-        echo "Free up disk space before continuing."  >> $TMPMAIL
-        echo "Please visit https://forums.efa-project.org for assistance." >> $TMPMAIL
-        
-        echo "FATAL:  Update aborted.  Low disk space <=5% detected on one"
-        echo "or more local ext4 filesystems!"
-        echo "Free up disk space before continuing."
-        echo "Please visit https://forums.efa-project.org for assistance." 
-              
-        abort
-     fi
-  done
-  IFS=$IFS1
-}
-
-#----------------------------------------------------------------#
 # Function to update system with yum
 #----------------------------------------------------------------#
 function yum_update() {
   yum -y --exclude="$yumexclude" update
+  [[ $? -ne 0 ]] && abort
   # Todo, write some logic that checks any of the yumexclude packages and updates them after testing...
 }
 #----------------------------------------------------------------#
