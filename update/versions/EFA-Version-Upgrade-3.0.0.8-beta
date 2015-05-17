@@ -25,7 +25,7 @@
 #----------------------------------------------------------------#
 VERSION="3.0.0.8-beta"
 logdir="/var/log/EFA"
-yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd*"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
 MAILFROM="$ADMINEMAIL"
 MAILTO="$ADMINEMAIL"
@@ -42,7 +42,6 @@ MAILWATCHVERSION="7482fe0831"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
 PYZORVERSION="0.7.0"
-VMTOOLSVERSION="9.10.0-2476743"
 WEBMINVERSION="1.690-1"
 #----------------------------------------------------------------#
 
@@ -467,39 +466,31 @@ function update-mailwatch() {
 #----------------------------------------------------------------#
 function update-vmtools() {
   # Issue #55 reapply open-vm-tools, if present and upgrade if new version is available
-  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" && $VMTOOLSVERSION != "`grep VMTOOLSVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]; then
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
 
-    # Add a vmware-tools version if needed
-    if [[ -z "`grep VMTOOLSVERSION /etc/EFA-Config`" ]]; then
-	  echo "VMTOOLSVERSION:" >> /etc/EFA-Config
+    # Remove source compiled version of open-vm-tools
+    if [[ -n "`grep VMTOOLSVERSION /etc/EFA-Config`" ]]; then
+	  service vmtoolsd stop
+
+      # Cleanup existing open-vm-tools
+      rm -f /usr/local/lib/libvmtools*
+      rm -f /usr/local/lib/libhgfs*
+      rm -f /usr/local/lib/libguestlib*
+      rm -rf /usr/local/lib/open-vm-tools
+      rm -f /usr/local/bin/vmware*
+      rm -f /usr/local/bin/vmtoolsd
+      rm -f /usr/local/sbin/mount.vmhgfs
+      rm -rf /etc/vmware-tools
+      rm -f /usr/local/include/vmci_sockets.h
+      rm -rf /usr/local/include/vmGuestLib
+      sed -i "/VMTOOLSVERSION:/d" /etc/EFA-Config
+      
+      # Install open-vm-tools from EPEL
+      yum -y install open-vm-tools
+    else
+      yum -y update open-vm-tools
     fi
 
-    service vmtoolsd stop
-
-    # Cleanup existing open-vm-tools
-    rm -f /usr/local/lib/libvmtools*
-    rm -f /usr/local/lib/libhgfs*
-    rm -f /usr/local/lib/libguestlib*
-    rm -rf /usr/local/lib/open-vm-tools
-    rm -f /usr/local/bin/vmware*
-    rm -f /usr/local/bin/vmtoolsd
-    rm -f /usr/local/sbin/mount.vmhgfs
-    rm -rf /etc/vmware-tools
-    rm -f /usr/local/include/vmci_sockets.h
-    rm -rf /usr/local/include/vmGuestLib
-
-    cd /usr/src/EFA
-    tar xvzf $STAGING/Files/open-vm-tools-$VMTOOLSVERSION.tar.gz -C /usr/src/EFA
-    cd open-vm-tools-$VMTOOLSVERSION
-    ./configure --without-x
-    make
-    make install
-
-    rm -f /etc/init.d/vmtoolsd
-    mv $STAGING/Files/vmtoolsd.init /etc/init.d/vmtoolsd
-    chmod 755 /etc/init.d/vmtoolsd
-    # lib adjustment
-    ln -s /usr/lib64/libdnet.so.1 /usr/lib64/libdnet.1 > /dev/null 2>&1
     chkconfig vmtoolsd on
     service vmtoolsd start
 
