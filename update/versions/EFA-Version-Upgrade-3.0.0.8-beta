@@ -78,9 +78,9 @@ function run_update() {
   [[ $? -ne 0 ]] && abort
   yum install epel-release -y
   [[ $? -ne 0 ]] && abort
- 
+
   yum_update
- 
+
   # Issue #177 Correct EFA to new clamav paths using EPEL
   update-clamav
   userdel clamav
@@ -91,7 +91,7 @@ function run_update() {
   sed -i '/^Clamd Socket =/ c\Clamd Socket = /var/run/clamav/clamd.sock' /etc/MailScanner/MailScanner.conf
   sed -i "^/clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
   sed -i "^/clamd\t\t\/bin\/false c\ clamd\t\t/bin/false\t\t\t\t/usr" /etc/MailScanner/virus.scanners.conf
-  
+
   # Issue #150 URIBL_BLOCKED using dnsmasq
   # disable dnsmasq but leave running
   # do this early in case it fails...
