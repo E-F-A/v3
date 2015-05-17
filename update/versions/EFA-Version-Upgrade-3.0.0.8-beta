@@ -483,12 +483,15 @@ function update-vmtools() {
       rm -rf /etc/vmware-tools
       rm -f /usr/local/include/vmci_sockets.h
       rm -rf /usr/local/include/vmGuestLib
-      sed -i "/VMTOOLSVERSION:/d" /etc/EFA-Config
       
       # Install open-vm-tools from EPEL
       yum -y install open-vm-tools
+      [[ $? -ne 0 ]] && abort
+      
+      sed -i "/VMTOOLSVERSION:/d" /etc/EFA-Config
     else
       yum -y update open-vm-tools
+      [[ $? -ne 0 ]] && abort 
     fi
 
     chkconfig vmtoolsd on
