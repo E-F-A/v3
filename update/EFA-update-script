@@ -299,6 +299,10 @@ function update-kernel(){
   CURRENTKERNEL="`uname -r`"
   LATESTKERNEL="`grep -m 1 CentOS /boot/grub/menu.lst | sed 's/.*(//' | sed 's/)//'`"
   if [[ $CURRENTKERNEL != $LATESTKERNEL ]]; then
+
+    # Zero out VMTOOLSVERSION to reapply open-vm-tools after reboot if installed
+    sed -i "/^VMTOOLSVERSION:/ c\VMTOOLSVERSION:0" /etc/EFA-Config
+    
     echo "Your system has an updated kernel, but you are not running"
     echo "on the latest kernel.  Please restart your system and run"
     echo "EFA-Update after restart."
