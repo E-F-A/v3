@@ -516,8 +516,6 @@ function update-vmtools() {
 
     chkconfig vmtoolsd on
     service vmtoolsd start
-
-    sed -i "/VMTOOLSVERSION:/ c\VMTOOLSVERSION:$VMTOOLSVERSION" /etc/EFA-Config
   fi
 }
 #----------------------------------------------------------------#
