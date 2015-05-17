@@ -134,6 +134,7 @@ function update-3.0.0.8() {
   # Is staging area clean?
   [[ -n $STAGING ]] && rm -rf $STAGING/*
   tar xzvf $STAGING/$UPDATE
+  [[ $? -ne 0 ]] && abort
   chmod 700 $STAGING/EFA-Version-Upgrade
   $STAGING/EFA-Version-Upgrade
 }
@@ -256,6 +257,7 @@ function get_cversion() {
 # Disk Space Check Routine
 #----------------------------------------------------------------#
 function check_disk_space() {
+  # Abort update if disk space is low use is >= 95%
   THRESHOLD="95"
   DISKUSE=$(df -hP -t ext4 --local | awk '{print $5}' | grep [0-9] | tr -d "%")
   IFS1=$IFS

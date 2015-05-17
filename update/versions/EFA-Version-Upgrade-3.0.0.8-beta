@@ -67,7 +67,7 @@ function run_update() {
   /usr/local/sbin/EFA-Backup -backup
 
   ##### Commit Phase #####
-  
+
   # Issue #171 Update clamav -- fix any clamav discrepancies
   # Enabling EPEL Repo...
   # Do this early in case it fails...
