@@ -126,14 +126,15 @@ function update-3.0.0.7() {
 # Update to 3.0.0.8
 #----------------------------------------------------------------#
 function update-3.0.0.8() {
+ # Is staging area clean?
+ [[ -n $STAGING ]] && rm -rf $STAGING/*
+
   check_disk_space
   UPDATE="EFA-Update-3.0.0.7-3.0.0.8.tar.gz"
   download_update
   check_md5
-    
+
   # Unpack update
-  # Is staging area clean?
-  [[ -n $STAGING ]] && rm -rf $STAGING/*
   tar xzvf $STAGING/$UPDATE
   [[ $? -ne 0 ]] && abort
   chmod 700 $STAGING/EFA-Version-Upgrade
