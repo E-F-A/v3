@@ -265,7 +265,7 @@ function check_disk_space() {
   IFS1=$IFS
   IFS=" "
    for i in $DISKUSE; do
-     if [[ $i -ge $THRESHOLD]]; then 
+     if [[ $i -ge $THRESHOLD ]]; then 
         
         echo "FATAL:  Update aborted.  Low disk space <=5% detected on one" >> $TMPMAIL 
         echo "or more local ext4 filesystems!" >> $TMPMAIL
