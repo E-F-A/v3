@@ -130,6 +130,10 @@ function update-3.0.0.8() {
  [[ -n $STAGING ]] && rm -rf $STAGING/*
 
   check_disk_space
+
+  # Check for kernel update prior to package download
+  update-kernel
+
   UPDATE="EFA-Update-3.0.0.7-3.0.0.8.tar.gz"
   download_update
   check_md5
@@ -279,6 +283,39 @@ function check_disk_space() {
     fi
   done
 
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update Kernel function
+#----------------------------------------------------------------#
+function update-kernel(){
+  yum -y update kernel*
+
+  # Kernel update check
+  # If the kernel has updated in a previous update, and
+  # the system has not rebooted, do not proceed until running
+  # on latest kernel
+  CURRENTKERNEL="`uname -r`"
+  LATESTKERNEL="`grep -m 1 CentOS /boot/grub/menu.lst | sed 's/.*(//' | sed 's/)//'`"
+  if [[ $CURRENTKERNEL != $LATESTKERNEL ]]; then
+    echo "Your system has an updated kernel, but you are not running"
+    echo "on the latest kernel.  Please restart your system and run"
+    echo "EFA-Update after restart."
+
+    echo "From: $MAILFROM" > $TMPMAIL
+    echo "To: $MAILTO" >> $TMPMAIL
+    echo "Reply-To: $MAILFROM" >> $TMPMAIL
+    echo "Subject: Restart needed to update to $VERSION" >> $TMPMAIL
+    echo "" >> $TMPMAIL
+    echo "Update to $VERSION is pending." >> $TMPMAIL
+    echo "Your system has an updated kernel, but you are not running" >> $TMPMAIL
+    echo "on the latest kernel.  Please restart your system and run" >> $TMPMAIL
+    echo "EFA-Update after restart." >> $TMPMAIL
+    cat $TMPMAIL | $SENDMAIL -t
+    rm $TMPMAIL
+    exit 1
+  fi
 }
 #----------------------------------------------------------------#
 
