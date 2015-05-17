@@ -121,7 +121,7 @@ function run_update() {
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /var/EFA/lib/EFA-Configure/*
-  cp $STAGING/Scripts/EFA-Configure/* /usr/local/sbin/EFA-Configure
+  cp $STAGING/Scripts/EFA-Configure/* /usr/local/sbin/EFA-Configure/
   mkdir -p /var/EFA/lib/EFA-Configure
   cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
   chmod 700 /usr/local/sbin/EFA-Configure
