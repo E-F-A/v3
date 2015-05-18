@@ -760,7 +760,7 @@ func_mailwatch () {
     echo "apache ALL=NOPASSWD: /usr/sbin/MailScanner --lint" > /etc/sudoers.d/EFA-Services
 
     # Issue #72 EFA MSRE Support
-    sed -i "^/define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
+    sed -i "/^define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
     chgrp -R apache /etc/MailScanner/rules
     chmod g+rwxs /etc/MailScanner/rules
     chmod g+rw /etc/MailScanner/rules/*.rules
