@@ -82,8 +82,8 @@ function run_update() {
 
   # Issue #177 Correct EFA to new clamav paths using EPEL
   update-clamav
-  service clamd stop
-  userdel clamav
+  service clamd stop > /dev/null 2>&1
+  userdel clamav > /dev/null 2>&1
   mv -f /var/clamav/* /var/lib/clamav > /dev/null 2>&1
   chown -R clam:clam /var/lib/clamav 
   rm -rf /var/clamav
@@ -93,7 +93,14 @@ function run_update() {
   sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
   # Future proofing for next MailScanner version...
   sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/share/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
-  sed -i "/^clamd\t\t\/bin\/false c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
+  sed -i "/^clamd\t\t\/bin\/false/ c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
+  rm -f /etc/freshclam.conf.rpmnew > /dev/null 2>&1
+  sed -i "/^DatabaseDirectory/ c\DatabaseDirectory /var/lib/clamav" /etc/freshclam.conf
+  sed -i "/^DatabaseOwner/ c\DatabaseOwner clam" /etc/freshclam.conf
+  chown clam:clam /var/log/clamav/freshclam.log
+
+  # Remove duplicate db in clamav if present
+  rm -f /var/lib/clamav/mail.cld > /dev/null 2>&1
 
   # Issue #150 URIBL_BLOCKED using dnsmasq
   # disable dnsmasq but leave running
@@ -120,8 +127,8 @@ function run_update() {
 
   # grab latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
-  rm -f /var/EFA/lib/EFA-Configure/*
-  cp $STAGING/Scripts/EFA-Configure/* /usr/local/sbin/EFA-Configure/
+  rm -rf /var/EFA/lib/EFA-Configure/
+  cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
   mkdir -p /var/EFA/lib/EFA-Configure
   cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
   chmod 700 /usr/local/sbin/EFA-Configure
@@ -170,15 +177,16 @@ function run_update() {
 
   # Update MailWatch to latest version
   update-mailwatch
-  
+
   # Install Encoding:FixLatin perl module for mailwatch UTF8 support
   cp $STAGING/Files/Encoding-FixLatin-1.04.tar.gz /usr/src/EFA/Encoding-FixLatin-1.04.tar.gz
-  tar xzvf /usr/src/EFA/Encoding-FixLatin-1.04.tar.gz
-  cd /usr/src/EFA/Encoding*
+  cd /usr/src/EFA
+  tar xzvf Encoding-FixLatin-1.04.tar.gz
+  cd Encoding-FixLatin-1.04
   perl Makefile.PL
   make
   make install
-  
+
   # Issue #178 EFA MailWatch Unicode Support 
   mysql --user=mailwatch --password=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed 's/MAILWATCHSQLPWD://') --database=mailscanner < /usr/local/bin/mailwatch/tools/UTF8_Database/upgrade_mysql_db_to_utf8.sql
   # Issue #72 EFA MSRE Support
@@ -236,6 +244,11 @@ function run_update() {
   cp $STAGING/Files/RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
 
   service clamd start
+  # Force update clam dbs
+  /usr/bin/freshclam
+
+  # Just in case...
+  service MailScanner start
 
   echo "$VERSION update is complete"
   echo ""
@@ -305,7 +318,7 @@ function update-spamassassin(){
     cp $STAGING/Files/Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz /usr/src/EFA
     cd /usr/src/EFA
     tar xzvf Spamassassin-$SPAMASSASSINVERSION-EFA-Upgrade.tar.gz
-    cd Spamassassin*
+    cd Spamassassin-3.4.0-EFA-Upgrade
     # Installation meta-script...add a little modularity to future spamassassin upgrades
     chmod 755 install.sh
     # Run install without testing each module during compile
@@ -319,7 +332,7 @@ function update-spamassassin(){
 
     # Symlink for Geo::IP
     mkdir -p /usr/local/share/GeoIP
-    ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
+    ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat > /dev/null 2>&1
 
     # Issue #82 re2c spamassassin rule compilation
     yum -y install re2c
@@ -489,7 +502,7 @@ function update-vmtools() {
   if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
 
     # Remove source compiled version of open-vm-tools
-    if [[ -n "`grep VMTOOLSVERSION /etc/EFA-Config`" ]]; then
+    if [[ -n "`rpm -q open-vm-tools | grep not\ installed`" ]]; then
 	  service vmtoolsd stop
 
       # Cleanup existing open-vm-tools
