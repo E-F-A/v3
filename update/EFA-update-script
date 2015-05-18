@@ -132,6 +132,7 @@ function update-3.0.0.8() {
   check_disk_space
 
   # Check for kernel update prior to package download
+  VERSION="3.0.0.8-beta"
   update-kernel
 
   UPDATE="EFA-Update-3.0.0.7-3.0.0.8.tar.gz"
