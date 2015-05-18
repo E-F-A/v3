@@ -135,7 +135,7 @@ function update-3.0.0.8() {
   VERSION="3.0.0.8-beta"
   update-kernel
 
-  UPDATE="EFA-Update-3.0.0.7-3.0.0.8.tar.gz"
+  UPDATE="EFA-Update-3.0.0.7-3.0.0.8-beta.tar.gz"
   download_update
   check_md5
 
