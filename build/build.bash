@@ -380,8 +380,8 @@ func_spam_clamav () {
     # http://sanesecurity.co.uk/usage/linux-scripts/
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
-    tar -xvzf clamav-unofficial-sigs-3.7.2.tar.gz
-    cd clamav-unofficial-sigs-3.7.2
+    tar -xvzf clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
+    cd clamav-unofficial-sigs-3.7.2-EFA-1.0
     cp clamav-unofficial-sigs.sh /usr/local/bin/
     cp clamav-unofficial-sigs.conf /usr/local/etc/
     cp clamav-unofficial-sigs.8 /usr/share/man/man8/

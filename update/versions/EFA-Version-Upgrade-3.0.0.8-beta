@@ -141,6 +141,12 @@ function run_update() {
     sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
   fi
 
+  # Set MailScanner attempts to 2 if not set
+  TEST=$(grep '^Maximum Processing Attempts = 0' /etc/MailScanner/MailScanner.conf)
+  if [[ -n $TEST ]]; then
+    sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 2" /etc/MailScanner/MailScanner.conf
+  fi
+
   # Issue #157 Razor failing after registration of service
   # Reapply perms for new builds
   # Setuid and Setgid
