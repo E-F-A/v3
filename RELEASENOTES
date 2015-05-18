@@ -90,7 +90,7 @@ open-vm-tools:
 sudo rpm -e open-vm-tools
 
 2) Error, "could not search" when logging into MailWatch after
-updating to 3.0.0.7
+updating to 3.0.0.8-beta
 
 This occurs when Active Directory integration is enabled.
 
