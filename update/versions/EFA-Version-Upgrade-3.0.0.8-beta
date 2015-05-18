@@ -350,10 +350,9 @@ function update-spamassassin(){
     /usr/local/bin/sa-compile
     
     # Restore original mailscanner.cf and local.cf
-    rm -f /etc/mail/spamassassin/mailscanner.cf
-    cp $BACKUPDIR/spamassassin-etc/mailscanner.cf /etc/mail/spamassassin/mailscanner.cf
+    sudo ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/mail/spamassassin/mailscanner.cf
     rm -f /etc/mail/spamassassin/local.cf
-    cp $BACKUPDIR/spamassassin-etc/local.cf /etc/mail/spamassassin/local.cf
+    cp $BACKUPDIR/spamassassin-etc/spamassassin/local.cf /etc/mail/spamassassin/local.cf
     
     # Restart mailscanner
     service MailScanner start
