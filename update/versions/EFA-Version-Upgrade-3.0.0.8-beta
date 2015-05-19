@@ -111,7 +111,7 @@ function run_update() {
   # disable ipv6 support in unbound
   sed -i "/^\t# do-ip6: yes/ c\\\tdo-ip6: no" /etc/unbound/unbound.conf
   # disable validator
-  sed -i "/^\tmodule-config:/ c\\\tmodule-config: \"iterator\"" /etc/unbound/unbound.conf
+  sed -i "/^\t# module-config:/ c\\\tmodule-config: \"iterator\"" /etc/unbound/unbound.conf
   # copy dnsmasq resolvers to unbound
   resolvips=$(cat /etc/resolv.dnsmasq | awk '{print $2}')
   echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
