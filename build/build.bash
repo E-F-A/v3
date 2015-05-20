@@ -1302,6 +1302,12 @@ func_cleanup () {
     rm -f /var/log/yum.log
     touch /var/log/yum.log
     chmod 600 /var/log/yum.log
+    touch /var/log/clamav/freshclam.log
+    chmod 600 /var/log/clamav/freshclam.log
+    chown clam:clam /var/log/clamav/freshclam.log
+    touch /var/log/clamav/clamd.log
+    chmod 600 /var/log/clamav/clamd.log
+    chown clam:clam /var/log/clamav/clamd.log
 
     # Clean root
     rm -f /root/anaconda-ks.cfg
