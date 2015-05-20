@@ -68,8 +68,6 @@ function run_update() {
 
   ##### Commit Phase #####
 
-  update-vmtools
-
   # Issue #171 Update clamav -- fix any clamav discrepancies
   # Enabling EPEL Repo...
   # Do this early in case it fails...
@@ -79,6 +77,8 @@ function run_update() {
   [[ $? -ne 0 ]] && abort
 
   yum_update
+
+  update-vmtools
 
   # Issue #177 Correct EFA to new clamav paths using EPEL
   update-clamav
