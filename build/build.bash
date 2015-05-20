@@ -366,6 +366,10 @@ func_spam_clamav () {
 
     # Issue #171 Update clamav -- fix any clamav discrepancies
 
+    # Set freshclam to correct paths
+    sed -i "/^DatabaseDirectory/ c\DatabaseDirectory /var/lib/clamav" /etc/freshclam.conf
+    sed -i "/^DatabaseOwner/ c\DatabaseOwner clam" /etc/freshclam.conf
+
     # Reverse changes from EPEL version of clamd (superceded by issue #177)
     #sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
     #sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
