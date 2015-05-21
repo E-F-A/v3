@@ -211,9 +211,13 @@ function func_ask-recursion() {
       if [[ $RECURSE =~ ^[Yy]$ || -z $RECURSE ]]; then
         recursecheck=1
         enablerecursion=1
+        $DNS1=""
+        $DNS2=""
       elif [[ $RECURSE =~ ^[Nn]$ ]]; then
         recursecheck=1
         enablerecursion=0
+        func_ask-dns1
+        func_ask-dns2
       else
         echo -e "       $red ERROR: Invalid choice$clean"
         echo -e ""
@@ -1143,13 +1147,6 @@ if [ $CONFIGURED == "NO" ]
       func_ask-netmask
       func_ask-gateway
       func_ask-recursion
-      if [[ "$enablerecursion" -eq 0 ]]; then
-        func_ask-dns1
-        func_ask-dns2
-      else
-        $DNS1=""
-        $DNS2=""
-      fi
       func_ask-username
       func_ask-userpassword
       func_ask-rootpassword
