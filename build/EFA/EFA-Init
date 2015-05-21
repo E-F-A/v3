@@ -567,7 +567,7 @@ function func_verify-settings() {
     echo -e "5)  IP address     : $IPADDRESS"
     echo -e "6)  Netmask        : $NETMASK"
     echo -e "7)  Gateway        : $GATEWAY"
-    echo -e "8)  Use Recursion  : "; [[ "$enablerecursion" -eq 1 ]] && echo "Enabled" || echo "Disabled"
+    echo -e -n "8)  Use Recursion  : "; [[ "$enablerecursion" -eq 1 ]] && echo "Enabled" || echo "Disabled"
     echo -e "9)  Primary DNS    : $DNS1"
     echo -e "10)  Secondary DNS  : $DNS2"
     echo -e "11) User           : $USERNAME"
