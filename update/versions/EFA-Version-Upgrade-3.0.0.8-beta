@@ -119,6 +119,7 @@ function run_update() {
   for i in $resolvips; do
     echo "  forward-addr: $i" >> /etc/unbound/conf.d/forwarders.conf
   done
+  echo "RECURSION:DISABLED" >> /etc/EFA-Config
   # shut down dnsmasq
   service dnsmasq stop
   # start unbound
