@@ -206,7 +206,7 @@ function func_ask-recursion() {
   echo -e -n "$green[EFA]$clean Enable full recursive DNS? (Y/n): "
   read RECURSE
   recursecheck=0
-  while [ $recursecheck = 0]
+  while [ $recursecheck -eq 0 ]
     do
       if [[ $RECURSE =~ ^[Yy]$ || -z $RECURSE ]]; then
         recursecheck=1
@@ -228,7 +228,7 @@ function func_ask-recursion() {
 function func_ask-dns1() {
   func_echo-header
   if [[ "$enablerecursion" -eq 1 ]]; then
-    echo "$red[EFA] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
+    echo -e "$red[EFA] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
     pause
     return
   fi
@@ -262,7 +262,7 @@ function func_ask-dns2() {
   func_echo-header
 
   if [[ "$enablerecursion" -eq 1 ]]; then
-    echo "$red[EFA] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
+    echo -e "$red[EFA] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
     pause
     return
   fi
@@ -569,7 +569,7 @@ function func_verify-settings() {
     echo -e "7)  Gateway        : $GATEWAY"
     echo -e -n "8)  Use Recursion  : "; [[ "$enablerecursion" -eq 1 ]] && echo "Enabled" || echo "Disabled"
     echo -e "9)  Primary DNS    : $DNS1"
-    echo -e "10)  Secondary DNS  : $DNS2"
+    echo -e "10) Secondary DNS  : $DNS2"
     echo -e "11) User           : $USERNAME"
     echo -e "12) User PWD       : <hidden>"
     echo -e "13) Admin PWD      : <hidden>"
