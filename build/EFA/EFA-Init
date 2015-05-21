@@ -206,7 +206,7 @@ function func_ask-recursion() {
   echo -e -n "$green[EFA]$clean Enable full recursive DNS? (Y/n): "
   read RECURSE
   recursecheck=0
-  while [ $recursecheck != 0]
+  while [ $recursecheck = 0]
     do
       if [[ $RECURSE =~ ^[Yy]$ || -z $RECURSE ]]; then
         recursecheck=1
