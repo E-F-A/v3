@@ -12,6 +12,7 @@ func_ip-settings(){
       echo -e "1) IP                   :  $IP"
       echo -e "2) Netmask              :  $NM"
       echo -e "3) Gateway              :  $GW"
+      echo -e "4) DNS Recursion        :  $RECURSIVEDNS"
       echo -e "4) Primary DNS          :  $DNS1"
       echo -e "5) Secondary DNS        :  $DNS2"
       echo -e "6) Hostname             :  $HOSTNAME"
@@ -51,22 +52,36 @@ func_ip-settings(){
 					fi
                     ;;
                 4)  ipmenu=0
-                    echo ""
-                    read -p "Enter your new primary DNS: " DNS1
-					if [ -z "$DNS1" ]; then echo "ERROR empty value" && pause && menu=1; else
-                      func_setipsettings
-                      menu=1
-					fi
+                    func_askrecursion
+                    menu=1
                     ;;
                 5)  ipmenu=0
                     echo ""
-                    read -p "Enter your new secondary DNS: " DNS2
-					if [ -z "$DNS2" ]; then echo "ERROR empty value" && pause && menu=1; else
-                      func_setipsettings
-                      menu=1
-					fi
+                    if [ "$RECURSIVEDNS" == "ENABLED"]; then 
+                      echo "ERROR: DNS Recursion is enabled.  Disable recursion to set DNS"
+                      pause && menu=1
+                    else
+                      read -p "Enter your new primary DNS: " DNS1
+					  if [ -z "$DNS1" ]; then echo "ERROR empty value" && pause && menu=1; else
+                        func_setipsettings
+                        menu=1
+					  fi
+                    fi
                     ;;
                 6)  ipmenu=0
+                    echo ""
+                    if [ "$RECURSIVEDNS" == "ENABLED"]; then 
+                      echo "ERROR: DNS Recursion is enabled.  Disable recursion to set DNS"
+                      pause && menu=1
+                    else
+                      read -p "Enter your new secondary DNS: " DNS2
+					  if [ -z "$DNS2" ]; then echo "ERROR empty value" && pause && menu=1; else
+                        func_setipsettings
+                        menu=1
+					  fi
+                    fi
+                    ;;
+                7)  ipmenu=0
                     echo ""
                     read -p "Enter your new HOSTNAME: " HOSTNAME
 					if [ -z "$HOSTNAME" ]; then echo "ERROR empty value" && pause && menu=1; else
@@ -74,7 +89,7 @@ func_ip-settings(){
                       menu=1
 					fi
                     ;;
-                7)  ipmenu=0
+                8)  ipmenu=0
                     echo ""
                     read -p "Enter your new DOMAIN NAME: " DOMAINNAME
 					if [ -z "$DOMAINNAME" ]; then echo "ERROR empty value" && pause && menu=1; else
