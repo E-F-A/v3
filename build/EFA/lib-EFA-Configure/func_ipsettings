@@ -13,10 +13,10 @@ func_ip-settings(){
       echo -e "2) Netmask              :  $NM"
       echo -e "3) Gateway              :  $GW"
       echo -e "4) DNS Recursion        :  $RECURSIVEDNS"
-      echo -e "4) Primary DNS          :  $DNS1"
-      echo -e "5) Secondary DNS        :  $DNS2"
-      echo -e "6) Hostname             :  $HOSTNAME"
-      echo -e "7) Domain Name          :  $DOMAINNAME"
+      echo -e "5) Primary DNS          :  $DNS1"
+      echo -e "6) Secondary DNS        :  $DNS2"
+      echo -e "7) Hostname             :  $HOSTNAME"
+      echo -e "8) Domain Name          :  $DOMAINNAME"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
@@ -57,7 +57,7 @@ func_ip-settings(){
                     ;;
                 5)  ipmenu=0
                     echo ""
-                    if [ "$RECURSIVEDNS" == "ENABLED"]; then 
+                    if [ "$RECURSIVEDNS" == "ENABLED" ]; then 
                       echo "ERROR: DNS Recursion is enabled.  Disable recursion to set DNS"
                       pause && menu=1
                     else
@@ -70,7 +70,7 @@ func_ip-settings(){
                     ;;
                 6)  ipmenu=0
                     echo ""
-                    if [ "$RECURSIVEDNS" == "ENABLED"]; then 
+                    if [ "$RECURSIVEDNS" == "ENABLED" ]; then 
                       echo "ERROR: DNS Recursion is enabled.  Disable recursion to set DNS"
                       pause && menu=1
                     else
