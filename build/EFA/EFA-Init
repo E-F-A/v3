@@ -211,8 +211,8 @@ function func_ask-recursion() {
       if [[ $RECURSE =~ ^[Yy]$ || -z $RECURSE ]]; then
         recursecheck=1
         enablerecursion=1
-        $DNS1=""
-        $DNS2=""
+        DNS1=""
+        DNS2=""
       elif [[ $RECURSE =~ ^[Nn]$ ]]; then
         recursecheck=1
         enablerecursion=0
