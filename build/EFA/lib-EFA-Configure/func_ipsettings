@@ -52,7 +52,7 @@ func_ip-settings(){
 					fi
                     ;;
                 4)  ipmenu=0
-                    func_askrecursion
+                    func_ask-recursion
                     menu=1
                     ;;
                 5)  ipmenu=0

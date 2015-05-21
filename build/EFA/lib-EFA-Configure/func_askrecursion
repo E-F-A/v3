@@ -23,8 +23,8 @@ function func_ask-recursion() {
         echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
         echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf 
         sed -i "/^RECURSION:/ c\RECURSION:ENABLED" /etc/EFA-Config
-        sed -i "/^DNS1:/ c\DNS1: /etc/EFA-Config"
-        sed -i "/^DNS2:/ c\DNS2: /etc/EFA-Config"
+        sed -i "/^DNS1:/ c\DNS1:" /etc/EFA-Config
+        sed -i "/^DNS2:/ c\DNS2:" /etc/EFA-Config
         service unbound reload
         echo -e "$green[EFA]$clean Recursion is now ENABLED"
       elif [[ $RECURSE =~ ^[Nn]$ ]]; then
