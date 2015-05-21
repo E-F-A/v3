@@ -198,8 +198,8 @@ function func_ask-recursion() {
   # Prompt on whether to recurse or to forward
   echo -e ""
   echo -e "$green[EFA]$clean EFA supports full DNS recursion."
-  echo -e "$green[EFA]$clean Doing so prevents common problems using DNS blocklists.
-  echo -e "$green[EFA]$clean Alternatively, you can choose to forward DNS to your
+  echo -e "$green[EFA]$clean Doing so prevents common problems using DNS blocklists."
+  echo -e "$green[EFA]$clean Alternatively, you can choose to forward DNS to your"
   echo -e "$green[EFA]$clean DNS servers or your ISP's DNS servers."
   echo -e "$green[EFA]$clean Port 53 outbound must be allowed for recursion to function."
   echo -e ""
