@@ -15,7 +15,7 @@ func_ask-maxsizemailwatch(){
    do
      if [[ -z $MWMAXSIZE ]]
       then
-        MWMAXSIZE="0"
+        MWMAXSIZE="262144"
      fi
      if [[ $MWMAXSIZE =~ [0-9]+ && $MWMAXSIZE -ge 262144 && $MWMAXSIZE -lt 10000000 ]]
       then
