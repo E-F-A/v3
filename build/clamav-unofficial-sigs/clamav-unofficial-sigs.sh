@@ -803,7 +803,7 @@ fi
 #      echo "$si_dir/$db" >> "$current_tmp"
 #      clamav_files
 #   done
-fi
+#fi
 if [ -n "$mbl_dbs" ] ; then
    for db in $mbl_dbs ; do
       echo "$mbl_dir/$db" >> "$current_tmp"
@@ -1372,7 +1372,7 @@ if [ -n "$mbl_dbs" ] ; then
                      log "WARNING - Failed curl connection to $mbl_url - SKIPPED MalwarePatrol $db_file update"
                   fi
            else
-              log "INFO - "MalwarePatrol receipt password not set - skipping"
+              log "INFO - MalwarePatrol receipt password not set - skipping"
            fi
          done
       else
