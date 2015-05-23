@@ -8,7 +8,7 @@ function func_ask-recursion() {
   echo -e ""
   echo -e "$green[EFA]$clean EFA supports full DNS recursion."
   echo -e "$green[EFA]$clean Doing so prevents common problems using DNS blocklists."
-  echo -e "$green[EFA]$clean Alternatively, you can choose to forward DNS to your""
+  echo -e "$green[EFA]$clean Alternatively, you can choose to forward DNS to your"
   echo -e "$green[EFA]$clean DNS servers or your ISP's DNS servers."
   echo -e "$green[EFA]$clean Port 53 outbound must be allowed for recursion to function."
   echo -e ""
@@ -21,7 +21,7 @@ function func_ask-recursion() {
         recursecheck=1
         echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
         echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
-        echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf 
+        echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf
         sed -i "/^RECURSION:/ c\RECURSION:ENABLED" /etc/EFA-Config
         sed -i "/^DNS1:/ c\DNS1:" /etc/EFA-Config
         sed -i "/^DNS2:/ c\DNS2:" /etc/EFA-Config
