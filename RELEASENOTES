@@ -27,7 +27,7 @@ These release notes will help guide you through the 3.0.0.8-beta update.
 Many fixes and enhancements have been made to EFA.  Please review the
 CHANGELOG for further information.
 
-https://raw.githubusercontent.com/E-F-A/v3/3.0.0.78-beta/CHANGELOG
+https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8-beta/CHANGELOG
 
 ###################### How To Update ##################################
 
@@ -113,6 +113,24 @@ This is a known issue.  This is usually caused from processes that
 spawned off of the script and have not closed.
 
 You can kill the logsave process (Ctrl+C if running interactively)
+
+4) URIBL blocked
+
+EFA now supports full recursion using the unbound caching dns server
+Use EFA Configure --> IP Settings to enable recursion.
+Forwarding to other DNS servers results in indirect querying to
+blocklists, which often have rate limits set to downstream DNS servers.
+Using full recursion means that you query the blocklists directly and
+do not get lumped into other DNS server queries to the same blocklists.
+
+5) Logjam vulnerability mitigation in postfix
+
+Postfix is now configured to use 2048bit Diffie-Hellman key exchange and
+disables opportunistic use of export ciphers.  This can have side effects
+with servers that do not support this level of encryption.  However, it is
+strongly advised to use this level of encyption.
+
+
 
 #######################################################################
 
