@@ -244,7 +244,8 @@ function run_update() {
   TESTMBLRECEIPT=$(grep "^mbl_receipt=" /usr/local/etc/clamav-unofficial-sigs.conf)
   if [[ -z $TESTMBLRECEIPT ]]; then
     sed -i '/^mbl_update_hours=/ a\\n# MalwarePatrol Subscription\n# Add subscription receipt password here\nmbl_receipt=""' /usr/local/etc/clamav-unofficial-sigs.conf
-  fi  
+  fi
+  sed -i '/^   mbl.ndb/ c\   mbl.db' /usr/local/etc/clamav-unofficial-sigs.conf
 
   # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
   chmod 0600 /etc/postfix/sasl_passwd
