@@ -392,6 +392,7 @@ func_spam_clamav () {
     cp clamav-unofficial-sigs-cron /etc/cron.d/
     cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
     sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log 2>&1" /etc/cron.d/clamav-unofficial-sigs-cron
+    chmod 755 /usr/local/bin/clamav-unofficial-sigs.sh
 
     # Issue #177 Correct EFA to new clamav paths using EPEL
     sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
