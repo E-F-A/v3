@@ -3,13 +3,14 @@ by Bill Landry (unofficialsigs@gmail.com).  The script provides a simple
 way to download, test, and use third-party ClamAV signature databases
 provided by Sanesecurity, SecuriteInfo, MalwarePatrol, OITC, etc.
 
-Verion 3.7.2-EFA-1.0 (Updated 2015-04-26)
+Verion 3.7.2-EFA-1.0 (Updated 2015-05-23)
   - Added MalwarePatrol Subscription Support
   - Lengthen update intervals of MalwarePatrol and SecuriteInfo
   - Update Sanesecurity list (low FP Risk and scamnailer)
   - Disable Securiteinfo list (subscription only -- uses clamav instead)
   - Correct default_config path in EFA
   - Update mbl_url
+  - replace mbl.ndb with mbl.db
   - Disable Securiteinfo public update
 
 Version 3.7.2 (updated 2013-08-25)
