@@ -7,7 +7,7 @@ func_setipsettings(){
             validcheck=1
             while [ $validcheck != "0" ]
                 do
-                    if checkip $ip
+                    if [[ -n $ip ]] && checkip $ip
                         then
                             validcheck=0
                         else
@@ -29,10 +29,12 @@ func_setipsettings(){
   #echo "nameserver $DNS1" > /etc/resolv.dnsmasq
   #echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
   # new unbound stuff... 
-  echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
-  echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
-  echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
-  echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
+  if [[ "$RECURSIVEDNS" == "DISABLED" ]]; then
+    echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
+    echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
+    echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
+    echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
+  fi
 
   # Set ip settings
   ifdown $INTERFACE

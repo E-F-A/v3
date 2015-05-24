@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.8 build script version 20150419
+# EFA 3.0.0.8 build script version 20150517
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2015 http://www.efa-project.org
 #
@@ -26,7 +26,7 @@
 # +---------------------------------------------------+
 version="3.0.0.8-beta"
 logdir="/var/log/EFA"
-gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/master/build"
+gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8-beta/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/3.0.0.8-beta"
@@ -210,6 +210,11 @@ func_postfix () {
     # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
     chmod 0600 /etc/postfix/sasl_passwd
 
+    # Logjam Vulnerability #188
+    openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
+    postconf -e "smtpd_tls_dh1024_param_file = /etc/postfix/ssl/dhparam.pem"
+    postconf -e "smtpd_tls_ciphers = low"
+
     echo "pwcheck_method: auxprop">/usr/lib64/sasl2/smtpd.conf
     echo "auxprop_plugin: sasldb">>/usr/lib64/sasl2/smtpd.conf
     echo "mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5">>/usr/lib64/sasl2/smtpd.conf
@@ -366,12 +371,18 @@ func_spam_clamav () {
 
     # Issue #171 Update clamav -- fix any clamav discrepancies
 
+    # Set freshclam to correct paths
+    sed -i "/^DatabaseDirectory/ c\DatabaseDirectory /var/lib/clamav" /etc/freshclam.conf
+    sed -i "/^DatabaseOwner/ c\DatabaseOwner clam" /etc/freshclam.conf
+
     # Reverse changes from EPEL version of clamd (superceded by issue #177)
     #sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
     #sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
     #rm -rf /var/lib/clamav
     #userdel clam
     #chown clamav:clamav /var/run/clamav
+    userdel clamav > /dev/null 2&>1
+    rm -f /etc/freshclam.conf.rpmnew
 
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
     rm -f /etc/cron.daily/freshclam
@@ -388,6 +399,7 @@ func_spam_clamav () {
     cp clamav-unofficial-sigs-cron /etc/cron.d/
     cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
     sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log 2>&1" /etc/cron.d/clamav-unofficial-sigs-cron
+    chmod 755 /usr/local/bin/clamav-unofficial-sigs.sh
 
     # Issue #177 Correct EFA to new clamav paths using EPEL
     sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -760,7 +772,7 @@ func_mailwatch () {
     echo "apache ALL=NOPASSWD: /usr/sbin/MailScanner --lint" > /etc/sudoers.d/EFA-Services
 
     # Issue #72 EFA MSRE Support
-    sed -i "^/define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
+    sed -i "/^define('MSRE'/ c\define('MSRE', true);" /var/www/html/mailscanner/conf.php
     chgrp -R apache /etc/MailScanner/rules
     chmod g+rwxs /etc/MailScanner/rules
     chmod g+rw /etc/MailScanner/rules/*.rules
@@ -1097,7 +1109,7 @@ func_unbound () {
     sed -i "/^\t# do-ip6: yes/ c\\\tdo-ip6: no" /etc/unbound/unbound.conf
     
     # disable validator
-    sed -i "/^\tmodule-config:/ c\\\tmodule-config: \"iterator\"" /etc/unbound/unbound.conf
+    sed -i "/^\t# module-config:/ c\\\tmodule-config: \"iterator\"" /etc/unbound/unbound.conf
   
     echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
     echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
@@ -1302,6 +1314,12 @@ func_cleanup () {
     rm -f /var/log/yum.log
     touch /var/log/yum.log
     chmod 600 /var/log/yum.log
+    touch /var/log/clamav/freshclam.log
+    chmod 600 /var/log/clamav/freshclam.log
+    chown clam:clam /var/log/clamav/freshclam.log
+    touch /var/log/clamav/clamd.log
+    chmod 600 /var/log/clamav/clamd.log
+    chown clam:clam /var/log/clamav/clamd.log
 
     # Clean root
     rm -f /root/anaconda-ks.cfg

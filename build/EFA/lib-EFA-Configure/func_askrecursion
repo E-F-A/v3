@@ -1,0 +1,44 @@
+# +---------------------------------------------------+
+# Configure DNS Recursion Behavior
+# +---------------------------------------------------+
+function func_ask-recursion() {
+  func_echo-header
+  
+  # Prompt on whether to recurse or to forward
+  echo -e ""
+  echo -e "$green[EFA]$clean EFA supports full DNS recursion."
+  echo -e "$green[EFA]$clean Doing so prevents common problems using DNS blocklists."
+  echo -e "$green[EFA]$clean Alternatively, you can choose to forward DNS to your"
+  echo -e "$green[EFA]$clean DNS servers or your ISP's DNS servers."
+  echo -e "$green[EFA]$clean Port 53 outbound must be allowed for recursion to function."
+  echo -e ""
+  echo -e -n "$green[EFA]$clean Enable full recursive DNS? (Y/n): "
+  read RECURSE
+  recursecheck=0
+  while [ $recursecheck -eq 0 ]
+    do
+      if [[ $RECURSE =~ ^[Yy]$ || -z $RECURSE ]]; then
+        recursecheck=1
+        echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
+        echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
+        echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf
+        sed -i "/^RECURSION:/ c\RECURSION:ENABLED" /etc/EFA-Config
+        sed -i "/^DNS1:/ c\DNS1:" /etc/EFA-Config
+        sed -i "/^DNS2:/ c\DNS2:" /etc/EFA-Config
+        service unbound reload
+        echo -e "$green[EFA]$clean Recursion is now ENABLED"
+      elif [[ $RECURSE =~ ^[Nn]$ ]]; then
+        recursecheck=1
+        sed -i "/^RECURSION:/ c\RECURSION:DISABLED" /etc/EFA-Config
+        echo -e "$green[EFA]$clean Recursion is now DISABLED.  Please set your DNS entries."
+      else
+        echo -e "       $red ERROR: Invalid choice$clean"
+        echo -e ""
+        echo -e -n "$green[EFA]$clean Enable full recursive DNS? (Y/n): "
+        read RECURSE
+      fi
+    done
+
+  sleep 2
+}
+# +---------------------------------------------------+

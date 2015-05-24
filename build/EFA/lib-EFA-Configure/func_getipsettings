@@ -48,8 +48,9 @@ function func_getipsettings(){
     IP="`cat /etc/sysconfig/network-scripts/ifcfg-$INTERFACE | grep IPADDR | sed 's/IPADDR=//;s/"//g'`"
     NM="`cat /etc/sysconfig/network-scripts/ifcfg-$INTERFACE | grep NETMASK | sed 's/NETMASK=//;s/"//g'`"
     GW="`cat /etc/sysconfig/network | grep GATEWAY | sed 's/GATEWAY=//'`"
-    DNS1="`cat /etc/resolv.dnsmasq  | grep -v '#' | grep -v 127.0.0.1 | grep nameserver | awk 'NR==1 {print $2}'`"
-    DNS2="`cat /etc/resolv.dnsmasq  | grep -v '#' | grep -v 127.0.0.1 | grep nameserver | awk 'NR==2 {print $2}'`"
+    RECURSIVEDNS="`grep RECURSION /etc/EFA-Config | sed 's/.*://'`"
+    DNS1="`grep forward-addr /etc/unbound/conf.d/forwarders.conf | awk 'NR==1 {print $2}'`"
+    DNS2="`grep forward-addr /etc/unbound/conf.d/forwarders.conf | awk 'NR==2 {print $2}'`"
     HOSTNAME="`grep HOSTNAME /etc/EFA-Config | sed 's/.*://'`"
     DOMAINNAME="`grep DOMAINNAME /etc/EFA-Config | sed 's/.*://'`"
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA-Init
-# Version 20141115
+# Version 20150517
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2015 http://www.efa-project.org
 #
@@ -23,9 +23,9 @@
 # Variables
 # +---------------------------------------------------+
 debug="0"
-gitdlurl="https://raw.github.com/E-F-A/v3/master/build"
+gitdlurl="https://raw.github.com/E-F-A/v3/3.0.0.8-beta/build"
 mirror="http://dl.efa-project.org"
-mirrorpath="/build/3.0.0.6"
+mirrorpath="/build/3.0.0.8-beta"
 initpassword="EfaPr0j3ct"
 # +---------------------------------------------------+
 
@@ -192,9 +192,50 @@ function func_ask-gateway() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+function func_ask-recursion() {
+  func_echo-header
+  
+  # Prompt on whether to recurse or to forward
+  echo -e ""
+  echo -e "$green[EFA]$clean EFA supports full DNS recursion."
+  echo -e "$green[EFA]$clean Doing so prevents common problems using DNS blocklists."
+  echo -e "$green[EFA]$clean Alternatively, you can choose to forward DNS to your"
+  echo -e "$green[EFA]$clean DNS servers or your ISP's DNS servers."
+  echo -e "$green[EFA]$clean Port 53 outbound must be allowed for recursion to function."
+  echo -e ""
+  echo -e -n "$green[EFA]$clean Enable full recursive DNS? (Y/n): "
+  read RECURSE
+  recursecheck=0
+  while [ $recursecheck -eq 0 ]
+    do
+      if [[ $RECURSE =~ ^[Yy]$ || -z $RECURSE ]]; then
+        recursecheck=1
+        enablerecursion=1
+        DNS1=""
+        DNS2=""
+      elif [[ $RECURSE =~ ^[Nn]$ ]]; then
+        recursecheck=1
+        enablerecursion=0
+        func_ask-dns1
+        func_ask-dns2
+      else
+        echo -e "       $red ERROR: Invalid choice$clean"
+        echo -e ""
+        echo -e -n "$green[EFA]$clean Enable full recursive DNS? (Y/n): "
+        read RECURSE
+      fi
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 function func_ask-dns1() {
   func_echo-header
-
+  if [[ "$enablerecursion" -eq 1 ]]; then
+    echo -e "$red[EFA] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
+    pause
+    return
+  fi
   # Display current primary dns
   CDNS1=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p`
   echo -e ""
@@ -223,6 +264,12 @@ function func_ask-dns1() {
 # +---------------------------------------------------+
 function func_ask-dns2() {
   func_echo-header
+
+  if [[ "$enablerecursion" -eq 1 ]]; then
+    echo -e "$red[EFA] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
+    pause
+    return
+  fi
 
   # Display current secondary dns
   CDNS2=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p`
@@ -524,18 +571,19 @@ function func_verify-settings() {
     echo -e "5)  IP address     : $IPADDRESS"
     echo -e "6)  Netmask        : $NETMASK"
     echo -e "7)  Gateway        : $GATEWAY"
-    echo -e "8)  Primary DNS    : $DNS1"
-    echo -e "9)  Secondary DNS  : $DNS2"
-    echo -e "10) User           : $USERNAME"
-    echo -e "11) User PWD       : <hidden>"
-    echo -e "12) Admin PWD      : <hidden>"
-    echo -e -n "13) VMware Tools   : "; if [[ "$InstallVmwareTools" -eq 1 ]]; then echo "Install"; else echo "Not needed"; fi
-    echo -e -n "14) Time zone      : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
-    echo -e "15) Keyboard       : $KEYBOARD"
-    echo -e "16) IANA Code      : $IANACODE"
-    echo -e "17) Mail Server    : $MAILSERVER"
-    echo -e "18) Org. name      : $ORGNAME"
-    echo -e -n "19) Auto update    : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
+    echo -e -n "8)  Use Recursion  : "; [[ "$enablerecursion" -eq 1 ]] && echo "Enabled" || echo "Disabled"
+    echo -e "9)  Primary DNS    : $DNS1"
+    echo -e "10) Secondary DNS  : $DNS2"
+    echo -e "11) User           : $USERNAME"
+    echo -e "12) User PWD       : <hidden>"
+    echo -e "13) Admin PWD      : <hidden>"
+    echo -e -n "14) VMware Tools   : "; if [[ "$InstallVmwareTools" -eq 1 ]]; then echo "Install"; else echo "Not needed"; fi
+    echo -e -n "15) Time zone      : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
+    echo -e "16) Keyboard       : $KEYBOARD"
+    echo -e "17) IANA Code      : $IANACODE"
+    echo -e "18) Mail Server    : $MAILSERVER"
+    echo -e "19) Org. name      : $ORGNAME"
+    echo -e -n "20) Auto update    : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
@@ -558,29 +606,31 @@ function func_verify-settings() {
                         ;;
                 7)        func_ask-gateway
                         ;;
-                8)        func_ask-dns1
+                8)        func_ask-recursion
                         ;;
-                9)        func_ask-dns2
+                9)        func_ask-dns1
                         ;;
-                10)       func_ask-username
+                10)        func_ask-dns2
                         ;;
-                11)       func_ask-userpassword
+                11)       func_ask-username
                         ;;
-                12)       func_ask-rootpassword
+                12)       func_ask-userpassword
                         ;;
-                13)       func_detect-virtual
+                13)       func_ask-rootpassword
                         ;;
-                14)       func_ask-timezone
+                14)       func_detect-virtual
                         ;;
-                15)       func_ask-keyboard
+                15)       func_ask-timezone
                         ;;
-                16)       func_ask-ianacode
+                16)       func_ask-keyboard
                         ;;
-                17)       func_ask-mailserver
+                17)       func_ask-ianacode
                         ;;
-                18)       func_ask-orgname
+                18)       func_ask-mailserver
                         ;;
-                19)       func_ask-updates
+                19)       func_ask-orgname
+                        ;;
+                20)       func_ask-updates
                         ;;
                 OK)       verifymenu=0
                         ;;
@@ -615,11 +665,14 @@ function func_configure-system() {
   #echo "nameserver $DNS1" > /etc/resolv.dnsmasq
   #echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
   # new unbound stuff... 
-  echo "forawrd-zone:" > /etc/unbound/conf.d/forwarders.conf
+  echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
   echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
-  echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
-  echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
-  
+  if [[ "$enablerecursion" -eq 1 ]]; then
+    echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf 
+  else
+    echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
+    echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
+  fi
   echo -e "$green[EFA]$clean - Setting IP settings"
   ifdown $INTERFACE
   # Use ipcalc to get the broadcast & network id's
@@ -678,7 +731,7 @@ function func_configure-system() {
   chown -R postfix:apache /var/spool/postfix/.razor
   chmod ug+rwx /var/spool/postfix/.razor
   # setgid to lock in apache group for new files
-  chmod g+s /var/spool/postfix/.razor
+  chmod ug+s /var/spool/postfix/.razor
   chmod ug+rw /var/spool/postfix/.razor/*
 
   # +--------------------------------------------------+
@@ -882,6 +935,11 @@ function func_end() {
   echo "IPADDRESS:$IPADDRESS" >> /etc/EFA-Config
   echo "NETMASK:$NETMASK" >> /etc/EFA-Config
   echo "GATEWAY:$GATEWAY" >> /etc/EFA-Config
+  if [[ "$enablerecursion" -eq 1 ]]; then
+    echo "RECURSION:ENABLED" >> /etc/EFA-Config
+  else
+    echo "RECURSION:DISABLED" >> /etc/EFA-Config
+  fi
   echo "DNS1:$DNS1" >> /etc/EFA-Config
   echo "DNS2:$DNS2" >> /etc/EFA-Config
   echo "IANA:$IANACODE" >> /etc/EFA-Config
@@ -1088,8 +1146,7 @@ if [ $CONFIGURED == "NO" ]
       func_ask-ipaddress
       func_ask-netmask
       func_ask-gateway
-      func_ask-dns1
-      func_ask-dns2
+      func_ask-recursion
       func_ask-username
       func_ask-userpassword
       func_ask-rootpassword
