@@ -210,6 +210,11 @@ func_postfix () {
     # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
     chmod 0600 /etc/postfix/sasl_passwd
 
+    # Logjam Vulnerability #188
+    openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
+    postconf -e "smtpd_tls_dh1024_param_file = /etc/postfix/ssl/dhparam.pem"
+    postconf -e "smtpd_tls_ciphers = low"
+
     echo "pwcheck_method: auxprop">/usr/lib64/sasl2/smtpd.conf
     echo "auxprop_plugin: sasldb">>/usr/lib64/sasl2/smtpd.conf
     echo "mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5">>/usr/lib64/sasl2/smtpd.conf

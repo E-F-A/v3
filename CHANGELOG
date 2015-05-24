@@ -25,6 +25,7 @@ Issue #175 Enhancement  - Set keyboard layout at beginning of EFA-Init
 Issue #177 Enhancement  - Correct EFA to new clamav paths using EPEL
 Issue #178 Enhancement  - EFA MailWatch Unicode Support
 Issue #186 Bug          - Unbound full recursion support
+Issue #188 Bug          - Logjam Vulnerability
 
 EFA-Update enhanced fault tolerance
 EPEL Repository is now enabled

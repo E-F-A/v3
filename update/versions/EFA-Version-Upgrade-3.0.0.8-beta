@@ -255,6 +255,12 @@ function run_update() {
   rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
   cp $STAGING/Files/RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
 
+  # Logjam Vulnerability #188
+  openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
+  postconf -e "smtpd_tls_dh1024_param_file = /etc/postfix/ssl/dhparam.pem"
+  postconf -e "smtpd_tls_ciphers = low"
+  service postfix reload
+
   service clamd start
   # Force update clam dbs
   /usr/bin/freshclam
