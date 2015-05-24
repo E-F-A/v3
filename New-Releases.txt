@@ -3,10 +3,6 @@
 build/ks.cfg
  [ ] build.bash wget location
 
-build/EFA/EFA-Init
- [ ] mirrorpath=""
- [ ] gitdlurl=""
-		
 build/build.bash
  [ ] Header
  [ ] Version=""

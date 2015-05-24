@@ -12,7 +12,7 @@
 #		Working internet connection
 #
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013~2015 http://www.efa-project.org
+# Copyright (C) 2013~2015 https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -223,7 +223,7 @@ alsa-lib
 #----------------------------------------------------------------#
 mkdir /var/log/EFA
 mkdir /usr/src/EFA
-/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8-beta/build/build.bash --no-check-certificate
+/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8/build/build.bash --no-check-certificate
 chmod 700 /usr/src/EFA/build.bash
 #----------------------------------------------------------------#
 

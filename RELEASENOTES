@@ -1,7 +1,7 @@
 ######################################################################
-# EFA 3.0.0.8-beta RELEASE NOTES
+# EFA 3.0.0.8 RELEASE NOTES
 ######################################################################
-# Copyright (C) 2015  http://www.efa-project.org
+# Copyright (C) 2015  https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,25 +17,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
 
-Welcome to EFA Version 3.0.0.8-beta!
+Welcome to EFA Version 3.0.0.8!
 
 Many thanks goes to the developers of EFA and maintainers of all
 3rd party packages!
 
-These release notes will help guide you through the 3.0.0.8-beta update.
+These release notes will help guide you through the 3.0.0.8 update.
 
 Many fixes and enhancements have been made to EFA.  Please review the
 CHANGELOG for further information.
 
-https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8-beta/CHANGELOG
+https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8/CHANGELOG
 
 ###################### How To Update ##################################
-
-///////////////////////////WARNING\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-This is a beta branch.  Do not use this version in production.
-This beta is for testing only.  You will not be able to update to the
-next release.  You have been warned.
-///////////////////////////WARNING\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 It is recommended that you suspend your mail flow and snapshot prior
 to updating or to back up the entire appliance.
@@ -51,7 +45,7 @@ sudo /usr/local/sbin/EFA-Update -update
 The first time you run this update, the kernel may update. If this
 happens, the script will halt to give you an opportunity to restart.
 After restarting and booting to the new kernel, rerun EFA-Update to
-continue the update process to 3.0.0.8-beta.
+continue the update process to 3.0.0.8.
 
 EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
@@ -62,7 +56,7 @@ if present.
 ################ Important Info -- Custom Tweaks ######################
 
 Many EFA users have modified their EFA installations and made tweaks
-that may "disappear" after an update to 3.0.0.8-beta.
+that may "disappear" after an update to 3.0.0.8.
 
 Updated files have been automatically backed up to the following
 location:
@@ -71,7 +65,7 @@ location:
 
 (Other versions may be present if updating from an older version)
 
-You may need to re-implement customizations after update to 3.0.0.8-beta
+You may need to re-implement customizations after update to 3.0.0.8
 For example, if you are using Active Directory integration,
 this will need to be turned back on (see MailWatch Changes below)
 
@@ -83,14 +77,14 @@ files automatically in the backup tarballs.
 ########################## Known Issues ###############################
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
-install itself after updating to 3.0.0.8-beta.  Reapply VMware-Tools
-after updating to 3.0.0.8-beta.  Run the following command to remove
+install itself after updating to 3.0.0.8.  Reapply VMware-Tools
+after updating to 3.0.0.8.  Run the following command to remove
 open-vm-tools:
 
 sudo rpm -e open-vm-tools
 
 2) Error, "could not search" when logging into MailWatch after
-updating to 3.0.0.8-beta
+updating to 3.0.0.8
 
 This occurs when Active Directory integration is enabled.
 

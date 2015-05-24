@@ -1,8 +1,8 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.8 build script version 20150517
+# EFA 3.0.0.8 build script version 20150524
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013~2015 http://www.efa-project.org
+# Copyright (C) 2013~2015 https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,12 +24,12 @@
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.8-beta"
+version="3.0.0.8"
 logdir="/var/log/EFA"
-gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8-beta/build"
+gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
-mirrorpath="/build/3.0.0.8-beta"
+mirrorpath="/build/$version"
 MAILWATCHVERSION="7482fe0831"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
