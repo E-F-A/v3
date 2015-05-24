@@ -382,6 +382,7 @@ func_spam_clamav () {
     #userdel clam
     #chown clamav:clamav /var/run/clamav
     userdel clamav > /dev/null 2&>1
+    rm -f /etc/freshclam.conf.rpmnew
 
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
     rm -f /etc/cron.daily/freshclam
