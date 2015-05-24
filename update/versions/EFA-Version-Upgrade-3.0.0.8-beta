@@ -215,6 +215,7 @@ function run_update() {
   tar xvzf clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
   cd clamav-unofficial-sigs-3.7.2-EFA-1.0
   cp clamav-unofficial-sigs.sh /usr/local/bin/
+  chmod 755 /usr/local/bin/clamav-unofficial-sigs.sh
 
   # Issue #177 Correct EFA to new clamav paths using EPEL (for clamav-unoffical-sigs)
   sed -i '/^clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
@@ -355,7 +356,7 @@ function update-spamassassin(){
     /usr/local/bin/sa-compile
     
     # Restore original mailscanner.cf and local.cf
-    sudo ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/mail/spamassassin/mailscanner.cf
+    sudo ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/mail/spamassassin/mailscanner.cf > /dev/null 2>&1
     rm -f /etc/mail/spamassassin/local.cf
     cp $BACKUPDIR/spamassassin-etc/spamassassin/local.cf /etc/mail/spamassassin/local.cf
     
@@ -363,6 +364,7 @@ function update-spamassassin(){
     service MailScanner start
 
     # Cleanup
+    cd ~
     rm -rf /usr/src/EFA/Spamassassin*
 
     # Update the version of spamassassin in EFA-Config
@@ -381,7 +383,7 @@ function update-mailwatch() {
     then
 
       #### Backup Phase #####
-      mkdir /var/EFA/backup/$VERSION/
+      mkdir -p /var/EFA/backup/$VERSION/ > /dev/null 2>&1
       mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/ > /dev/null 2>&1
       mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
       mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
