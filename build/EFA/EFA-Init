@@ -731,7 +731,7 @@ function func_configure-system() {
   chown -R postfix:apache /var/spool/postfix/.razor
   chmod ug+rwx /var/spool/postfix/.razor
   # setgid to lock in apache group for new files
-  chmod g+s /var/spool/postfix/.razor
+  chmod ug+s /var/spool/postfix/.razor
   chmod ug+rw /var/spool/postfix/.razor/*
 
   # +--------------------------------------------------+
