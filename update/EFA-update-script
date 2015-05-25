@@ -143,7 +143,8 @@ function update-3.0.0.8() {
   check_md5
 
   # Unpack update
-  tar xzvf $STAGING/$UPDATE
+  cd $STAGING
+  tar xzvf $UPDATE
   [[ $? -ne 0 ]] && abort
   # Bypass noexec in /tmp
   rm -f /var/EFA/update/EFA-Version-Upgrade
