@@ -117,8 +117,10 @@ function get_update_path() {
 function update-3.0.0.7() {
   cd $STAGING
   wget -q $MIRROR/update/versions/EFA-Version-Upgrade-3.0.0.7
+  mv $STAGING/EFA-Version-Upgrade-3.0.0.7 /usr/src/EFA
+  cd /usr/src/EFA
   chmod 700 EFA-Version-Upgrade-3.0.0.7
-  $STAGING/EFA-Version-Upgrade-3.0.0.7
+  ./EFA-Version-Upgrade-3.0.0.7
 }
 #----------------------------------------------------------------#
 
