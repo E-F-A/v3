@@ -117,6 +117,7 @@ function get_update_path() {
 function update-3.0.0.7() {
   cd $STAGING
   wget -q $MIRROR/update/versions/EFA-Version-Upgrade-3.0.0.7
+  [[ $? -ne 0 ]] && abort
   mv $STAGING/EFA-Version-Upgrade-3.0.0.7 /var/EFA/update/
   cd /var/EFA/update
   chmod 700 EFA-Version-Upgrade-3.0.0.7
@@ -145,7 +146,6 @@ function update-3.0.0.8() {
   tar xzvf $STAGING/$UPDATE
   [[ $? -ne 0 ]] && abort
   # Bypass noexec in /tmp
-  rm -f /var/EFA/update/EFA-Version-Upgrade
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
@@ -220,7 +220,8 @@ function finalize() {
 # Abort Routine
 #----------------------------------------------------------------#
 function abort() {
-  rm -rf $STAGING
+  [[ -n $STANGING ]] && rm -rf $STAGING
+  rm -f /var/EFA/update/EFA-Version-Upgrade*
 
   echo "" >> $TMPMAIL
   echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
