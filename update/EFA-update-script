@@ -146,7 +146,8 @@ function update-3.0.0.8() {
   tar xzvf $STAGING/$UPDATE
   [[ $? -ne 0 ]] && abort
   # Bypass noexec in /tmp
-  cp $STAGING/EFA-Version-Upgrade /var/EFA/update
+  rm -f /var/EFA/update/EFA-Version-Upgrade
+  cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
 }
