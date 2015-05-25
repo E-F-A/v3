@@ -355,10 +355,10 @@ func_mailscanner () {
 	rm -f mailscanner-4.84.6-1.patch
     
     # Issue #177 Correct EFA to new clamav paths using EPEL
-    sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/lib/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
-    sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t/usr/share/MailScanner/clamav-wrapper\t/usr" /etc/MailScanner/virus.scanners.conf
-    sed -i "/^clamd\t\t\/bin\/false c\ clamd\t\t/bin/false\t\t\t\t/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamd\t\t\/bin\/false c\ clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
 }
 # +---------------------------------------------------+
 
