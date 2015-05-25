@@ -200,7 +200,7 @@ function initialize() {
 function finalize() {
   cd /tmp
   rm -rf $STAGING
-  rm -f /var/EFA/update/EFA-Version-Upgrade
+  rm -f /var/EFA/update/EFA-Version-Upgrade*
 
   # Finalize the mail and send it out
   echo "" >> $TMPMAIL
