@@ -250,7 +250,7 @@ function run_update() {
   sed -i '/^   mbl.ndb/ c\   mbl.db' /usr/local/etc/clamav-unofficial-sigs.conf
 
   # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
-  chmod 0600 /etc/postfix/sasl_passwd
+  chmod 0600 /etc/postfix/sasl_passwd > /dev/null 2>&1
 
   # Issue #168 Start regular updates on RegistrarBoundaries.pm 
   rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
