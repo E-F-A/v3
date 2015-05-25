@@ -101,6 +101,7 @@ function run_update() {
 
   # Remove duplicate db in clamav if present
   rm -f /var/lib/clamav/main.cld > /dev/null 2>&1
+  rm -f /var/lib/clamav/daily.cld > /dev/null 2>&1
 
   # Issue #150 URIBL_BLOCKED using dnsmasq
   # disable dnsmasq but leave running
