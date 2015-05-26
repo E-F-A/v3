@@ -2,7 +2,7 @@
 include_once 'config.php';
 
 function sec_session_start() {
-    $session_name = 'efa_session_id';
+    $session_name = 'sec_session_id';
     $secure = SECURE;
 
     // This stops JavaScript being able to access the session id.

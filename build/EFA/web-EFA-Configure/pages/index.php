@@ -1,6 +1,15 @@
-<?php include '../inc/header.php';?>
-<?php include '../inc/topnav.php';?>
-<?php include '../inc/sidebar.php';?>
+<?php
+
+include_once '../inc/db_connect.php';
+include_once '../inc/functions.php';
+include '../inc/header.php';
+include '../inc/topnav.php';
+include '../inc/sidebar.php';
+
+sec_session_start();
+
+if (login_check($mysqli) == true) :
+?>
 
       <!-- Page Content -->
       <div id="page-wrapper">
@@ -44,5 +53,11 @@
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-    
+
+
+<?php else : ?>
+  <p>
+    <span class="error">You are not authorized to access this page.</span> Please <a href="index.php">login</a>.
+  </p>
+<?php endif; ?>
 <?php include '../inc/footer.php';?>
