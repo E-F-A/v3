@@ -54,6 +54,7 @@ func_transport-settings(){
         elif (( $((y/2+1)) < 100 )); then echo -n " "
         fi
         echo -e "$((y/2+1))) ${RELAYS[$y]} ${padding:${#RELAYS[$y]}} ${RELAYS[$((y+1))]}"
+        [[ $(((y/2 + 1) % 25)) -eq 0 ]] && pause
       done
       echo -e ""
       echo -e "n) Add new mail domain"
@@ -65,7 +66,7 @@ func_transport-settings(){
       read choice
       case $choice in
              [0-9]*)
-               if [[ $choice > "0" && $choice < $((tLen/2+1)) ]]; then
+               if [[ $choice -gt 0 && $choice -lt $((tLen/2+1)) ]]; then
                  ENTDOMAIN=${RELAYS[$((choice*2-2))]}
                  ENTDEST=${RELAYS[$((choice*2-1))]}
                  echo -e "Entry Selected: $ENTDOMAIN  $ENTDEST" 
