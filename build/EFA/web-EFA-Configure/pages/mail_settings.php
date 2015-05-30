@@ -1,6 +1,8 @@
-<?php include '../inc/header.php';?>
-<?php include '../inc/topnav.php';?>
-<?php include '../inc/sidebar.php';?>
+<?php
+include '../inc/header.php';
+include '../inc/topnav.php';
+include '../inc/sidebar.php';
+?>
 
         <!-- Page Content -->
         <div id="page-wrapper">
@@ -63,7 +65,7 @@
                 <!-- /.col-lg-6 -->
             </div>
             <!-- /.row -->
-            
+
             <!-- greylisting.row -->
             <div class="row">
                 <form role="form-greylisting">
@@ -91,7 +93,7 @@
                 </form>
             </div>
             <!-- /greylisting.row -->
-            
+
             <!-- Outbound mail relay.row -->
             <div class="row">
                 <form role="form-obmailrelay">
@@ -136,8 +138,8 @@
                 <!-- /.col-lg-6 -->
                 </form>
             </div>
-            <!-- /Outbound mail relay.row -->            
-            
+            <!-- /Outbound mail relay.row -->
+
             <!-- adminemail.row -->
             <div class="row">
                 <form role="form-adminemail">
@@ -171,8 +173,8 @@
                 </form>
             </div>
             <!-- /admin email.row -->
-            
+
         </div>
         <!-- /#page-wrapper -->
-        
+
 <?php include '../inc/footer.php';?>

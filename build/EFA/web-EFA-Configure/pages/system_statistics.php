@@ -1,6 +1,8 @@
-<?php include '../inc/header.php';?>
-<?php include '../inc/topnav.php';?>
-<?php include '../inc/sidebar.php';?>
+<?php
+include '../inc/header.php';
+include '../inc/topnav.php';
+include '../inc/sidebar.php';
+?>
 
       <!-- Page Content -->
       <div id="page-wrapper">
@@ -45,7 +47,7 @@
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-            <!-- /.row --> 
+            <!-- /.row -->
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12">
@@ -84,5 +86,5 @@
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-    
+
 <?php include '../inc/footer.php';?>

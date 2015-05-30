@@ -1,6 +1,8 @@
-<?php include '../inc/header.php';?>
-<?php include '../inc/topnav.php';?>
-<?php include '../inc/sidebar.php';?>
+<?php
+include '../inc/header.php';
+include '../inc/topnav.php';
+include '../inc/sidebar.php';
+?>
 
         <!-- Page Content -->
         <div id="page-wrapper">
@@ -12,7 +14,7 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
-            
+
             <!-- network.row -->
             <div class="row">
                 <form role="form-network">
@@ -55,8 +57,8 @@
                 </form>
             </div>
             <!-- /network.row -->
-            
-            
+
+
             <!-- autoupdate.row -->
             <div class="row">
                 <form role="form-autoupdate">
@@ -85,7 +87,7 @@
                 </form>
             </div>
             <!-- /autoupdate.row -->
-                               
+
             <!-- mailscanner.row -->
             <div class="row">
                 <form role="form-mailscanner">
@@ -123,7 +125,7 @@
                 </form>
             </div>
             <!-- /mailscanner.row -->
-            
+
             <!-- reboot-shutdown.row -->
             <div class="row">
                 <div class="col-lg-6">
@@ -143,9 +145,9 @@
                     </form>
                 </div>
                 <!-- /.col-lg-6 -->
-                
-                
-                
+
+
+
                 <div class="col-lg-6">
                     <form role="form-shutdown">
                     <div class="panel panel-default">
@@ -165,9 +167,9 @@
                 <!-- /.col-lg-6 -->
             </div>
             <!-- /reboot-shutdown.row -->
-            
-            
+
+
         </div>
         <!-- /#page-wrapper -->
-        
+
 <?php include '../inc/footer.php';?>

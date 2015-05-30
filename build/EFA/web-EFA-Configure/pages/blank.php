@@ -1,6 +1,8 @@
-<?php include '../inc/header.php';?>
-<?php include '../inc/topnav.php';?>
-<?php include '../inc/sidebar.php';?>
+<?php
+include '../inc/header.php';
+include '../inc/topnav.php';
+include '../inc/sidebar.php';
+?>
 
         <!-- Page Content -->
         <div id="page-wrapper">
@@ -16,5 +18,5 @@
             <!-- /.container-fluid -->
         </div>
         <!-- /#page-wrapper -->
-        
+
 <?php include '../inc/footer.php';?>

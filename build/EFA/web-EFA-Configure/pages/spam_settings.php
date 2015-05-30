@@ -1,6 +1,8 @@
-<?php include '../inc/header.php';?>
-<?php include '../inc/topnav.php';?>
-<?php include '../inc/sidebar.php';?>
+<?php
+include '../inc/header.php';
+include '../inc/topnav.php';
+include '../inc/sidebar.php';
+?>
 
        <!-- Page Content -->
         <div id="page-wrapper">
@@ -12,7 +14,7 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
-            
+
             <!-- nonspam.row -->
             <div class="row">
                 <form role="form-nonspam">
@@ -40,7 +42,7 @@
                 </form>
             </div>
             <!-- /nonspam.row -->
-            
+
             <!-- inline signatures.row -->
             <div class="row">
                 <form role="form-nonspam">
@@ -64,9 +66,9 @@
                 <!-- /.col-lg-6 -->
                 </form>
             </div>
-            <!-- /nonspam.row -->            
+            <!-- /nonspam.row -->
 
-            <!-- /inlinesignatures.row -->            
+            <!-- /inlinesignatures.row -->
             <div class="row">
                 <form role="form-inline-signatures">
                 <div class="col-lg-12">
@@ -117,9 +119,9 @@
                 </div>
                 <!-- /.col-lg-6 -->
             </div>
-            <!-- /.row -->            
-            
+            <!-- /.row -->
+
         </div>
         <!-- /#page-wrapper -->
-        
+
 <?php include '../inc/footer.php';?>

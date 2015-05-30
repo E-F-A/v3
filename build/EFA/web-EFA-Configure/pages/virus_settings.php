@@ -1,6 +1,8 @@
-<?php include '../inc/header.php';?>
-<?php include '../inc/topnav.php';?>
-<?php include '../inc/sidebar.php';?>
+<?php
+include '../inc/header.php';
+include '../inc/topnav.php';
+include '../inc/sidebar.php';
+?>
 
         <!-- Page Content -->
         <div id="page-wrapper">
@@ -19,7 +21,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Cleaned Messages Delivery 
+                            Cleaned Messages Delivery
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -37,8 +39,8 @@
                 </form>
             </div>
             <!-- /Cleaned Messages Delivery .row -->
-            
+
         </div>
         <!-- /#page-wrapper -->
-        
+
 <?php include '../inc/footer.php';?>
