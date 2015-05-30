@@ -6,7 +6,7 @@
 # Options:
 #         --enable
 #         --disable
-#         --silent
+#         --status
 #-----------------------------------------------------------------------------#
 # Copyright (C) 2012~2015  http://www.efa-project.org
 #
