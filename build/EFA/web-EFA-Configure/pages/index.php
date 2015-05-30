@@ -2,6 +2,7 @@
 include '../inc/header.php';
 include '../inc/topnav.php';
 include '../inc/sidebar.php';
+?>
 
       <!-- Page Content -->
       <div id="page-wrapper">
@@ -46,4 +47,8 @@ include '../inc/sidebar.php';
         </div>
         <!-- /#page-wrapper -->
 
-<?php include '../inc/footer.php';?>
+        
+
+<?php 
+include '../inc/footer.php';
+?>

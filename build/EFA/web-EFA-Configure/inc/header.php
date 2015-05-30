@@ -1,3 +1,14 @@
+<?php
+require_once("../config/db.php");
+require_once("../classes/Login.php");
+$login = new Login();
+if ($login->isUserLoggedIn() == false) {
+    echo "ERROR not logged in";
+    exit();
+ }
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 

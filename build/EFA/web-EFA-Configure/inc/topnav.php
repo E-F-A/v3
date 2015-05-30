@@ -55,7 +55,7 @@
                     <!-- /.dropdown-messages -->
                 </li>
                 <!-- /.dropdown -->
-
+                
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
@@ -90,7 +90,7 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="../index.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="/Admin/index.php?logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
