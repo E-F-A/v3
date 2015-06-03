@@ -85,9 +85,10 @@ include '../inc/sidebar.php';
                             <p class="text-warning">
                             This however causes an delay in receiving mail, by default this system is configured to reject any email for 5 minutes.
                             </p>
-                            <?php 
-                                define('LIBDIR', "/var/www/html/Admin/EFA/v3/build/EFA/lib-EFA-Configure/new/");
-                                if (exec("sudo $LIBDIR/EFA-func_greylisting.bash --status") == ENABLED) {
+                            <?php
+                                $LIBDIR="/var/www/html/Admin/EFA/v3/build/EFA/lib-EFA-Configure/new/";
+
+                                if (exec("sudo $LIBDIR/EFA-func_greylisting.bash --status") == 'ENABLED') {
                                     print '<p class="text-success">Greylisting is currently ENABLED</p>';
                                     print '<button type="submit" class="btn btn-default">Disable</button>';
                                 } else {
