@@ -2,6 +2,34 @@
 include '../inc/header.php';
 include '../inc/topnav.php';
 include '../inc/sidebar.php';
+
+$LIBDIR="/var/www/html/Admin/EFA/v3/build/EFA/lib-EFA-Configure/new/";
+
+function test_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
+
+if (isset($_POST['GreyToggle'])){
+  $GreyToggle = test_input($_POST['GreyToggle']);
+
+  if (!preg_match("/^[0-1]*$/",$GreyToggle)) {
+    exit("input error");
+  }
+
+  // Greylisting on/off toggle
+  if ($GreyToggle == '1') {
+    exec("sudo $LIBDIR/EFA-func_greylisting.bash --enable");
+  }
+  if ($GreyToggle == '0') {
+    exec("sudo $LIBDIR/EFA-func_greylisting.bash --disable");
+  }
+}
+
+$GREYSTATUS=exec("sudo $LIBDIR/EFA-func_greylisting.bash --status");
+
 ?>
 
         <!-- Page Content -->
@@ -71,7 +99,7 @@ include '../inc/sidebar.php';
 
             <!-- greylisting.row -->
             <div class="row">
-                <form role="form-greylisting">
+                <form role="form-greylisting" methode="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -86,14 +114,12 @@ include '../inc/sidebar.php';
                             This however causes an delay in receiving mail, by default this system is configured to reject any email for 5 minutes.
                             </p>
                             <?php
-                                $LIBDIR="/var/www/html/Admin/EFA/v3/build/EFA/lib-EFA-Configure/new/";
-
-                                if (exec("sudo $LIBDIR/EFA-func_greylisting.bash --status") == 'ENABLED') {
+                                if ($GREYSTATUS == 'ENABLED') {
                                     print '<p class="text-success">Greylisting is currently ENABLED</p>';
-                                    print '<button type="submit" class="btn btn-default">Disable</button>';
+                                    print '<button id="submit" type="submit" class="btn btn-default" name="GreyToggle" value="0">Disable</button>';
                                 } else {
                                     print '<p class="text-danger">Greylisting is currently DISABLED</p>';
-                                    print '<button type="submit" class="btn btn-default">Enable</button>';
+                                    print '<button id="submit" type="submit" class="btn btn-default" name="GreyToggle" value="1">Enable</button>';
                                 }
                             ?>    
                         </div>
