@@ -41,10 +41,10 @@ $GREYSTATUS=exec("sudo $LIBDIR/EFA-func_greylisting.bash --status");
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
-            
+
             <!-- greylisting.row -->
             <div class="row">
-                <form role="form-greylisting" methode="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
