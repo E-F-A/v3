@@ -1121,6 +1121,14 @@ func_unbound () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Munin
+# +---------------------------------------------------+
+func_munin () {
+    yum -y install munin
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # kernel settings
 # +---------------------------------------------------+
 func_kernsettings () {
@@ -1162,6 +1170,7 @@ func_services () {
     chkconfig adcc off
     chkconfig webmin off
     chkconfig unbound off
+    chkconfig munin-node off
 }
 # +---------------------------------------------------+
 
@@ -1385,6 +1394,7 @@ func_dcc
 func_imagecerberus
 func_webmin
 func_unbound
+func_munin
 func_kernsettings
 func_services
 func_efarequirements

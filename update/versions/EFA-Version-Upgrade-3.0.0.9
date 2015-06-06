@@ -67,7 +67,11 @@ function run_update() {
   yum-config-manager --disable rpmforge
   yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c
 
-  # yum install perl-IP-Country --disablerepo=rpmforge
+  # Install munin for system stats
+  yum -y install munin
+  chkconfig munin-node on
+  service munin-node start
+
 
   # Update all packages
   yum_update

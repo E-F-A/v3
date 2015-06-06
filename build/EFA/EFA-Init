@@ -191,7 +191,7 @@ function func_ask-gateway() {
 # +---------------------------------------------------+
 function func_ask-recursion() {
   func_echo-header
-  
+
   # Prompt on whether to recurse or to forward
   echo -e ""
   echo -e "$green[EFA]$clean EFA supports full DNS recursion."
@@ -661,11 +661,11 @@ function func_configure-system() {
   # old dnsmasq stuff...
   #echo "nameserver $DNS1" > /etc/resolv.dnsmasq
   #echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
-  # new unbound stuff... 
+  # new unbound stuff...
   echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
   echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
   if [[ "$enablerecursion" -eq 1 ]]; then
-    echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf 
+    echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf
   else
     echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
     echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
@@ -974,6 +974,7 @@ function func_end() {
   chkconfig adcc on
   chkconfig webmin on
   chkconfig ntpd on
+  chkconfig munin-node on
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
