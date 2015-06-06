@@ -1,0 +1,330 @@
+#!/bin/bash
+# +--------------------------------------------------------------------+
+# EFA update script
+# Version 20150606
+# +--------------------------------------------------------------------+
+# Copyright (C) 2012~2015 https://efa-project.org
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# +--------------------------------------------------------------------+
+
+#----------------------------------------------------------------#
+# Variables
+#----------------------------------------------------------------#
+VERSION="3.0.0.9"
+logdir="/var/log/EFA"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
+ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
+MAILFROM="$ADMINEMAIL"
+MAILTO="$ADMINEMAIL"
+MAILSUBJECT="EFA Update Complete For: `hostname`"
+SENDMAIL="/usr/lib/sendmail"
+TMPMAIL="/tmp/tempmail"
+STAGING="/tmp/EFA-Staging"
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# List of current version numbers in this E.F.A. Version.
+#----------------------------------------------------------------#
+MAILWATCHVERSION="7482fe0831"
+IMAGECEBERUSVERSION="1.1"
+SPAMASSASSINVERSION="3.4.0a"
+PYZORVERSION="0.7.0"
+WEBMINVERSION="1.690-1"
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function where we do all our magic
+#----------------------------------------------------------------#
+function run_update() {
+  echo "Starting update to E.F.A. $VERSION"
+
+  # To package for this update:
+  # /EFA-Version-Upgrade                              <- This file in the root, renamed!
+  # /Files/                                           <- Directory (containing binary files)
+  # /Scripts/                                         <- Directory (containing update scripts (previous git scripts))
+  # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
+  # /Scripts/EFA-Configure                            <- EFA-Configure script
+
+  ##### Backup Phase #####
+  /usr/local/sbin/EFA-Backup -backup
+
+  ##### Commit Phase #####
+
+  # Remove packages from rpmforge
+  yum -y remove perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c
+  yum-config-manager --disable rpmforge
+  yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c
+
+  # yum install perl-IP-Country --disablerepo=rpmforge
+
+  # Update all packages
+  yum_update
+
+  update-vmtools
+
+  # Update MailWatch to latest version
+  #update-mailwatch
+
+  echo "$VERSION update is complete"
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update mailwatch function
+#----------------------------------------------------------------#
+function update-mailwatch() {
+  # Update mailwatch if we have a new version available
+  if [[ $MAILWATCHVERSION != "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+
+      #### Backup Phase #####
+      mkdir -p /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
+      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+
+      #### Commit Phase #####
+      echo -e "Starting installation of new mailwatch version"
+      service httpd stop
+      service MailScanner stop
+
+      rm -rf /usr/src/EFA/1.2.0-master
+      unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
+
+      # Issue #66  Grab Passwords from /etc/EFA-Config
+      sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+      sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+      sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
+      sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
+
+      mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      cd /usr/src/EFA/1.2.0-master
+      mv tools /usr/local/bin/mailwatch
+      rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
+      chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
+      mv mailscanner /var/www/html
+      cd /var/www/html/mailscanner
+      chown root:apache images
+      chmod ug+rwx images
+      chown root:apache images/cache
+      chmod ug+rwx images/cache
+      chown root:apache temp
+      chmod ug+rwx temp
+      rm -rf docs
+
+      # Issue #30 filter non-spam from quarantine reports (regression fix)
+      sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
+
+      # Merge conf.php and conf.php.example changes
+      cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
+
+      # Licensing update
+      COPYRIGHTPRESENT=$(grep " Copyright (C) 2014-2015  MailWatch Team" /var/www/html/mailscanner/conf.php)
+      if [[ -z $COPYRIGHTPRESENT ]]; then
+        sed -i '/^ Copyright (C) 2011  Garrod Alwood (garrod.alwood@lorodoes.com)/ a\ Copyright (C) 2014-2015  MailWatch Team (https://github.com/orgs/mailwatch/teams/team-stable)' /var/www/html/mailscanner/conf.php
+      fi
+      LICENSEPRESENT=$(grep " In addition, as a special exception," /var/www/html/mailscanner/conf.php)
+      if [[ -z $LICENSEPRESENT ]]; then
+        sed -i "/^ GNU General Public License for more details./ a\\\n In addition, as a special exception, the copyright holder gives permission to link the code of this program\n with those files in the PEAR library that are licensed under the PHP License (or with modified versions of those\n files that use the same license as those files), and distribute linked combinations including the two.\n You must obey the GNU General Public License in all respects for all of the code used other than those files in the\n PEAR library that are licensed under the PHP License. If you modify this program, you may extend this exception to\n your version of the program, but you are not obligated to do so.\n If you do not wish to do so, delete this exception statement from your version.\n As a special exception, you have permission to link this program with the JpGraph library and\n distribute executables, as long as you follow the requirements of the GNU GPL in regard to all of the software\n in the executable aside from JpGraph.\n" /var/www/html/mailscanner/conf.php
+      fi
+
+      # older EFA installations are missing this
+      LDAPFIELDPRESENT=`grep define\(\'LDAP_EMAIL_FIELD\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $LDAPFIELDPRESENT ]]; then
+        sed -i "/^define('LDAP_SITE'/ a\// can be set to 'proxyaddresses' or 'mail'. Please refer to your LDAP system manual for the right keyword\ndefine('LDAP_EMAIL_FIELD', 'proxyaddresses');" /var/www/html/mailscanner/conf.php
+      fi
+
+      # Issue #132 Increase sa-learn and spamassassin max message size limits
+      MAXSIZEPRESENT=`grep define\(\'SA_MAXSIZE\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $MAXSIZEPRESENT ]]; then
+        sed -i "/^define('MSRE_RULESET_DIR'/ a\\\n// Spamassassin sa-learn max message size (Spamassassin Version >= 3.4.0)\n// Size is in bytes\ndefine('SA_MAXSIZE', 0);" /var/www/html/mailscanner/conf.php
+      fi
+
+      # Issue #40 Extend MailWatch to hide high spam from regular users
+      HIGHSPAMPRESENT=`grep define\(\'HIDE_HIGH_SPAM\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $HIGHSPAMPRESENT ]]; then
+        sed -i "/^define('SA_MAXSIZE'/ a\\\n// Hide High Spam and high mcp from regular users\n// Prevent regular users from seeing high spam and high mcp\ndefine('HIDE_HIGH_SPAM', false);" /var/www/html/mailscanner/conf.php
+      fi
+
+      # Add favicons back
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images/favicon.png
+
+      # Add back EFA Branding
+      cd /var/www/html/mailscanner/images
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-47px.gif .
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-79px.png .
+      mv mailwatch-logo.gif mailwatch-logo.gif.orig >/dev/null 2>&1
+      mv mailwatch-logo.png mailwatch-logo.png.orig
+      mv mailscannerlogo.gif mailscannerlogo.gif.orig
+
+      # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
+      mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
+      ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
+      sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
+
+      ln -s EFAlogo-79px.png mailwatch-logo.gif
+      ln -s EFAlogo-79px.png mailwatch-logo.png
+      ln -s EFAlogo-47px.gif mailscannerlogo.gif
+
+      # Alter color scheme
+      sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
+
+      # Add back Mailgraph link
+      cd /var/www/html/mailscanner
+      cp other.php other.php.orig
+      sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+      cp /var/EFA/backup/$VERSION/mailscanner/mailgraph.php .
+
+      # Reconfigure Greylisting as previously configured
+      cp functions.php functions.php.orig
+      cp /var/EFA/backup/$VERSION/mailscanner/grey.php .
+
+      # Is greylisting enabled?  Add back menu item...
+      if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
+        sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+      fi
+
+      # Cleanup
+      rm -rf /usr/src/EFA/1.2.0-master
+
+      # Update the version of mailwatch in EFA-Config
+      sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
+
+      service httpd start
+      service MailScanner start
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update vmtools function
+#----------------------------------------------------------------#
+function update-vmtools() {
+  # Issue #55 reapply open-vm-tools, if present and upgrade if new version is available
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
+
+    # Remove source compiled version of open-vm-tools
+    if [[ -n "`rpm -q open-vm-tools | grep not\ installed`" ]]; then
+	  service vmtoolsd stop
+
+      # Cleanup existing open-vm-tools
+      rm -f /usr/local/lib/libvmtools*
+      rm -f /usr/local/lib/libhgfs*
+      rm -f /usr/local/lib/libguestlib*
+      rm -rf /usr/local/lib/open-vm-tools
+      rm -f /usr/local/bin/vmware*
+      rm -f /usr/local/bin/vmtoolsd
+      rm -f /usr/local/sbin/mount.vmhgfs
+      rm -rf /etc/vmware-tools
+      rm -f /usr/local/include/vmci_sockets.h
+      rm -rf /usr/local/include/vmGuestLib
+
+      # Install open-vm-tools from EPEL
+      yum -y install open-vm-tools
+      [[ $? -ne 0 ]] && abort
+
+      sed -i "/VMTOOLSVERSION:/d" /etc/EFA-Config
+    else
+      yum -y update open-vm-tools
+      [[ $? -ne 0 ]] && abort
+    fi
+
+    chkconfig vmtoolsd on
+    service vmtoolsd start
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to download file
+#----------------------------------------------------------------#
+function download_update() {
+  /usr/bin/wget -O $STAGING/$UPDATE $MIRROR/update/$UPDATE
+  [[ $? -ne 0 ]] && abort
+  /usr/bin/wget -O $STAGING/$UPDATE.md5 $MIRROR/update/$UPDATE.md5
+  [[ $? -ne 0 ]] && abort
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to check the MD5
+#----------------------------------------------------------------#
+function check_md5() {
+  # Grab md5 from file
+  checksum1=$(cat $STAGING/$UPDATE.md5 | awk '{print $1}')
+  # Calculate md5
+  checksum2=$(md5sum $STAGING/$UPDATE | awk '{print $1}')
+  if [[ "$checksum1" != "$checksum2" ]]; then
+    echo "Fatal:  $UPDATE md5 checksum does not match!  Aborting..."
+    abort
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Abort Routine
+#----------------------------------------------------------------#
+function abort() {
+  [[ -n $STAGING ]] && rm -rf $STAGING
+
+  echo "" >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+
+  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Please visit http://www.efa-project.org for more information."
+  exit 1
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update system with yum
+#----------------------------------------------------------------#
+function yum_update() {
+  yum -y --exclude="$yumexclude" update
+  [[ $? -ne 0 ]] && abort
+  # Todo, write some logic that checks any of the yumexclude packages and updates them after testing...
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Finalize
+#----------------------------------------------------------------#
+function finalize() {
+  # Write the latest version number
+  echo "EFA-$VERSION" > /etc/EFA-Version
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
+
+  # Finalize the mail
+  echo "" >> $TMPMAIL
+  echo "Please visit https://efa-project.org for more information." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Where to start
+#----------------------------------------------------------------#
+run_update
+finalize

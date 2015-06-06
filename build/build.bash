@@ -60,7 +60,8 @@ func_upgradeOS () {
 func_repoforge () {
     rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
     rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-    yum install -y unrar tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-File-Tail perl-Mail-ClamAV perl-Net-Netmask perl-NetAddr-IP re2c
+    yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV
+    yum-config-manager --disable rpmforge
 }
 # +---------------------------------------------------+
 
@@ -70,6 +71,7 @@ func_repoforge () {
 func_epelrepo () {
    rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
    yum install epel-release -y
+   yum install -y tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail perl-Net-Netmask perl-NetAddr-IP re2c
 }
 # +---------------------------------------------------+
 
@@ -207,7 +209,7 @@ func_postfix () {
     postmap /etc/postfix/recipient_access
     postmap /etc/postfix/sasl_passwd
 
-    # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600 
+    # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600
     chmod 0600 /etc/postfix/sasl_passwd
 
     # Logjam Vulnerability #188
@@ -353,7 +355,7 @@ func_mailscanner () {
 	wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
 	patch < mailscanner-4.84.6-1.patch
 	rm -f mailscanner-4.84.6-1.patch
-    
+
     # Issue #177 Correct EFA to new clamav paths using EPEL
     sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
@@ -499,8 +501,8 @@ func_spam_clamav () {
 
     # Issue #82 re2c spamassassin rule complilation
     sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
-    
-    # Issue #168 Start regular updates on RegistrarBoundaries.pm 
+
+    # Issue #168 Start regular updates on RegistrarBoundaries.pm
     # next 2 lines temp until everything is packaged
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/RegistrarBoundaries.pm
@@ -791,7 +793,7 @@ func_mailwatch () {
 
     # Install Encoding:FixLatin perl module for mailwatch UTF8 support
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/Encoding-FixLatin-1.04.tar.gz 
+    wget $mirror/$mirrorpath/Encoding-FixLatin-1.04.tar.gz
     tar xzvf /usr/src/EFA/Encoding-FixLatin-1.04.tar.gz
     cd /usr/src/EFA/Encoding*
     perl Makefile.PL
@@ -1107,10 +1109,10 @@ func_unbound () {
     yum -y install unbound
     # disable ipv6 support in unbound
     sed -i "/^\t# do-ip6: yes/ c\\\tdo-ip6: no" /etc/unbound/unbound.conf
-    
+
     # disable validator
     sed -i "/^\t# module-config:/ c\\\tmodule-config: \"iterator\"" /etc/unbound/unbound.conf
-  
+
     echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
     echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
     echo "  forward-addr: 8.8.8.8" >> /etc/unbound/conf.d/forwarders.conf
