@@ -17,7 +17,7 @@ require_once '../inc/functions.php';
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-success">
+                    <div class="panel panel-default">
                         <div class="panel-heading">
                             CPU
                         </div>
@@ -36,7 +36,7 @@ require_once '../inc/functions.php';
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-success">
+                    <div class="panel panel-default">
                         <div class="panel-heading">
                             Disk
                         </div>
@@ -57,7 +57,7 @@ require_once '../inc/functions.php';
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-success">
+                    <div class="panel panel-default">
                         <div class="panel-heading">
                             Memory
                         </div>
@@ -76,7 +76,7 @@ require_once '../inc/functions.php';
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-success">
+                    <div class="panel panel-default">
                         <div class="panel-heading">
                             Network
                         </div>
