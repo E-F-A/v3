@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.8 build script version 20150524
+# EFA 3.0.0.9 build script version 20150607
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2015 https://efa-project.org
 #
@@ -24,7 +24,7 @@
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.8"
+version="3.0.0.9"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"

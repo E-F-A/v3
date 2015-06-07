@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20150524
+# Version 20150607
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2015 https://efa-project.org
 #
@@ -44,9 +44,9 @@ STAGING="/tmp/EFA-Staging"
 # tar.gz file structure and naming:
 # EFA-Update-<previous version>-<new version>.tar.gz:
 #   EFA-Update-3.0.0.7-3.0.0.8.tar.gz
-#      /EFA-Version-Upgrade   				<- script that should be launched from this file.
-#		   /Files/										    <- Directory containing binary files
-#      /Scripts/									    <- Directory containing update scripts (previous git scripts)
+#      /EFA-Version-Upgrade           <- script that should be launched from this file.
+#      /Files/                        <- Directory containing binary files
+#      /Scripts/                      <- Directory containing update scripts (previous git scripts)
 #
 # Update methode:
 # this script downloads the latest EFA-Update.XXXX-XXXX.tar.gz file
@@ -65,47 +65,60 @@ function get_update_path() {
       initialize
       update-3.0.0.7
       update-3.0.0.8
+      update-3.0.0.9
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
       initialize
       update-3.0.0.7
       update-3.0.0.8
+      update-3.0.0.9
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
       initialize
       update-3.0.0.7
       update-3.0.0.8
+      update-3.0.0.9
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.3" ]]
     then
       initialize
       update-3.0.0.7
       update-3.0.0.8
+      update-3.0.0.9
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
     then
       initialize
       update-3.0.0.7
       update-3.0.0.8
+      update-3.0.0.9
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.5" ]]
     then
       initialize
       update-3.0.0.7
       update-3.0.0.8
+      update-3.0.0.9
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.6" ]]
     then
       initialize
       update-3.0.0.7
       update-3.0.0.8
+      update-3.0.0.9
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.7" ]]
     then
       initialize
       update-3.0.0.8
+      update-3.0.0.9
+      finalize
+  elif [[ $CVERSION == "EFA-3.0.0.8" ]]
+    then
+      initialize
+      update-3.0.0.9
       finalize
   fi
 }
@@ -139,6 +152,35 @@ function update-3.0.0.8() {
   update-kernel
 
   UPDATE="EFA-Update-3.0.0.7-3.0.0.8.tar.gz"
+  download_update
+  check_md5
+
+  # Unpack update
+  cd $STAGING
+  tar xzvf $UPDATE
+  [[ $? -ne 0 ]] && abort
+  # Bypass noexec in /tmp
+  rm -f /var/EFA/update/EFA-Version-Upgrade
+  cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
+  chmod 700 /var/EFA/update/EFA-Version-Upgrade
+  /var/EFA/update/EFA-Version-Upgrade
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to 3.0.0.9
+#----------------------------------------------------------------#
+function update-3.0.0.9() {
+ # Is staging area clean?
+ [[ -n $STAGING ]] && rm -rf $STAGING/*
+
+  check_disk_space
+
+  # Check for kernel update prior to package download
+  VERSION="3.0.0.9"
+  update-kernel
+
+  UPDATE="EFA-Update-3.0.0.8-3.0.0.9.tar.gz"
   download_update
   check_md5
 
@@ -276,9 +318,9 @@ function check_disk_space() {
   THRESHOLD="95"
   DISKUSE=$(df -hP -t ext4 --local | awk '{print $5}' | grep [0-9] | tr -d "%")
   for i in $DISKUSE; do
-    if [[ $i -ge $THRESHOLD ]]; then 
+    if [[ $i -ge $THRESHOLD ]]; then
 
-      echo "FATAL:  Update aborted.  Low disk space <=5% detected on one" >> $TMPMAIL 
+      echo "FATAL:  Update aborted.  Low disk space <=5% detected on one" >> $TMPMAIL
       echo "or more local ext4 filesystems!" >> $TMPMAIL
       echo "Free up disk space before continuing."  >> $TMPMAIL
       echo "Please visit https://forum.efa-project.org for assistance." >> $TMPMAIL
@@ -286,7 +328,7 @@ function check_disk_space() {
       echo "FATAL:  Update aborted.  Low disk space <=5% detected on one"
       echo "or more local ext4 filesystems!"
       echo "Free up disk space before continuing."
-      echo "Please visit https://forums.efa-project.org for assistance." 
+      echo "Please visit https://forums.efa-project.org for assistance."
 
       abort
     fi
@@ -311,7 +353,7 @@ function update-kernel(){
 
     # Zero out VMTOOLSVERSION to reapply open-vm-tools after reboot if installed
     sed -i "/^VMTOOLSVERSION:/ c\VMTOOLSVERSION:0" /etc/EFA-Config
-    
+
     echo "Your system has an updated kernel, but you are not running"
     echo "on the latest kernel.  Please restart your system and run"
     echo "EFA-Update after restart."
