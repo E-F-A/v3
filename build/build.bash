@@ -182,11 +182,11 @@ func_postfix () {
     postconf -e "tls_random_source = dev:/dev/urandom"
     postconf -e "smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache"
     postconf -e "smtpd_tls_security_level = may"
-	# Issue #149 Disable SSL in Postfix
-	postconf -e "smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3"
-	postconf -e "smtp_tls_mandatory_protocols = !SSLv2,!SSLv3"
-	postconf -e "smtpd_tls_protocols = !SSLv2,!SSLv3"
-	postconf -e "smtp_tls_protocols = !SSLv2,!SSLv3"
+    # Issue #149 Disable SSL in Postfix
+    postconf -e "smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3"
+    postconf -e "smtp_tls_mandatory_protocols = !SSLv2,!SSLv3"
+    postconf -e "smtpd_tls_protocols = !SSLv2,!SSLv3"
+    postconf -e "smtp_tls_protocols = !SSLv2,!SSLv3"
     # restrictions
     postconf -e "smtpd_helo_restrictions =  check_helo_access hash:/etc/postfix/helo_access, reject_invalid_hostname"
     postconf -e "smtpd_sender_restrictions = permit_sasl_authenticated, check_sender_access hash:/etc/postfix/sender_access, reject_non_fqdn_sender, reject_unknown_sender_domain"
@@ -294,12 +294,12 @@ func_mailscanner () {
     sed -i "/^Sign Clean Messages =/ c\# EFA Note: CustomAction.pm will Sign Clean Messages instead using the custom(nonspam) action.\nSign Clean Messages = No" /etc/MailScanner/MailScanner.conf
     sed -i "/^Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No" /etc/MailScanner/MailScanner.conf
     sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 2" /etc/MailScanner/MailScanner.conf
-	sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
+    sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
 
-	# Issue #132 Increase sa-learn and spamassassin max message size limits
-	sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
+  # Issue #132 Increase sa-learn and spamassassin max message size limits
+    sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
 
-	# Issue #153 Reply signature behavior not functional
+  # Issue #153 Reply signature behavior not functional
     sed -i "/^Dont Sign HTML If Headers Exist =/ c\Dont Sign HTML If Headers Exist = In-Reply-To: References:" /etc/MailScanner/MailScanner.conf
 
     # Issue #136 Disable Notify Senders by default in MailScanner
@@ -310,7 +310,7 @@ func_mailscanner () {
 
     touch /etc/MailScanner/rules/sig.html.rules
     touch /etc/MailScanner/rules/sig.text.rules
-	touch /etc/MailScanner/phishing.safe.sites.conf
+    touch /etc/MailScanner/phishing.safe.sites.conf
     rm -rf /var/spool/MailScanner/incoming
     mkdir /var/spool/MailScanner/incoming
     echo "none /var/spool/MailScanner/incoming tmpfs noatime 0 0">>/etc/fstab
@@ -347,14 +347,14 @@ func_mailscanner () {
     # Issue #51 -- Redundant Quarantine Clean Scripts Present
     rm -f /etc/cron.daily/clean.quarantine
 
-	# Remove Mailscanners phishing sites cron (#100, replaced by EFA-MS-Update)
-	rm -f /etc/cron.daily/update_phishing_sites
+    # Remove Mailscanners phishing sites cron (#100, replaced by EFA-MS-Update)
+    rm -f /etc/cron.daily/update_phishing_sites
 
-	# Issue #77 -- EFA MailScanner 0 byte tmp files
-	cd /usr/lib/MailScanner
-	wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
-	patch < mailscanner-4.84.6-1.patch
-	rm -f mailscanner-4.84.6-1.patch
+    # Issue #77 -- EFA MailScanner 0 byte tmp files
+    cd /usr/lib/MailScanner
+    wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
+    patch < mailscanner-4.84.6-1.patch
+    rm -f mailscanner-4.84.6-1.patch
 
     # Issue #177 Correct EFA to new clamav paths using EPEL
     sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
@@ -431,9 +431,9 @@ func_spam_clamav () {
     cd /usr/src/EFA
     rm -rf Spamassassin*
 
-	# Symlink for Geo::IP
-	mkdir -p /usr/local/share/GeoIP
-	ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
+    # Symlink for Geo::IP
+    mkdir -p /usr/local/share/GeoIP
+    ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
 
     # PDFInfo
     cd /usr/src/EFA
@@ -628,20 +628,20 @@ func_mailwatch () {
     cd MailScanner_perl_scripts
     sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
     # Issue #66 grab all passwords from EFA-Config
-	#sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" MailWatch.pm
-	sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+    #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" MailWatch.pm
+    sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
     mv MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
 
     # Set up SQLBlackWhiteList
     sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
     #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$password';" SQLBlackWhiteList.pm
     sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
-	mv SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
+    mv SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
 
     # Set up SQLSpamSettings
     sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" SQLSpamSettings.pm
     #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" SQLSpamSettings.pm
-	sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" SQLSpamSettings.pm
+    sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" SQLSpamSettings.pm
     mv SQLSpamSettings.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
 
     # Set up MailWatch tools
@@ -689,7 +689,7 @@ func_mailwatch () {
     sed -i "/^define('SA_RULES_DIR',/ c\define('SA_RULES_DIR', '/etc/mail/spamassassin');" conf.php
     sed -i "/^define('SHOW_SFVERSION',/ c\define('SHOW_SFVERSION', false);" conf.php
     # Issue #109 Documentation tab present after MailWatch update testing
-	sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" conf.php
+    sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" conf.php
 
     # Set up a redirect in web root to MailWatch
     touch /var/www/html/index.html
@@ -724,10 +724,10 @@ func_mailwatch () {
     ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
 
-	# Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
-	mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
-	ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
-	sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
+    # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
+    mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
+    ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
+    sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
 
     # Change the yellow to match website colors..
     sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
@@ -801,7 +801,7 @@ func_mailwatch () {
     make install
 
     # Add mailwatch version to EFA-Config
-	echo "MAILWATCHVERSION:$MAILWATCHVERSION" >> /etc/EFA-Config
+    echo "MAILWATCHVERSION:$MAILWATCHVERSION" >> /etc/EFA-Config
 
     # Fix menu width
     # sed -i '/^#menu {$/ a\    min-width:1000px;' /var/www/html/mailscanner/style.css
@@ -822,7 +822,7 @@ func_sgwi () {
     mv * /var/www/html/sgwi
 
     # add db credential
-	# Issue #66 Grab all passwords from EFA-Config
+    # Issue #66 Grab all passwords from EFA-Config
     sed -i "/^\$db_pass/ c\$efa_array = preg_grep('/^SQLGREYSQLPWD/', file('/etc/EFA-Config'));\nforeach(\$efa_array as \$num => \$line) {\n  if (\$line) {\n    \$db_pass = chop(preg_replace('/^SQLGREYSQLPWD:(.*)/','\$1',\$line));\n  }\n}" /var/www/html/sgwi/includes/config.inc.php
 
     # Add greylist to mailwatch menu
@@ -953,15 +953,15 @@ func_pyzor () {
     sed -i '/^#!\/usr\/bin\/python/ c\#!\/usr\/bin\/python -Wignore::DeprecationWarning' /usr/bin/pyzor
 
     mkdir /var/spool/postfix/.pyzor
-	ln -s /var/spool/postfix/.pyzor /var/www/.pyzor
-	chown -R postfix:apache /var/spool/postfix/.pyzor
-	chmod -R ug+rwx /var/spool/postfix/.pyzor
+    ln -s /var/spool/postfix/.pyzor /var/www/.pyzor
+    chown -R postfix:apache /var/spool/postfix/.pyzor
+    chmod -R ug+rwx /var/spool/postfix/.pyzor
 
     # and finally initialize the servers file with an discover.
     su postfix -s /bin/bash -c 'pyzor discover'
 
-	# Add version to EFA-Config
-	echo "PYZORVERSION:$PYZORVERSION" >> /etc/EFA-Config
+    # Add version to EFA-Config
+    echo "PYZORVERSION:$PYZORVERSION" >> /etc/EFA-Config
 }
 # +---------------------------------------------------+
 
@@ -980,13 +980,13 @@ func_razor () {
     make install
 
     mkdir /var/spool/postfix/.razor
-	ln -s /var/spool/postfix/.razor /var/www/.razor
+    ln -s /var/spool/postfix/.razor /var/www/.razor
     chown postfix:apache /var/spool/postfix/.razor
-	chmod -R ug+rwx /var/spool/postfix/.razor
+    chmod -R ug+rwx /var/spool/postfix/.razor
 
-	# Issue #157 Razor failing after registration of service
-	# Use setgid bit
-	chmod ug+s /var/spool/postfix/.razor
+    # Issue #157 Razor failing after registration of service
+    # Use setgid bit
+    chmod ug+s /var/spool/postfix/.razor
 }
 # +---------------------------------------------------+
 
@@ -1082,8 +1082,8 @@ func_webmin () {
     sed -i '/localauth=\/usr\/sbin\/lsof/d' /etc/webmin/miniserv.conf
     service webmin restart
 
-	# Add version to EFA-Config
-	echo "WEBMINVERSION:$WEBMINVERSION" >> /etc/EFA-Config
+    # Add version to EFA-Config
+    echo "WEBMINVERSION:$WEBMINVERSION" >> /etc/EFA-Config
 }
 # +---------------------------------------------------+
 
@@ -1257,7 +1257,7 @@ EOF
     # Compress logs from logrotate
     sed -i "s/#compress/compress/g" /etc/logrotate.conf
 
-	# Set the system as unconfigured
+  # Set the system as unconfigured
     sed -i '1i\CONFIGURED:NO' /etc/EFA-Config
 
     # Set EFA-Init to run at first root login:
@@ -1275,8 +1275,8 @@ func_cron () {
     chmod 700 /etc/cron.monthly/EFA-Monthly-cron
     /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Backup-cron  $gitdlurl/EFA/EFA-Backup-cron
     chmod 700 /etc/cron.daily/EFA-Backup-cron
-	# Remove the raid-check util (Issue #102)
-	rm -f /etc/cron.d/raid-check
+    # Remove the raid-check util (Issue #102)
+    rm -f /etc/cron.d/raid-check
 }
 # +---------------------------------------------------+
 

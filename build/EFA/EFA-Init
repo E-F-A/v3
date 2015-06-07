@@ -842,7 +842,7 @@ function func_configure-system() {
   /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SQLGREYSQLPWD') WHERE User='sqlgrey';"
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
   sed -i "/db_pass =/ c\db_pass = $SQLGREYSQLPWD" /etc/sqlgrey/sqlgrey.conf
-  #sed -i "/^\$db_pass/ c\$db_pass	= \"$SQLGREYSQLPWD\";" /var/www/html/sgwi/includes/config.inc.php
+  #sed -i "/^\$db_pass/ c\$db_pass  = \"$SQLGREYSQLPWD\";" /var/www/html/sgwi/includes/config.inc.php
 
   # efa token SQL password
   randompw
@@ -871,6 +871,11 @@ function func_configure-system() {
   randompw
   WATERMARK=$PASSWD
   sed -i "/^Watermark Secret =/ c\Watermark Secret = %org-name%-$WATERMARK" /etc/MailScanner/MailScanner.conf
+
+  # munin
+  randompw
+  MUNINPWD=$PASSWD
+  htpasswd -b /etc/munin/munin-htpasswd munin $MUNINPWD
 }
 # +---------------------------------------------------+
 
@@ -947,7 +952,7 @@ function func_end() {
   echo "SQLGREYSQLPWD:$SQLGREYSQLPWD" >> /etc/EFA-Config
   echo "EFASQLPWD:$EFASQLPWD" >> /etc/EFA-Config
   echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
-
+  echo "MUNINPWD:$MUNINPWD" >> /etc/EFA-Config
   if [[ "$enableupdates" -eq 1 ]]; then
     echo "AUTOUPDATES:ENABLED" >> /etc/EFA-Config
   else
@@ -1132,10 +1137,10 @@ if [ $CONFIGURED == "NO" ]
     echo -e "$green[EFA]$clean We will ask you a few questions to setup this system."
     echo -e "$green[EFA]$clean Please make sure the system is connected to the internet."
     echo -e "--------------------------------------------------------------"
-	echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
-	read StartConf
+  echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
+  read StartConf
 
-	if [[ "$StartConf" == "Y" || "$StartConf" == "y" || "$StartConf" == "" ]]; then
+  if [[ "$StartConf" == "Y" || "$StartConf" == "y" || "$StartConf" == "" ]]; then
       pause
       func_ask-keyboard
       func_ask-hostname
@@ -1159,16 +1164,16 @@ if [ $CONFIGURED == "NO" ]
       if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
       func_end
     elif [[ "$StartConf" == "N" || "$StartConf" == "n" ]]; then
-		echo -e "$red"
-		echo -e "You are now aborting EFA-Init, your system will not function properly."
-		echo -e "Please run /usr/local/sbin/EFA-Init to start the first-time configuration again."
-		echo -e ""
-		echo -e "Aborting EFA-Init now. $clean"
-		exit 0
-	else
-		echo -e "       $red ERROR: please make an selection.$clean"
-		echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
-		read StartConf
+    echo -e "$red"
+    echo -e "You are now aborting EFA-Init, your system will not function properly."
+    echo -e "Please run /usr/local/sbin/EFA-Init to start the first-time configuration again."
+    echo -e ""
+    echo -e "Aborting EFA-Init now. $clean"
+    exit 0
+  else
+    echo -e "       $red ERROR: please make an selection.$clean"
+    echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
+    read StartConf
     fi
  else
     echo -e "$red         ERROR: EFA is already configured $clean"
