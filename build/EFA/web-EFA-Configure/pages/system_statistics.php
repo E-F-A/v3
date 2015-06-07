@@ -2,6 +2,8 @@
 include '../inc/header.php';
 include '../inc/topnav.php';
 include '../inc/sidebar.php';
+
+require_once '../inc/functions.php';
 ?>
 
       <!-- Page Content -->
@@ -21,7 +23,8 @@ include '../inc/sidebar.php';
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <img src="../images/system-cpu.png">
+                            <img src="/munin/localhost/localhost/cpu-day.png"><br />
+                            <img src="/munin/localhost/localhost/load-day.png"><br />
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -39,7 +42,10 @@ include '../inc/sidebar.php';
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <img src="../images/system-disk.png">
+                            <img src="/munin/localhost/localhost/diskstats_iops-day.png"><br />
+                            <img src="/munin/localhost/localhost/diskstats_latency-day.png"><br />
+                            <img src="/munin/localhost/localhost/df_inode-day.png"><br />
+                            <img src="/munin/localhost/localhost/diskstats_utilization-day.png"><br />
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -57,7 +63,8 @@ include '../inc/sidebar.php';
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <img src="../images/system-mem.png">
+                            <img src="/munin/localhost/localhost/memory-day.png"><br />
+                            <img src="/munin/localhost/localhost/swap-day.png"><br />
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -75,7 +82,12 @@ include '../inc/sidebar.php';
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <img src="../images/system-network.png">
+                            <img src="/munin/localhost/localhost/if_eth0-day.png"><br />
+                            <img src="/munin/localhost/localhost/fw_conntrack-day.png"><br />
+                            <img src="/munin/localhost/localhost/fw_packets-day.png"><br />
+                            <img src="/munin/localhost/localhost/netstat-day.png"><br />
+                            <img src="/munin/localhost/localhost/fw_forwarded_local-day.png"><br />
+                            <img src="/munin/localhost/localhost/if_err_eth0-day.png"><br />
                         </div>
                         <!-- /.panel-body -->
                     </div>
