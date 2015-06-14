@@ -23,8 +23,8 @@ require_once '../inc/functions.php';
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <img src="/munin/localhost/localhost/cpu-day.png"><br />
-                            <img src="/munin/localhost/localhost/load-day.png"><br />
+                            <a href="system_statistics_long.php?type=cpu"><img src="/munin/localhost/localhost/cpu-day.png"></a><br />
+                            <a href="system_statistics_long.php?type=load"><img src="/munin/localhost/localhost/load-day.png"></a><br />
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -42,10 +42,10 @@ require_once '../inc/functions.php';
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <img src="/munin/localhost/localhost/diskstats_iops-day.png"><br />
-                            <img src="/munin/localhost/localhost/diskstats_latency-day.png"><br />
-                            <img src="/munin/localhost/localhost/df_inode-day.png"><br />
-                            <img src="/munin/localhost/localhost/diskstats_utilization-day.png"><br />
+                            <a href="system_statistics_long.php?type=diskstats_iops"><img src="/munin/localhost/localhost/diskstats_iops-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=diskstats_latency><img src="/munin/localhost/localhost/diskstats_latency-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=df_inode><img src="/munin/localhost/localhost/df_inode-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=diskstats_utilization><img src="/munin/localhost/localhost/diskstats_utilization-day.png"></a><br />
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -63,8 +63,8 @@ require_once '../inc/functions.php';
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <img src="/munin/localhost/localhost/memory-day.png"><br />
-                            <img src="/munin/localhost/localhost/swap-day.png"><br />
+                            <a href=system_statistics_long.php?type=memory><img src="/munin/localhost/localhost/memory-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=swap><img src="/munin/localhost/localhost/swap-day.png"></a><br />
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -82,12 +82,12 @@ require_once '../inc/functions.php';
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <img src="/munin/localhost/localhost/if_eth0-day.png"><br />
-                            <img src="/munin/localhost/localhost/fw_conntrack-day.png"><br />
-                            <img src="/munin/localhost/localhost/fw_packets-day.png"><br />
-                            <img src="/munin/localhost/localhost/netstat-day.png"><br />
-                            <img src="/munin/localhost/localhost/fw_forwarded_local-day.png"><br />
-                            <img src="/munin/localhost/localhost/if_err_eth0-day.png"><br />
+                            <a href=system_statistics_long.php?type=if_eth0><img src="/munin/localhost/localhost/if_eth0-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=fw_conntrack><img src="/munin/localhost/localhost/fw_conntrack-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=fw_packets><img src="/munin/localhost/localhost/fw_packets-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=netstat><img src="/munin/localhost/localhost/netstat-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=fw_forwarded_local><img src="/munin/localhost/localhost/fw_forwarded_local-day.png"></a><br />
+                            <a href=system_statistics_long.php?type=if_err_eth0><img src="/munin/localhost/localhost/if_err_eth0-day.png"></a><br />
                         </div>
                         <!-- /.panel-body -->
                     </div>

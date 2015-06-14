@@ -5,13 +5,6 @@ include '../inc/sidebar.php';
 
 $LIBDIR="/var/www/html/Admin/EFA/v3/build/EFA/lib-EFA-Configure/new/";
 
-function test_input($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
-}
-
 if (isset($_POST['GreyToggle'])){
   $GreyToggle = test_input($_POST['GreyToggle']);
 

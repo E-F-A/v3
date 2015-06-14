@@ -1127,6 +1127,23 @@ func_munin () {
     yum -y install munin
     sed -i '/^my $graph_width = / c\my $graph_width = $ENV{'"'graph_width'"'} ? $ENV{'"'graph_width'"'} : 800;' /usr/share/munin/plugins/diskstats
     sed -i 's/.*#max_size_y 4000/&\ngraph_width 800/' /etc/munin/munin.conf
+
+    cat > /etc/httpd/conf.d/munin.conf << 'EOF'
+  <directory /var/www/html/munin/localhost/localhost>
+      Order allow,deny
+      Allow from all
+      Satisfy any
+  </directory>
+
+  <directory /var/www/html/munin>
+      AuthUserFile /etc/munin/munin-htpasswd
+      AuthName "Munin"
+      AuthType Basic
+      require valid-user
+  </directory>
+  EOF
+    # End writing apache config file
+
 }
 # +---------------------------------------------------+
 
