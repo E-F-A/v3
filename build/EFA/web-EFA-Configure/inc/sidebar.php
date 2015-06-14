@@ -34,18 +34,6 @@
                                 <li>
                                     <a href="mail_settings.php">Mail Settings</a>
                                 </li>
-                                <li>
-                                    <a href="spam_settings.php">SPAM Settings</a>
-                                </li>
-                                <li>
-                                    <a href="apache_settings.php">Apache Settings</a>
-                                </li>
-                                <li>
-                                    <a href="virus_settings.php">Virus Settings</a>
-                                </li>
-                                <li>
-                                    <a href="system_settings.php">System Settings</a>
-                                </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
