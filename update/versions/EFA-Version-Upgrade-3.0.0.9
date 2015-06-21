@@ -67,7 +67,7 @@ function run_update() {
   yum -y remove perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV rpmforge-release
   cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo
   yum clean all
-  yum update
+  yum_update
   yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV
 
   # Install munin for system stats
@@ -100,8 +100,7 @@ EOF
   service httpd restart
 
 
-  # Update all packages
-  yum_update
+
 
   update-vmtools
 
