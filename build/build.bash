@@ -55,13 +55,12 @@ func_upgradeOS () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# add rpmforge/repoforge repositories
+# add EFA Repo
 # +---------------------------------------------------+
-func_repoforge () {
-    rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
-    rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-    yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV
-    yum-config-manager --disable rpmforge
+func_efarepo () {
+   cd /etc/yum.repos.d/
+   /usr/bin/wget --no-check-certificate $mirror/rpm/EFA.repo
+   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV
 }
 # +---------------------------------------------------+
 
@@ -1396,7 +1395,7 @@ func_cleanup () {
 # +---------------------------------------------------+
 func_prebuild
 func_upgradeOS
-func_repoforge
+func_efarepo
 func_epelrepo
 func_mysql
 func_postfix

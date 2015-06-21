@@ -53,6 +53,7 @@ function run_update() {
   # To package for this update:
   # /EFA-Version-Upgrade                              <- This file in the root, renamed!
   # /Files/                                           <- Directory (containing binary files)
+  # /Files/EFA.repo                                   <- EFA repo file
   # /Scripts/                                         <- Directory (containing update scripts (previous git scripts))
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
@@ -62,10 +63,12 @@ function run_update() {
 
   ##### Commit Phase #####
 
-  # Remove packages from rpmforge
-  yum -y remove perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c
-  yum-config-manager --disable rpmforge
-  yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c
+  # Remove packages from rpmforge and install from EFA (to fix dependency issues between rpmforge & EPEL)
+  yum -y remove perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV rpmforge-release
+  cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo
+  yum clean all
+  yum update
+  yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV
 
   # Install munin for system stats
   yum -y install munin
