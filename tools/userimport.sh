@@ -19,11 +19,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
-SQLTMPFILE="massimport.sql"
+SQLTMPFILE="userimport.sql"
 SQLTMPDIR="/tmp/EFA/"
 infile=""
-isblacklist="0"
-iswhitelist="0"
 append="0"
 overwrite="0"
 quiet="0"
@@ -31,27 +29,23 @@ quiet="0"
 
 function help(){
   echo 
-  echo "EFA Mass Whitelist and Blacklist Import Help"
+  echo "EFA Mass User Import Help"
   echo 
-  echo "massimport.sh  Copyright (C) 2014  efa-project.org"
-  echo "Licened GNU GPL v3. This program comes with ABSOLUTELY NO WARRANTY"
+  echo "userimport.sh  Copyright (C) 2014  efa-project.org"
+  echo "Licensed GNU GPL v3. This program comes with ABSOLUTELY NO WARRANTY"
   echo "This is free software, and you are welcome to redistribute it under"
   echo "certain conditions.  See http://www.gnu.org/licenses for more details"
   echo 
-  echo "Usage: massimport.sh -f mylist -b|-w [-a|-o [-q]]"
-  echo "-f	Whitelist or Blacklist File"
-  echo "-a	append to existing list"
-  echo "-b	File is a Blacklist"
+  echo "Usage: userimport.sh -f mylist -a|-o [-q]"
+  echo "-a      append to existing list"
   echo "-q      force overwrite database tables without prompting"
-  echo "-o	overwrite existing list"
-  echo "-w	File is a Whitelist"
+  echo "-o      overwrite existing list"
   echo
-  echo "Whitelist and Blacklist is newline separated list with each"
-  echo "line in either of the following formats:"
+  echo "user list mylist is newline comma separated list with each"
+  echo "line in the following format:"
   echo 
-  echo '<From Address Domain or IP>, <To Address Domain or IP>'
-  echo '<From Address Domain or IP>'
-  echo 
+  echo '<username>,<password>,<fullname>,<type>'
+  echo 'type={A,D,U,R,H}'
 }
 
 if [[ "$#" == "0" ]]; then
@@ -72,12 +66,6 @@ do
     -f|--file)
     infile="$1"
     shift
-    ;;
-    -b|--blacklist)
-    isblacklist="1"
-    ;;
-    -w|--whitelist)
-    iswhitelist="1"
     ;;
     -a|--append)
     append="1"
@@ -103,16 +91,6 @@ fi
 
 if [[ $quiet == "1" && $overwrite == "0" ]]; then
   echo "Quiet flag (-q) used without overwrite (-o)"
-  flag="1"
-fi
-
-if [[ $iswhitelist == "1" && $isblacklist == "1" ]]; then
-  echo "Incompatible parameter combination (-w and -b)"
-  flag="1"
-fi
-
-if [[ $iswhitelist == "0" && $isblacklist == "0" ]]; then
-  echo "Whitelist or Blacklist not specified"
   flag="1"
 fi
 
@@ -156,67 +134,56 @@ if [[ $overwrite == "1" ]]; then
       done
   fi
   
-  if [[ $iswhitelist == "1" ]]; then
-    echo 'DROP TABLE IF EXISTS `whitelist`;' >> $SQLTMPDIR$SQLTMPFILE
-    echo 'CREATE TABLE `whitelist` (' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' `id` int(11) NOT NULL AUTO_INCREMENT,' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' `to_address` text,' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' `to_domain` text,' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' `from_address` text,' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' PRIMARY KEY (`id`),' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' UNIQUE KEY `whitelist_uniq` (`to_address`(100),`from_address`(100))' >> $SQLTMPDIR$SQLTMPFILE
-    echo ') ENGINE=MyISAM DEFAULT CHARSET=latin1;' >> $SQLTMPDIR$SQLTMPFILE
-  elif [[ $isblacklist == "1" ]]; then
-    echo 'DROP TABLE IF EXISTS `blacklist`;' >> $SQLTMPDIR$SQLTMPFILE 
-    echo 'CREATE TABLE `blacklist` (' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' `id` int(11) NOT NULL AUTO_INCREMENT,' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' `to_address` text,' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' `to_domain` text,' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' `from_address` text,' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' PRIMARY KEY (`id`),' >> $SQLTMPDIR$SQLTMPFILE
-    echo ' UNIQUE KEY `blacklist_uniq` (`to_address`(100),`from_address`(100))' >> $SQLTMPDIR$SQLTMPFILE
-    echo ') ENGINE=MyISAM DEFAULT CHARSET=latin1;' >> $SQLTMPDIR$SQLTMPFILE
-  fi
+  echo 'DROP TABLE IF EXISTS `users`;' >> $SQLTMPDIR$SQLTMPFILE
+  echo 'CREATE TABLE `users` (' >> $SQLTMPDIR$SQLTMPFILE
+  echo " `username` varchar(60) NOT NULL DEFAULT ''," >> $SQLTMPDIR$SQLTMPFILE
+  echo ' `password` varchar(32) DEFAULT NULL,' >> $SQLTMPDIR$SQLTMPFILE
+  echo " `fullname` varchar(50) NOT NULL DEFAULT ''," >> $SQLTMPDIR$SQLTMPFILE
+  echo " `type` enum('A','D','U','R','H') DEFAULT NULL," >> $SQLTMPDIR$SQLTMPFILE
+  echo " `quarantine_report` tinyint(1) DEFAULT '1'" >> $SQLTMPDIR$SQLTMPFILE
+  echo " `spamscore` tinyint(4) DEFAULT '0'," >> $SQLTMPDIR$SQLTMPFILE
+  echo " `highspamscore` tinyint(4) DEFAULT '0'," >> $SQLTMPDIR$SQLTMPFILE
+  echo " `noscan` tinyint(1) DEFAULT '0'," >> $SQLTMPDIR$SQLTMPFILE
+  echo " `quarantine_rcpt` varchar(60) DEFAULT NULL," >> $SQLTMPDIR$SQLTMPFILE
+  echo " PRIMARY KEY (`username`)" >> $SQLTMPDIR$SQLTMPFILE
+  echo ') ENGINE=MyISAM DEFAULT CHARSET=utf8;' >> $SQLTMPDIR$SQLTMPFILE
 fi
 
 # Lock Tables for writing and begin input
-if [[ $iswhitelist == "1" ]]; then
-  echo 'LOCK TABLES `whitelist` WRITE;' >> $SQLTMPDIR$SQLTMPFILE
-  echo -n 'INSERT INTO `whitelist` (to_address,to_domain,from_address) VALUES ' >> $SQLTMPDIR$SQLTMPFILE
-elif [[ $isblacklist == "1" ]]; then
-  echo 'LOCK TABLES `blacklist` WRITE;' >> $SQLTMPDIR$SQLTMPFILE
-  echo -n 'INSERT INTO `blacklist` (to_address,to_domain,from_address) VALUES ' >> $SQLTMPDIR$SQLTMPFILE
-fi
+  echo 'LOCK TABLES `users` WRITE;' >> $SQLTMPDIR$SQLTMPFILE
+  echo -n 'INSERT INTO `users` (username,password,fullname,type) VALUES ' >> $SQLTMPDIR$SQLTMPFILE
 
 # Process each line of file
 
 firstloop="1"
 TMPIFS=$IFS
 IFS=","
-while read col1 col2
+while read col1 col2 col3 col4
 do
-  fromaddress=""
-  toaddress=""
-  todomain=""
+  username=""
+  password=""
+  fullname=""
+  type=""
   # check input length 
-  fromaddress=$col1
-  if [[ $fromaddress =~ ^.{2,100}$ ]]; then
-    if [[ $col2 != "" && $col2 =~ ^.{2,100}$ ]]; then
-      toaddress=$col2
-      todomain=`echo $col2 | awk -F@ '{print $2}'`
-      if [[ $todomain == "" ]]; then
-        todomain=$toaddress
+  username=$col1
+  if [[ $username != "" && $username =~ ^.{2,60}$ ]]; then
+    password=$col2
+    
+    if [[ $col2 != "" && $col2 =~ ^.{4,32}$ ]]; then
+      password=$col2
+      if [[ $col3 =~ ^.{0,50}$ ]]; then
+        fullname=$col3
+        if [[ $col4 != "" && $col4 =~ ^[ADURH]$ ]]; then
+            type=$col4
+        fi
       fi
-    else
-      toaddress="default"
-    fi
-  
-    if [[ $firstloop != "1" ]]; then
+     fi
+   if [[ $firstloop != "1" ]]; then
       echo -n "," >> $SQLTMPDIR$SQLTMPFILE
     else
       firstloop="0"
     fi
-    echo -n "('$toaddress','$todomain','$fromaddress')" >> $SQLTMPDIR$SQLTMPFILE
+    echo -n "('$username',md5('$password'),'$fullname','$type')" >> $SQLTMPDIR$SQLTMPFILE
   fi  
 
 done < $infile
@@ -226,9 +193,9 @@ echo ";" >> $SQLTMPDIR$SQLTMPFILE
 echo "UNLOCK TABLES;" >> $SQLTMPDIR$SQLTMPFILE
 
 # Import into MySQL
-mysql -u mailwatch --password=$MAILWATCHSQLPWD mailscanner < /tmp/EFA/massimport.sql
+mysql -u mailwatch --password=$MAILWATCHSQLPWD mailscanner < /tmp/EFA/userimport.sql
 
 # Cleanup
-rm -f /tmp/EFA/massimport.sql
+rm -f /tmp/EFA/userimport.sql
 rmdir /tmp/EFA
 
