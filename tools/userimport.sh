@@ -39,7 +39,7 @@ function help(){
   echo "Usage: userimport.sh -f mylist -a|-o [-q]"
   echo "-a      append to existing list"
   echo "-q      force overwrite database tables without prompting"
-  echo "-o      overwrite existing list"
+  echo "-o      overwrite existing list (admins and domain admins exempt)"
   echo
   echo "user list mylist is newline comma separated list with each"
   echo "line in the following format:"
@@ -114,6 +114,7 @@ fi
 mkdir -p $SQLTMPDIR
 rm -f $SQLTMPDIR$SQLTMPFILE
 touch $SQLTMPDIR$SQLTMPFILE
+echo 'LOCK TABLES `users` WRITE;' >> $SQLTMPDIR$SQLTMPFILE
 if [[ $overwrite == "1" ]]; then
   if [[ $quiet == "0" ]]; then
     flag="0"
@@ -134,23 +135,11 @@ if [[ $overwrite == "1" ]]; then
       done
   fi
   
-  echo 'DROP TABLE IF EXISTS `users`;' >> $SQLTMPDIR$SQLTMPFILE
-  echo 'CREATE TABLE `users` (' >> $SQLTMPDIR$SQLTMPFILE
-  echo " `username` varchar(60) NOT NULL DEFAULT ''," >> $SQLTMPDIR$SQLTMPFILE
-  echo ' `password` varchar(32) DEFAULT NULL,' >> $SQLTMPDIR$SQLTMPFILE
-  echo " `fullname` varchar(50) NOT NULL DEFAULT ''," >> $SQLTMPDIR$SQLTMPFILE
-  echo " `type` enum('A','D','U','R','H') DEFAULT NULL," >> $SQLTMPDIR$SQLTMPFILE
-  echo " `quarantine_report` tinyint(1) DEFAULT '1'" >> $SQLTMPDIR$SQLTMPFILE
-  echo " `spamscore` tinyint(4) DEFAULT '0'," >> $SQLTMPDIR$SQLTMPFILE
-  echo " `highspamscore` tinyint(4) DEFAULT '0'," >> $SQLTMPDIR$SQLTMPFILE
-  echo " `noscan` tinyint(1) DEFAULT '0'," >> $SQLTMPDIR$SQLTMPFILE
-  echo " `quarantine_rcpt` varchar(60) DEFAULT NULL," >> $SQLTMPDIR$SQLTMPFILE
-  echo " PRIMARY KEY (`username`)" >> $SQLTMPDIR$SQLTMPFILE
-  echo ') ENGINE=MyISAM DEFAULT CHARSET=utf8;' >> $SQLTMPDIR$SQLTMPFILE
-fi
+  echo "DELETE from \`users\` where type RLIKE '[UHR]';" >> $SQLTMPDIR$SQLTMPFILE 
+  
+  fi
 
 # Lock Tables for writing and begin input
-  echo 'LOCK TABLES `users` WRITE;' >> $SQLTMPDIR$SQLTMPFILE
   echo -n 'INSERT INTO `users` (username,password,fullname,type) VALUES ' >> $SQLTMPDIR$SQLTMPFILE
 
 # Process each line of file
