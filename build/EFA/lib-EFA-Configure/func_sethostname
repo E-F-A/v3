@@ -19,7 +19,7 @@ function func_sethostname() {
         read HOSTNAME
      fi
     done
-  
+
   # Check if the Domain name is valid  
   dncheck=1
   while [ $dncheck != 0 ]
@@ -34,8 +34,8 @@ function func_sethostname() {
         echo -e -n "$green[EFA]$clean : "
         read DOMAINNAME
      fi
-    done  
-  
+    done
+
   echo -e ""
   echo -e "$red Changing your hostname will reboot your server. $clean"
   echo -e ""
@@ -47,21 +47,21 @@ function func_sethostname() {
     # Write new hosts file
     echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
     echo "$IP   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
-  
+
     sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
-  
+
     sed -i "/^Hostname =/ c\Hostname = $HOSTNAME.$DOMAINNAME" /etc/MailScanner/MailScanner.conf
-  
+
     # Set the hostname for the active system
     hostname $HOSTNAME
-  
+
     # Write change to EFA-Config
     sed -i "/^HOSTNAME:/ c\HOSTNAME:$HOSTNAME" /etc/EFA-Config
     sed -i "/^DOMAINNAME:/ c\DOMAINNAME:$DOMAINNAME" /etc/EFA-Config
-  
+
     # Change mailscanner config
     sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
-    
+
     echo -e ""
     echo -e "Hostname changed"
     echo -e ""
