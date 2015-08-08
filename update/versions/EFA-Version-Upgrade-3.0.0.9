@@ -99,6 +99,10 @@ EOF
   service munin-node start
   service httpd restart
 
+  # Issue #197 EFA-Backup for Unbound
+  rm -f /usr/local/bin/EFA-Backup
+  cp $STAGING/Scripts/EFA-Backup /usr/local/bin
+
   # Issue #194 mtalog is empty -- install postfix relay script
   mailwatchpw=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed s/^.*://)
   mysql -u mailwatch -p $mailwatchpw mailscanner < /usr/local/bin/mailwatch/tools/Postfix_relay/create_relay_postfix.sql
