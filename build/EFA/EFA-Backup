@@ -126,6 +126,10 @@ function start_backup()
   # Backup Apache
   mkdir -p $WORKINGDIR/etc/httpd
   cp -ra /etc/httpd/* $WORKINGDIR/etc/httpd
+  
+  # Backup Unbound
+  mkdir -p $WORKINGDIR/etc/unbound
+  cp -ra /etc/unbound/* $WORKINGDIR/etc/unbound
 
   # Gzip tarball the collection
   tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz -C $TMPDIR/$CDATE$CTIME .
