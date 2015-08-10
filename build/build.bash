@@ -1,4 +1,5 @@
 #!/bin/bash
+action=$1
 # +--------------------------------------------------------------------+
 # EFA 3.0.0.9 build script version 20150607
 # +--------------------------------------------------------------------+
@@ -1393,29 +1394,64 @@ func_cleanup () {
 # +---------------------------------------------------+
 # Main logic (this is where we start calling out functions)
 # +---------------------------------------------------+
-func_prebuild
-func_upgradeOS
-func_efarepo
-func_epelrepo
-func_mysql
-func_postfix
-func_mailscanner
-func_spam_clamav
-func_apache
-func_sqlgrey
-func_mailwatch
-func_sgwi
-func_mailgraph
-func_pyzor
-func_razor
-func_dcc
-func_imagecerberus
-func_webmin
-func_unbound
-func_munin
-func_kernsettings
-func_services
-func_efarequirements
-func_cron
-func_cleanup
+
 # +---------------------------------------------------+
+#-----------------------------------------------------------------------------#
+# Main function
+#-----------------------------------------------------------------------------#
+function main() {
+  # If $action is empty we run the normal setup
+  if [[ -z "$action" ]]; then
+    func_prebuild
+    func_upgradeOS
+    func_efarepo
+    func_epelrepo
+    func_mysql
+    func_postfix
+    func_mailscanner
+    func_spam_clamav
+    func_apache
+    func_sqlgrey
+    func_mailwatch
+    func_sgwi
+    func_mailgraph
+    func_pyzor
+    func_razor
+    func_dcc
+    func_imagecerberus
+    func_webmin
+    func_unbound
+    func_munin
+    func_kernsettings
+    func_services
+    func_efarequirements
+    func_cron
+    func_cleanup
+  elif [[ "$action" == "--frontend" ]]; then
+    # If $action is --frontend, we do a frontend only install.
+    func_prebuild
+    func_upgradeOS
+    func_efarepo
+    func_epelrepo
+    func_postfix
+    func_mailscanner
+    func_spam_clamav
+    func_pyzor
+    func_razor
+    func_dcc
+    func_imagecerberus
+    func_unbound
+    func_kernsettings
+    func_services
+    func_efarequirements
+    func_cron
+    func_cleanup
+  fi
+}
+#-----------------------------------------------------------------------------#
+
+#-----------------------------------------------------------------------------#
+# Run the main script
+#-----------------------------------------------------------------------------#
+main
+#-----------------------------------------------------------------------------#
