@@ -376,11 +376,13 @@ FROM
 WHERE
  username RLIKE '$regdomain'
 AND
+(
  type = 'U'
 OR
  type = 'R'
 OR
  type = 'D'
+ )
 ORDER BY
  username
 ";
