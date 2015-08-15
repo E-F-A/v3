@@ -106,13 +106,19 @@ EOF
   # Issue #194 mtalog is empty -- install postfix relay script
   mailwatchpw=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed s/^.*://)
   mysql -u mailwatch -p $mailwatchpw mailscanner < /usr/local/bin/mailwatch/tools/Postfix_relay/create_relay_postfix.sql
+########################################################################
   cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
 #!/bin/bash
 
 /usr/bin/php /var/www/html/mailscanner/postfix_relay.php --refresh
 /usr/bin/php /var/www/html/mailscanner/mailscanner_relay.php --refresh
 EOF
+########################################################################
   chmod 755 /etc/cron.hourly/mailwatch_relay.sh
+
+  # Issue 203 Notify Senders sed replace issue in 3.0.0.8
+  # TODO
+
 
   update-vmtools
 

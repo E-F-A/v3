@@ -296,14 +296,15 @@ func_mailscanner () {
     sed -i "/^Maximum Processing Attempts =/ c\Maximum Processing Attempts = 2" /etc/MailScanner/MailScanner.conf
     sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
 
-  # Issue #132 Increase sa-learn and spamassassin max message size limits
+    # Issue #132 Increase sa-learn and spamassassin max message size limits
     sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
 
-  # Issue #153 Reply signature behavior not functional
+    # Issue #153 Reply signature behavior not functional
     sed -i "/^Dont Sign HTML If Headers Exist =/ c\Dont Sign HTML If Headers Exist = In-Reply-To: References:" /etc/MailScanner/MailScanner.conf
 
     # Issue #136 Disable Notify Senders by default in MailScanner
-    sed -i "/^Notify Senders/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
+    # Issue #203 fix the notify Senders
+    sed -i "/^Notify Senders =/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
 
     # Match up envelope header (changed at efa-init but usefull for testing)
     sed -i '/^envelope_sender_header / c\envelope_sender_header X-yoursite-MailScanner-EFA-From' /etc/MailScanner/spam.assassin.prefs.conf
