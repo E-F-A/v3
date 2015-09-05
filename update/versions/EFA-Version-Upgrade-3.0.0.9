@@ -117,8 +117,17 @@ EOF
   chmod 755 /etc/cron.hourly/mailwatch_relay.sh
 
   # Issue 203 Notify Senders sed replace issue in 3.0.0.8
-  # TODO
-
+  # Test for issue
+  if [[ $(grep -o '^Notify Senders =' /etc/MailScanner/MailScanner.conf | wc -l) -eq 5) {
+    awk '{if(/^Notify Senders =/) count++; \
+      if(count==2) { sub(/^Notify Senders =.*$/,"Notify Senders Of Viruses = no"); print; } \
+      else if(count==3) { sub(/^Notify Senders =.*$/,"Notify Senders Of Blocked Filenames Or Filetypes = yes"); print; } \
+      else if(count==4) { sub(/^Notify Senders =.*$/,"Notify Senders Of Blocked Size Attachments = no"); print; } \
+      else if(count==5) { sub(/^Notify Senders =.*$/,"Notify Senders Of Other Blocked Content = yes"); print; } \
+      else print;}' /etc/MailScanner/MailScanner.conf > /etc/MailScanner/MailScanner.conf.tmp
+    rm -f /etc/MailScanner/MailScanner.conf
+    mv /etc/MailScanner/MailScanner.conf.tmp /etc/MailScanner/MailScanner.conf
+  }
 
   update-vmtools
 
