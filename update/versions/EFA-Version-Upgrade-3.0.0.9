@@ -150,12 +150,8 @@ function update-mailwatch() {
     then
 
       #### Backup Phase #####
-      mkdir -p /var/EFA/backup/$VERSION/ > /dev/null 2>&1
-      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/ > /dev/null 2>&1
-      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
-      mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
-      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/ > /dev/null 2>&1
-
+      # Now included in main backup
+      
       #### Commit Phase #####
       echo -e "Starting installation of new mailwatch version"
       service httpd stop
