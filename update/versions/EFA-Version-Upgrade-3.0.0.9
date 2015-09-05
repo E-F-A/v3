@@ -118,7 +118,7 @@ EOF
 
   # Issue 203 Notify Senders sed replace issue in 3.0.0.8
   # Test for issue
-  if [[ $(grep -o '^Notify Senders =' /etc/MailScanner/MailScanner.conf | wc -l) -eq 5) {
+  if [[ $(grep -o '^Notify Senders =' /etc/MailScanner/MailScanner.conf | wc -l) -eq 5 ]] {
     awk '{if(/^Notify Senders =/) count++; \
       if(count==2) { sub(/^Notify Senders =.*$/,"Notify Senders Of Viruses = no"); print; } \
       else if(count==3) { sub(/^Notify Senders =.*$/,"Notify Senders Of Blocked Filenames Or Filetypes = yes"); print; } \
