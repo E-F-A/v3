@@ -6,6 +6,7 @@ Issue #193  Enhancement  - Removed rpmforge from yum, added EFA repo
 Issue #194  Bug          - mtalog is empty
 Issue #197  Enhancement  - Update EFA-Backup for Unbound
 Issue #203  Bug          - Fix Notify Senders sed replace issue in 3.0.0.8
+Issue #204  Bug          - UTF8 Characters Not Rendering in MailWatch
 
 ############################################################
 EFA Version 3.0.0.8 Changes
