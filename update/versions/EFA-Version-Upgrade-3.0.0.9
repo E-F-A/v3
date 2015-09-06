@@ -63,6 +63,15 @@ function run_update() {
 
   ##### Commit Phase #####
 
+  # grab latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -rf /var/EFA/lib/EFA-Configure/
+  cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
+
   # Remove packages from rpmforge and install from EFA (to fix dependency issues between rpmforge & EPEL)
   yum -y remove perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV rpmforge-release
   cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo

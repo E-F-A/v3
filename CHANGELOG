@@ -5,6 +5,7 @@ EFA Version 3.0.0.9 Changes
 Issue #148  Enhancement  - Allow message view from quarantine reports directly
 Issue #193  Enhancement  - Removed rpmforge from yum, added EFA repo
 Issue #194  Bug          - mtalog is empty
+Issue #195  Bug          - Update EFA hostname in MySQL
 Issue #197  Enhancement  - Update EFA-Backup for Unbound
 Issue #199  Bug          - quarantine_report.php issues
 Issue #200  Bug          - unrar binary not extracting rar files in MailScanner
