@@ -37,7 +37,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="7482fe0831"
+MAILWATCHVERSION="20f37a1ecb"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
 PYZORVERSION="0.7.0"
@@ -118,7 +118,7 @@ EOF
 
   # Issue 203 Notify Senders sed replace issue in 3.0.0.8
   # Test for issue
-  if [[ $(grep -o '^Notify Senders =' /etc/MailScanner/MailScanner.conf | wc -l) -eq 5 ]] {
+  if [[ $(grep -o '^Notify Senders =' /etc/MailScanner/MailScanner.conf | wc -l) -eq 5 ]]; then
     awk '{if(/^Notify Senders =/) count++; \
       if(count==2) { sub(/^Notify Senders =.*$/,"Notify Senders Of Viruses = no"); print; } \
       else if(count==3) { sub(/^Notify Senders =.*$/,"Notify Senders Of Blocked Filenames Or Filetypes = yes"); print; } \
@@ -127,7 +127,7 @@ EOF
       else print;}' /etc/MailScanner/MailScanner.conf > /etc/MailScanner/MailScanner.conf.tmp
     rm -f /etc/MailScanner/MailScanner.conf
     mv /etc/MailScanner/MailScanner.conf.tmp /etc/MailScanner/MailScanner.conf
-  }
+  fi
 
   update-vmtools
 
@@ -151,7 +151,7 @@ function update-mailwatch() {
 
       #### Backup Phase #####
       # Now included in main backup
-      
+
       #### Commit Phase #####
       echo -e "Starting installation of new mailwatch version"
       service httpd stop
@@ -162,13 +162,14 @@ function update-mailwatch() {
       cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
-      sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
-      sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
-      sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
-      sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
-
-      mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
-      mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      # No change in MailWatch.pm and SQLBlackWhiteList.pm in commit 20f37a1ecb.  Check all files in next update.
+      # sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+      # sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+      # sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
+      # sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
+      # mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      # mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      
       cd /usr/src/EFA/1.2.0-master
       mv tools /usr/local/bin/mailwatch
       rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
