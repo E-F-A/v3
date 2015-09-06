@@ -119,14 +119,9 @@ function start_backup()
   mkdir -p $WORKINGDIR/etc/pki
   cp -ra /etc/pki/* $WORKINGDIR/etc/pki
 
-  # Backup MailWatch (files and settings)
+  # Backup MailWatch Config
   mkdir -p $WORKINGDIR/var/www/html/mailscanner
-  cp -ra /var/www/html/mailscanner/* $WORKINGDIR/var/www/html/mailscanner
-  mkdir -p $WORKINGDIR/usr/lib/MailScanner/MailScanner/CustomFunctions
-  cp -a /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm $WORKINGDIR/usr/lib/MailScanner/MailScanner/CustomFunctions
-  cp -a /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm $WORKINGDIR/usr/lib/MailScanner/MailScanner/CustomFunctions
-  mkdir -p $WORKINGDIR/usr/local/bin/mailwatch/tools
-  cp -ra /usr/local/bin/mailwatch/tools/* $WORKINGDIR/usr/local/bin/mailwatch/tools
+  cp -a /var/www/html/mailscanner/conf.php $WORKINGDIR/var/www/html/mailscanner
 
   # Backup Apache
   mkdir -p $WORKINGDIR/etc/httpd
