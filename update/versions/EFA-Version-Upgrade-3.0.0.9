@@ -129,6 +129,10 @@ EOF
     mv /etc/MailScanner/MailScanner.conf.tmp /etc/MailScanner/MailScanner.conf
   fi
 
+  # Issue 200 Unrar v5 support (mailscanner backport)
+  rm -f /usr/lib/MailScanner/MailScanner/Message.pm
+  cp $STAGING/Files/Message.pm /usr/lib/MailScanner/MailScanner/Message.pm
+
   update-vmtools
 
   # Update MailWatch to latest version
