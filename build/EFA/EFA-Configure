@@ -75,6 +75,7 @@ show_menu() {
       echo -e "4) IP Settings                        11) Apache Settings"
       echo -e "5) Tunables                           12) Virus Settings"
       echo -e "6) MailWatch Settings                 13) System Restore"
+      echo -e "                                      14) Update Now
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
@@ -87,13 +88,14 @@ show_menu() {
                     4) func_ip-settings ;;
                     5) func_tunables ;;
                     6) func_mailwatch-settings ;;
-                    7) func_autoupdates ;;                    
+                    7) func_autoupdates ;;
                     8) func_mail-settings ;;
                     9) func_spam-settings ;;
                    10) func_recover-mysql ;;
                    11) func_apache-settings ;;
                    12) func_virus-settings ;;
                    13) func_system-restore ;;
+                   14) func_update-now ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
@@ -151,6 +153,14 @@ func_halt() {
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Update Now function
+# +---------------------------------------------------+
+func_update-now() {
+  /usr/local/sbin/EFA-Update -update
 }
 # +---------------------------------------------------+
 
