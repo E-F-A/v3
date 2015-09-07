@@ -75,7 +75,7 @@ show_menu() {
       echo -e "4) IP Settings                        11) Apache Settings"
       echo -e "5) Tunables                           12) Virus Settings"
       echo -e "6) MailWatch Settings                 13) System Restore"
-      echo -e "                                      14) Update Now
+      echo -e "                                      14) Update Now"
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
