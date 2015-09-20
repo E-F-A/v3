@@ -100,6 +100,31 @@ function func_ask-adminemail() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+function func_ask-postmasteremail() {
+  func_echo-header
+  echo -e "$green[EFA]$clean Please enter the email address of the postmaster "
+  echo -e "$green[EFA]$clean This user will receive postfix related notifications"
+  echo -e -n "$green[EFA]$clean : "
+  read POSTMASTEREMAIL
+  postmasteremailcheck=1
+  while [ $postmasteremailcheck != 0 ]
+   do
+     if [[ $POSTMASTEREMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        postmasteremailcheck=0
+      else
+        echo -e "       $red ERROR: The address $POSTMASTEREMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the admin email address$clean"
+        echo -e "$green[EFA]$clean Please enter the email address of an admin "
+        echo -e "$green[EFA]$clean This user will receive EFA related notifications"
+        echo -e -n "$green[EFA]$clean : "
+        read POSTMASTEREMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 function func_ask-ipaddress() {
   func_echo-header
   # Get the primary interface
@@ -953,6 +978,7 @@ function func_end() {
   echo "EFASQLPWD:$EFASQLPWD" >> /etc/EFA-Config
   echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
   echo "MUNINPWD:$MUNINPWD" >> /etc/EFA-Config
+  echo "POSTMASTEREMAIL:$POSTMASTEREMAIL" >> /etc/EFA-Config
   if [[ "$enableupdates" -eq 1 ]]; then
     echo "AUTOUPDATES:ENABLED" >> /etc/EFA-Config
   else
@@ -1146,6 +1172,7 @@ if [ $CONFIGURED == "NO" ]
       func_ask-hostname
       func_ask-domainname
       func_ask-adminemail
+      func_ask-postmasteremail
       func_ask-ipaddress
       func_ask-netmask
       func_ask-gateway

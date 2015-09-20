@@ -3,6 +3,7 @@ EFA Version 3.0.0.9 Changes
 ############################################################
 
 Issue #148  Enhancement  - Allow message view from quarantine reports directly
+Issue #191  Enhancement  - Redirect postfix notifications from postmaster to postmaster email
 Issue #192  Enhancement  - EFA Update Now option
 Issue #193  Enhancement  - Removed rpmforge from yum, added EFA repo
 Issue #194  Bug          - mtalog is empty

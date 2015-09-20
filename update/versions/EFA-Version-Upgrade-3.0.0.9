@@ -141,6 +141,9 @@ EOF
   # Issue 200 Unrar v5 support (mailscanner backport)
   rm -f /usr/lib/MailScanner/MailScanner/Message.pm
   cp $STAGING/Files/Message.pm /usr/lib/MailScanner/MailScanner/Message.pm
+  
+  # Issue 191 Redirect postfix notifications from postmaster
+  echo "POSTMASTEREMAIL:" >> /etc/EFA-Config
 
   update-vmtools
 

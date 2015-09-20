@@ -13,6 +13,7 @@ func_mail-settings(){
       echo -e "2) Outbound smarthost"
       echo -e "3) Admin Email"
       echo -e "4) Transport settings"
+      echo -e "5) Postmaster Email"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
@@ -24,6 +25,7 @@ func_mail-settings(){
                 2) func_outbound-smarthost;;  
                 3) func_adminemail;;
                 4) func_transport-settings;;
+                5) func_postmasteremail;;
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
             esac
@@ -139,11 +141,11 @@ func_transport-settings(){
                         done
                         echo -e "Thank you.."
                         sed -i "/$ENTDOMAIN[[:space:]]\+smtp:\[$ENTDEST\]/ c\\$DOMAIN  smtp:[$DEST]" /etc/postfix/transport
-						postmap /etc/postfix/transport
+                        postmap /etc/postfix/transport
                         flag=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
                         sed -i "/$ENTDOMAIN[[:space:]]\+smtp:\[$ENTDEST\]/d" /etc/postfix/transport
-						postmap /etc/postfix/transport
+                        postmap /etc/postfix/transport
                         echo -e "Entry deleted from transports." && sleep 2
                         flag=1
                       elif [[ $TMPOPTION == "c" || $TMPOPTION == "C" ]]; then
@@ -258,13 +260,57 @@ func_adminemail(){
            echo -e ""
            read -p "> " ADMINEMAIL
            sed -i "/ADMINEMAIL\:/ c\ADMINEMAIL\:$ADMINEMAIL" /etc/EFA-Config
-		   
-		   Issue #73 Admin Email Change Fails to Update MailScanner Values
-		   sed -i "/^Unscanned Header Value =/ c\Unscanned Header Value = Please contact $ADMINEMAIL for details" /etc/MailScanner/MailScanner.conf
-		   sed -i "/^Information Header Value =/ c\Information Header Value = Please contact $ADMINEMAIL for more information" /etc/MailScanner/MailScanner.conf
-		   sed -i "/^root:/ c\root: $ADMINEMAIL" /etc/aliases
-		   
+
+           Issue #73 Admin Email Change Fails to Update MailScanner Values
+           sed -i "/^Unscanned Header Value =/ c\Unscanned Header Value = Please contact $ADMINEMAIL for details" /etc/MailScanner/MailScanner.conf
+           sed -i "/^Information Header Value =/ c\Information Header Value = Please contact $ADMINEMAIL for more information" /etc/MailScanner/MailScanner.conf
+           sed -i "/^root:/ c\root: $ADMINEMAIL" /etc/aliases
+
            aemenu=1
+           ;;
+        e) mailmenu=1 && return ;;
+        *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Configure postmaster email
+# +---------------------------------------------------+
+func_postmasteremail(){
+  pemenu=1
+  POSTMASTEREMAIL="`cat /etc/EFA-Config | grep POSTMASTEREMAIL | sed 's/.*://'`"
+  while [ $pemenu == "1" ]
+    do
+      func_echo-header
+      echo -e ""
+      echo -e "Description:"
+      echo -e "With this option you can change the E.F.A. postmaster email address."
+      echo -e "This address is used for various postfix alerts and notifications."
+      echo -e ""
+      echo -e "Current settings are:"
+      echo -e "1) Postmaster email:        $POSTMASTEREMAIL"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      local choice
+      read -p "Enter setting you want to change: " choice
+      case $choice in
+        1) pemenu=0
+           echo -e ""
+           echo -e "Enter your new postmaster email address"
+           echo -e ""
+           read -p "> " POSTMASTEREMAIL
+           sed -i "/POSTMASTEREMAIL\:/ c\POSTMASTEREMAIL\:$POSTMASTEREMAIL" /etc/EFA-Config
+
+           # Change postfix configuration
+           postconf -e notify_classes="resource, software, delay, bounce"
+           postconf -e 2bounce_notice_recipient="$POSTMASTEREMAIL"
+           postconf -e bounce_notice_recipient="$POSTMASTEREMAIL"
+           postconf -e delay_notice_recipient="$POSTMASTEREMAIL"
+           postconf -e error_notice_recipient="$POSTMASTEREMAIL"
+           
+           pemenu=1
            ;;
         e) mailmenu=1 && return ;;
         *) echo -e "Error \"$choice\" is not an option..." && sleep 2
