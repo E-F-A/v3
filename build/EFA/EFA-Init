@@ -710,7 +710,22 @@ function func_configure-system() {
   echo "GATEWAY=$GATEWAY" >> /etc/sysconfig/network
   ifup $INTERFACE
   # +--------------------------------------------------+
-
+  
+  # +--------------------------------------------------+
+  # Issue #190 EFA-Init Link test
+  
+  # Test Link with a DNS lookup
+  LINKTEST=$(dig efa-project.org | grep "^efa-project\.org")
+  if [[ -z $LINKTEST ]]; then 
+    echo -e "$red[ERROR]$clean Unable to resolve efa-project.org."
+    echo "Check your connectivity to the Internet and"
+    echo "ensure that DNS is functional."
+    echo "Then try to run EFA-Init again."
+    exit 1
+  fi
+  
+  # +--------------------------------------------------+
+  
   # +--------------------------------------------------+
   # User settings
   echo -e "$green[EFA]$clean - Creating user"
