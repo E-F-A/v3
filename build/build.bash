@@ -737,9 +737,10 @@ func_mailwatch () {
     sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
 
     # Add Mailgraph link and remove dnsreport link
+    # Issue #39 Add link for Webmin in MailWatch
     cd /var/www/html/mailscanner
     cp other.php other.php.orig
-    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';\n    /*End EFA*/" other.php
 
     # Postfix Relay Info
     # Disabled until needed...no front end for data
