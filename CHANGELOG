@@ -17,6 +17,7 @@ Issue #200  Bug          - unrar binary not extracting rar files in MailScanner
 Issue #203  Bug          - Fix Notify Senders sed replace issue in 3.0.0.8
 Issue #204  Bug          - UTF8 Characters Not Rendering in MailWatch
 Issue #211  Bug          - MS_LOGO missing
+Issue #219  Bug          - Trailing spaces in subjects in MailScanner trigger duplicate subjects in header
 
 ############################################################
 EFA Version 3.0.0.8 Changes

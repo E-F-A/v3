@@ -144,6 +144,9 @@ EOF
   
   # Issue 191 Redirect postfix notifications from postmaster
   echo "POSTMASTEREMAIL:" >> /etc/EFA-Config
+  
+  # Issue 219 Trailing spaces in subjects in MailScanner trigger duplicate subjects in header
+  sed -i "/^Place New Headers At Top Of Message =/ c\Place New Headers At Top Of Message = yes" /etc/MailScanner/MailScanner.conf
 
   update-vmtools
 
