@@ -1,0 +1,23 @@
+--- postfix-3.0.3/conf/post-install	2015-03-28 20:31:36.000000000 -0400
++++ postfix-3.0.3/conf/post-install2	2015-11-23 03:05:54.807564288 -0500
+@@ -530,7 +530,19 @@ test -n "$create" && {
+ 	    case $path in
+ 	    no|no/*) continue;;
+ 	    esac
+-	    # Pick up the flags.
++
++            # Munge paths for alternatives.
++            case $path in
++               /usr/bin/mailq) path=$path.postfix ;;
++               /usr/bin/newaliases) path=$path.postfix ;;
++               /usr/bin/rmail) path=$path.postfix ;;
++               /usr/sbin/sendmail) path=$path.postfix ;;
++               /usr/share/man/man1/mailq.1.gz) path=/usr/share/man/man1/mailq.postfix.1.gz ;;
++               /usr/share/man/man1/newaliases.1.gz) path=/usr/share/man/man1/newaliases.postfix.1.gz ;;
++               /usr/share/man/man5/aliases.5.gz) path=/usr/share/man/man5/aliases.postfix.5.gz ;;
++            esac
++
++            # Pick up the flags.
+ 	    case $flags in *u*) upgrade_flag=1;; *) upgrade_flag=;; esac
+ 	    case $flags in *c*) create_flag=1;; *) create_flag=;; esac
+ 	    case $flags in *r*) recursive="-R";; *) recursive=;; esac

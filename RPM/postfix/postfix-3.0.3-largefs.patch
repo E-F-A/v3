@@ -1,0 +1,20 @@
+--- postfix-3.0.3/src/util/fsspace.c	2006-06-15 14:07:16.000000000 -0400
++++ postfix-3.0.3/src/util/fsspace.c2	2015-11-23 03:16:24.887639284 -0500
+@@ -91,8 +91,15 @@ void    fsspace(const char *path, struct
+ 
+     if (statvfs(path, &fsbuf) < 0)
+ 	msg_fatal("statvfs %s: %m", path);
+-    sp->block_size = fsbuf.f_frsize;
+-    sp->block_free = fsbuf.f_bavail;
++    if (fsbuf.f_frsize > 0)
++       sp->block_size = fsbuf.f_frsize;
++    else
++       sp->block_size = fsbuf.f_bsize;
++    /* 4G of FS blocks is surely enough space to put a mail in */
++    sp->block_free = 0;
++    sp->block_free = ~sp->block_free;
++    if (fsbuf.f_bavail < sp->block_free)
++       sp->block_free = fsbuf.f_bavail;
+ #endif
+     if (msg_verbose)
+ 	msg_info("%s: %s: block size %lu, blocks free %lu",
