@@ -55,6 +55,7 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_askhighspammailwatch
 . /var/EFA/lib/EFA-Configure/func_askmalwarepatrol
 . /var/EFA/lib/EFA-Configure/func_askrecursion
+. /var/EFA/lib/EFA-Configure/func_retention
 
 # +---------------------------------------------------+
 

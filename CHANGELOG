@@ -5,6 +5,7 @@ EFA Version 3.0.0.9 Changes
 Issue #39   Enhancement  - Add link for Webmin in MailWatch
 Issue #135  Enhancement  - Lots of legit mails blocked on SpamAssassin KAM_BODY_URIBL_PCCC
 Issue #148  Enhancement  - Allow message view from quarantine reports directly
+Issue #176  Enhancement  - Add quarantine cleanup options to EFA-Configure
 Issue #179  Enhancement  - Get webinterface to work with https by default
 Issue #190  Enhancement  - EFA-Init link test
 Issue #191  Enhancement  - Redirect postfix notifications from postmaster to postmaster email

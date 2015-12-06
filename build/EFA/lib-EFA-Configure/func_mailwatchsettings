@@ -11,6 +11,7 @@ func_mailwatch-settings() {
       echo ""
       echo -e "1) Toggle Greylisting"
       echo -e "2) Reset MailWatch Admin"
+      echo -e "3) Quarantine Retention"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
@@ -20,6 +21,7 @@ func_mailwatch-settings() {
       case $choice in
                 1) func_greylisting;;
                 2) func_resetadmin;;
+                3) func_retention;;
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
