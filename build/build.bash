@@ -31,6 +31,7 @@ gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/$version"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
 MAILWATCHVERSION="7482fe0831"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
@@ -1334,6 +1335,9 @@ func_cleanup () {
 
     # clean yum cache
     yum clean all
+    
+    # Issue #96 Reconfigure to permit yum update
+    echo "exclude=$yumexclude" >> /etc/yum.conf
 
     # clear logfiles
     rm -f /var/log/clamav/freshclam.log

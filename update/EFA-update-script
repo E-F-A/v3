@@ -341,7 +341,10 @@ function check_disk_space() {
 # Update Kernel function
 #----------------------------------------------------------------#
 function update-kernel(){
+  # Issue #96 Reconfigure to permit yum update
+  sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
   yum -y update kernel*
+  sed -i "/^exclude=/ c\exclude=$yumexclude" /etc/yum.conf
 
   # Kernel update check
   # If the kernel has updated in a previous update, and

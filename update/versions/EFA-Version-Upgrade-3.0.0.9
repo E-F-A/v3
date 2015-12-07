@@ -153,6 +153,12 @@ EOF
   # Update MailWatch to latest version
   update-mailwatch
 
+  # Issue #96 Reconfigure to permit yum update
+  CHECKEXCLUDE=$(grep "^exclude" /etc/yum.conf)
+  if [[ -z $CHECKEXCLUDE ]]; then
+    echo "exclude=$yumexclude" >> /etc/yum.conf
+  fi
+
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
