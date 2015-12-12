@@ -35,7 +35,7 @@ yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
 MAILWATCHVERSION="7482fe0831"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
-WEBMINVERSION="1.690-1"
+WEBMINVERSION="1.770-1"
 PYZORVERSION="0.7.0"
 # +---------------------------------------------------+
 
@@ -62,7 +62,7 @@ func_upgradeOS () {
 func_efarepo () {
    cd /etc/yum.repos.d/
    /usr/bin/wget --no-check-certificate $mirror/rpm/EFA.repo
-   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV
+   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin
 }
 # +---------------------------------------------------+
 
@@ -1071,9 +1071,10 @@ func_imagecerberus () {
 # Webmin (http://www.webmin.com/)
 # +---------------------------------------------------+
 func_webmin () {
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/webmin-$WEBMINVERSION.noarch.rpm
-    rpm -i webmin-$WEBMINVERSION.noarch.rpm
+    # Pulled from EFA Repo instead ;)
+    #cd /usr/src/EFA
+    #wget $mirror/$mirrorpath/webmin-$WEBMINVERSION.noarch.rpm
+    #rpm -i webmin-$WEBMINVERSION.noarch.rpm
 
     # shoot a hole in webmin so we can change settings
     echo "localauth=/usr/sbin/lsof" >> /etc/webmin/miniserv.conf

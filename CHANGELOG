@@ -6,6 +6,7 @@ Issue #39   Enhancement  - Add link for Webmin in MailWatch
 Issue #96   Enhancement  - Reconfigure to permit regular yum updates
 Issue #135  Enhancement  - Lots of legit mails blocked on SpamAssassin KAM_BODY_URIBL_PCCC
 Issue #148  Enhancement  - Allow message view from quarantine reports directly
+Issue #162  Enhancement  - Upgrade Webmin (to 1.770-1)
 Issue #176  Enhancement  - Add quarantine cleanup options to EFA-Configure
 Issue #179  Enhancement  - Get webinterface to work with https by default
 Issue #190  Enhancement  - EFA-Init link test
