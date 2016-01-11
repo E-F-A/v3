@@ -429,7 +429,8 @@ func_spam_clamav () {
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
     tar -xvzf Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
-    cd Spamassassin*
+    # Issue #230 build script not building spamassassin
+    cd Spamassassin-3.4.0-*
     chmod 755 install.sh
     ./install.sh
     cd /usr/src/EFA
