@@ -26,3 +26,4 @@ func_askhighspammailwatch
 func_askmalwarepatrol
 func_askrecursion
 func_retention
+func_maintenance

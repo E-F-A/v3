@@ -56,6 +56,7 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_askmalwarepatrol
 . /var/EFA/lib/EFA-Configure/func_askrecursion
 . /var/EFA/lib/EFA-Configure/func_retention
+. /var/EFA/lib/EFA-Configure/func_maintenance
 
 # +---------------------------------------------------+
 
@@ -69,14 +70,14 @@ show_menu() {
       func_echo-header
       echo -e "Please choose an option:"
       echo -e " "
-      echo -e "0) Logout                              7) Auto Update"
-      echo -e "1) Shell                               8) Mail Settings"
-      echo -e "2) Reboot system                       9) Spam Settings"
-      echo -e "3) Halt system                        10) Mysql Recovery"
-      echo -e "4) IP Settings                        11) Apache Settings"
-      echo -e "5) Tunables                           12) Virus Settings"
-      echo -e "6) MailWatch Settings                 13) System Restore"
-      echo -e "                                      14) Update Now"
+      echo -e "0) Logout                              8) Mail Settings"
+      echo -e "1) Shell                               9) Spam Settings"
+      echo -e "2) Reboot system                      10) Mysql Recovery"
+      echo -e "3) Halt system                        11) Apache Settings"
+      echo -e "4) IP Settings                        12) Virus Settings"
+      echo -e "5) Tunables                           13) System Restore"
+      echo -e "6) MailWatch Settings                 14) Update Now"
+      echo -e "7) Auto Update                        15) Maintenance Mode"
       echo -e ""
       echo -e -n "$green[EFA]$clean : "
       local choice
@@ -97,6 +98,7 @@ show_menu() {
                    12) func_virus-settings ;;
                    13) func_system-restore ;;
                    14) func_update-now ;;
+                   15) func_maintenance-mode ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done

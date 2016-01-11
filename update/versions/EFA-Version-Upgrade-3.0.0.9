@@ -158,11 +158,16 @@ EOF
   if [[ -z $CHECKEXCLUDE ]]; then
     echo "exclude=$yumexclude" >> /etc/yum.conf
   fi
-  
+
   # Issue #162 Upgrade Webmin
   # Pulled from EFA Repo during yum update
   # Just call update-webmin to cleanup modules
   update-webmin
+
+  # Issue #187 EFA service Monitoring
+  cp $STAGING/Scripts/EFA-Monitor-cron /usr/sbin
+  chmod 700 /usr/sbin/EFA-Monitor-cron
+  echo "* * * * * root /usr/sbin/EFA-Monitor-cron" > /etc/cron.d/EFA-Monitor.cron
 
   echo "$VERSION update is complete"
   echo ""

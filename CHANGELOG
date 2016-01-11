@@ -9,6 +9,7 @@ Issue #148  Enhancement  - Allow message view from quarantine reports directly
 Issue #162  Enhancement  - Upgrade Webmin (to 1.770-1)
 Issue #176  Enhancement  - Add quarantine cleanup options to EFA-Configure
 Issue #179  Enhancement  - Get webinterface to work with https by default
+Issue #187  Enhancement  - EFA service Monitoring
 Issue #190  Enhancement  - EFA-Init link test
 Issue #191  Enhancement  - Redirect postfix notifications from postmaster to postmaster email
 Issue #192  Enhancement  - EFA Update Now option
