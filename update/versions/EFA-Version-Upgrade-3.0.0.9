@@ -169,6 +169,11 @@ EOF
   chmod 700 /usr/sbin/EFA-Monitor-cron
   echo "* * * * * root /usr/sbin/EFA-Monitor-cron >/dev/null 2>&1" > /etc/cron.d/EFA-Monitor.cron
 
+  # Issue #227 Include local.cf in EFA-Backup
+  rm -f /usr/local/sbin/EFA-Backup
+  cp $STAGING/Scripts/EFA-Backup /usr/local/sbin/
+  chmod 700 /usr/local/sbin/EFA-Backup
+
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL

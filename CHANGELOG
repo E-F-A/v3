@@ -24,6 +24,7 @@ Issue #204  Bug          - UTF8 Characters Not Rendering in MailWatch
 Issue #211  Bug          - MS_LOGO missing
 Issue #217  Enhancement  - Upgrade Postfix (to 3.0.3)
 Issue #219  Bug          - Trailing spaces in subjects in MailScanner trigger duplicate subjects in header
+Issue #227  Enhancement  - Include local.cf in EFA-Backup
 Issue #230  Bug          - build script not building spamassassin
 
 ############################################################

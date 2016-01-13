@@ -130,6 +130,10 @@ function start_backup()
   # Backup Unbound
   mkdir -p $WORKINGDIR/etc/unbound
   cp -ra /etc/unbound/* $WORKINGDIR/etc/unbound
+  
+  # Issue #227 Include local.cf in EFA-Backup
+  mkdir -p $WORKINGDIR/etc/mail/spamassassin
+  cp -a /etc/mail/spamassassin/local.cf $WORKINGDIR/etc/mail/spamassassin
 
   # Gzip tarball the collection
   tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz -C $TMPDIR/$CDATE$CTIME .
