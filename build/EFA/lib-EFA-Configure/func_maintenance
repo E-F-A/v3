@@ -39,7 +39,7 @@ func_maintenance-mode() {
     while [ $FLAG -eq 1 ]
     do
       if [[ -z "$MAINTENANCE" || $MAINTENANCE =~ ^[yY]$ ]]; then
-        [[ -f /var/EFA/EFA-Monitor.cron ]] && ( mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d ) || ( echo "* * * * * root /usr/sbin/EFA-Monitor-cron" > /etc/cron.d/EFA-Monitor.cron )
+        [[ -f /var/EFA/EFA-Monitor.cron ]] && ( mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d ) || ( echo "* * * * * root /usr/sbin/EFA-Monitor-cron >/dev/null 2>&1" > /etc/cron.d/EFA-Monitor.cron )
         echo -e ""
         echo -e "$green[EFA]$clean Maintenance mode is $green DISABLED $clean"
         echo -e ""
