@@ -29,7 +29,7 @@
 # +--------------------------------------------------------------------+
 MaxRestartAttempts=3
 # Monitored Service Array (daemon=sysv)
-MonitoredServices=("mysqld=mysqld" "MailScanner=MailScanner" "qmgr=postfix" "master=postfix" "pickup=postfix" "httpd=httpd" "miniserv.pl=webmin" "clamd=clamd" "unbound=unbound" "saslauthd=saslauthd" "sqlgrey=sqlgrey" "dccifd=adcc")
+MonitoredServices=("mysqld=mysqld" "MailScanner=MailScanner" "master=postfix" "httpd=httpd" "miniserv.pl=webmin" "clamd=clamd" "unbound=unbound" "saslauthd=saslauthd" "sqlgrey=sqlgrey" "dccifd=adcc")
 # Enable restart expiry (1 day)
 RestartExpiry=1
 AttemptsFile="/var/EFA/EFAmonitor"
