@@ -57,7 +57,7 @@ function CheckServices() {
       # Service is not running!
       # Check # of attempts, if present
       serviceAttempts=$(grep -e "^$mService=" $AttemptsFile | awk -F'=' '{print $2}') 
-      if [[ -z "$serviceAttempts" || "$serviceAttempts" -le "$MaxRestartAttempts" ]]; then
+      if [[ -z "$serviceAttempts" || "$serviceAttempts" -lt "$MaxRestartAttempts" ]]; then
         # Start Service
         /sbin/service $mService start
         # Increment restart attempts
