@@ -178,6 +178,10 @@ EOF
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
+  
+  # Issue #233 Disable postfix utf8 support for now
+  echo "smtputf8_enable = no" >> /etc/postfix/main.cf
+  
 }
 #----------------------------------------------------------------#
 
