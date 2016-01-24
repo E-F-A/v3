@@ -35,7 +35,7 @@
 Name: postfix
 Summary: Postfix Mail Transport Agent
 Version: 3.0.3
-Release: 1efa%{?dist}
+Release: 2.efa%{?dist}
 Epoch: 2
 Group: System Environment/Daemons
 URL: http://www.postfix.org
@@ -353,7 +353,7 @@ rm -f $RPM_BUILD_ROOT%{postfix_config_dir}/master.cf.proto
 	--initscript postfix
 
 # Remove postfix-files file
-rm -f %{_sysconfdir}/postfix/postfix-files
+# rm -f %{_sysconfdir}/postfix/postfix-files
 
 %if %{SASL}
 # Move sasl config to new location
@@ -503,6 +503,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Sun Jan 24 2016 Shawn Iverson <shawniverson@gmail.com> - 2:3.0.3-2
+- Add smtputf8_enable = no to EFA build
+
 * Sun Nov 22 2015 Shawn Iverson <shawniverson@gmail.com> - 2:3.0.3-1
 - EFA Build of Postfix 3.0 Patch Level 3
 
