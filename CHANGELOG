@@ -26,7 +26,7 @@ Issue #217  Enhancement  - Upgrade Postfix (to 3.0.3)
 Issue #219  Bug          - Trailing spaces in subjects in MailScanner trigger duplicate subjects in header
 Issue #227  Enhancement  - Include local.cf in EFA-Backup
 Issue #230  Bug          - build script not building spamassassin
-Issue #233  Bug          - Disable postfix utf8 support for now (new feature compiled in yet)
+Issue #233  Bug          - Disable postfix utf8 support for now (new feature not compiled in yet)
 
 ############################################################
 EFA Version 3.0.0.8 Changes
