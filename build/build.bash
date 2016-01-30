@@ -55,11 +55,20 @@ func_upgradeOS () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# add rpmforge/repoforge repositories
+# add rpmforge/repoforge repositories (obsoleted)
 # +---------------------------------------------------+
 func_repoforge () {
     rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
     rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
+    yum install -y unrar tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-File-Tail perl-Mail-ClamAV perl-Net-Netmask perl-NetAddr-IP re2c
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# add efa repository
+# +---------------------------------------------------+
+func_efarepo () {
+    wget -O /etc/yum.repos.d/EFA.repo https://dl.efa-project.org/rpm/EFA.repo
     yum install -y unrar tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-File-Tail perl-Mail-ClamAV perl-Net-Netmask perl-NetAddr-IP re2c
 }
 # +---------------------------------------------------+
@@ -1366,8 +1375,9 @@ func_cleanup () {
 # +---------------------------------------------------+
 func_prebuild
 func_upgradeOS
-func_repoforge
+#func_repoforge
 func_epelrepo
+func_efarepo
 func_mysql
 func_postfix
 func_mailscanner
