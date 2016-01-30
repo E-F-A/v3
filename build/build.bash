@@ -358,7 +358,7 @@ func_mailscanner () {
     sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
     sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
-    sed -i "/^clamd\t\t\/bin\/false c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamd\t\t\/bin\/false/ c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
 }
 # +---------------------------------------------------+
 
