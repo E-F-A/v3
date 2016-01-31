@@ -60,6 +60,7 @@ func_upgradeOS () {
 # add EFA Repo
 # +---------------------------------------------------+
 func_efarepo () {
+   rpm --import https://dl.efa-project.org/rpm/RPM-GPG-KEY-E.F.A.Project
    cd /etc/yum.repos.d/
    /usr/bin/wget --no-check-certificate $mirror/rpm/EFA.repo
    yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin
