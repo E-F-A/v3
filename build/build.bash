@@ -68,6 +68,7 @@ func_repoforge () {
 # add efa repository
 # +---------------------------------------------------+
 func_efarepo () {
+    rpm --import https://dl.efa-project.org/rpm/RPM-GPG-KEY-E.F.A.Project
     wget -O /etc/yum.repos.d/EFA.repo https://dl.efa-project.org/rpm/EFA.repo
     yum install -y unrar tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-IP-Country perl-Mail-SPF-Query perl-Net-CIDR perl-Net-Ident perl-Net-Server perl-File-Tail perl-Mail-ClamAV perl-Net-Netmask perl-NetAddr-IP re2c
 }
