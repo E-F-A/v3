@@ -32,7 +32,7 @@ password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="7482fe0831"
+MAILWATCHVERSION="20f37a1ecb"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.0a"
 WEBMINVERSION="1.770-1"
@@ -654,7 +654,8 @@ func_mailwatch () {
     #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" SQLSpamSettings.pm
     sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" SQLSpamSettings.pm
     mv SQLSpamSettings.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
-
+    
+    
     # Set up MailWatch tools
     cd ..
     mkdir /usr/local/bin/mailwatch
@@ -753,17 +754,15 @@ func_mailwatch () {
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';\n    /*End EFA*/" other.php
 
     # Postfix Relay Info
-    # Disabled until needed...no front end for data
-    #echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #echo "" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/postfix_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/mailscanner_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #rm -f /usr/local/bin/mailwatch/tools/Postfix_relay/INSTALL
-    #chmod +x /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #touch /etc/cron.hourly/mailwatch_update_relay
-    #echo "#!/bin/sh" > /etc/cron.hourly/mailwatch_update_relay
-    #echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
-    #chmod +x /etc/cron.hourly/mailwatch_update_relay
+########################################################################
+  cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
+#!/bin/bash
+
+/usr/bin/php /var/www/html/mailscanner/postfix_relay.php --refresh
+/usr/bin/php /var/www/html/mailscanner/mailscanner_relay.php --refresh
+EOF
+########################################################################
+    chmod 755 /etc/cron.hourly/mailwatch_relay.sh
 
     # Place the learn and release scripts
     cd /var/www/cgi-bin
