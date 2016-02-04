@@ -364,7 +364,7 @@ func_mailscanner () {
     sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
     sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
-    sed -i "/^clamd\t\t\/bin\/false c\ clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamd\t\t\/bin\/false/ c\ clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
 }
 # +---------------------------------------------------+
 
@@ -430,7 +430,7 @@ func_spam_clamav () {
     wget $mirror/$mirrorpath/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
     tar -xvzf Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
     # Issue #230 build script not building spamassassin
-    cd Spamassassin-3.4.0-*
+    cd Spamassassin-3.4.0-EFA-Upgrade
     chmod 755 install.sh
     ./install.sh
     cd /usr/src/EFA
