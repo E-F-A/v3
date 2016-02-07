@@ -730,7 +730,6 @@ func_mailwatch () {
     mv mailwatch-logo.png mailwatch-logo.png.orig
     mv mailscannerlogo.gif mailscannerlogo.gif.orig
     # png image looks much better -- linking to png instead
-    ln -s EFAlogo-79px.png mailwatch-logo.gif
     ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
     ln -s EFAlogo-79px.png MW_LOGO
