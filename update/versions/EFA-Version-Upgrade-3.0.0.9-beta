@@ -115,7 +115,7 @@ EOF
 
   # Issue #194 mtalog is empty -- install postfix relay script
   mailwatchpw=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed s/^.*://)
-  mysql -u mailwatch -p $mailwatchpw mailscanner < /usr/local/bin/mailwatch/tools/Postfix_relay/create_relay_postfix.sql
+  mysql -u mailwatch --password=$mailwatchpw mailscanner < /usr/local/bin/mailwatch/tools/Postfix_relay/create_relay_postfix.sql
 ########################################################################
   cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
 #!/bin/bash
