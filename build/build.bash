@@ -100,8 +100,6 @@ func_mysql () {
     cd /usr/src/EFA
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create.sql
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
-    /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create_relay_postfix.sql
-    /usr/bin/mysql -u root -p"$password" mailscanner < /usr/src/EFA/create_relay_postfix.sql
 
     # Create and populate efa db
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/efatokens.sql
