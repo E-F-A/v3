@@ -75,8 +75,27 @@ You may need to re-implement customizations after update to 3.0.0.9-beta
 For example, if you are using Active Directory integration,
 this will need to be turned back on (see MailWatch Changes below)
 
-In future updates, the EFA backup tool will start including these
-files automatically in the backup tarballs.
+#######################################################################
+
+################### New Feature -- EFA-Monitor ########################
+
+EFA Monitor is a new feature in 3.0.0.9-beta.
+
+EFA Monitor checks for critical services running every minute via cron
+and attempts to restart them if they are not running.  By default, 3
+attempts are made before giving up for the day.
+
+When performing maintenance tasks that require stopping services,
+disable the cron from running.
+
+sudo /usr/local/sbin/EFA-Configure
+Choose option 15 to enable and disable maintenance mode
+
+#######################################################################
+
+###################### New Feature -- Munin ###########################
+
+Todo
 
 #######################################################################
 
