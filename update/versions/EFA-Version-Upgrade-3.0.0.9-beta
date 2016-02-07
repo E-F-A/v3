@@ -155,7 +155,7 @@ EOF
   update-mailwatch
 
   # Add Munin to Mailwatch
-  sed -i "/^    \/\*End EFA\*/ c\    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . $munin_pass . '@'  . $hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" /var/www/html/mailscanner/other.php
+  sed -i "/^    \/\*End EFA\*/ c\    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . \$munin_pass . '@'  . \$hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" /var/www/html/mailscanner/other.php
 
   # Issue #96 Reconfigure to permit yum update
   CHECKEXCLUDE=$(grep "^exclude" /etc/yum.conf)
