@@ -74,7 +74,7 @@ function run_update() {
 
   # Remove packages from rpmforge and install from EFA (to fix dependency issues between rpmforge & EPEL)
   yum -y remove perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV rpmforge-release
-  rpm --import https://dl.efa-project.org/rpm/RPM-GPG-KEY-E.F.A.Project
+  rpm --import $STAGING/Files/RPM-GPG-KEY-E.F.A.Project
   cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo
   yum clean all
   yum_update
