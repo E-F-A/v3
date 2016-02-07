@@ -78,9 +78,8 @@ function run_update() {
   cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo
   yum clean all
   yum_update
-  yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin
-  yum -y update postfix mysql clamav clamd
-  
+  yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin postfix mysql clamav clamd
+
   # Install munin for system stats
   yum -y install munin
   chkconfig munin-node on
