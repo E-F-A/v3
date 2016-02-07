@@ -795,13 +795,7 @@ EOF
     chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
 
     # Issue #156 -- GeoIP Bug
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/geoip-5fc9611.tar.gz
-    tar xzvf geoip-5fc9611.tar.gz
-    cd geoip-api-perl
-    perl Makefile.PL
-    make
-    make install
+    # Obsolete superseded with SpamAssassin fix in package
 
     # Install Encoding:FixLatin perl module for mailwatch UTF8 support
     cd /usr/src/EFA
