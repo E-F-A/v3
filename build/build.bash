@@ -1304,7 +1304,7 @@ func_cron () {
     # Remove the raid-check util (Issue #102)
     rm -f /etc/cron.d/raid-check
     # Issue #187 EFA service Monitoring
-    usr/bin/wget --no-check-certificate -O /usr/sbin/EFA-Monitor-cron $gitdlurl/EFA/EFA-Monitor-cron
+    /usr/bin/wget --no-check-certificate -O /usr/sbin/EFA-Monitor-cron $gitdlurl/EFA/EFA-Monitor-cron
     chmod 700 /usr/sbin/EFA-Monitor-cron
     echo "* * * * * root /usr/sbin/EFA-Monitor-cron >/dev/null 2>&1" > /etc/cron.d/EFA-Monitor.cron
 }
