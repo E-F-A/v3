@@ -357,7 +357,11 @@ func_mailscanner () {
     wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
     patch < mailscanner-4.84.6-1.patch
     rm -f mailscanner-4.84.6-1.patch
-
+    
+     # Issue 200 Unrar v5 support (mailscanner backport)
+    rm -f /usr/lib/MailScanner/MailScanner/Message.pm
+    wget -O /usr/lib/MailScanner/MailScanner/Message.pm --no-check-certificate $mirror/$mirrorpath/Message.pm
+    
     # Issue #177 Correct EFA to new clamav paths using EPEL
     sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
