@@ -243,6 +243,11 @@ function update-mailwatch() {
       if [[ -z $NONSPAMPRESENT ]]; then
         sed -i "/^define('HIDE_HIGH_SPAM'/ a\\\n// Hide Non Spam from quarantine reports\ndefine('HIDE_NON_SPAM', false);" /var/www/html/mailscanner/conf.php
       fi
+      
+      ADCOMPATPRESENT=`grep define\(\'LDAP_MS_AD_COMPATIBILITY\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $ADCOMPATPRESENT ]]; then
+        sed -i "/^define('HIDE_NON_SPAM'/ a\\\n//Active Directory Compatibility Mode\ndefine('LDAP_MS_AD_COMPATIBILITY', true);" /var/www/html/mailscanner/conf.php
+      fi
 
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
