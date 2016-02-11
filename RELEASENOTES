@@ -95,7 +95,9 @@ Choose option 15 to enable and disable maintenance mode
 
 ###################### New Feature -- Munin ###########################
 
-Todo
+Munin is now included in EFA.  A link to Munin can be found in MailWatch
+under Tools.  Munin provides details stats and graphs for various parts
+of the EFA system beyond the simple mail statistics graphs.
 
 #######################################################################
 
