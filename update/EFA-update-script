@@ -387,7 +387,7 @@ function update-3.0.0.5() {
   service MailScanner restart
   
   # Issue #123 Update mysql, postfix, clamav
-  yum -y update mysql* postfix* clamav* clamd*
+  yum -y update mysql* postfix*
   chown -R postfix:apache /var/spool/postfix/hold
   chown -R postfix:apache /var/spool/postfix/incoming
   chmod -R 750 /var/spool/postfix/hold
