@@ -60,6 +60,7 @@ function run_update() {
 
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
+  [[ $? -ne 0 ]] && abort
 
   ##### Commit Phase #####
 
@@ -74,14 +75,17 @@ function run_update() {
 
   # Remove packages from rpmforge and install from EFA (to fix dependency issues between rpmforge & EPEL)
   yum -y remove perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV rpmforge-release
+  [[ $? -ne 0 ]] && abort
   rpm --import $STAGING/Files/RPM-GPG-KEY-E.F.A.Project
   cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo
   yum clean all
   yum_update
   yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin postfix mysql clamav clamd
-
+  [[ $? -ne 0 ]] && abort
+  
   # Install munin for system stats
   yum -y install munin
+  [[ $? -ne 0 ]] && abort
   chkconfig munin-node on
   randompw
   MUNINPWD=$PASSWD
