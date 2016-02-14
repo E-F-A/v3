@@ -67,7 +67,8 @@ func_efarepo () {
    perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail \ 
    perl-Net-Netmask perl-NetAddr-IP re2c postfix perl-Business-ISBN perl-Business-ISBN-Data perl-Crypt-OpenSSL-Random \
    perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Error perl-IO-String perl-libwww-perl perl-Mail-DKIM \
-   perl-Mail-SPF perl-Net-Patricia perl-Parse-RecDescent perl-Test-Manifest perl-YAML perl-Digest-HMAC perl-Net-DNS
+   perl-Mail-SPF perl-Net-Patricia perl-Parse-RecDescent perl-Test-Manifest perl-YAML perl-Digest-HMAC perl-Net-DNS \
+   perl-Net-DNS-Resolver-Programmable perl-Test-Pod 
    }
 # +---------------------------------------------------+
 
