@@ -63,7 +63,11 @@ func_efarepo () {
    rpm --import https://dl.efa-project.org/rpm/RPM-GPG-KEY-E.F.A.Project
    cd /etc/yum.repos.d/
    /usr/bin/wget --no-check-certificate $mirror/rpm/EFA.repo
-   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail perl-Net-Netmask perl-NetAddr-IP re2c postfix
+   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin tnef perl-BerkeleyDB \
+   perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail \ 
+   perl-Net-Netmask perl-NetAddr-IP re2c postfix perl-Business-ISBN perl-Business-ISBN-Data perl-Crypt-OpenSSL-Random \
+   perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Error perl-IO-String perl-libwww-perl perl-Mail-DKIM \
+   perl-Mail-SPF perl-Net-Patricia perl-Parse-RecDescent perl-Test-Manifest perl-YAML
    }
 # +---------------------------------------------------+
 
