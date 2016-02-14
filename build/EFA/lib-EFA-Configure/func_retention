@@ -23,7 +23,7 @@ func_retention() {
       echo -e ""
       FLAG=0
     else
-      echo -e "$red[ERROR]$clean Invalid input
+      echo -e "$red[ERROR]$clean Invalid input"
       echo -en "$green[EFA]$clean Enter the number of days to retain messages in quarantine (1-999): "
       read NEWRETENTION
     fi
