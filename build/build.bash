@@ -69,7 +69,7 @@ func_efarepo () {
    perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Error perl-IO-String perl-libwww-perl perl-Mail-DKIM \
    perl-Mail-SPF perl-Net-Patricia perl-Parse-RecDescent perl-Test-Manifest perl-YAML perl-Digest-HMAC perl-Net-DNS \
    perl-Net-DNS-Resolver-Programmable perl-Test-Pod perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant \
-   perl-Geo-IP perl-IO-Socket-INET6
+   perl-Geo-IP perl-IO-Socket-INET6 perl-Socket perl-IO-Socket-IP perl-libnet
    }
 # +---------------------------------------------------+
 
