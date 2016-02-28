@@ -30,6 +30,7 @@ logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
+smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
 MAILWATCHVERSION="20f37a1ecb"
@@ -60,11 +61,11 @@ func_upgradeOS () {
 # add EFA Repo
 # +---------------------------------------------------+
 func_efarepo () {
-   rpm --import https://dl.efa-project.org/rpm/RPM-GPG-KEY-E.F.A.Project
+   rpm --import $smirror/rpm/RPM-GPG-KEY-E.F.A.Project
    cd /etc/yum.repos.d/
-   /usr/bin/wget --no-check-certificate $mirror/rpm/EFA.repo
+   /usr/bin/wget $smirror/rpm/EFA.repo
    yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin tnef perl-BerkeleyDB \
-   perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail \ 
+   perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail \
    perl-Net-Netmask perl-NetAddr-IP re2c postfix perl-Business-ISBN perl-Business-ISBN-Data perl-Crypt-OpenSSL-Random \
    perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Error perl-IO-String perl-libwww-perl perl-Mail-DKIM \
    perl-Mail-SPF perl-Net-Patricia perl-Parse-RecDescent perl-Test-Manifest perl-YAML perl-Digest-HMAC perl-Net-DNS \
