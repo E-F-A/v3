@@ -27,6 +27,7 @@ Issue #219  Bug          - Trailing spaces in subjects in MailScanner trigger du
 Issue #227  Enhancement  - Include local.cf in EFA-Backup
 Issue #230  Bug          - build script not building spamassassin
 Issue #233  Bug          - Disable postfix utf8 support for now (new feature not compiled in yet)
+Issue #238  Enhancement  - Upgrade Spamassassin to 3.4.1
 
 ############################################################
 EFA Version 3.0.0.8 Changes

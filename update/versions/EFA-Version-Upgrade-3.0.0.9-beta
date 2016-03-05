@@ -1,9 +1,9 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20150607
+# Version 20160305
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2015 https://efa-project.org
+# Copyright (C) 2012~2016 https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #----------------------------------------------------------------#
 # Variables
 #----------------------------------------------------------------#
-VERSION="3.0.0.9"
+VERSION="3.0.0.9-beta"
 logdir="/var/log/EFA"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
@@ -39,7 +39,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 MAILWATCHVERSION="20f37a1ecb"
 IMAGECEBERUSVERSION="1.1"
-SPAMASSASSINVERSION="3.4.0a"
+SPAMASSASSINVERSION="3.4.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
 #----------------------------------------------------------------#
@@ -80,8 +80,18 @@ function run_update() {
   cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo
   yum clean all
   yum_update
-  yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin postfix mysql clamav clamd
+  yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query \
+    perl-Net-Ident perl-Mail-ClamAV webmin postfix mysql clamav clamd tnef perl-BerkeleyDB perl-Filesys-Df \
+    perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail perl-Net-Netmask perl-NetAddr-IP \
+    perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Mail-SPF perl-Net-Patricia perl-Parse-RecDescent \
+    perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable perl-Test-Pod perl-Digest perl-Digest-MD5 \
+    perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket perl-IO-Socket-IP perl-libnet \
+    perl-Text-Balanced spamassassin
   [[ $? -ne 0 ]] && abort
+  
+  # Issue #238 - Upgrade Spamassassin to 3.4.1
+  # Enable support for new RegistryBoundaries plugin
+  echo "loadplugin Mail::Spamassassin::Plugin:RegistryBoundaries" >> /etc/mail/spamassassin/v341.pre
   
   # Install munin for system stats
   yum -y install munin
