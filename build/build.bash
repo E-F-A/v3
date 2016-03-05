@@ -35,7 +35,7 @@ mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
 MAILWATCHVERSION="20f37a1ecb"
 IMAGECEBERUSVERSION="1.1"
-SPAMASSASSINVERSION="3.4.0a"
+SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"
 PYZORVERSION="0.7.0"
 # +---------------------------------------------------+
@@ -69,7 +69,7 @@ func_efarepo () {
    perl-Net-Netmask perl-NetAddr-IP re2c postfix perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Mail-SPF \
    perl-Net-Patricia perl-Parse-RecDescent perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable perl-Test-Pod \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
-   perl-IO-Socket-IP perl-libnet perl-Text-Balanced
+   perl-IO-Socket-IP perl-libnet perl-Text-Balanced spamassassin
    }
 # +---------------------------------------------------+
 
@@ -372,7 +372,7 @@ func_mailscanner () {
     sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
     sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
-    sed -i "/^clamd\t\t\/bin\/false/ c\ clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamd\t\t\/bin\/false/ c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
 }
 # +---------------------------------------------------+
 
@@ -434,28 +434,38 @@ func_spam_clamav () {
     # echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
 
     # Use the EFA packaged version.
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
-    tar -xvzf Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
+    # Issue #238 - Upgrade Spamassassin to 3.4.1
+    #cd /usr/src/EFA
+    #wget $mirror/$mirrorpath/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
+    #tar -xvzf Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
     # Issue #230 build script not building spamassassin
-    cd Spamassassin-3.4.0-EFA-Upgrade
-    chmod 755 install.sh
-    ./install.sh
-    cd /usr/src/EFA
-    rm -rf Spamassassin*
-
+    #cd Spamassassin-3.4.0-EFA-Upgrade
+    #chmod 755 install.sh
+    #./install.sh
+    #cd /usr/src/EFA
+    #rm -rf Spamassassin*
+    
+    # Symlink spam.assassin.prefs.conf (previously handled by tarball)
+    ln -s -f /etc/MailScanner/spam.assassin.prefs.conf /etc/mail/spamassassin/mailscanner.cf
+    
+    # Configure *.pre files (previously handled by tarball)
+    sed -i "/^# loadplugin Mail::Spamassassin::Plugin::RelayCountry$/ c\loadplugin Mail::Spamassassin::Plugin::RelayCountry" /etc/mail/spamassassin/init.pre
+    
+    # Enable support for new RegistryBoundaries plugin
+    echo "loadplugin Mail::Spamassassin::Plugin:RegistryBoundaries" >> /etc/mail/spamassassin/v341.pre
+    
     # Symlink for Geo::IP
     mkdir -p /usr/local/share/GeoIP
     ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
 
-    # PDFInfo
-    cd /usr/src/EFA
-    /usr/bin/wget --no-check-certificate -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
-    /usr/bin/wget --no-check-certificate -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
-    echo "loadplugin Mail::SpamAssassin::Plugin::PDFInfo">>/etc/mail/spamassassin/v310.pre
+    # PDFInfo (now included in SA 3.4.1)
+    #cd /usr/src/EFA
+    #/usr/bin/wget -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
+    /usr/bin/wget -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
+    sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::PDFInfo$/ c\loadplugin Mail::SpamAssassin::Plugin::PDFInfo" /etc/mail/spamassassin/v341.pre
 
     # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
-    /usr/bin/wget --no-check-certificate -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
+    /usr/bin/wget -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
 
     # Configure spamassassin bayes and awl DB settings
     echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
@@ -473,7 +483,7 @@ func_spam_clamav () {
     # Add example spam to db
     # source: http://spamassassin.apache.org/gtube/gtube.txt
     cd /usr/src/EFA
-    /usr/bin/wget --no-check-certificate $gitdlurl/EFA/gtube.txt
+    /usr/bin/wget $gitdlurl/EFA/gtube.txt
     /usr/local/bin/sa-learn --spam /usr/src/EFA/gtube.txt
 
     # Enable Auto White Listing
@@ -504,7 +514,7 @@ func_spam_clamav () {
 
     # Add Sought Channel to replace Sare and initialize sa-update
     /usr/local/bin/sa-update
-    /usr/bin/wget --no-check-certificate -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY
+    /usr/bin/wget -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY
     /usr/local/bin/sa-update --import /usr/src/EFA/GPG.KEY
 
     # Customize sa-update in /etc/sysconfig/update_spamassassin
@@ -518,7 +528,7 @@ func_spam_clamav () {
     # Issue #168 Start regular updates on RegistrarBoundaries.pm
     # next 2 lines temp until everything is packaged
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/RegistrarBoundaries.pm
+    wget $smirror/$mirrorpath/RegistrarBoundaries.pm
     rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
     mv RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
 
