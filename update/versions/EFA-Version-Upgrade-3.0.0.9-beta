@@ -191,14 +191,16 @@ EOF
   rm -f /usr/local/sbin/EFA-Backup
   cp $STAGING/Scripts/EFA-Backup /usr/local/sbin/
   chmod 700 /usr/local/sbin/EFA-Backup
+  
+   # Issue #233 Disable postfix utf8 support for now
+  echo "smtputf8_enable = no" >> /etc/postfix/main.cf
 
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
   
-  # Issue #233 Disable postfix utf8 support for now
-  echo "smtputf8_enable = no" >> /etc/postfix/main.cf
+ 
   
 }
 #----------------------------------------------------------------#
