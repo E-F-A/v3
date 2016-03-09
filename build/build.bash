@@ -965,8 +965,6 @@ func_mailgraph () {
 # +---------------------------------------------------+
 func_pyzor () {
 
-    yum -y install python-setuptools
-
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/pyzor-$PYZORVERSION.tar.gz
     tar xvzf pyzor-$PYZORVERSION.tar.gz
