@@ -452,7 +452,7 @@ func_spam_clamav () {
     sed -i "/^# loadplugin Mail::Spamassassin::Plugin::RelayCountry$/ c\loadplugin Mail::Spamassassin::Plugin::RelayCountry" /etc/mail/spamassassin/init.pre
     
     # Enable support for new RegistryBoundaries plugin
-    echo "loadplugin Mail::Spamassassin::Plugin::RegistryBoundaries" >> /etc/mail/spamassassin/v341.pre
+    echo "loadplugin Mail::Spamassassin::RegistryBoundaries" >> /etc/mail/spamassassin/v341.pre
     
     # Symlink for Geo::IP
     mkdir -p /usr/local/share/GeoIP

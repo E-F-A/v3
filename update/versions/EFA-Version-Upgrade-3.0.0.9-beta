@@ -91,7 +91,7 @@ function run_update() {
   
   # Issue #238 - Upgrade Spamassassin to 3.4.1
   # Enable support for new RegistryBoundaries plugin
-  echo "loadplugin Mail::Spamassassin::Plugin::RegistryBoundaries" >> /etc/mail/spamassassin/v341.pre
+  echo "loadplugin Mail::Spamassassin::RegistryBoundaries" >> /etc/mail/spamassassin/v341.pre
   
   # Install munin for system stats
   yum -y install munin
