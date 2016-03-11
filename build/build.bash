@@ -455,8 +455,9 @@ func_spam_clamav () {
     echo "loadplugin Mail::SpamAssassin::RegistryBoundaries" >> /etc/mail/spamassassin/v341.pre
     
     # Symlink for Geo::IP
-    mkdir -p /usr/local/share/GeoIP
-    ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
+    # Issue #247 Move GeoIP symlink to new location   
+    rm -f /usr/share/GeoIP/GeoLiteCountry.dat
+    ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/share/GeoIP/GeoLiteCountry.dat
 
     # PDFInfo (now included in SA 3.4.1)
     #cd /usr/src/EFA
