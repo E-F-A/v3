@@ -199,6 +199,20 @@ EOF
   mv /usr/local/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/
   sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
 
+  Issue #244 Cleanup of SpamAssassin in /usr/local
+  rm -rf /usr/local/spamassassin
+  rm -f /usr/local/perl5/spamassassin-run.pod
+  rm -f /usr/local/perl5/Mail/SpamAssassin.pm
+  rm -rf /usr/local/perl5/Mail/SpamAssassin
+  rm -f /usr/local/bin/sa-awl
+  rm -f /usr/local/bin/sa-check_spamd
+  rm -f /usr/local/bin/sa-compiled
+  rm -f /usr/local/bin/sa-learn
+  rm -f /usr/local/bin/sa-update
+  rm -f /usr/local/bin/spamassassin
+  rm -f /usr/local/bin/spamc
+  rm -f /usr/local/bin/spamd
+  
   echo "$VERSION update is complete"  
   echo ""
   echo "" >> $TMPMAIL
