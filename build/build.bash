@@ -451,9 +451,6 @@ func_spam_clamav () {
     # Configure *.pre files (previously handled by tarball)
     sed -i "/^# loadplugin Mail::Spamassassin::Plugin::RelayCountry$/ c\loadplugin Mail::Spamassassin::Plugin::RelayCountry" /etc/mail/spamassassin/init.pre
     
-    # Enable support for new RegistryBoundaries plugin
-    echo "loadplugin Mail::SpamAssassin::RegistryBoundaries" >> /etc/mail/spamassassin/v341.pre
-    
     # Symlink for Geo::IP
     # Issue #247 Move GeoIP symlink to new location   
     rm -f /usr/share/GeoIP/GeoLiteCountry.dat
