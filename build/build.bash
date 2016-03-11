@@ -1057,10 +1057,10 @@ func_imagecerberus () {
     rm -rf /etc/spamassassin/imageCerberus/x86_64
     rm -rf /etc/spamassassin/imageCerberus/i386
 
-    mv spamassassin/ImageCerberusPLG.pm /usr/local/share/perl5/Mail/SpamAssassin/Plugin/
+    # Issue #245 Move ImageCerberus to correct (new) location
+    mv spamassassin/ImageCerberusPLG.pm /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/
     mv spamassassin/ImageCerberusPLG.cf /etc/mail/spamassassin/
-
-    sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
 
     # fix a few library locations
     ln -s /usr/lib64/libcv.so.2.0 /usr/lib64/libcv.so.1

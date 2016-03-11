@@ -191,11 +191,15 @@ EOF
   rm -f /usr/local/sbin/EFA-Backup
   cp $STAGING/Scripts/EFA-Backup /usr/local/sbin/
   chmod 700 /usr/local/sbin/EFA-Backup
-  
+
    # Issue #233 Disable postfix utf8 support for now
   echo "smtputf8_enable = no" >> /etc/postfix/main.cf
 
-  echo "$VERSION update is complete"
+  # Issue #245 Move ImageCerberus to correct (new) location
+  mv /usr/local/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/
+  sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
+
+  echo "$VERSION update is complete"  
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
