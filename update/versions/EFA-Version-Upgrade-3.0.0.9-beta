@@ -212,14 +212,16 @@ EOF
   rm -f /usr/local/bin/spamassassin
   rm -f /usr/local/bin/spamc
   rm -f /usr/local/bin/spamd
-  
+
+  Issue #247 Move GeoIP symlink to new location
+  rm -f /usr/share/GeoIP/GeoLiteCountry.dat
+  ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/share/GeoIP/GeoLiteCountry.dat
+
   echo "$VERSION update is complete"  
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
-  
- 
-  
+
 }
 #----------------------------------------------------------------#
 
