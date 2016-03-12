@@ -30,6 +30,7 @@ Issue #233  Bug          - Disable postfix utf8 support for now (new feature not
 Issue #238  Enhancement  - Upgrade Spamassassin to 3.4.1
 Issue #244  Bug          - Cleanup of SpamAssassin in /usr/local
 Issue #245  Bug          - ImageCerberus install/move to correct location
+Issue #246  Bug          - Cleanup old perl modules in /usr/local (and other locations)
 Issue #247  Bug          - Move GeoIP symlink to new location
 
 ############################################################
