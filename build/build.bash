@@ -65,7 +65,7 @@ func_efarepo () {
    cd /etc/yum.repos.d/
    /usr/bin/wget $smirror/rpm/EFA.repo
    yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin tnef perl-BerkeleyDB \
-   perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail \
+   perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR \
    perl-Net-Netmask perl-NetAddr-IP re2c postfix perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Mail-SPF \
    perl-Net-Patricia perl-Parse-RecDescent perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable perl-Test-Pod \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
