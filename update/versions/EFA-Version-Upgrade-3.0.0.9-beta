@@ -61,6 +61,15 @@ function run_update() {
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
+  
+  # Backup perl locations in preparation for perl cleanup
+  tar -cpzf /var/EFA/backup/$VERSION/backup-usrlocal.tar.gz -C /usr/local usr/local
+  [[ $? -ne 0 ]] && abort
+  tar -cpzf /var/EFA/backup/$VERSION/backup-usrlib64perl5.tar.gz /usr/lib64/perl5 usr/lib64/perl5
+  [[ $? -ne 0 ]] && abort
+  tar -cpzf /var/EFA/backup/$VERSION/backup-usrshareperl5.tar.gz /usr/share/perl5 usr/share/perl5
+  [[ $? -ne 0 ]] && abort
+
 
   ##### Commit Phase #####
 
@@ -294,11 +303,12 @@ EOF
   ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/share/GeoIP/GeoLiteCountry.dat
 
   # Issue #246 Cleanup old perl modules in /usr/local (and other old locations)
-  # Probably others, keep looking in subsequent updates to perl modules and use surgical level scrutiny
+  # Probably others, keep looking in subsequent updates to perl modules and use ***surgical*** level scrutiny
+
   rm -f /usr/local/share/man/man3/Bundle::LWP.3pm
+  rm -f /usr/local/share/perl5/LWP.pm
   rm -rf /usr/local/share/perl5/Bundle
   rm -rf /usr/local/lib64/perl5/auto/Business
-  rm -f /usr/local/share/man/man3/Business::ISBN.3
   rm -f /usr/local/share/man/man3/Business::ISBN::Data.3
   rm -rf /usr/local/share/perl5/Business
   rm -rf /usr/local/lib64/perl5/auto/Data
@@ -309,13 +319,19 @@ EOF
   rm -f /usr/local/share/man/man3/Error::Simple.3pm
   rm -f /usr/local/share/man/man3/YAML::Error.3pm
   rm -f /usr/local/share/perl5/Error.pm
+  rm -rf /usr/local/share/perl5/YAML/
   rm -rf /usr/local/share/perl5/File
   rm -f /usr/local/share/man/man3/HTML::Form.3pm
   rm -rf /usr/local/share/perl5/HTML
   rm -f /usr/lib64/perl5/DB_File.pm
   rm -rf /usr/lib64/perl5/auto/DB_File
-  rm -rf /usr/lib64/perl5/Digest
+  rm -f /usr/lib64/perl5/Digest/MD5.pm
+  rm -f /usr/lib64/perl5/Digest/SHA.pm
   rm -f /usr/share/perl5/Digest.pm
+  rm -rf /usr/lib64/perl5/auto/Digest/MD5
+  rm -rf /usr/lib64/perl5/auto/Digest/SHA
+  rm -rf /usr/local/share/perl5/LWP
+  rm -rf /usr/local/share/perl5/Error
   rm -rf /usr/share/perl5/Digest
   rm -rf /usr/local/lib64/perl5/auto/Net/DNS/Resolver/Programmable
   rm -f /usr/local/share/man/man3/Net::DNS::Resolver::Programmable.3pm
@@ -353,8 +369,6 @@ EOF
   rm -f /usr/local/share/man/man3/Mail::SPF::v2::Record.3pm
   rm -rf /usr/local/share/perl5/Mail/SPF
   rm -f /usr/local/share/perl5/Mail/SPF.pm
-  rm -rf /usr/lib64/perl5/Digest
-  rm -rf /usr/lib64/perl5/auto/Digest
   rm -rf /usr/local/lib64/perl5/auto/Data
   rm -rf /usr/local/share/perl5/Data
   rm -rf /usr/local/lib64/perl5/auto/Crypt/OpenSSL/RSA
@@ -369,7 +383,6 @@ EOF
   rm -rf /usr/lib64/perl5/auto/ExtUtils/Constant
   rm -rf /usr/share/perl5/ExtUtils/Constant
   rm -f /usr/share/perl5/ExtUtils/Constant.pm
-  rm -f /usr/lib64/perl5/IO/Socket/INET.pm
   rm -rf /usr/local/lib64/perl5/auto/IO/Socket
   rm -rf /usr/local/share/perl5/IO/Socket
   rm -f /usr/share/perl5/Net/Cmd.pm
@@ -386,7 +399,6 @@ EOF
   rm -f /usr/share/perl5/Net/libnetFAQ.pod
   rm -rf /usr/local/lib64/perl5/Net/DNS
   rm -f /usr/local/lib64/perl5/Net/DNS.pm
-  rm -rf /usr/local/lib64/perl5/auto/Net/DNS
   rm -f /usr/local/share/man/man3/Net::DNS.3pm
   rm -f /usr/local/share/man/man3/Net::DNS::Domain.3pm
   rm -f /usr/local/share/man/man3/Net::DNS::DomainName.3pm
@@ -462,7 +474,6 @@ EOF
   rm -f /usr/local/share/man/man3/Geo::Mirror.3pm
   rm -rf /usr/local/share/perl5/Geo
   rm -f /usr/lib64/perl5/Socket.pm
-  rm -rf /usr/lib64/perl5/Socket
   rm -rf /usr/lib64/perl5/auto/Socket
   rm -rf /usr/local/lib64/perl5/auto/Test/Pod
   rm -f /usr/local/share/man/man3/Test::Pod.3pm

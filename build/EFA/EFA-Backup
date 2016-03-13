@@ -25,7 +25,7 @@ action="$1"
 #----------------------------------------------------------------#
 BACKUPDIR="/var/EFA/backup"
 MYSQLROOTPWD="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/.*://'`"
-TMPDIR="/tmp"
+TMPDIR="/var/EFA/backup/tmp"
 DAYSTOKEEP=5
 
 #----------------------------------------------------------------#

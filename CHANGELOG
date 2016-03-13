@@ -33,6 +33,7 @@ Issue #244  Bug          - Cleanup of SpamAssassin in /usr/local
 Issue #245  Bug          - ImageCerberus install/move to correct location
 Issue #246  Bug          - Cleanup old perl modules in /usr/local (and other locations)
 Issue #247  Bug          - Move GeoIP symlink to new location
+Issue #251  Bug          - EFA-Backup to /tmp fails when size of backup exceeds size of /tmp
 
 ############################################################
 EFA Version 3.0.0.8 Changes
