@@ -7,7 +7,7 @@ Summary: Spam filter for email which can be invoked from mail delivery agents
 Name:    spamassassin
 Version: 3.4.1
 #Release: 0.8.%{prerev}%{?dist}
-Release: 1.efa%{?dist}
+Release: 2.efa%{?dist}
 License: ASL 2.0
 Group:   Applications/Internet
 URL:     http://spamassassin.apache.org/
@@ -17,7 +17,7 @@ Buildroot: %{_tmppath}/%{name}-root
 Requires: /sbin/chkconfig /sbin/service
 Requires(post): diffutils
 BuildRequires: perl >= 5.10.1
-BuildRequires: perl(Net::DNS) >= 1.04
+BuildRequires: perl(Net::DNS) >= 0.65
 BuildRequires: perl(Time::HiRes) >= 1.9721
 BuildRequires: perl(NetAddr::IP) >= 4.078
 BuildRequires: openssl-devel >= 1.0.1e
@@ -74,7 +74,7 @@ BuildRequires: perl(Data::Dump) >= 1.15
 BuildRequires: perl(Encode::Detect) >= 1.01
 BuildRequires: perl(Crypt::OpenSSL::Random) >= 0.04
 BuildRequires: perl(Crypt::OpenSSL::RSA) >= 0.25
-Requires: perl(Net::DNS) >= 1.04
+Requires: perl(Net::DNS) >= 0.65
 Requires: perl(Time::HiRes) >= 1.9721
 Requires: perl(DB_File) >= 1.835
 Requires: perl(Mail::SPF) 
