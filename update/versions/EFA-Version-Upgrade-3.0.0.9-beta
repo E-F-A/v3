@@ -357,7 +357,6 @@ EOF
   rm -rf /usr/lib64/perl5/auto/Digest
   rm -rf /usr/local/lib64/perl5/auto/Data
   rm -rf /usr/local/share/perl5/Data
-  rm -rf /usr/lib64/perl5/Crypt/OpenSSL
   rm -rf /usr/local/lib64/perl5/auto/Crypt/OpenSSL/RSA
   rm -f /usr/local/share/man/man3/Crypt::OpenSSL::RSA.3pm
   rm -rf /usr/local/lib64/perl5/NetAddr
@@ -370,7 +369,7 @@ EOF
   rm -rf /usr/lib64/perl5/auto/ExtUtils/Constant
   rm -rf /usr/share/perl5/ExtUtils/Constant
   rm -f /usr/share/perl5/ExtUtils/Constant.pm
-  rm -rf /usr/lib64/perl5/IO/Socket
+  rm -f /usr/lib64/perl5/IO/Socket/INET.pm
   rm -f /usr/lib64/perl5/IO/Socket.pm
   rm -rf /usr/local/lib64/perl5/auto/IO/Socket
   rm -rf /usr/local/share/perl5/IO/Socket
@@ -465,11 +464,14 @@ EOF
   rm -rf /usr/local/share/perl5/Geo
   rm -f /usr/lib64/perl5/Socket.pm
   rm -rf /usr/lib64/perl5/Socket
-  rm -f /usr/lib64/perl5/auto/Socket
+  rm -rf /usr/lib64/perl5/auto/Socket
   rm -rf /usr/local/lib64/perl5/auto/Test/Pod
   rm -f /usr/local/share/man/man3/Test::Pod.3pm
-  rm -rf /usr/local/share/perl5/Test
+  rm -f /usr/local/share/perl5/Test/Pod.pm
   rm -f /usr/share/perl5/Text/Balanced.pm
+
+  # Update SA path in MailWatch
+  sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/bin/');" /var/www/html/mailscanner/conf.php
 
   echo "$VERSION update is complete"  
   echo ""
