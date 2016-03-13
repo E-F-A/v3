@@ -196,7 +196,7 @@ EOF
   mv /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/
   sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
 
-  Issue #244 Cleanup of SpamAssassin in /usr/local
+  # Issue #244 Cleanup of SpamAssassin in /usr/local
   rm -rf /usr/local/spamassassin
   rm -f /usr/local/perl5/spamassassin-run.pod
   rm -f /usr/local/share/perl5/Mail/SpamAssassin.pm
