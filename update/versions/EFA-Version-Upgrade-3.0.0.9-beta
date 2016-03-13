@@ -307,8 +307,6 @@ EOF
   # Issue #246 Cleanup old perl modules in /usr/local (and other old locations)
   # Probably others, keep looking in subsequent updates to perl modules and use ***surgical*** level scrutiny
 
-  rm -f /usr/local/share/man/man3/Bundle::LWP.3pm
-  rm -f /usr/local/share/perl5/LWP.pm
   rm -rf /usr/local/share/perl5/Bundle
   rm -rf /usr/local/lib64/perl5/auto/Business
   rm -f /usr/local/share/man/man3/Business::ISBN::Data.3
@@ -322,6 +320,7 @@ EOF
   rm -f /usr/local/share/man/man3/YAML::Error.3pm
   rm -f /usr/local/share/perl5/Error.pm
   rm -rf /usr/local/share/perl5/YAML/
+  rm -f /usr/local/share/perl5/YAML.pm
   rm -rf /usr/local/share/perl5/File
   rm -f /usr/local/share/man/man3/HTML::Form.3pm
   rm -rf /usr/local/share/perl5/HTML
@@ -332,7 +331,6 @@ EOF
   rm -f /usr/share/perl5/Digest.pm
   rm -rf /usr/lib64/perl5/auto/Digest/MD5
   rm -rf /usr/lib64/perl5/auto/Digest/SHA
-  rm -rf /usr/local/share/perl5/LWP
   rm -rf /usr/local/share/perl5/Error
   rm -rf /usr/share/perl5/Digest
   rm -rf /usr/local/lib64/perl5/auto/Net/DNS/Resolver/Programmable
@@ -481,7 +479,34 @@ EOF
   rm -f /usr/local/share/man/man3/Test::Pod.3pm
   rm -f /usr/local/share/perl5/Test/Pod.pm
   rm -f /usr/share/perl5/Text/Balanced.pm
-
+  rm -f /usr/local/share/perl5/LWP.pm
+  rm -rf /usr/local/share/perl5/HTTP
+  rm -rf /usr/local/share/perl5/LWP
+  rm -rf /usr/local/share/perl5/Net
+  rm -rf /usr/local/share/perl5/WWW
+  rm -f /usr/local/share/perl5/lwpcook.pod
+  rm -f /usr/local/share/perl5/lwptut.pod
+  rm -f /usr/local/share/man/man3/Bundle::LWP.3pm
+  rm -f /usr/local/share/perl5/YAML.pm
+  rm -rf /usr/local/share/perl5/IO
+  rm -rf /usr/local/share/perl5/Mail
+  rm -rf /usr/local/share/perl5/OLE
+  rm -f /usr/local/share/perl5/Test/Manifest.pm
+  rm -rf /usr/local/lib64/perl5/Net
+  rm -rf /usr/local/lib64/perl5/auto/CGI
+  rm -rf /usr/local/lib64/perl5/auto/Crypt
+  rm -rf /usr/local/lib64/perl5/auto/Encoding
+  rm -rf /usr/local/lib64/perl5/auto/IO
+  rm -rf /usr/local/lib64/perl5/auto/LWP
+  rm -rf /usr/local/lib64/perl5/auto/Mail
+  rm -rf /usr/local/lib64/perl5/auto/Parse
+  rm -rf /usr/local/lib64/perl5/auto/PHP
+  rm -rf /usr/local/lib64/perl5/auto/Test
+  rm -rf /usr/local/lib64/perl5/auto/UNIVERSAL
+  rm -rf /usr/local/lib64/perl5/auto/YAML
+  rm -rf /usr/local/lib64/perl5/Crypt
+  rm -rf /usr/local/lib64/perl5/Net
+  
   # Update SA path in MailWatch
   sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/bin/');" /var/www/html/mailscanner/conf.php
   
