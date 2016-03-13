@@ -75,6 +75,16 @@ You may need to re-implement customizations after update to 3.0.0.9-beta
 For example, if you are using Active Directory integration,
 this will need to be turned back on (see MailWatch Changes below)
 
+###################### Perl Module Cleanup ############################
+
+Redundant perl modules in /usr/local /usr/lib64/perl5 and
+/usr/share/perl5 that are superceded with RPMs are removed in this
+update.  As a precaution, these locations are backed up to
+/var/EFA/backup/3.0.0.9-beta as tarballs of each branch.
+
+If you are missing perl modules after updating, you can find them here,
+or, preferably, you can reinstall the missing modules.
+
 #######################################################################
 
 ################### New Feature -- EFA-Monitor ########################
