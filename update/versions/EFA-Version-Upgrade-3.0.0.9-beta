@@ -751,6 +751,7 @@ function finalize() {
   # Finalize the mail
   echo "" >> $TMPMAIL
   echo "Please visit https://efa-project.org for more information." >> $TMPMAIL
+  echo "Please reboot the system as soon as possible." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
 
