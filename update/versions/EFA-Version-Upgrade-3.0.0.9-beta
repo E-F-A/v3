@@ -199,8 +199,8 @@ EOF
   Issue #244 Cleanup of SpamAssassin in /usr/local
   rm -rf /usr/local/spamassassin
   rm -f /usr/local/perl5/spamassassin-run.pod
-  rm -f /usr/local/perl5/Mail/SpamAssassin.pm
-  rm -rf /usr/local/perl5/Mail/SpamAssassin
+  rm -f /usr/local/share/perl5/Mail/SpamAssassin.pm
+  rm -rf /usr/local/share/perl5/Mail/SpamAssassin
   rm -f /usr/local/bin/sa-awl
   rm -f /usr/local/bin/sa-check_spamd
   rm -f /usr/local/bin/sa-compiled
