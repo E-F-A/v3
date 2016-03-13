@@ -71,7 +71,6 @@ function run_update() {
   tar -cpzf /var/EFA/backup/$VERSION/backup-usrshareperl5.tar.gz -C /usr/share/perl5 /usr/share/perl5
   [[ $? -ne 0 ]] && abort
 
-
   ##### Commit Phase #####
 
   # grab latest version of EFA-Configure with libraries
@@ -99,6 +98,8 @@ function run_update() {
     perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket perl-IO-Socket-IP perl-libnet \
     perl-Text-Balanced spamassassin
   [[ $? -ne 0 ]] && abort
+
+  update-vmtools
 
   # Install munin for system stats
   yum -y install munin
@@ -169,8 +170,6 @@ EOF
   
   # Issue 219 Trailing spaces in subjects in MailScanner trigger duplicate subjects in header
   sed -i "/^Place New Headers At Top Of Message =/ c\Place New Headers At Top Of Message = yes" /etc/MailScanner/MailScanner.conf
-
-  update-vmtools
 
   # Update MailWatch to latest version
   update-mailwatch
@@ -618,7 +617,7 @@ function update-vmtools() {
 
     # Remove source compiled version of open-vm-tools
     if [[ -n "`rpm -q open-vm-tools | grep not\ installed`" ]]; then
-	  service vmtoolsd stop
+      service vmtoolsd stop
 
       # Cleanup existing open-vm-tools
       rm -f /usr/local/lib/libvmtools*
