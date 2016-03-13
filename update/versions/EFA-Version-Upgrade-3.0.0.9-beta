@@ -193,7 +193,7 @@ EOF
   echo "smtputf8_enable = no" >> /etc/postfix/main.cf
 
   # Issue #245 Move ImageCerberus to correct (new) location
-  mv /usr/local/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/
+  mv /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/
   sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
 
   Issue #244 Cleanup of SpamAssassin in /usr/local
