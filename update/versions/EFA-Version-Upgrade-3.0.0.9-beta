@@ -370,7 +370,6 @@ EOF
   rm -rf /usr/share/perl5/ExtUtils/Constant
   rm -f /usr/share/perl5/ExtUtils/Constant.pm
   rm -f /usr/lib64/perl5/IO/Socket/INET.pm
-  rm -f /usr/lib64/perl5/IO/Socket.pm
   rm -rf /usr/local/lib64/perl5/auto/IO/Socket
   rm -rf /usr/local/share/perl5/IO/Socket
   rm -f /usr/share/perl5/Net/Cmd.pm
