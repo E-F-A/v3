@@ -511,9 +511,9 @@ func_spam_clamav () {
     chown postfix:postfix /var/www/.spamassassin
 
     # Add Sought Channel to replace Sare and initialize sa-update
-    /usr/local/bin/sa-update
+    /usr/bin/sa-update
     /usr/bin/wget -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY
-    /usr/local/bin/sa-update --import /usr/src/EFA/GPG.KEY
+    /usr/bin/sa-update --import /usr/src/EFA/GPG.KEY
 
     # Customize sa-update in /etc/sysconfig/update_spamassassin
     sed -i '/^SAUPDATE=/ c\SAUPDATE=/usr/local/bin/sa-update' /etc/sysconfig/update_spamassassin
@@ -531,8 +531,8 @@ func_spam_clamav () {
     # mv RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
 
     # and in the end we run sa-update just for the fun of it..
-    /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
-    /usr/local/bin/sa-compile
+    /usr/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
+    /usr/bin/sa-compile
 
     echo "SPAMASSASSINVERSION:$SPAMASSASSINVERSION" >> /etc/EFA-Config
 }
@@ -713,7 +713,7 @@ func_mailwatch () {
     sed -i "/^define('AUDIT',/ c\define('AUDIT', true);" conf.php
     sed -i "/^define('MS_LOG',/ c\define('MS_LOG', '/var/log/maillog');" conf.php
     sed -i "/^define('MAIL_LOG',/ c\define('MAIL_LOG', '/var/log/maillog');" conf.php
-    sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/local/bin/');" conf.php
+    sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/bin/');" conf.php
     sed -i "/^define('SA_RULES_DIR',/ c\define('SA_RULES_DIR', '/etc/mail/spamassassin');" conf.php
     sed -i "/^define('SHOW_SFVERSION',/ c\define('SHOW_SFVERSION', false);" conf.php
     # Issue #109 Documentation tab present after MailWatch update testing
