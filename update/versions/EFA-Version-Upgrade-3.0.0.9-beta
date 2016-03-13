@@ -482,6 +482,11 @@ EOF
 
   # Update SA path in MailWatch
   sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/bin/');" /var/www/html/mailscanner/conf.php
+  
+  # cleanup /var/lib/spamassassin and run updates
+  rm -rf /var/lib/spamassassin/*
+  sa-update
+  sa-compile
 
   echo "$VERSION update is complete"  
   echo ""
