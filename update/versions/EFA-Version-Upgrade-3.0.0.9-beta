@@ -506,6 +506,19 @@ EOF
   rm -rf /usr/local/lib64/perl5/auto/YAML
   rm -rf /usr/local/lib64/perl5/Crypt
   rm -rf /usr/local/lib64/perl5/Net
+  rm -f /usr/local/share/man/man3/Crypt::OpenSSL::Random.3pm
+  rm -f /usr/local/share/man/man3/File::Listing.3pm
+  rm -f /usr/local/share/man/man3/HTTP::*.3pm
+  rm -f /usr/local/share/man/man3/IO::Socket::INET6.3pm
+  rm -f /usr/local/share/man/man3/IO::*.3pm
+  rm -f /usr/local/share/man/man3/LWP*.3pm
+  rm -f /usr/local/share/man/man3/lwpcook.3pm
+  rm -f /usr/local/share/man/man3/lwptut.3pm
+  rm -f /usr/local/share/man/man3/Mail::*.3pm
+  rm -f /usr/local/share/man/man3/Net::*.3pm
+  rm -f /usr/local/share/man/man3/Test::Manifest.3
+  rm -f /usr/local/share/man/man3/WWW::RobotRules*.3pm
+  rm -f /usr/local/share/man/man3/YAML*.3pm
   
   # Update SA path in MailWatch
   sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/bin/');" /var/www/html/mailscanner/conf.php
