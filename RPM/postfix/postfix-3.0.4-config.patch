@@ -1,17 +1,14 @@
---- postfix-3.0.3/conf/main.cf	2014-10-09 19:46:44.000000000 -0400
-+++ postfix-3.0.3/conf/main.cf2	2015-11-23 02:52:27.875413072 -0500
-@@ -132,6 +132,10 @@ mail_owner = postfix
+--- postfix-3.0.4/conf/main.cf	2014-10-09 19:46:44.000000000 -0400
++++ postfix-3.0.4/conf/main.cf2	2016-03-12 12:09:44.962999629 -0500
+@@ -132,6 +132,7 @@
  #inet_interfaces = all
  #inet_interfaces = $myhostname
  #inet_interfaces = $myhostname, localhost
 +inet_interfaces = localhost
-+
-+# Enable IPv4, and IPv6 if supported
-+inet_protocols = all
  
  # The proxy_interfaces parameter specifies the network interface
  # addresses that this mail system receives mail on by way of a
-@@ -180,6 +184,7 @@ mail_owner = postfix
+@@ -180,6 +181,7 @@
  #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
  #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain,
  #	mail.$mydomain, www.$mydomain, ftp.$mydomain
@@ -19,7 +16,7 @@
  
  # REJECTING MAIL FOR UNKNOWN LOCAL USERS
  #
-@@ -401,6 +406,7 @@ unknown_local_recipient_reject_code = 55
+@@ -401,6 +403,7 @@
  #alias_maps = hash:/etc/aliases
  #alias_maps = hash:/etc/aliases, nis:mail.aliases
  #alias_maps = netinfo:/aliases
@@ -27,15 +24,15 @@
  
  # The alias_database parameter specifies the alias database(s) that
  # are built with "newaliases" or "sendmail -bi".  This is a separate
-@@ -411,6 +417,7 @@ unknown_local_recipient_reject_code = 55
+@@ -411,6 +414,7 @@
  #alias_database = dbm:/etc/mail/aliases
  #alias_database = hash:/etc/aliases
  #alias_database = hash:/etc/aliases, hash:/opt/majordomo/aliases
-++alias_database = hash:/etc/aliases
++alias_database = hash:/etc/aliases
  
  # ADDRESS EXTENSIONS (e.g., user+foo)
  #
-@@ -479,7 +486,7 @@ unknown_local_recipient_reject_code = 55
+@@ -479,7 +483,7 @@
  #
  # Cyrus IMAP over LMTP. Specify ``lmtpunix      cmd="lmtpd"
  # listen="/var/imap/socket/lmtp" prefork=0'' in cyrus.conf.
@@ -44,7 +41,7 @@
  #
  # Cyrus IMAP via command line. Uncomment the "cyrus...pipe" and
  # subsequent line in master.cf.
-@@ -499,7 +506,7 @@ unknown_local_recipient_reject_code = 55
+@@ -499,7 +503,7 @@
  # the main.cf file, otherwise the SMTP server will reject mail for    
  # non-UNIX accounts with "User unknown in local recipient table".
  #
@@ -52,8 +49,8 @@
 +#fallback_transport = lmtp:unix:/var/lib/imap/socket/lmtp
  #fallback_transport = cyrus
  #fallback_transport =
-
-@@ -674,3 +681,6 @@
+ 
+@@ -674,3 +678,7 @@
  #
  readme_directory =
  inet_protocols = ipv4
@@ -61,10 +58,9 @@
 +# SMTP UTF8 support (requires EAI support compiled in)
 +smtputf8_enable = no
 +
-
---- postfix-3.0.3/conf/master.cf        2015-01-31 17:54:26.000000000 -0500
-+++ postfix-3.0.3/conf/master.cf2       2015-11-23 05:11:03.990900558 -0500
-@@ -39,7 +39,7 @@ smtp      inet  n       -       n
+--- postfix-3.0.4/conf/master.cf	2015-01-31 17:54:26.000000000 -0500
++++ postfix-3.0.4/conf/master.cf2	2016-03-12 12:11:50.038000271 -0500
+@@ -39,7 +39,7 @@
  #628       inet  n       -       n       -       -       qmqpd
  pickup    unix  n       -       n       60      1       pickup
  cleanup   unix  n       -       n       -       0       cleanup
@@ -73,7 +69,7 @@
  #qmgr     unix  n       -       n       300     1       oqmgr
  tlsmgr    unix  -       -       n       1000?   1       tlsmgr
  rewrite   unix  -       -       n       -       -       trivial-rewrite
-@@ -95,14 +95,14 @@ scache    unix  -       -       n
+@@ -95,14 +95,14 @@
  # Also specify in main.cf: cyrus_destination_recipient_limit=1
  #
  #cyrus     unix  -       n       n       -       -       pipe
@@ -90,4 +86,3 @@
  #
  # ====================================================================
  #
- 

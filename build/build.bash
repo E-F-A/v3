@@ -1,9 +1,9 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.9 build script version 20150607
+# EFA 3.0.0.9-beta build script version 20160203
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013~2015 https://efa-project.org
+# Copyright (C) 2013~2016 https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,16 +25,17 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.9"
+version="3.0.0.9-beta"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
+smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="7482fe0831"
+MAILWATCHVERSION="20f37a1ecb"
 IMAGECEBERUSVERSION="1.1"
-SPAMASSASSINVERSION="3.4.0a"
+SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"
 PYZORVERSION="0.7.0"
 # +---------------------------------------------------+
@@ -60,11 +61,16 @@ func_upgradeOS () {
 # add EFA Repo
 # +---------------------------------------------------+
 func_efarepo () {
-   rpm --import https://dl.efa-project.org/rpm/RPM-GPG-KEY-E.F.A.Project
+   rpm --import $smirror/rpm/RPM-GPG-KEY-E.F.A.Project
    cd /etc/yum.repos.d/
-   /usr/bin/wget --no-check-certificate $mirror/rpm/EFA.repo
-   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin
-}
+   /usr/bin/wget $smirror/rpm/EFA.repo
+   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin tnef perl-BerkeleyDB \
+   perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR \
+   perl-Net-Netmask perl-NetAddr-IP re2c postfix perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Mail-SPF \
+   perl-Net-Patricia perl-Parse-RecDescent perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable perl-Test-Pod \
+   perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
+   perl-IO-Socket-IP perl-libnet perl-Text-Balanced spamassassin
+   }
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -73,7 +79,6 @@ func_efarepo () {
 func_epelrepo () {
    rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
    yum install epel-release -y
-   yum install -y tnef perl-BerkeleyDB perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR perl-File-Tail perl-Net-Netmask perl-NetAddr-IP re2c
 }
 # +---------------------------------------------------+
 
@@ -101,8 +106,6 @@ func_mysql () {
     cd /usr/src/EFA
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create.sql
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
-    /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create_relay_postfix.sql
-    /usr/bin/mysql -u root -p"$password" mailscanner < /usr/src/EFA/create_relay_postfix.sql
 
     # Create and populate efa db
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/efatokens.sql
@@ -360,12 +363,16 @@ func_mailscanner () {
     wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
     patch < mailscanner-4.84.6-1.patch
     rm -f mailscanner-4.84.6-1.patch
-
+    
+     # Issue 200 Unrar v5 support (mailscanner backport)
+    rm -f /usr/lib/MailScanner/MailScanner/Message.pm
+    wget -O /usr/lib/MailScanner/MailScanner/Message.pm --no-check-certificate $mirror/$mirrorpath/Message.pm
+    
     # Issue #177 Correct EFA to new clamav paths using EPEL
     sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
     sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
-    sed -i "/^clamd\t\t\/bin\/false c\ clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
+    sed -i "/^clamd\t\t\/bin\/false/ c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
 }
 # +---------------------------------------------------+
 
@@ -427,28 +434,36 @@ func_spam_clamav () {
     # echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
 
     # Use the EFA packaged version.
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
-    tar -xvzf Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
+    # Issue #238 - Upgrade Spamassassin to 3.4.1
+    #cd /usr/src/EFA
+    #wget $mirror/$mirrorpath/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
+    #tar -xvzf Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
     # Issue #230 build script not building spamassassin
-    cd Spamassassin-3.4.0-*
-    chmod 755 install.sh
-    ./install.sh
-    cd /usr/src/EFA
-    rm -rf Spamassassin*
-
+    #cd Spamassassin-3.4.0-EFA-Upgrade
+    #chmod 755 install.sh
+    #./install.sh
+    #cd /usr/src/EFA
+    #rm -rf Spamassassin*
+    
+    # Symlink spam.assassin.prefs.conf (previously handled by tarball)
+    ln -s -f /etc/MailScanner/spam.assassin.prefs.conf /etc/mail/spamassassin/mailscanner.cf
+    
+    # Configure *.pre files (previously handled by tarball)
+    sed -i "/^# loadplugin Mail::Spamassassin::Plugin::RelayCountry$/ c\loadplugin Mail::Spamassassin::Plugin::RelayCountry" /etc/mail/spamassassin/init.pre
+    
     # Symlink for Geo::IP
-    mkdir -p /usr/local/share/GeoIP
-    ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
+    # Issue #247 Move GeoIP symlink to new location   
+    rm -f /usr/share/GeoIP/GeoLiteCountry.dat
+    ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/share/GeoIP/GeoLiteCountry.dat
 
-    # PDFInfo
-    cd /usr/src/EFA
-    /usr/bin/wget --no-check-certificate -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
-    /usr/bin/wget --no-check-certificate -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
-    echo "loadplugin Mail::SpamAssassin::Plugin::PDFInfo">>/etc/mail/spamassassin/v310.pre
+    # PDFInfo (now included in SA 3.4.1)
+    #cd /usr/src/EFA
+    #/usr/bin/wget -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
+    /usr/bin/wget -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
+    sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::PDFInfo$/ c\loadplugin Mail::SpamAssassin::Plugin::PDFInfo" /etc/mail/spamassassin/v341.pre
 
     # Download an initial KAM.cf file updates are handled by EFA-SA-Update.
-    /usr/bin/wget --no-check-certificate -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
+    /usr/bin/wget -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
 
     # Configure spamassassin bayes and awl DB settings
     echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
@@ -466,7 +481,7 @@ func_spam_clamav () {
     # Add example spam to db
     # source: http://spamassassin.apache.org/gtube/gtube.txt
     cd /usr/src/EFA
-    /usr/bin/wget --no-check-certificate $gitdlurl/EFA/gtube.txt
+    /usr/bin/wget $gitdlurl/EFA/gtube.txt
     /usr/local/bin/sa-learn --spam /usr/src/EFA/gtube.txt
 
     # Enable Auto White Listing
@@ -496,9 +511,9 @@ func_spam_clamav () {
     chown postfix:postfix /var/www/.spamassassin
 
     # Add Sought Channel to replace Sare and initialize sa-update
-    /usr/local/bin/sa-update
-    /usr/bin/wget --no-check-certificate -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY
-    /usr/local/bin/sa-update --import /usr/src/EFA/GPG.KEY
+    /usr/bin/sa-update
+    /usr/bin/wget -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY
+    /usr/bin/sa-update --import /usr/src/EFA/GPG.KEY
 
     # Customize sa-update in /etc/sysconfig/update_spamassassin
     sed -i '/^SAUPDATE=/ c\SAUPDATE=/usr/local/bin/sa-update' /etc/sysconfig/update_spamassassin
@@ -508,16 +523,16 @@ func_spam_clamav () {
     # Issue #82 re2c spamassassin rule complilation
     sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
 
-    # Issue #168 Start regular updates on RegistrarBoundaries.pm
+    # Issue #168 Start regular updates on RegistrarBoundaries.pm (superceded in SA 3.4.1)
     # next 2 lines temp until everything is packaged
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/RegistrarBoundaries.pm
-    rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
-    mv RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
+    # cd /usr/src/EFA
+    # wget $smirror/$mirrorpath/RegistrarBoundaries.pm
+    # rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
+    # mv RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
 
     # and in the end we run sa-update just for the fun of it..
-    /usr/local/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
-    /usr/local/bin/sa-compile
+    /usr/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
+    /usr/bin/sa-compile
 
     echo "SPAMASSASSINVERSION:$SPAMASSASSINVERSION" >> /etc/EFA-Config
 }
@@ -655,7 +670,8 @@ func_mailwatch () {
     #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" SQLSpamSettings.pm
     sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" SQLSpamSettings.pm
     mv SQLSpamSettings.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
-
+    
+    
     # Set up MailWatch tools
     cd ..
     mkdir /usr/local/bin/mailwatch
@@ -697,7 +713,7 @@ func_mailwatch () {
     sed -i "/^define('AUDIT',/ c\define('AUDIT', true);" conf.php
     sed -i "/^define('MS_LOG',/ c\define('MS_LOG', '/var/log/maillog');" conf.php
     sed -i "/^define('MAIL_LOG',/ c\define('MAIL_LOG', '/var/log/maillog');" conf.php
-    sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/local/bin/');" conf.php
+    sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/bin/');" conf.php
     sed -i "/^define('SA_RULES_DIR',/ c\define('SA_RULES_DIR', '/etc/mail/spamassassin');" conf.php
     sed -i "/^define('SHOW_SFVERSION',/ c\define('SHOW_SFVERSION', false);" conf.php
     # Issue #109 Documentation tab present after MailWatch update testing
@@ -732,8 +748,7 @@ func_mailwatch () {
     mv mailwatch-logo.png mailwatch-logo.png.orig
     mv mailscannerlogo.gif mailscannerlogo.gif.orig
     # png image looks much better -- linking to png instead
-    ln -s EFAlogo-79px.png mailwatch-logo.gif
-    #ln -s EFAlogo-79px.png mailwatch-logo.png
+    ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
     ln -s EFAlogo-79px.png MW_LOGO
     # Issue 211 MS_LOGO Missing
@@ -751,20 +766,18 @@ func_mailwatch () {
     # Issue #39 Add link for Webmin in MailWatch
     cd /var/www/html/mailscanner
     cp other.php other.php.orig
-    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';\n    /*End EFA*/" other.php
+    sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';\n    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . \$munin_pass . '@'  . \$hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" other.php
 
     # Postfix Relay Info
-    # Disabled until needed...no front end for data
-    #echo '#!/bin/bash' > /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #echo "" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/postfix_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #echo "/usr/bin/php -qc/etc/php.ini /var/www/html/mailscanner/mailscanner_relay.php --refresh" >> /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #rm -f /usr/local/bin/mailwatch/tools/Postfix_relay/INSTALL
-    #chmod +x /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh
-    #touch /etc/cron.hourly/mailwatch_update_relay
-    #echo "#!/bin/sh" > /etc/cron.hourly/mailwatch_update_relay
-    #echo "/usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_relay.sh" >> /etc/cron.hourly/mailwatch_update_relay
-    #chmod +x /etc/cron.hourly/mailwatch_update_relay
+########################################################################
+  cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
+#!/bin/bash
+
+/usr/bin/php /var/www/html/mailscanner/postfix_relay.php --refresh
+/usr/bin/php /var/www/html/mailscanner/mailscanner_relay.php --refresh
+EOF
+########################################################################
+    chmod 755 /etc/cron.hourly/mailwatch_relay.sh
 
     # Place the learn and release scripts
     cd /var/www/cgi-bin
@@ -799,13 +812,7 @@ func_mailwatch () {
     chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
 
     # Issue #156 -- GeoIP Bug
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/geoip-5fc9611.tar.gz
-    tar xzvf geoip-5fc9611.tar.gz
-    cd geoip-api-perl
-    perl Makefile.PL
-    make
-    make install
+    # Obsolete superseded with SpamAssassin fix in package
 
     # Install Encoding:FixLatin perl module for mailwatch UTF8 support
     cd /usr/src/EFA
@@ -956,8 +963,6 @@ func_mailgraph () {
 # +---------------------------------------------------+
 func_pyzor () {
 
-    yum -y install python-setuptools
-
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/pyzor-$PYZORVERSION.tar.gz
     tar xvzf pyzor-$PYZORVERSION.tar.gz
@@ -1050,10 +1055,10 @@ func_imagecerberus () {
     rm -rf /etc/spamassassin/imageCerberus/x86_64
     rm -rf /etc/spamassassin/imageCerberus/i386
 
-    mv spamassassin/ImageCerberusPLG.pm /usr/local/share/perl5/Mail/SpamAssassin/Plugin/
+    # Issue #245 Move ImageCerberus to correct (new) location
+    mv spamassassin/ImageCerberusPLG.pm /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/
     mv spamassassin/ImageCerberusPLG.cf /etc/mail/spamassassin/
-
-    sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
 
     # fix a few library locations
     ln -s /usr/lib64/libcv.so.2.0 /usr/lib64/libcv.so.1
@@ -1086,11 +1091,11 @@ func_webmin () {
     service webmin restart
 
     # Remove modules we don't need.
-    curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=adsl-client&mod=bacula-backup&mod=burner&mod=pserver&mod=cluster-copy&mod=exim&mod=shorewall6&mod=sendmail&confirm=Delete&acls=1&nodeps="
-    curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=cluster-webmin&mod=bandwidth&mod=cluster-passwd&mod=cluster-cron&mod=cluster-shell&mod=cluster-usermin&mod=cluster-useradmin&confirm=Delete&acls=1&nodeps="
-    curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=cfengine&mod=dhcpd&mod=dovecot&mod=fetchmail&mod=filter&mod=frox&mod=tunnel&mod=heartbeat&mod=ipsec&mod=jabber&mod=krb5&confirm=Delete&acls=1&nodeps="
-    curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=ldap-client&mod=ldap-server&mod=ldap-useradmin&mod=firewall&mod=mon&mod=majordomo&mod=exports&mod=openslp&mod=pap&mod=ppp-client&mod=pptp-client&mod=pptp-server&mod=postgresql&confirm=Delete&acls=1&nodeps="
-    curl -k "https://localhost:10000/webmin/delete_mod.cgi?mod=lpadmin&mod=proftpd&mod=procmail&mod=qmailadmin&mod=smart-status&mod=samba&mod=shorewall&mod=sarg&mod=squid&mod=usermin&mod=vgetty&mod=wuftpd&mod=webalizer&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=adsl-client&mod=bacula-backup&mod=burner&mod=pserver&mod=cluster-copy&mod=exim&mod=shorewall6&mod=sendmail&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=cluster-webmin&mod=bandwidth&mod=cluster-passwd&mod=cluster-cron&mod=cluster-shell&mod=cluster-usermin&mod=cluster-useradmin&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=cfengine&mod=dhcpd&mod=dovecot&mod=fetchmail&mod=filter&mod=frox&mod=tunnel&mod=heartbeat&mod=ipsec&mod=jabber&mod=krb5&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=ldap-client&mod=ldap-server&mod=ldap-useradmin&mod=firewall&mod=mon&mod=majordomo&mod=exports&mod=openslp&mod=pap&mod=ppp-client&mod=pptp-client&mod=pptp-server&mod=postgresql&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=lpadmin&mod=proftpd&mod=procmail&mod=qmailadmin&mod=smart-status&mod=samba&mod=shorewall&mod=sarg&mod=squid&mod=usermin&mod=vgetty&mod=wuftpd&mod=webalizer&confirm=Delete&acls=1&nodeps="
 
     # fix the holes again
     sed -i '/^referers_none=0/ c\referers_none=1' /etc/webmin/config
@@ -1158,7 +1163,7 @@ func_munin () {
       AuthType Basic
       require valid-user
   </directory>
-  EOF
+EOF
     # End writing apache config file
 
 }
@@ -1314,9 +1319,8 @@ func_cron () {
     # Remove the raid-check util (Issue #102)
     rm -f /etc/cron.d/raid-check
     # Issue #187 EFA service Monitoring
-    usr/bin/wget --no-check-certificate -O /usr/sbin/EFA-Monitor-cron $gitdlurl/EFA/EFA-Monitor-cron
+    /usr/bin/wget --no-check-certificate -O /usr/sbin/EFA-Monitor-cron $gitdlurl/EFA/EFA-Monitor-cron
     chmod 700 /usr/sbin/EFA-Monitor-cron
-    echo "* * * * * root /usr/sbin/EFA-Monitor-cron >/dev/null 2>&1" > /etc/cron.d/EFA-Monitor.cron
 }
 # +---------------------------------------------------+
 
@@ -1428,8 +1432,8 @@ function main() {
   if [[ -z "$action" ]]; then
     func_prebuild
     func_upgradeOS
-    func_efarepo
     func_epelrepo
+    func_efarepo
     func_mysql
     func_postfix
     func_mailscanner

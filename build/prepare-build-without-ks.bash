@@ -1,18 +1,18 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.8 build without ks version 20150517
+# EFA 3.0.0.9-beta build without ks version 20160203
 #
 # Purpose:
-#		This script will 'baseline' an existing CentOS installation
-#		to start the build.bash script ONLY use this script if you
-#		are unable to use the kickstart methode.
+#       This script will 'baseline' an existing CentOS installation
+#       to start the build.bash script ONLY use this script if you
+#       are unable to use the kickstart methode.
 #
 # Prerequirements:
-#		A minimal installation of CentOS.
-#		Working internet connection
+#       A minimal installation of CentOS.
+#       Working internet connection
 #
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013~2015 https://efa-project.org
+# Copyright (C) 2013~2016 https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,13 +47,13 @@ fi
 #----------------------------------------------------------------#
 CENTOS=`cat /etc/centos-release`
 
-if [[ "$CENTOS" == "CentOS release 6.6 (Final)" ]]
+if [[ "$CENTOS" == "CentOS release 6.7 (Final)" ]]
   then
-    echo "Good you are running CentOS 6.6 x64"
+    echo "Good you are running CentOS 6.7 x64"
 else
-  echo "You are not running CentOS 6.6"
+  echo "You are not running CentOS 6.7"
   echo "Unsupported system, stopping now"
-  echo "If you are running CentOS 6.5 please do a manual upgrade to 6.6 before starting this build"
+  echo "If you are running CentOS 6.6 please do a manual upgrade to 6.7 before starting this build"
   exit 1
 fi
 #----------------------------------------------------------------#
@@ -179,6 +179,16 @@ perl-Net-IP \
 perl-Net-SSLeay \
 perl-Encode-Detect \
 perl-Module-Build \
+perl-Business-ISBN \
+perl-Business-ISBN-Data \
+perl-Crypt-OpenSSL-Random \
+perl-Error \
+perl-IO-String \
+perl-Mail-DKIM \
+perl-Test-Manifest \
+perl-YAML \
+perl-libwww-perl \
+perl-URI \
 mod_ssl \
 system-config-keyboard \
 openssl-devel
@@ -223,7 +233,7 @@ alsa-lib
 #----------------------------------------------------------------#
 mkdir /var/log/EFA
 mkdir /usr/src/EFA
-/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.0.8/build/build.bash --no-check-certificate
+/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.0.9-beta/build/build.bash --no-check-certificate
 chmod 700 /usr/src/EFA/build.bash
 #----------------------------------------------------------------#
 

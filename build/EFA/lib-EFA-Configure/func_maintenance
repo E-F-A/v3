@@ -25,8 +25,9 @@ func_maintenance-mode() {
       elif [[ -z "$MAINTENANCE" || $MAINTENANCE =~ ^[nN]$ ]]; then
         echo -e ""
         echo -e "$green[EFA]$clean No action taken"
+        FLAG=0
       else
-        echo -e "$red[ERROR]$clean Invalid input
+        echo -e "$red[ERROR]$clean Invalid input"
         echo -en "$green[EFA]$clean : Enter EFA Maintenance Mode? (y/N):"
         read MAINTENANCE
       fi
@@ -47,8 +48,9 @@ func_maintenance-mode() {
       elif [[ $MAINTENANCE =~ ^[nN]$ ]]; then
         echo -e ""
         echo -e "$green[EFA]$clean No action taken"
+        FLAG=0
       else
-        echo -e "$red[ERROR]$clean Invalid input
+        echo -e "$red[ERROR]$clean Invalid input"
         echo -en "$green[EFA]$clean : Exit EFA Maintenance Mode? (Y/n):"
         read MAINTENANCE
       fi

@@ -1036,10 +1036,15 @@ function func_end() {
 
   # Cleanup /var/log/EFA
   rm -f /var/log/EFA/*
-  
+
   # Issue 135 Lots of legit mails blocked on SpamAssassin KAM_BODY_URIBL_PCCC
   # aka update kam.cf early
+  service MailScanner start
   /usr/local/sbin/EFA-SA-Update -update
+  service MailScanner stop
+
+  # Enable EFA Service Monitoring now
+  echo "* * * * * root /usr/sbin/EFA-Monitor-cron >/dev/null 2>&1" > /etc/cron.d/EFA-Monitor.cron
 
   # And the end.. we are done.. whooo!
   func_echo-header
