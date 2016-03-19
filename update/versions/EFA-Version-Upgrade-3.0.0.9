@@ -24,7 +24,7 @@
 #----------------------------------------------------------------#
 VERSION="3.0.0.9"
 logdir="/var/log/EFA"
-yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
 MAILFROM="$ADMINEMAIL"
 MAILTO="$ADMINEMAIL"
@@ -639,14 +639,23 @@ function update-mailwatch() {
       cp /var/EFA/backup/$VERSION/mailscanner/mailgraph.php .
 
       # Reconfigure Greylisting as previously configured
-      cp functions.php functions.php.orig
       cp /var/EFA/backup/$VERSION/mailscanner/grey.php .
+
+      # Add greylist to mailwatch menu
+      # hide from non-admins
+      sed -i "/^        \$nav\['docs.php'\] =/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A' \&\& SHOW_GREYLIST == true\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+
+      # add SHOW_GREYLIST to conf.php
+      echo "" >> /var/www/html/mailscanner/conf.php
+      echo "// Greylisting menu item" >> /var/www/html/mailscanner/conf.php
 
       # Is greylisting enabled?  Add back menu item...
       if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
-        sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+        echo "define('SHOW_GREYLIST', true);" >> /var/www/html/mailscanner/conf.php
+      else
+        echo "define('SHOW_GREYLIST', false);" >> /var/www/html/mailscanner/conf.php
       fi
-      
+
       # Issue #39 Add link for Webmin in MailWatch
       sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
 

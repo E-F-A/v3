@@ -28,7 +28,7 @@ func_greylisting(){
           chkconfig sqlgrey off
 
           # disable Greylist menu item
-          /bin/cp -f /var/www/html/mailscanner/functions.php.orig /var/www/html/mailscanner/functions.php
+          sed -i "/^define('SHOW_GREYLIST', true);/ c\define('SHOW_GREYLIST', false);" /var/www/html/mailscanner/conf.php
 
           echo -e "$green[EFA]$clean Greylisting $red DISABLED $clean"
           pause
@@ -52,8 +52,7 @@ func_greylisting(){
           service sqlgrey start 
           chkconfig sqlgrey on
           # Enable Greylist menu item
-		  cp /var/www/html/mailscanner/functions.php /var/www/html/mailscanner/functions.php.orig
-          sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+          sed -i "/^define('SHOW_GREYLIST', false);/ c\define('SHOW_GREYLIST', true);" /var/www/html/mailscanner/conf.php
 
           echo -e "$green[EFA]$clean Greylisting $green ENABLED $clean"
           pause

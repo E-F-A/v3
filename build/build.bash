@@ -32,7 +32,7 @@ password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
-yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
 MAILWATCHVERSION="20f37a1ecb"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
@@ -482,7 +482,7 @@ func_spam_clamav () {
     # source: http://spamassassin.apache.org/gtube/gtube.txt
     cd /usr/src/EFA
     /usr/bin/wget $gitdlurl/EFA/gtube.txt
-    /usr/local/bin/sa-learn --spam /usr/src/EFA/gtube.txt
+    /usr/bin/sa-learn --spam /usr/src/EFA/gtube.txt
 
     # Enable Auto White Listing
     sed -i '/^#loadplugin Mail::SpamAssassin::Plugin::AWL/ c\loadplugin Mail::SpamAssassin::Plugin::AWL' /etc/mail/spamassassin/v310.pre
@@ -516,8 +516,8 @@ func_spam_clamav () {
     /usr/bin/sa-update --import /usr/src/EFA/GPG.KEY
 
     # Customize sa-update in /etc/sysconfig/update_spamassassin
-    sed -i '/^SAUPDATE=/ c\SAUPDATE=/usr/local/bin/sa-update' /etc/sysconfig/update_spamassassin
-    sed -i '/^SACOMPILE=/ c\SACOMPILE=/usr/local/bin/sa-compile' /etc/sysconfig/update_spamassassin
+    sed -i '/^SAUPDATE=/ c\SAUPDATE=/usr/bin/sa-update' /etc/sysconfig/update_spamassassin
+    sed -i '/^SACOMPILE=/ c\SACOMPILE=/usr/bin/sa-compile' /etc/sysconfig/update_spamassassin
     sed -i '/^SAUPDATEARGS=/ c\SAUPDATEARGS=" --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org"' /etc/sysconfig/update_spamassassin
 
     # Issue #82 re2c spamassassin rule complilation
@@ -850,8 +850,12 @@ func_sgwi () {
 
     # Add greylist to mailwatch menu
     # hide from non-admins
-    cp /var/www/html/mailscanner/functions.php /var/www/html/mailscanner/functions.php.orig
-    sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+    sed -i "/^        \$nav\['docs.php'\] =/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A' \&\& SHOW_GREYLIST == true\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+
+    # add SHOW_GREYLIST to conf.php
+    echo "" >> /var/www/html/mailscanner/conf.php
+    echo "// Greylisting menu item" >> /var/www/html/mailscanner/conf.php
+    echo "define('SHOW_GREYLIST', true);" >> /var/www/html/mailscanner/conf.php
 
     # Create wrapper
     touch /var/www/html/mailscanner/grey.php
