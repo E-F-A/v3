@@ -519,10 +519,14 @@ EOF
   rm -f /usr/local/share/man/man3/Test::Manifest.3
   rm -f /usr/local/share/man/man3/WWW::RobotRules*.3pm
   rm -f /usr/local/share/man/man3/YAML*.3pm
-  
+
   # Update SA path in MailWatch
   sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/bin/');" /var/www/html/mailscanner/conf.php
-  
+
+  # Update SA path in update_spamassassin
+  sed -i "/^SAUPDATE=/ c\SAUPDATE=/usr/bin/sa-update" /etc/sysconfig/update_spamassassin
+  sed -i "/^SACOMPILE=/ c\SACOMPILE=/usr/bin/sa-compile" /etc/sysconfig/update_spamassassin
+
   # cleanup /var/lib/spamassassin and run updates
   rm -rf /var/lib/spamassassin/*
   sa-update
