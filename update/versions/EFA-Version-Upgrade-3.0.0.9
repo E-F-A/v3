@@ -528,6 +528,18 @@ EOF
   sa-update
   sa-compile
 
+  # Issue #179 default https
+  sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
+  echo -e "RewriteEngine On" > /etc/httpd/conf.d/redirectssl.conf
+  echo -e "RewriteCond %{HTTPS} !=on" >> /etc/httpd/conf.d/redirectssl.conf
+  echo -e "RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]" >> /etc/httpd/conf.d/redirectssl.conf
+  iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT>/dev/null 2>&1
+  iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+  /etc/init.d/iptables save
+
+  # Remove SA in /etc/EFA-Config (now rpm based)
+  sed -i "/^SPAMASSASSINVERSION:/d" /etc/EFA-Config
+  
   echo "$VERSION update is complete"  
   echo ""
   echo "" >> $TMPMAIL

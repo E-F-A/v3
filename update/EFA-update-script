@@ -252,6 +252,7 @@ function finalize() {
   rm $TMPMAIL
 
   echo "All done"
+  echo "Please restart your system as soon as possible."
   echo "If your system does not return to a command prompt"
   echo "you can now safely press ctrl-c to abort logsave"
   echo "Thank you for using E.F.A."
