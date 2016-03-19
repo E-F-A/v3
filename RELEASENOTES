@@ -1,5 +1,5 @@
 ######################################################################
-# EFA 3.0.0.9-beta RELEASE NOTES
+# EFA 3.0.0.9 RELEASE NOTES
 ######################################################################
 # Copyright (C) 2015-2016  https://efa-project.org
 #
@@ -17,25 +17,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
 
-Welcome to EFA Version 3.0.0.9-beta!
+Welcome to EFA Version 3.0.0.9!
 
 Many thanks goes to the developers of EFA and maintainers of all
 3rd party packages!
 
-These release notes will help guide you through the 3.0.0.9-beta update.
+These release notes will help guide you through the 3.0.0.9 update.
 
 Many fixes and enhancements have been made to EFA.  Please review the
 CHANGELOG for further information.
 
-https://raw.githubusercontent.com/E-F-A/v3/3.0.0.9-beta/CHANGELOG
+https://raw.githubusercontent.com/E-F-A/v3/3.0.0.9/CHANGELOG
 
 ###################### How To Update ##################################
-
-///////////////////////////WARNING\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-This is a beta branch.  Do not use this version in production.
-This beta is for testing only.  You will not be able to update to the
-next release.  You have been warned.
-///////////////////////////WARNING\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 It is recommended that you suspend your mail flow and snapshot prior
 to updating or to back up the entire appliance.
@@ -51,7 +45,7 @@ sudo /usr/local/sbin/EFA-Update -update
 The first time you run this update, the kernel may update. If this
 happens, the script will halt to give you an opportunity to restart.
 After restarting and booting to the new kernel, rerun EFA-Update to
-continue the update process to 3.0.0.9-beta.
+continue the update process to 3.0.0.9.
 
 EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
@@ -62,7 +56,7 @@ if present.
 ################ Important Info -- Custom Tweaks ######################
 
 Many EFA users have modified their EFA installations and made tweaks
-that may "disappear" after an update to 3.0.0.9-beta.
+that may "disappear" after an update to 3.0.0.9.
 
 Updated files have been automatically backed up to the following
 location:
@@ -71,7 +65,7 @@ location:
 
 (Other versions may be present if updating from an older version)
 
-You may need to re-implement customizations after update to 3.0.0.9-beta
+You may need to re-implement customizations after update to 3.0.0.9
 For example, if you are using Active Directory integration,
 this will need to be turned back on (see MailWatch Changes below)
 
@@ -80,7 +74,7 @@ this will need to be turned back on (see MailWatch Changes below)
 Redundant perl modules in /usr/local /usr/lib64/perl5 and
 /usr/share/perl5 that are superceded with RPMs are removed in this
 update.  As a precaution, these locations are backed up to
-/var/EFA/backup/3.0.0.9-beta as tarballs of each branch.
+/var/EFA/backup/3.0.0.9 as tarballs of each branch.
 
 If you are missing perl modules after updating, you can find them here,
 or, preferably, you can reinstall the missing modules.
@@ -89,7 +83,7 @@ or, preferably, you can reinstall the missing modules.
 
 ################### New Feature -- EFA-Monitor ########################
 
-EFA Monitor is a new feature in 3.0.0.9-beta.
+EFA Monitor is a new feature in 3.0.0.9.
 
 EFA Monitor checks for critical services running every minute via cron
 and attempts to restart them if they are not running.  By default, 3
@@ -109,21 +103,22 @@ Munin is now included in EFA.  A link to Munin can be found in MailWatch
 under Tools.  Munin provides details stats and graphs for various parts
 of the EFA system beyond the simple mail statistics graphs.
 
-Note that HTTPS should be enabled to access Munin.
+Note that HTTPS should be enabled to access Munin, and DNS must be 
+set up properly in your environment for EFA.
 
 #######################################################################
 
 ########################## Known Issues ###############################
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
-install itself after updating to 3.0.0.9-beta.  Reapply VMware-Tools
-after updating to 3.0.0.9-beta.  Run the following command to remove
+install itself after updating to 3.0.0.9.  Reapply VMware-Tools
+after updating to 3.0.0.9.  Run the following command to remove
 open-vm-tools:
 
 sudo rpm -e open-vm-tools
 
 2) Error, "could not search" when logging into MailWatch after
-updating to 3.0.0.9-beta
+updating to 3.0.0.9
 
 This occurs when Active Directory integration is enabled.
 
