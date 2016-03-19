@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.9-beta build without ks version 20160203
+# EFA 3.0.0.9 build without ks version 20160203
 #
 # Purpose:
 #       This script will 'baseline' an existing CentOS installation
@@ -233,7 +233,7 @@ alsa-lib
 #----------------------------------------------------------------#
 mkdir /var/log/EFA
 mkdir /usr/src/EFA
-/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.0.9-beta/build/build.bash --no-check-certificate
+/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.0.9/build/build.bash --no-check-certificate
 chmod 700 /usr/src/EFA/build.bash
 #----------------------------------------------------------------#
 
