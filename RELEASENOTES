@@ -51,6 +51,9 @@ EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
 if present.
 
+After updating, please run "Update GeoIP Database" update as soon as 
+possible from MailWatch under Tools/Links.
+
 #######################################################################
 
 ################ Important Info -- Custom Tweaks ######################
