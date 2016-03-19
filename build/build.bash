@@ -32,7 +32,7 @@ password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
-yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
 MAILWATCHVERSION="20f37a1ecb"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
@@ -850,8 +850,12 @@ func_sgwi () {
 
     # Add greylist to mailwatch menu
     # hide from non-admins
-    cp /var/www/html/mailscanner/functions.php /var/www/html/mailscanner/functions.php.orig
-    sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+    sed -i "/^        \$nav\['docs.php'\] =/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A' \&\& SHOW_GREYLIST == true\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+
+    # add SHOW_GREYLIST to conf.php
+    echo "" >> /var/www/html/mailscanner/conf.php
+    echo "// Greylisting menu item" >> /var/www/html/mailscanner/conf.php
+    echo "define('SHOW_GREYLIST', true);" >> /var/www/html/mailscanner/conf.php
 
     # Create wrapper
     touch /var/www/html/mailscanner/grey.php
