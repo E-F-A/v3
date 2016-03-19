@@ -928,7 +928,11 @@ func_Install-VmwareTools(){
   echo -e "$green[EFA]$clean Depending on the speed of your system this"
   echo -e "$green[EFA]$clean might take a while."
   pause
+  # Disable excludes
+  sed -i "s/^exclude=\(.*\)$/#exclude=\1/" /etc/yum.conf
   yum -y install glib2-devel pam-devel libdnet-devel gcc-c++ libicu-devel open-vm-tools
+  # Restore excludes
+  sed -i "s/^#exclude=\(.*\)$/exclude=\1/" /etc/yum.conf
   chkconfig vmtoolsd on
   service vmtoolsd start
   func_echo-header
