@@ -11,3 +11,7 @@ build/build.bash
 
 build/prepare-build-without-ks.bash
  [ ] line 226
+ 
+update/versions
+ [ ] create new update script for version
+ [ ] Version=""

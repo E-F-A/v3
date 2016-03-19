@@ -1,0 +1,810 @@
+#!/bin/bash
+# +--------------------------------------------------------------------+
+# EFA update script
+# Version 20160305
+# +--------------------------------------------------------------------+
+# Copyright (C) 2012~2016 https://efa-project.org
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# +--------------------------------------------------------------------+
+
+#----------------------------------------------------------------#
+# Variables
+#----------------------------------------------------------------#
+VERSION="3.0.0.9"
+logdir="/var/log/EFA"
+yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
+ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
+MAILFROM="$ADMINEMAIL"
+MAILTO="$ADMINEMAIL"
+MAILSUBJECT="EFA Update Complete For: `hostname`"
+SENDMAIL="/usr/lib/sendmail"
+TMPMAIL="/tmp/tempmail"
+STAGING="/tmp/EFA-Staging"
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# List of current version numbers in this E.F.A. Version.
+#----------------------------------------------------------------#
+MAILWATCHVERSION="20f37a1ecb"
+IMAGECEBERUSVERSION="1.1"
+SPAMASSASSINVERSION="3.4.1"
+PYZORVERSION="0.7.0"
+WEBMINVERSION="1.770-1"
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function where we do all our magic
+#----------------------------------------------------------------#
+function run_update() {
+  echo "Starting update to E.F.A. $VERSION"
+
+  # To package for this update:
+  # /EFA-Version-Upgrade                              <- This file in the root, renamed!
+  # /Files/                                           <- Directory (containing binary files)
+  # /Files/EFA.repo                                   <- EFA repo file
+  # /Scripts/                                         <- Directory (containing update scripts (previous git scripts))
+  # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
+  # /Scripts/EFA-Configure                            <- EFA-Configure script
+
+  ##### Backup Phase #####
+  /usr/local/sbin/EFA-Backup -backup
+  [[ $? -ne 0 ]] && abort
+  
+  # Backup perl locations in preparation for perl cleanup
+  mkdir -p /var/EFA/backup/$VERSION
+  tar -cpzf /var/EFA/backup/$VERSION/backup-usrlocal.tar.gz -C /usr/local /usr/local
+  [[ $? -ne 0 ]] && abort
+  tar -cpzf /var/EFA/backup/$VERSION/backup-usrlib64perl5.tar.gz -C /usr/lib64/perl5 /usr/lib64/perl5
+  [[ $? -ne 0 ]] && abort
+  tar -cpzf /var/EFA/backup/$VERSION/backup-usrshareperl5.tar.gz -C /usr/share/perl5 /usr/share/perl5
+  [[ $? -ne 0 ]] && abort
+
+  ##### Commit Phase #####
+
+  # grab latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -rf /var/EFA/lib/EFA-Configure/
+  cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
+
+  # Remove packages from rpmforge and install from EFA (to fix dependency issues between rpmforge & EPEL)
+  rpm -e --nodeps perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV rpmforge-release
+  # Skip abort in case one or more is already removed
+  # [[ $? -ne 0 ]] && abort
+
+  rpm --import $STAGING/Files/RPM-GPG-KEY-E.F.A.Project
+  cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo
+  yum clean all
+  yum_update
+  # Issue #238 - Upgrade Spamassassin to 3.4.1 
+  yum -y install perl-Convert-TNEF perl-IO-Multiplex perl-Net-Server re2c unrar perl-IP-Country perl-Mail-SPF-Query \
+    perl-Net-Ident perl-Mail-ClamAV webmin postfix mysql clamav clamd tnef perl-BerkeleyDB perl-Filesys-Df \
+    perl-File-Tail perl-Net-Server perl-Net-CIDR perl-Net-Netmask perl-NetAddr-IP \
+    perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Mail-SPF perl-Net-Patricia perl-Parse-RecDescent \
+    perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable perl-Test-Pod perl-Digest perl-Digest-MD5 \
+    perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket perl-IO-Socket-IP perl-libnet \
+    perl-Text-Balanced spamassassin
+  [[ $? -ne 0 ]] && abort
+
+  update-vmtools
+
+  # Install munin for system stats
+  yum -y install munin
+  [[ $? -ne 0 ]] && abort
+  chkconfig munin-node on
+  randompw
+  MUNINPWD=$PASSWD
+  htpasswd -b /etc/munin/munin-htpasswd munin $MUNINPWD
+  sed -i '/^my $graph_width = / c\my $graph_width = $ENV{'"'graph_width'"'} ? $ENV{'"'graph_width'"'} : 800;' /usr/share/munin/plugins/diskstats
+  sed -i 's/.*#max_size_y 4000/&\ngraph_width 800/' /etc/munin/munin.conf
+  echo "MUNINPWD:$MUNINPWD" >> /etc/EFA-Config
+  # write new munin apache config file
+  cat > /etc/httpd/conf.d/munin.conf << 'EOF'
+<directory /var/www/html/munin/localhost/localhost>
+    Order allow,deny
+    Allow from all
+    Satisfy any
+</directory>
+
+<directory /var/www/html/munin>
+    AuthUserFile /etc/munin/munin-htpasswd
+    AuthName "Munin"
+    AuthType Basic
+    require valid-user
+</directory>
+EOF
+  # End writing apache config file
+
+  service munin-node start
+  service httpd restart
+
+  # Issue #197 EFA-Backup for Unbound
+  rm -f /usr/local/bin/EFA-Backup
+  cp $STAGING/Scripts/EFA-Backup /usr/local/bin
+
+  # Issue #194 mtalog is empty -- install postfix relay script
+  mailwatchpw=$(grep MAILWATCHSQLPWD /etc/EFA-Config | sed s/^.*://)
+  mysql -u mailwatch --password=$mailwatchpw mailscanner < /usr/local/bin/mailwatch/tools/Postfix_relay/create_relay_postfix.sql
+########################################################################
+  cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
+#!/bin/bash
+
+/usr/bin/php /var/www/html/mailscanner/postfix_relay.php --refresh
+/usr/bin/php /var/www/html/mailscanner/mailscanner_relay.php --refresh
+EOF
+########################################################################
+  chmod 755 /etc/cron.hourly/mailwatch_relay.sh
+
+  # Issue 203 Notify Senders sed replace issue in 3.0.0.8
+  # Test for issue
+  if [[ $(grep -o '^Notify Senders =' /etc/MailScanner/MailScanner.conf | wc -l) -eq 5 ]]; then
+    awk '{if(/^Notify Senders =/) count++; \
+      if(count==2) { sub(/^Notify Senders =.*$/,"Notify Senders Of Viruses = no"); print; } \
+      else if(count==3) { sub(/^Notify Senders =.*$/,"Notify Senders Of Blocked Filenames Or Filetypes = yes"); print; } \
+      else if(count==4) { sub(/^Notify Senders =.*$/,"Notify Senders Of Blocked Size Attachments = no"); print; } \
+      else if(count==5) { sub(/^Notify Senders =.*$/,"Notify Senders Of Other Blocked Content = yes"); print; } \
+      else print;}' /etc/MailScanner/MailScanner.conf > /etc/MailScanner/MailScanner.conf.tmp
+    rm -f /etc/MailScanner/MailScanner.conf
+    mv /etc/MailScanner/MailScanner.conf.tmp /etc/MailScanner/MailScanner.conf
+  fi
+
+  # Issue 200 Unrar v5 support (mailscanner backport)
+  rm -f /usr/lib/MailScanner/MailScanner/Message.pm
+  cp $STAGING/Files/Message.pm /usr/lib/MailScanner/MailScanner/Message.pm
+  
+  # Issue 191 Redirect postfix notifications from postmaster
+  echo "POSTMASTEREMAIL:" >> /etc/EFA-Config
+  
+  # Issue 219 Trailing spaces in subjects in MailScanner trigger duplicate subjects in header
+  sed -i "/^Place New Headers At Top Of Message =/ c\Place New Headers At Top Of Message = yes" /etc/MailScanner/MailScanner.conf
+
+  # Update MailWatch to latest version
+  update-mailwatch
+
+  # Add Munin to Mailwatch
+  sed -i "/^    \/\*End EFA\*/ c\    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . \$munin_pass . '@'  . \$hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" /var/www/html/mailscanner/other.php
+
+  # Issue #96 Reconfigure to permit yum update
+  CHECKEXCLUDE=$(grep "^exclude" /etc/yum.conf)
+  if [[ -z $CHECKEXCLUDE ]]; then
+    echo "exclude=$yumexclude" >> /etc/yum.conf
+  fi
+
+  # Issue #162 Upgrade Webmin
+  # Pulled from EFA Repo during yum update
+  # Just call update-webmin to cleanup modules
+  update-webmin
+
+  # Issue #187 EFA service Monitoring
+  cp $STAGING/Scripts/EFA-Monitor-cron /usr/sbin
+  chmod 700 /usr/sbin/EFA-Monitor-cron
+  echo "* * * * * root /usr/sbin/EFA-Monitor-cron >/dev/null 2>&1" > /etc/cron.d/EFA-Monitor.cron
+
+  # Issue #227 Include local.cf in EFA-Backup
+  rm -f /usr/local/sbin/EFA-Backup
+  cp $STAGING/Scripts/EFA-Backup /usr/local/sbin/
+  chmod 700 /usr/local/sbin/EFA-Backup
+
+   # Issue #233 Disable postfix utf8 support for now
+  echo "smtputf8_enable = no" >> /etc/postfix/main.cf
+
+  # Issue #245 Move ImageCerberus to correct (new) location
+  mv /usr/local/share/perl5/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/
+  sed -i '/^loadplugin ImageCerberusPLG / c\loadplugin ImageCerberusPLG /usr/share/perl5/vendor_perl/Mail/SpamAssassin/Plugin/ImageCerberusPLG.pm' /etc/mail/spamassassin/ImageCerberusPLG.cf
+
+  # Issue #244 Cleanup of SpamAssassin in /usr/local
+  rm -rf /usr/local/spamassassin
+  rm -f /usr/local/perl5/spamassassin-run.pod
+  rm -f /usr/local/share/perl5/Mail/SpamAssassin.pm
+  rm -rf /usr/local/share/perl5/Mail/SpamAssassin
+  rm -f /usr/local/bin/sa-awl
+  rm -f /usr/local/bin/sa-check_spamd
+  rm -f /usr/local/bin/sa-compiled
+  rm -f /usr/local/bin/sa-learn
+  rm -f /usr/local/bin/sa-update
+  rm -f /usr/local/bin/spamassassin
+  rm -f /usr/local/bin/spamc
+  rm -f /usr/local/bin/spamd
+  rm -f /usr/local/share/man/man1/sa-awl.1
+  rm -f /usr/local/share/man/man1/sa-compile.1
+  rm -f /usr/local/share/man/man1/sa-learn.1
+  rm -f /usr/local/share/man/man1/sa-update.1
+  rm -f /usr/local/share/man/man1/spamassassin-run.1
+  rm -f /usr/local/share/man/man1/spamassassin.1
+  rm -f /usr/local/share/man/man1/spamc.1
+  rm -f /usr/local/share/man/man1/spamd.1
+  rm -rf /usr/local/lib64/perl5/auto/Mail/SpamAssassin
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::AICache.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::ArchiveIterator.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::AsyncLoop.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::AutoWhitelist.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Bayes.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::BayesStore.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::BayesStore::BDB.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::BayesStore::MySQL.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::BayesStore::PgSQL.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::BayesStore::Redis.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::BayesStore::SQL.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Client.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Conf.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Conf::LDAP.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Conf::Parser.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Conf::SQL.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::DnsResolver.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Logger.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Logger::File.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Logger::Stderr.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Logger::Syslog.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Message.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Message::Metadata.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Message::Node.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::PerMsgLearner.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::PerMsgStatus.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::PersistentAddrList.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::ASN.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::AWL.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::AccessDB.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::AntiVirus.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::AskDNS.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::AutoLearnThreshold.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Bayes.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::BodyRuleBaseExtractor.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Check.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::DCC.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::DKIM.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::DNSEval.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Hashcash.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::MIMEHeader.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::OneLineBodyRuleType.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::PhishTag.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Pyzor.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Razor2.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::RelayCountry.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::ReplaceTags.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Reuse.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Rule2XSBody.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::SPF.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Shortcircuit.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::SpamCop.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::Test.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::TextCat.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::URIDNSBL.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::URIDetail.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::VBounce.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Plugin::WhiteListSubject.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::PluginHandler.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::SQLBasedAddrList.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::SubProcBackChannel.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Timeout.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Util.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Util::DependencyInfo.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Util::Progress.3pm
+  rm -f /usr/local/share/man/man3/Mail::SpamAssassin::Util::RegistrarBoundaries.3pm
+  rm -f /usr/local/share/man/man3/spamassassin-run.3pm
+  rm -f /usr/local/share/perl5/spamassassin-run.pod
+
+  #Issue #247 Move GeoIP symlink to new location
+  rm -f /usr/share/GeoIP/GeoLiteCountry.dat
+  ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/share/GeoIP/GeoLiteCountry.dat
+
+  # Issue #246 Cleanup old perl modules in /usr/local (and other old locations)
+  # Probably others, keep looking in subsequent updates to perl modules and use ***surgical*** level scrutiny
+
+  rm -rf /usr/local/share/perl5/Bundle
+  rm -rf /usr/local/lib64/perl5/auto/Business
+  rm -f /usr/local/share/man/man3/Business::ISBN::Data.3
+  rm -rf /usr/local/share/perl5/Business
+  rm -rf /usr/local/lib64/perl5/auto/Data
+  rm -f /usr/local/share/man/man3/Data::Dump.3pm
+  rm -rf /usr/local/share/perl5/Data
+  rm -rf /usr/local/lib64/perl5/auto/Error
+  rm -f /usr/local/share/man/man3/Error.3pm
+  rm -f /usr/local/share/man/man3/Error::Simple.3pm
+  rm -f /usr/local/share/man/man3/YAML::Error.3pm
+  rm -f /usr/local/share/perl5/Error.pm
+  rm -rf /usr/local/share/perl5/YAML/
+  rm -f /usr/local/share/perl5/YAML.pm
+  rm -rf /usr/local/share/perl5/File
+  rm -f /usr/local/share/man/man3/HTML::Form.3pm
+  rm -rf /usr/local/share/perl5/HTML
+  rm -f /usr/lib64/perl5/DB_File.pm
+  rm -rf /usr/lib64/perl5/auto/DB_File
+  rm -f /usr/lib64/perl5/Digest/MD5.pm
+  rm -f /usr/lib64/perl5/Digest/SHA.pm
+  rm -f /usr/share/perl5/Digest.pm
+  rm -rf /usr/lib64/perl5/auto/Digest/MD5
+  rm -rf /usr/lib64/perl5/auto/Digest/SHA
+  rm -rf /usr/local/share/perl5/Error
+  rm -rf /usr/share/perl5/Digest
+  rm -rf /usr/local/lib64/perl5/auto/Net/DNS/Resolver/Programmable
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::Programmable.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS*
+  rm -rf /usr/local/lib64/perl5/auto/Parse/RecDescent
+  rm -f /usr/local/share/man/man3/Parse::RecDescent.3pm
+  rm -rf /usr/local/share/perl5/Parse
+  rm -f /usr/local/lib64/perl5/Net/Patricia.pm
+  rm -rf /usr/local/lib64/perl5/auto/Net/Patricia
+  rm -f /usr/local/share/man/man3/Net::Patricia.3pm
+  rm -rf /usr/local/lib64/perl5/auto/Mail/SPF
+  rm -f /usr/local/share/man/man3/Mail::SPF.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Base.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::MacroString.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech::A.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech::All.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech::Exists.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech::IP4.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech::IP6.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech::Include.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech::MX.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mech::PTR.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mod.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mod::Exp.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Mod::Redirect.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Record.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Request.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Result.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::SenderIPAddrMech.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Server.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Term.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::Util.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::v1::Record.3pm
+  rm -f /usr/local/share/man/man3/Mail::SPF::v2::Record.3pm
+  rm -rf /usr/local/share/perl5/Mail/SPF
+  rm -f /usr/local/share/perl5/Mail/SPF.pm
+  rm -rf /usr/local/lib64/perl5/auto/Data
+  rm -rf /usr/local/share/perl5/Data
+  rm -rf /usr/local/lib64/perl5/auto/Crypt/OpenSSL/RSA
+  rm -f /usr/local/share/man/man3/Crypt::OpenSSL::RSA.3pm
+  rm -rf /usr/local/lib64/perl5/NetAddr
+  rm -rf /usr/local/lib64/perl5/auto/NetAddr
+  rm -f /usr/local/share/man/man3/NetAddr::IP.3pm
+  rm -f /usr/local/share/man/man3/NetAddr::IP::InetBase.3pm
+  rm -f /usr/local/share/man/man3/NetAddr::IP::Lite.3pm
+  rm -f /usr/local/share/man/man3/NetAddr::IP::Util.3pm
+  rm -f /usr/local/share/man/man3/NetAddr::IP::UtilPP.3pm
+  rm -rf /usr/lib64/perl5/auto/ExtUtils/Constant
+  rm -rf /usr/share/perl5/ExtUtils/Constant
+  rm -f /usr/share/perl5/ExtUtils/Constant.pm
+  rm -rf /usr/local/lib64/perl5/auto/IO/Socket
+  rm -rf /usr/local/share/perl5/IO/Socket
+  rm -f /usr/share/perl5/Net/Cmd.pm
+  rm -f /usr/share/perl5/Net/Config.pm
+  rm -f /usr/share/perl5/Net/Domain.pm
+  rm -rf /usr/share/perl5/Net/FTP
+  rm -f /usr/share/perl5/Net/FTP.pm
+  rm -f /usr/share/perl5/Net/NNTP.pm
+  rm -f /usr/share/perl5/Net/Netrc.pm
+  rm -f /usr/share/perl5/Net/POP3.pm
+  rm -f /usr/share/perl5/Net/SMTP.pm
+  rm -f /usr/share/perl5/Net/Time.pm
+  rm -f /usr/share/perl5/Net/libnet.cfg
+  rm -f /usr/share/perl5/Net/libnetFAQ.pod
+  rm -rf /usr/local/lib64/perl5/Net/DNS
+  rm -f /usr/local/lib64/perl5/Net/DNS.pm
+  rm -f /usr/local/share/man/man3/Net::DNS.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Domain.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::DomainName.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::FAQ.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Header.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Mailbox.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Nameserver.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Packet.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Parameters.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Question.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::A.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::AAAA.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::AFSDB.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::APL.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::CAA.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::CERT.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::CNAME.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::DHCID.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::DNAME.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::EUI48.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::EUI64.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::GPOS.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::HINFO.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::HIP.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::IPSECKEY.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::ISDN.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::KX.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::L32.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::L64.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::LOC.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::LP.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::MB.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::MG.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::MINFO.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::MR.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::MX.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::NAPTR.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::NID.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::NS.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::NULL.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::OPENPGPKEY.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::OPT.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::PTR.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::PX.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::RP.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::RT.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::SOA.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::SPF.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::SRV.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::SSHFP.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::TKEY.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::TLSA.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::TSIG.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::TXT.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::RR::X25.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::Base.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::MSWin32.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::Programmable.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::Recurse.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::UNIX.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::android.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::cygwin.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Resolver::os2.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Text.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::Update.3pm
+  rm -f /usr/local/share/man/man3/Net::DNS::ZoneFile.3pm
+  rm -rf /usr/local/share/perl5/Net/DNS
+  rm -rf /usr/local/lib64/perl5/auto/Geo
+  rm -f /usr/local/share/man/man3/Geo::IP.3pm
+  rm -f /usr/local/share/man/man3/Geo::IP::Record.3pm
+  rm -f /usr/local/share/man/man3/Geo::Mirror.3pm
+  rm -rf /usr/local/share/perl5/Geo
+  rm -f /usr/lib64/perl5/Socket.pm
+  rm -rf /usr/lib64/perl5/auto/Socket
+  rm -rf /usr/local/lib64/perl5/auto/Test/Pod
+  rm -f /usr/local/share/man/man3/Test::Pod.3pm
+  rm -f /usr/local/share/perl5/Test/Pod.pm
+  rm -f /usr/share/perl5/Text/Balanced.pm
+  rm -f /usr/local/share/perl5/LWP.pm
+  rm -rf /usr/local/share/perl5/HTTP
+  rm -rf /usr/local/share/perl5/LWP
+  rm -rf /usr/local/share/perl5/Net
+  rm -rf /usr/local/share/perl5/WWW
+  rm -f /usr/local/share/perl5/lwpcook.pod
+  rm -f /usr/local/share/perl5/lwptut.pod
+  rm -f /usr/local/share/man/man3/Bundle::LWP.3pm
+  rm -f /usr/local/share/perl5/YAML.pm
+  rm -rf /usr/local/share/perl5/IO
+  rm -rf /usr/local/share/perl5/Mail
+  rm -rf /usr/local/share/perl5/OLE
+  rm -f /usr/local/share/perl5/Test/Manifest.pm
+  rm -rf /usr/local/lib64/perl5/Net
+  rm -rf /usr/local/lib64/perl5/auto/CGI
+  rm -rf /usr/local/lib64/perl5/auto/Crypt
+  rm -rf /usr/local/lib64/perl5/auto/Encoding
+  rm -rf /usr/local/lib64/perl5/auto/IO
+  rm -rf /usr/local/lib64/perl5/auto/LWP
+  rm -rf /usr/local/lib64/perl5/auto/Mail
+  rm -rf /usr/local/lib64/perl5/auto/Parse
+  rm -rf /usr/local/lib64/perl5/auto/PHP
+  rm -rf /usr/local/lib64/perl5/auto/Test
+  rm -rf /usr/local/lib64/perl5/auto/UNIVERSAL
+  rm -rf /usr/local/lib64/perl5/auto/YAML
+  rm -rf /usr/local/lib64/perl5/Crypt
+  rm -rf /usr/local/lib64/perl5/Net
+  rm -f /usr/local/share/man/man3/Crypt::OpenSSL::Random.3pm
+  rm -f /usr/local/share/man/man3/File::Listing.3pm
+  rm -f /usr/local/share/man/man3/HTTP::*.3pm
+  rm -f /usr/local/share/man/man3/IO::Socket::INET6.3pm
+  rm -f /usr/local/share/man/man3/IO::*.3pm
+  rm -f /usr/local/share/man/man3/LWP*.3pm
+  rm -f /usr/local/share/man/man3/lwpcook.3pm
+  rm -f /usr/local/share/man/man3/lwptut.3pm
+  rm -f /usr/local/share/man/man3/Mail::*.3pm
+  rm -f /usr/local/share/man/man3/Net::*.3pm
+  rm -f /usr/local/share/man/man3/Test::Manifest.3
+  rm -f /usr/local/share/man/man3/WWW::RobotRules*.3pm
+  rm -f /usr/local/share/man/man3/YAML*.3pm
+  
+  # Update SA path in MailWatch
+  sed -i "/^define('SA_DIR',/ c\define('SA_DIR', '/usr/bin/');" /var/www/html/mailscanner/conf.php
+  
+  # cleanup /var/lib/spamassassin and run updates
+  rm -rf /var/lib/spamassassin/*
+  sa-update
+  sa-compile
+
+  echo "$VERSION update is complete"  
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update mailwatch function
+#----------------------------------------------------------------#
+function update-mailwatch() {
+  # Update mailwatch if we have a new version available
+  if [[ $MAILWATCHVERSION != "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+
+      #### Backup Phase #####
+      echo -e "Starting installation of new mailwatch version"
+      service httpd stop
+      service MailScanner stop
+      
+      mkdir -p /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      # mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
+      # mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+
+      #### Commit Phase #####
+      rm -rf /usr/src/EFA/1.2.0-master
+      unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
+
+      # Issue #66  Grab Passwords from /etc/EFA-Config
+      # No change in MailWatch.pm and SQLBlackWhiteList.pm in commit 20f37a1ecb.  Check all files in next update.
+      # sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+      # sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+      # sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
+      # sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
+      # mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      # mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      
+      cd /usr/src/EFA/1.2.0-master
+      mv tools /usr/local/bin/mailwatch
+      rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
+      chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
+      mv mailscanner /var/www/html
+      cd /var/www/html/mailscanner
+      chown root:apache images
+      chmod ug+rwx images
+      chown root:apache images/cache
+      chmod ug+rwx images/cache
+      chown root:apache temp
+      chmod ug+rwx temp
+      rm -rf docs
+
+      # Merge conf.php and conf.php.example changes
+      cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
+
+      NONSPAMPRESENT=`grep define\(\'HIDE_NON_SPAM\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $NONSPAMPRESENT ]]; then
+        sed -i "/^define('HIDE_HIGH_SPAM'/ a\\\n// Hide Non Spam from quarantine reports\ndefine('HIDE_NON_SPAM', false);" /var/www/html/mailscanner/conf.php
+      fi
+      
+      ADCOMPATPRESENT=`grep define\(\'LDAP_MS_AD_COMPATIBILITY\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $ADCOMPATPRESENT ]]; then
+        sed -i "/^define('HIDE_NON_SPAM'/ a\\\n//Active Directory Compatibility Mode\ndefine('LDAP_MS_AD_COMPATIBILITY', true);" /var/www/html/mailscanner/conf.php
+      fi
+
+      # Add favicons back
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images/favicon.png
+
+      # Add back EFA Branding
+      cd /var/www/html/mailscanner/images
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-47px.gif .
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-79px.png .
+      mv mailwatch-logo.png mailwatch-logo.png.orig
+      mv mailscannerlogo.gif mailscannerlogo.gif.orig
+
+      # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
+      sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
+
+      ln -s EFAlogo-79px.png mailwatch-logo.png
+      ln -s EFAlogo-47px.gif mailscannerlogo.gif
+      ln -s EFAlogo-79px.png MW_LOGO
+      # Issue 211 MS_LOGO Missing
+      ln -s EFAlogo-47px.gif MS_LOGO
+
+      # Alter color scheme
+      sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
+
+      # Add back Mailgraph link
+      cd /var/www/html/mailscanner
+      cp other.php other.php.orig
+      sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+      cp /var/EFA/backup/$VERSION/mailscanner/mailgraph.php .
+
+      # Reconfigure Greylisting as previously configured
+      cp functions.php functions.php.orig
+      cp /var/EFA/backup/$VERSION/mailscanner/grey.php .
+
+      # Is greylisting enabled?  Add back menu item...
+      if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
+        sed -i "/^        \$nav\['docs.php'\] = \"Documentation\";/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A'\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+      fi
+      
+      # Issue #39 Add link for Webmin in MailWatch
+      sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
+
+      # Cleanup
+      rm -rf /usr/src/EFA/1.2.0-master
+
+      # Update the version of mailwatch in EFA-Config
+      sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
+
+      # Issue 204 -- UTF8 Characters Not Rendering in MailWatch
+      yum -y install php-mbstring
+
+      service httpd start
+      service MailScanner start
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update vmtools function
+#----------------------------------------------------------------#
+function update-vmtools() {
+  # Issue #55 reapply open-vm-tools, if present and upgrade if new version is available
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
+
+    # Remove source compiled version of open-vm-tools
+    if [[ -n "`rpm -q open-vm-tools | grep not\ installed`" ]]; then
+      service vmtoolsd stop
+
+      # Cleanup existing open-vm-tools
+      rm -f /usr/local/lib/libvmtools*
+      rm -f /usr/local/lib/libhgfs*
+      rm -f /usr/local/lib/libguestlib*
+      rm -rf /usr/local/lib/open-vm-tools
+      rm -f /usr/local/bin/vmware*
+      rm -f /usr/local/bin/vmtoolsd
+      rm -f /usr/local/sbin/mount.vmhgfs
+      rm -rf /etc/vmware-tools
+      rm -f /usr/local/include/vmci_sockets.h
+      rm -rf /usr/local/include/vmGuestLib
+
+      # Install open-vm-tools from EPEL
+      yum -y install open-vm-tools
+      [[ $? -ne 0 ]] && abort
+
+      sed -i "/VMTOOLSVERSION:/d" /etc/EFA-Config
+    else
+      yum -y update open-vm-tools
+      [[ $? -ne 0 ]] && abort
+    fi
+
+    chkconfig vmtoolsd on
+    service vmtoolsd start
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update Webmin
+#----------------------------------------------------------------#
+function update-webmin() {
+  if [[ $WEBMINVERSION != "`grep WEBMINVERSION /etc/EFA-Config | sed 's/^.*://'`" && "`rpm -q webmin`" == "webmin-$WEBMINVERSION.noarch" ]]; then
+    # shoot a hole in webmin so we can change settings
+    echo "localauth=/usr/sbin/lsof" >> /etc/webmin/miniserv.conf
+    echo "referer=1" >> /etc/webmin/config
+    echo "referers=" >> /etc/webmin.config
+    sed -i '/^referers_none=1/ c\referers_none=0' /etc/webmin/config
+    service webmin restart
+
+    # Remove modules we don't need.
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=adsl-client&mod=bacula-backup&mod=burner&mod=pserver&mod=cluster-copy&mod=exim&mod=shorewall6&mod=sendmail&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=cluster-webmin&mod=bandwidth&mod=cluster-passwd&mod=cluster-cron&mod=cluster-shell&mod=cluster-usermin&mod=cluster-useradmin&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=cfengine&mod=dhcpd&mod=dovecot&mod=fetchmail&mod=filter&mod=frox&mod=tunnel&mod=heartbeat&mod=ipsec&mod=jabber&mod=krb5&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=ldap-client&mod=ldap-server&mod=ldap-useradmin&mod=firewall&mod=mon&mod=majordomo&mod=exports&mod=openslp&mod=pap&mod=ppp-client&mod=pptp-client&mod=pptp-server&mod=postgresql&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=lpadmin&mod=proftpd&mod=procmail&mod=qmailadmin&mod=smart-status&mod=samba&mod=shorewall&mod=sarg&mod=squid&mod=usermin&mod=vgetty&mod=wuftpd&mod=webalizer&confirm=Delete&acls=1&nodeps="
+
+    # fix the holes again
+    sed -i '/^referers_none=0/ c\referers_none=1' /etc/webmin/config
+    sed -i '/referer=1/d' /etc/webmin/config
+    sed -i '/referers=/d' /etc/webmin/config
+    sed -i '/localauth=\/usr\/sbin\/lsof/d' /etc/webmin/miniserv.conf
+    service webmin restart
+
+    # Update version to EFA-Config
+    sed -i "/^WEBMINVERSION:/ c\WEBMINVERSION:$WEBMINVERSION" /etc/EFA-Config
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to download file
+#----------------------------------------------------------------#
+function download_update() {
+  /usr/bin/wget -O $STAGING/$UPDATE $MIRROR/update/$UPDATE
+  [[ $? -ne 0 ]] && abort
+  /usr/bin/wget -O $STAGING/$UPDATE.md5 $MIRROR/update/$UPDATE.md5
+  [[ $? -ne 0 ]] && abort
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to check the MD5
+#----------------------------------------------------------------#
+function check_md5() {
+  # Grab md5 from file
+  checksum1=$(cat $STAGING/$UPDATE.md5 | awk '{print $1}')
+  # Calculate md5
+  checksum2=$(md5sum $STAGING/$UPDATE | awk '{print $1}')
+  if [[ "$checksum1" != "$checksum2" ]]; then
+    echo "Fatal:  $UPDATE md5 checksum does not match!  Aborting..."
+    abort
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Abort Routine
+#----------------------------------------------------------------#
+function abort() {
+  [[ -n $STAGING ]] && rm -rf $STAGING
+
+  echo "" >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+
+  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Please visit http://www.efa-project.org for more information."
+  exit 1
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update system with yum
+#----------------------------------------------------------------#
+function yum_update() {
+  yum -y --exclude="$yumexclude" update
+  [[ $? -ne 0 ]] && abort
+  # Todo, write some logic that checks any of the yumexclude packages and updates them after testing...
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Finalize
+#----------------------------------------------------------------#
+function finalize() {
+  # Write the latest version number
+  echo "EFA-$VERSION" > /etc/EFA-Version
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
+
+  # Finalize the mail
+  echo "" >> $TMPMAIL
+  echo "Please visit https://efa-project.org for more information." >> $TMPMAIL
+  echo "Please reboot the system as soon as possible." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+# +---------------------------------------------------+
+# Function to create a random password
+# +---------------------------------------------------+
+function randompw()
+{
+  PASSWD=""
+  PASSWD=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
+}
+# +---------------------------------------------------+
+
+#----------------------------------------------------------------#
+# Where to start
+#----------------------------------------------------------------#
+run_update
+finalize
