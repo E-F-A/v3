@@ -482,7 +482,7 @@ func_spam_clamav () {
     # source: http://spamassassin.apache.org/gtube/gtube.txt
     cd /usr/src/EFA
     /usr/bin/wget $gitdlurl/EFA/gtube.txt
-    /usr/local/bin/sa-learn --spam /usr/src/EFA/gtube.txt
+    /usr/bin/sa-learn --spam /usr/src/EFA/gtube.txt
 
     # Enable Auto White Listing
     sed -i '/^#loadplugin Mail::SpamAssassin::Plugin::AWL/ c\loadplugin Mail::SpamAssassin::Plugin::AWL' /etc/mail/spamassassin/v310.pre
@@ -516,8 +516,8 @@ func_spam_clamav () {
     /usr/bin/sa-update --import /usr/src/EFA/GPG.KEY
 
     # Customize sa-update in /etc/sysconfig/update_spamassassin
-    sed -i '/^SAUPDATE=/ c\SAUPDATE=/usr/local/bin/sa-update' /etc/sysconfig/update_spamassassin
-    sed -i '/^SACOMPILE=/ c\SACOMPILE=/usr/local/bin/sa-compile' /etc/sysconfig/update_spamassassin
+    sed -i '/^SAUPDATE=/ c\SAUPDATE=/usr/bin/sa-update' /etc/sysconfig/update_spamassassin
+    sed -i '/^SACOMPILE=/ c\SACOMPILE=/usr/bin/sa-compile' /etc/sysconfig/update_spamassassin
     sed -i '/^SAUPDATEARGS=/ c\SAUPDATEARGS=" --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org"' /etc/sysconfig/update_spamassassin
 
     # Issue #82 re2c spamassassin rule complilation
