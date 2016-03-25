@@ -280,6 +280,11 @@ function run_update() {
 # Update ClamAV function
 #----------------------------------------------------------------#
 function update-clamav(){
+  # Backported fix to allow updating from 3.0.0.7
+  rpm --import $STAGING/Files/RPM-GPG-KEY-E.F.A.Project
+  cp $STAGING/Files/EFA.repo /etc/yum.repos.d/EFA.repo
+  yum clean all
+
   yum -y update clam*
   [[ $? -ne 0 ]] && abort
 
