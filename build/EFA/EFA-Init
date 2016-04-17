@@ -711,6 +711,14 @@ function func_configure-system() {
   ifup $INTERFACE
   # +--------------------------------------------------+
   
+  # Issue #268 EFA-Link test without DHCP dependency
+  # +--------------------------------------------------+
+  # set nameserver to local unbound
+  echo "nameserver 127.0.0.1" > /etc/resolv.conf
+  # +--------------------------------------------------+
+  
+  service unbound restart
+  
   # +--------------------------------------------------+
   # Issue #190 EFA-Init Link test
   
@@ -1031,11 +1039,6 @@ function func_end() {
   # Synchronize time
   ntpdate 0.centos.pool.ntp.org
   hwclock --systohc
-  # +--------------------------------------------------+
-
-  # +--------------------------------------------------+
-  # set nameserver to local unbound
-  echo "nameserver 127.0.0.1" > /etc/resolv.conf
   # +--------------------------------------------------+
 
   # Cleanup /var/log/EFA
