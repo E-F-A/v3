@@ -1,6 +1,15 @@
 #!/usr/bin/perl
 # +--------------------------------------------------------------------+
 # EFA release spam message script version 20140105
+#
+# /////////////////////////////////NOTICE\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# This script is deprecated due to a major flaw in how messages are
+# released.  The script releases to all recipients, both internally and
+# externally, which is not acceptable in production.
+# Future versions of EFA will not include this script.  It is recommended
+# to disable this script if possible.
+# /////////////////////////////END OF NOTICE\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#
 # This script is an modification of the previous ESVA release-msg.cgi
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2015 http://www.efa-project.org
