@@ -78,7 +78,7 @@ function start_backup()
   cp -a /etc/postfix/canonical $WORKINGDIR/etc/postfix
   cp -a /etc/postfix/generic $WORKINGDIR/etc/postfix
   cp -a /etc/postfix/header_checks $WORKINGDIR/etc/postfix
-  cp -a /etc/postfix/ssl/smtpd.pem $WORKINGDIR/etc/postfix/ssl
+  cp -a /etc/postfix/ssl/* $WORKINGDIR/etc/postfix/ssl
 
   # Backup EFA-Config
   cp -a /etc/EFA-Config $WORKINGDIR/etc
