@@ -26,7 +26,7 @@ use Net::Netmask;
 print "Content-type: text/html \n\n";
 
 $query = new CGI;
-$salearn = "/usr/local/bin/sa-learn --spam";
+$salearn = "/usr/bin/sa-learn --spam";
 $id = param("id");
 $token = param("token");
 $db_name = "efa";
@@ -38,8 +38,8 @@ while ($line = <FILE>) {
   if ($line =~ /^EFASQLPWD/) {
     $db_pass = $line;
     $db_pass =~ s/^EFASQLPWD://;
-	$db_pass =~ s/\n//;
-	break;
+    $db_pass =~ s/\n//;
+    break;
   }
 }
 close (FILE);
