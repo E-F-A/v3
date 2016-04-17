@@ -7,17 +7,17 @@ function func_apache-settings() {
   echo -e ""
   echo -e "Apache Settings"
   echo -e ""
-  echo -e "By default, EFA uses port 80"
+  echo -e "By default, EFA uses port 443"
   echo -e "You can enable port 443 for secure access."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Enable port 443? (y/N): "
+  echo -e -n "$green[EFA]$clean Enable port 443? (Y/n): "
   local TMPSECURE
   read TMPSECURE
 
   flag=0
   while [ $flag == "0" ]
     do
-      if [[ $TMPSECURE == "y" || $TMPSECURE == "Y" ]]; then
+      if [[ $TMPSECURE == "y" || $TMPSECURE == "Y" || $TMPSECURE="" ]]; then
         sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
         iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT>/dev/null 2>&1
         iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
@@ -33,7 +33,7 @@ function func_apache-settings() {
         echo -e ""
         sleep 2
         flag=1
-      elif [[ $TMPSECURE == "n" || $TMPSECURE == "N" || $TMPSECURE="" ]]; then
+      elif [[ $TMPSECURE == "n" || $TMPSECURE == "N" ]]; then
 
         sed -i '/^Listen 443/ c\#Listen 443' /etc/httpd/conf.d/ssl.conf
 
@@ -53,24 +53,24 @@ function func_apache-settings() {
       else
         echo -e "Choice $green\"$TMPSECURE\"$clean is not a valid choice."
         echo -e ""
-        echo -e -n "$green[EFA]$clean Enable port 443? (y/N): "
+        echo -e -n "$green[EFA]$clean Enable port 443? (Y/n): "
         read TMPSECURE 
       fi
     done
 
-    if [[ $TMPSECURE == "Y" || $TMPSECURE == "y" ]]; then
+    if [[ $TMPSECURE == "Y" || $TMPSECURE == "y" | $TMPSECURE="" ]]; then
       echo -e ""
       echo -e "Port 80 --> 443 Redirect"
       echo -e "You can choose to redirect all port 80 traffic to port 443"
       echo -e ""
-      echo -e -n "$green[EFA]$clean Redirect port 80 to port 443? (y/N): "
+      echo -e -n "$green[EFA]$clean Redirect port 80 to port 443? (Y/n): "
       local TMPREDIRECT
       read TMPREDIRECT
 
       flag=0
       while [ $flag == "0" ]
         do
-        if [[ $TMPREDIRECT == "y" || $TMPREDIRECT == "Y" ]]; then
+        if [[ $TMPREDIRECT == "y" || $TMPREDIRECT == "Y" || $TMPREDIRECT="" ]]; then
         echo -e "RewriteEngine On" > /etc/httpd/conf.d/redirectssl.conf
         echo -e "RewriteCond %{HTTPS} !=on" >> /etc/httpd/conf.d/redirectssl.conf
         echo -e "RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]" >> /etc/httpd/conf.d/redirectssl.conf
@@ -79,7 +79,7 @@ function func_apache-settings() {
         echo -e "Port 80 to 443 redirection $green[Enabled]$clean"
         sleep 2
         flag=1
-      elif [[ $TMPREDIRECT == "n" || $TMPREDIRECT == "N" || $TMPREDIRECT="" ]]; then
+      elif [[ $TMPREDIRECT == "n" || $TMPREDIRECT == "N" ]]; then
         rm -f /etc/httpd/conf.d/redirectssl.conf >/dev/null 2>&1
         echo -e ""
         echo -e "Port 80 to 443 redirection $green[Disabled]$clean"
@@ -88,7 +88,7 @@ function func_apache-settings() {
       else
         echo -e "Choice $green\"$TMPREDIRECT\"$clean is not a valid choice."
         echo -e ""
-        echo -e -n "$green[EFA]$clean Enable port 443? (y/N): "
+        echo -e -n "$green[EFA]$clean Enable port 443? (Y/n): "
         read TMPREDIRECT 
       fi
     done
