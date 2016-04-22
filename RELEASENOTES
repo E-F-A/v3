@@ -88,8 +88,8 @@ or, preferably, you can reinstall the missing modules.
 
 HTTPS is now enabled by this update.  You will receive a certificate
 error if you have not updated SSL/TLS certificates on EFA.  Please
-update your certificates at /etc/pki/certs/localhost.crt and
-/etc/pki/private/localhost.key with your own versions, if needed.
+update your certificates at /etc/pki/tls/certs/localhost.crt and
+/etc/pki/tls/private/localhost.key with your own versions, if needed.
 
 #######################################################################
 
