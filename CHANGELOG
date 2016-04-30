@@ -1,4 +1,19 @@
 ############################################################
+EFA Version 3.0.1.0-beta Changes
+############################################################
+
+Issue #201  Bug          - Deprecated release-msg.cgi
+Issue #236  Enhancement  - Disable spam not delivered messages by default 
+Issue #253  Bug          - EFA-Backup ssl folder
+Issue #260  Bug          - Header in Apache Settings wrong
+Issue #261  Bug          - learn-msg.cgi wrong path for sa-learn
+Issue #262  Bug          - MS_LOGO and MW_LOGO Definitions Needed
+Issue #268  Enhancement  - EFA-Init link test without DHCP dependency 
+Issue #269  Bug          - SQL error during rename of host name in EFA-Configure
+PR    #270  Bug          - Typo in RELEASENOTES
+
+
+############################################################
 EFA Version 3.0.0.9 Changes
 ############################################################
 
