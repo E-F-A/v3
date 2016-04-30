@@ -74,6 +74,20 @@ function run_update() {
   chmod 600 /var/EFA/lib/EFA-Configure/*
 
   update-vmtools
+  
+  # Issue #262 MS_LOGO and MW_LOGO Definitions Needed
+  MW_LOGO_PRESENT=$(grep "^define\('MW_LOGO'" /var/www/html/mailscanner/conf.php)
+  if [[ -z $MW_LOGO_PRESENT ]]; then
+    echo "" >> /var/www/html/mailscanner/conf.php
+    echo "// Define MailWatch logo name" >> /var/www/html/mailscanner/conf.php
+    echo "define('MW_LOGO', 'mailwatch-logo.png');" >> /var/www/html/mailscanner/conf.php
+  fi
+  MS_LOGO_PRESENT=$(grep "^define\('MS_LOGO'" /var/www/html/mailscanner/conf.php)
+  if [[ -z $MS_LOGO_PRESENT ]]; then
+    echo "" >> /var/www/html/mailscanner/conf.php
+    echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
+    echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
+  fi
 
   echo "$VERSION update is complete"  
   echo ""
@@ -143,6 +157,20 @@ function update-mailwatch() {
         sed -i "/^define('HIDE_NON_SPAM'/ a\\\n//Active Directory Compatibility Mode\ndefine('LDAP_MS_AD_COMPATIBILITY', true);" /var/www/html/mailscanner/conf.php
       fi
 
+      # Issue #262 MS_LOGO and MW_LOGO Definitions Needed
+      MW_LOGO_PRESENT=$(grep "^define\('MW_LOGO'" /var/www/html/mailscanner/conf.php)
+      if [[ -z $MW_LOGO_PRESENT ]]; then
+        echo "" >> /var/www/html/mailscanner/conf.php
+        echo "// Define MailWatch logo name" >> /var/www/html/mailscanner/conf.php
+        echo "define('MW_LOGO', 'mailwatch-logo.png');" >> /var/www/html/mailscanner/conf.php
+      fi
+      MS_LOGO_PRESENT=$(grep "^define\('MS_LOGO'" /var/www/html/mailscanner/conf.php)
+      if [[ -z $MS_LOGO_PRESENT ]]; then
+        echo "" >> /var/www/html/mailscanner/conf.php
+        echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
+        echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
+      fi
+
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
@@ -161,8 +189,6 @@ function update-mailwatch() {
       ln -s EFAlogo-79px.png mailwatch-logo.png
       ln -s EFAlogo-47px.gif mailscannerlogo.gif
       ln -s EFAlogo-79px.png MW_LOGO
-      # Issue 211 MS_LOGO Missing
-      ln -s EFAlogo-47px.gif MS_LOGO
 
       # Alter color scheme
       sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
