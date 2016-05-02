@@ -227,6 +227,10 @@ function update-mailwatch() {
       # Update the version of mailwatch in EFA-Config
       sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
 
+      # Add Munin to Mailwatch
+      sed -i "/^    \/\*End EFA\*/ c\    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . \$munin_pass . '@'  . \$hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" /var/www/html/mailscanner/other.php
+
+
       # Issue 204 -- UTF8 Characters Not Rendering in MailWatch
       yum -y install php-mbstring
 
