@@ -53,7 +53,6 @@ function run_update() {
   # To package for this update:
   # /EFA-Version-Upgrade                              <- This file in the root, renamed!
   # /Files/                                           <- Directory (containing binary files)
-  # /Files/EFA.repo                                   <- EFA repo file
   # /Scripts/                                         <- Directory (containing update scripts (previous git scripts))
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
@@ -64,7 +63,7 @@ function run_update() {
 
   ##### Commit Phase #####
 
-  # grab latest version of EFA-Configure with libraries
+  # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -rf /var/EFA/lib/EFA-Configure/
   cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
@@ -89,11 +88,13 @@ function run_update() {
     echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
   fi
 
+  # Issue #272 Mailwatch vulnerability (upgrade to latest version)
+  update-mailwatch
+
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
-
 }
 #----------------------------------------------------------------#
 
