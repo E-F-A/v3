@@ -73,6 +73,8 @@ function run_update() {
   chmod 600 /var/EFA/lib/EFA-Configure/*
 
   update-vmtools
+  yum clean all
+  yum_update
 
   # Issue #262 MS_LOGO and MW_LOGO Definitions Needed
   MW_LOGO_PRESENT=$(grep "^define\('MW_LOGO'" /var/www/html/mailscanner/conf.php)
