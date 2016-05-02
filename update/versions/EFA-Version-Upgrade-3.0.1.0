@@ -77,13 +77,13 @@ function run_update() {
   yum_update
 
   # Issue #262 MS_LOGO and MW_LOGO Definitions Needed
-  MW_LOGO_PRESENT=$(grep "^define\('MW_LOGO'" /var/www/html/mailscanner/conf.php)
+  MW_LOGO_PRESENT=$(grep "^define('MW_LOGO'" /var/www/html/mailscanner/conf.php)
   if [[ -z $MW_LOGO_PRESENT ]]; then
     echo "" >> /var/www/html/mailscanner/conf.php
     echo "// Define MailWatch logo name" >> /var/www/html/mailscanner/conf.php
     echo "define('MW_LOGO', 'mailwatch-logo.png');" >> /var/www/html/mailscanner/conf.php
   fi
-  MS_LOGO_PRESENT=$(grep "^define\('MS_LOGO'" /var/www/html/mailscanner/conf.php)
+  MS_LOGO_PRESENT=$(grep "^define('MS_LOGO'" /var/www/html/mailscanner/conf.php)
   if [[ -z $MS_LOGO_PRESENT ]]; then
     echo "" >> /var/www/html/mailscanner/conf.php
     echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
@@ -161,13 +161,13 @@ function update-mailwatch() {
       fi
 
       # Issue #262 MS_LOGO and MW_LOGO Definitions Needed
-      MW_LOGO_PRESENT=$(grep "^define\('MW_LOGO'" /var/www/html/mailscanner/conf.php)
+      MW_LOGO_PRESENT=$(grep "^define('MW_LOGO'" /var/www/html/mailscanner/conf.php)
       if [[ -z $MW_LOGO_PRESENT ]]; then
         echo "" >> /var/www/html/mailscanner/conf.php
         echo "// Define MailWatch logo name" >> /var/www/html/mailscanner/conf.php
         echo "define('MW_LOGO', 'mailwatch-logo.png');" >> /var/www/html/mailscanner/conf.php
       fi
-      MS_LOGO_PRESENT=$(grep "^define\('MS_LOGO'" /var/www/html/mailscanner/conf.php)
+      MS_LOGO_PRESENT=$(grep "^define('MS_LOGO'" /var/www/html/mailscanner/conf.php)
       if [[ -z $MS_LOGO_PRESENT ]]; then
         echo "" >> /var/www/html/mailscanner/conf.php
         echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
