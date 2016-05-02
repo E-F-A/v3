@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.0.9 build script version 20160203
+# EFA 3.0.1.0 build script version 20160502
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2016 https://efa-project.org
 #
@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.0.9"
+version="3.0.1.0"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -33,7 +33,7 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
-MAILWATCHVERSION="20f37a1ecb"
+MAILWATCHVERSION="c71de84"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"
@@ -363,11 +363,11 @@ func_mailscanner () {
     wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
     patch < mailscanner-4.84.6-1.patch
     rm -f mailscanner-4.84.6-1.patch
-    
+
      # Issue 200 Unrar v5 support (mailscanner backport)
     rm -f /usr/lib/MailScanner/MailScanner/Message.pm
     wget -O /usr/lib/MailScanner/MailScanner/Message.pm --no-check-certificate $mirror/$mirrorpath/Message.pm
-    
+
     # Issue #177 Correct EFA to new clamav paths using EPEL
     sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
@@ -444,15 +444,15 @@ func_spam_clamav () {
     #./install.sh
     #cd /usr/src/EFA
     #rm -rf Spamassassin*
-    
+
     # Symlink spam.assassin.prefs.conf (previously handled by tarball)
     ln -s -f /etc/MailScanner/spam.assassin.prefs.conf /etc/mail/spamassassin/mailscanner.cf
-    
+
     # Configure *.pre files (previously handled by tarball)
     sed -i "/^# loadplugin Mail::Spamassassin::Plugin::RelayCountry$/ c\loadplugin Mail::Spamassassin::Plugin::RelayCountry" /etc/mail/spamassassin/init.pre
-    
+
     # Symlink for Geo::IP
-    # Issue #247 Move GeoIP symlink to new location   
+    # Issue #247 Move GeoIP symlink to new location
     rm -f /usr/share/GeoIP/GeoLiteCountry.dat
     ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/share/GeoIP/GeoLiteCountry.dat
 
@@ -573,7 +573,7 @@ func_apache () {
 
     # Issue #139 SSLv3 POODLE Vulnerability
     sed -i "/^SSLProtocol/ c\SSLProtocol all -SSLv2 -SSLv3" /etc/httpd/conf.d/ssl.conf
-    
+
     # Issue #179 default https
     sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
     echo -e "RewriteEngine On" > /etc/httpd/conf.d/redirectssl.conf
@@ -670,8 +670,8 @@ func_mailwatch () {
     #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" SQLSpamSettings.pm
     sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" SQLSpamSettings.pm
     mv SQLSpamSettings.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
-    
-    
+
+
     # Set up MailWatch tools
     cd ..
     mkdir /usr/local/bin/mailwatch
@@ -1350,7 +1350,7 @@ func_cleanup () {
 
     # clean yum cache
     yum clean all
-    
+
     # Issue #96 Reconfigure to permit yum update
     echo "exclude=$yumexclude" >> /etc/yum.conf
 

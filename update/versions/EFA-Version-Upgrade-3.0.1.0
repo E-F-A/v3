@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20160430
+# Version 20160502
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2016 https://efa-project.org
 #
@@ -22,7 +22,7 @@
 #----------------------------------------------------------------#
 # Variables
 #----------------------------------------------------------------#
-VERSION="3.0.1.0-beta"
+VERSION="3.0.1.0"
 logdir="/var/log/EFA"
 # No longer applicable
 # yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
@@ -38,7 +38,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="20f37a1ecb"
+MAILWATCHVERSION="c71de84"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
@@ -74,7 +74,7 @@ function run_update() {
   chmod 600 /var/EFA/lib/EFA-Configure/*
 
   update-vmtools
-  
+
   # Issue #262 MS_LOGO and MW_LOGO Definitions Needed
   MW_LOGO_PRESENT=$(grep "^define\('MW_LOGO'" /var/www/html/mailscanner/conf.php)
   if [[ -z $MW_LOGO_PRESENT ]]; then
@@ -89,7 +89,7 @@ function run_update() {
     echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
   fi
 
-  echo "$VERSION update is complete"  
+  echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
@@ -109,7 +109,7 @@ function update-mailwatch() {
       echo -e "Starting installation of new mailwatch version"
       service httpd stop
       service MailScanner stop
-      
+
       mkdir -p /var/EFA/backup/$VERSION/ > /dev/null 2>&1
       mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/ > /dev/null 2>&1
       # mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
@@ -129,7 +129,7 @@ function update-mailwatch() {
       # sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
       # mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
       # mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
-      
+
       cd /usr/src/EFA/1.2.0-master
       mv tools /usr/local/bin/mailwatch
       rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
@@ -151,7 +151,7 @@ function update-mailwatch() {
       if [[ -z $NONSPAMPRESENT ]]; then
         sed -i "/^define('HIDE_HIGH_SPAM'/ a\\\n// Hide Non Spam from quarantine reports\ndefine('HIDE_NON_SPAM', false);" /var/www/html/mailscanner/conf.php
       fi
-      
+
       ADCOMPATPRESENT=`grep define\(\'LDAP_MS_AD_COMPATIBILITY\' /var/www/html/mailscanner/conf.php`
       if [[ -z $ADCOMPATPRESENT ]]; then
         sed -i "/^define('HIDE_NON_SPAM'/ a\\\n//Active Directory Compatibility Mode\ndefine('LDAP_MS_AD_COMPATIBILITY', true);" /var/www/html/mailscanner/conf.php
