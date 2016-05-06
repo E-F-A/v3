@@ -1,0 +1,389 @@
+#!/bin/bash
+# +--------------------------------------------------------------------+
+# EFA update script
+# Version 20160505
+# +--------------------------------------------------------------------+
+# Copyright (C) 2012~2016 https://efa-project.org
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# +--------------------------------------------------------------------+
+
+#----------------------------------------------------------------#
+# Variables
+#----------------------------------------------------------------#
+VERSION="3.0.1.1"
+logdir="/var/log/EFA"
+# No longer applicable
+# yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
+ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
+MAILFROM="$ADMINEMAIL"
+MAILTO="$ADMINEMAIL"
+MAILSUBJECT="EFA Update Complete For: `hostname`"
+SENDMAIL="/usr/lib/sendmail"
+TMPMAIL="/tmp/tempmail"
+STAGING="/tmp/EFA-Staging"
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# List of current version numbers in this E.F.A. Version.
+#----------------------------------------------------------------#
+MAILWATCHVERSION="c71de84"
+IMAGECEBERUSVERSION="1.1"
+PYZORVERSION="0.7.0"
+WEBMINVERSION="1.770-1"
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function where we do all our magic
+#----------------------------------------------------------------#
+function run_update() {
+  echo "Starting update to E.F.A. $VERSION"
+
+  # To package for this update:
+  # /EFA-Version-Upgrade                              <- This file in the root, renamed!
+  # /Files/                                           <- Directory (containing binary files)
+  # /Scripts/                                         <- Directory (containing update scripts (previous git scripts))
+  # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
+  # /Scripts/EFA-Configure                            <- EFA-Configure script
+
+  ##### Backup Phase #####
+  /usr/local/sbin/EFA-Backup -backup
+  [[ $? -ne 0 ]] && abort
+
+  ##### Commit Phase #####
+
+  # Latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -rf /var/EFA/lib/EFA-Configure/
+  cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
+
+  update-vmtools
+  yum clean all
+  yum_update
+
+  # Issue #273 Pre 3.0.0.9 --> 3.0.1.0 USE_LDAP vulnerability
+  CHECKLDAP=$(grep "define('USE_LDAP'" /var/www/html/mailscanner/conf.php | awk -F"'" '{print $4}') 
+  if [[ "$CHECKLDAP" -eq "0" ]]; then
+    sed -i "/^define('USE_LDAP'/ c\define('USE_LDAP',         false);" /var/www/html/mailscanner/conf.php
+  elif [[ "$CHECKLDAP" -eq "1" ]]; then
+    sed -i "/^define('USE_LDAP'/ c\define('USE_LDAP',         true);" /var/www/html/mailscanner/conf.php
+  fi
+
+  echo "$VERSION update is complete"
+  echo ""
+  echo "" >> $TMPMAIL
+  echo "Update to $VERSION complete." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update mailwatch function
+#----------------------------------------------------------------#
+function update-mailwatch() {
+  # Update mailwatch if we have a new version available
+  if [[ $MAILWATCHVERSION != "`grep MAILWATCHVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+
+      #### Backup Phase #####
+      echo -e "Starting installation of new mailwatch version"
+      service httpd stop
+      service MailScanner stop
+
+      mkdir -p /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      # mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
+      # mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+
+      #### Commit Phase #####
+      rm -rf /usr/src/EFA/1.2.0-master
+      unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+      cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
+
+      # Issue #66  Grab Passwords from /etc/EFA-Config
+      # No change in MailWatch.pm and SQLBlackWhiteList.pm in commit 20f37a1ecb.  Check all files in next update.
+      # sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+      # sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+      # sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
+      # sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
+      # mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      # mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+
+      cd /usr/src/EFA/1.2.0-master
+      mv tools /usr/local/bin/mailwatch
+      rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
+      chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
+      mv mailscanner /var/www/html
+      cd /var/www/html/mailscanner
+      chown root:apache images
+      chmod ug+rwx images
+      chown root:apache images/cache
+      chmod ug+rwx images/cache
+      chown root:apache temp
+      chmod ug+rwx temp
+      rm -rf docs
+
+      # Merge conf.php and conf.php.example changes
+      cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
+
+      NONSPAMPRESENT=`grep define\(\'HIDE_NON_SPAM\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $NONSPAMPRESENT ]]; then
+        sed -i "/^define('HIDE_HIGH_SPAM'/ a\\\n// Hide Non Spam from quarantine reports\ndefine('HIDE_NON_SPAM', false);" /var/www/html/mailscanner/conf.php
+      fi
+
+      ADCOMPATPRESENT=`grep define\(\'LDAP_MS_AD_COMPATIBILITY\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $ADCOMPATPRESENT ]]; then
+        sed -i "/^define('HIDE_NON_SPAM'/ a\\\n//Active Directory Compatibility Mode\ndefine('LDAP_MS_AD_COMPATIBILITY', true);" /var/www/html/mailscanner/conf.php
+      fi
+
+      # Issue #262 MS_LOGO and MW_LOGO Definitions Needed
+      MW_LOGO_PRESENT=$(grep "^define('MW_LOGO'" /var/www/html/mailscanner/conf.php)
+      if [[ -z $MW_LOGO_PRESENT ]]; then
+        echo "" >> /var/www/html/mailscanner/conf.php
+        echo "// Define MailWatch logo name" >> /var/www/html/mailscanner/conf.php
+        echo "define('MW_LOGO', 'mailwatch-logo.png');" >> /var/www/html/mailscanner/conf.php
+      fi
+      MS_LOGO_PRESENT=$(grep "^define('MS_LOGO'" /var/www/html/mailscanner/conf.php)
+      if [[ -z $MS_LOGO_PRESENT ]]; then
+        echo "" >> /var/www/html/mailscanner/conf.php
+        echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
+        echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
+      fi
+
+      # Add favicons back
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
+      /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images/favicon.png
+
+      # Add back EFA Branding
+      cd /var/www/html/mailscanner/images
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-47px.gif .
+      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-79px.png .
+      mv mailwatch-logo.png mailwatch-logo.png.orig
+      mv mailscannerlogo.gif mailscannerlogo.gif.orig
+
+      # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
+      sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
+
+      ln -s EFAlogo-79px.png mailwatch-logo.png
+      ln -s EFAlogo-47px.gif mailscannerlogo.gif
+      ln -s EFAlogo-79px.png MW_LOGO
+
+      # Alter color scheme
+      sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
+
+      # Add back Mailgraph link
+      cd /var/www/html/mailscanner
+      cp other.php other.php.orig
+      sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    /*End EFA*/" other.php
+      cp /var/EFA/backup/$VERSION/mailscanner/mailgraph.php .
+
+      # Reconfigure Greylisting as previously configured
+      cp /var/EFA/backup/$VERSION/mailscanner/grey.php .
+
+      # Add greylist to mailwatch menu
+      # hide from non-admins
+      sed -i "/^        \$nav\['docs.php'\] =/{N;s/$/\n        \/\/Begin EFA\n        if \(\$_SESSION\['user_type'\] == 'A' \&\& SHOW_GREYLIST == true\) \{\n            \$nav\['grey.php'\] = \"greylist\";\n        \}\n        \/\/End EFA/}" /var/www/html/mailscanner/functions.php
+
+      # add SHOW_GREYLIST to conf.php
+      echo "" >> /var/www/html/mailscanner/conf.php
+      echo "// Greylisting menu item" >> /var/www/html/mailscanner/conf.php
+
+      # Is greylisting enabled?  Add back menu item...
+      if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
+        echo "define('SHOW_GREYLIST', true);" >> /var/www/html/mailscanner/conf.php
+      else
+        echo "define('SHOW_GREYLIST', false);" >> /var/www/html/mailscanner/conf.php
+      fi
+
+      # Issue #39 Add link for Webmin in MailWatch
+      sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
+
+      # Cleanup
+      rm -rf /usr/src/EFA/1.2.0-master
+
+      # Update the version of mailwatch in EFA-Config
+      sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
+
+      # Add Munin to Mailwatch
+      sed -i "/^    \/\*End EFA\*/ c\    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . \$munin_pass . '@'  . \$hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" /var/www/html/mailscanner/other.php
+
+
+      # Issue 204 -- UTF8 Characters Not Rendering in MailWatch
+      yum -y install php-mbstring
+
+      service httpd start
+      service MailScanner start
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update vmtools function
+#----------------------------------------------------------------#
+function update-vmtools() {
+  # Issue #55 reapply open-vm-tools, if present and upgrade if new version is available
+  if [[ -f "/usr/local/bin/vmware-toolbox-cmd" ]]; then
+
+    # Remove source compiled version of open-vm-tools
+    if [[ -n "`rpm -q open-vm-tools | grep not\ installed`" ]]; then
+      service vmtoolsd stop
+
+      # Cleanup existing open-vm-tools
+      rm -f /usr/local/lib/libvmtools*
+      rm -f /usr/local/lib/libhgfs*
+      rm -f /usr/local/lib/libguestlib*
+      rm -rf /usr/local/lib/open-vm-tools
+      rm -f /usr/local/bin/vmware*
+      rm -f /usr/local/bin/vmtoolsd
+      rm -f /usr/local/sbin/mount.vmhgfs
+      rm -rf /etc/vmware-tools
+      rm -f /usr/local/include/vmci_sockets.h
+      rm -rf /usr/local/include/vmGuestLib
+
+      # Install open-vm-tools from EPEL
+      yum -y install open-vm-tools
+      [[ $? -ne 0 ]] && abort
+
+      sed -i "/VMTOOLSVERSION:/d" /etc/EFA-Config
+    else
+      yum -y update open-vm-tools
+      [[ $? -ne 0 ]] && abort
+    fi
+
+    chkconfig vmtoolsd on
+    service vmtoolsd start
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update Webmin
+#----------------------------------------------------------------#
+function update-webmin() {
+  if [[ $WEBMINVERSION != "`grep WEBMINVERSION /etc/EFA-Config | sed 's/^.*://'`" && "`rpm -q webmin`" == "webmin-$WEBMINVERSION.noarch" ]]; then
+    # shoot a hole in webmin so we can change settings
+    echo "localauth=/usr/sbin/lsof" >> /etc/webmin/miniserv.conf
+    echo "referer=1" >> /etc/webmin/config
+    echo "referers=" >> /etc/webmin.config
+    sed -i '/^referers_none=1/ c\referers_none=0' /etc/webmin/config
+    service webmin restart
+
+    # Remove modules we don't need.
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=adsl-client&mod=bacula-backup&mod=burner&mod=pserver&mod=cluster-copy&mod=exim&mod=shorewall6&mod=sendmail&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=cluster-webmin&mod=bandwidth&mod=cluster-passwd&mod=cluster-cron&mod=cluster-shell&mod=cluster-usermin&mod=cluster-useradmin&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=cfengine&mod=dhcpd&mod=dovecot&mod=fetchmail&mod=filter&mod=frox&mod=tunnel&mod=heartbeat&mod=ipsec&mod=jabber&mod=krb5&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=ldap-client&mod=ldap-server&mod=ldap-useradmin&mod=firewall&mod=mon&mod=majordomo&mod=exports&mod=openslp&mod=pap&mod=ppp-client&mod=pptp-client&mod=pptp-server&mod=postgresql&confirm=Delete&acls=1&nodeps="
+    curl -k  --tlsv1.2 "https://localhost:10000/webmin/delete_mod.cgi?mod=lpadmin&mod=proftpd&mod=procmail&mod=qmailadmin&mod=smart-status&mod=samba&mod=shorewall&mod=sarg&mod=squid&mod=usermin&mod=vgetty&mod=wuftpd&mod=webalizer&confirm=Delete&acls=1&nodeps="
+
+    # fix the holes again
+    sed -i '/^referers_none=0/ c\referers_none=1' /etc/webmin/config
+    sed -i '/referer=1/d' /etc/webmin/config
+    sed -i '/referers=/d' /etc/webmin/config
+    sed -i '/localauth=\/usr\/sbin\/lsof/d' /etc/webmin/miniserv.conf
+    service webmin restart
+
+    # Update version to EFA-Config
+    sed -i "/^WEBMINVERSION:/ c\WEBMINVERSION:$WEBMINVERSION" /etc/EFA-Config
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to download file
+#----------------------------------------------------------------#
+function download_update() {
+  /usr/bin/wget -O $STAGING/$UPDATE $MIRROR/update/$UPDATE
+  [[ $? -ne 0 ]] && abort
+  /usr/bin/wget -O $STAGING/$UPDATE.md5 $MIRROR/update/$UPDATE.md5
+  [[ $? -ne 0 ]] && abort
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to check the MD5
+#----------------------------------------------------------------#
+function check_md5() {
+  # Grab md5 from file
+  checksum1=$(cat $STAGING/$UPDATE.md5 | awk '{print $1}')
+  # Calculate md5
+  checksum2=$(md5sum $STAGING/$UPDATE | awk '{print $1}')
+  if [[ "$checksum1" != "$checksum2" ]]; then
+    echo "Fatal:  $UPDATE md5 checksum does not match!  Aborting..."
+    abort
+  fi
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Abort Routine
+#----------------------------------------------------------------#
+function abort() {
+  [[ -n $STAGING ]] && rm -rf $STAGING
+
+  echo "" >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
+  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  cat $TMPMAIL | $SENDMAIL -t
+  rm $TMPMAIL
+
+  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Please visit http://www.efa-project.org for more information."
+  exit 1
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update system with yum
+#----------------------------------------------------------------#
+function yum_update() {
+  yum -y update
+  [[ $? -ne 0 ]] && abort
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Finalize
+#----------------------------------------------------------------#
+function finalize() {
+  # Write the latest version number
+  echo "EFA-$VERSION" > /etc/EFA-Version
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
+
+  # Finalize the mail
+  echo "" >> $TMPMAIL
+  echo "Please visit https://efa-project.org for more information." >> $TMPMAIL
+  echo "Please reboot the system as soon as possible." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+# +---------------------------------------------------+
+# Function to create a random password
+# +---------------------------------------------------+
+function randompw()
+{
+  PASSWD=""
+  PASSWD=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
+}
+# +---------------------------------------------------+
+
+#----------------------------------------------------------------#
+# Where to start
+#----------------------------------------------------------------#
+run_update
+finalize
