@@ -66,6 +66,8 @@ function get_update_path() {
       update-3.0.0.7
       update-3.0.0.8
       update-3.0.0.9
+      update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
@@ -73,6 +75,8 @@ function get_update_path() {
       update-3.0.0.7
       update-3.0.0.8
       update-3.0.0.9
+      update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
@@ -80,6 +84,8 @@ function get_update_path() {
       update-3.0.0.7
       update-3.0.0.8
       update-3.0.0.9
+      update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.3" ]]
     then
@@ -87,6 +93,8 @@ function get_update_path() {
       update-3.0.0.7
       update-3.0.0.8
       update-3.0.0.9
+      update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
     then
@@ -94,6 +102,8 @@ function get_update_path() {
       update-3.0.0.7
       update-3.0.0.8
       update-3.0.0.9
+      update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.5" ]]
     then
@@ -101,6 +111,8 @@ function get_update_path() {
       update-3.0.0.7
       update-3.0.0.8
       update-3.0.0.9
+      update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.6" ]]
     then
@@ -108,23 +120,29 @@ function get_update_path() {
       update-3.0.0.7
       update-3.0.0.8
       update-3.0.0.9
+      update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.7" ]]
     then
       initialize
       update-3.0.0.8
       update-3.0.0.9
+      update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.8" ]]
     then
       initialize
       update-3.0.0.9
       update-3.0.1.0
+      update-3.0.1.1
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.9" ]]
       then
         initialize
         update-3.0.1.0
+        update-3.0.1.1
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.0" ]]
       then
