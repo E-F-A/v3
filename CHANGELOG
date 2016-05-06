@@ -1,4 +1,15 @@
 ############################################################
+EFA Version 3.0.1.1 Changes
+############################################################
+
+Issue #201  Bug          - Deprecated release-msg.cgi (deployed)
+Issue #253  Bug          - EFA-Backup ssl folder (deployed)
+Issue #260  Bug          - Header in Apache Settings wrong (deployed)
+Issue #261  Bug          - learn-msg.cgi wrong path for sa-learn (deployed)
+Issue #273  Security     - MailWatch Configuration Vulnerability
+Issue #274  Bug          - Broken menu options in 3.0.1.0
+
+############################################################
 EFA Version 3.0.1.0 Changes
 ############################################################
 
