@@ -85,10 +85,16 @@ function run_update() {
   fi
 
   # Issue #261 learn-msg.cgi wrong path for sa-learn
-  rm -f /var/www/cgi-bin/learn-msg.cgi
+  mkdir -p /var/EFA/backup/$VERSION
+  mv -f /var/www/cgi-bin/learn-msg.cgi /var/EFA/backup/$VERSION
   cp $STAGING/Files/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
   chmod ugo+x /var/www/cgi-bin/learn-msg.cgi
 
+  # Issue #253 EFA-Backup ssl folder
+  mv -f /usr/local/sbin/EFA-Backup /var/EFA/backup/$VERSION
+  cp $STAGING/Files/EFA-Backup /usr/local/sbin/EFA-Backup
+  chmod 700 /usr/local/sbin/EFA-Backup
+  
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
