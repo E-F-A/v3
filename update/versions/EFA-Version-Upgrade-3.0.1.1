@@ -84,6 +84,11 @@ function run_update() {
     sed -i "/^define('USE_LDAP'/ c\define('USE_LDAP',         true);" /var/www/html/mailscanner/conf.php
   fi
 
+  # Issue #261 learn-msg.cgi wrong path for sa-learn
+  rm -f /var/www/cgi-bin/learn-msg.cgi
+  cp $STAGING/Files/learn-msg.cgi /var/www/cgi-bin/learn-msg.cgi
+  chmod ugo+x /var/www/cgi-bin/learn-msg.cgi
+
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
