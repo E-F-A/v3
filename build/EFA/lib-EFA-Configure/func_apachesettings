@@ -58,7 +58,7 @@ function func_apache-settings() {
       fi
     done
 
-    if [[ $TMPSECURE == "Y" || $TMPSECURE == "y" | $TMPSECURE="" ]]; then
+    if [[ $TMPSECURE == "Y" || $TMPSECURE == "y" || $TMPSECURE="" ]]; then
       echo -e ""
       echo -e "Port 80 --> 443 Redirect"
       echo -e "You can choose to redirect all port 80 traffic to port 443"

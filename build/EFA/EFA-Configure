@@ -70,7 +70,7 @@ show_menu() {
       func_echo-header
       echo -e "Please choose an option:"
       echo -e " "
-      echo -e "0) Logout                              8) Mail Settings"
+      echo -e "0) Logout from ssh                     8) Mail Settings"
       echo -e "1) Shell                               9) Spam Settings"
       echo -e "2) Reboot system                      10) Mysql Recovery"
       echo -e "3) Halt system                        11) Apache Settings"
