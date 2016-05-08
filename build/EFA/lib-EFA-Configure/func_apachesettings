@@ -17,7 +17,7 @@ function func_apache-settings() {
   flag=0
   while [ $flag == "0" ]
     do
-      if [[ $TMPSECURE == "y" || $TMPSECURE == "Y" || $TMPSECURE="" ]]; then
+      if [[ $TMPSECURE == "y" || $TMPSECURE == "Y" || -z $TMPSECURE ]]; then
         sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
         iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT>/dev/null 2>&1
         iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
@@ -39,16 +39,16 @@ function func_apache-settings() {
 
         iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT >/dev/null 2>&1
         /etc/init.d/iptables save
-		
+
         echo -e ""
         echo -e "Port 443 $green[Disabled]$clean"
         sleep 2
-		
-		# Issue #74 EFA-Configure Disable SSL does not disable redirect
-		rm -f /etc/httpd/conf.d/redirectssl.conf >/dev/null 2>&1
-		echo -e "Port 443 Redirection $green[Disabled]$clean"
-		sleep 2
-		
+
+        # Issue #74 EFA-Configure Disable SSL does not disable redirect
+        rm -f /etc/httpd/conf.d/redirectssl.conf >/dev/null 2>&1
+        echo -e "Port 443 Redirection $green[Disabled]$clean"
+        sleep 2
+
         flag=1
       else
         echo -e "Choice $green\"$TMPSECURE\"$clean is not a valid choice."
@@ -58,7 +58,7 @@ function func_apache-settings() {
       fi
     done
 
-    if [[ $TMPSECURE == "Y" || $TMPSECURE == "y" || $TMPSECURE="" ]]; then
+    if [[ $TMPSECURE == "Y" || $TMPSECURE == "y" || -z $TMPSECURE ]]; then
       echo -e ""
       echo -e "Port 80 --> 443 Redirect"
       echo -e "You can choose to redirect all port 80 traffic to port 443"
@@ -70,7 +70,7 @@ function func_apache-settings() {
       flag=0
       while [ $flag == "0" ]
         do
-        if [[ $TMPREDIRECT == "y" || $TMPREDIRECT == "Y" || $TMPREDIRECT="" ]]; then
+        if [[ $TMPREDIRECT == "y" || $TMPREDIRECT == "Y" || -z $TMPREDIRECT ]]; then
         echo -e "RewriteEngine On" > /etc/httpd/conf.d/redirectssl.conf
         echo -e "RewriteCond %{HTTPS} !=on" >> /etc/httpd/conf.d/redirectssl.conf
         echo -e "RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]" >> /etc/httpd/conf.d/redirectssl.conf
