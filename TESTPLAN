@@ -2,6 +2,11 @@
 EFA Version 3.0.1.2 TEST PLAN
 ############################################################
 
-Verify proper operation of func_apachesettings
-  y/n both function properly
-
+func_apachesettings
+  Verify proper operation of func_apachesettings
+  Verify that y/n both function properly
+SHOW_GREYLIST
+  Verify SHOW_GREYLIST duplicate is removed
+  Verify that mailwatch update routine does not add duplicate
+  Verify that mailwatch update adds SHOW_GREYLIST if missing
+  Verify that mailwatch update sets proper boolean flag for SHOW_GREYLIST
