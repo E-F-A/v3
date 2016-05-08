@@ -2,6 +2,8 @@
 EFA Version 3.0.1.2 Changes
 ############################################################
 
+Issue #165  Enhancement  - Upgrade MailScanner
+Issue #267  Bug          - SPAM bounce loop
 Issue #275  Bug          - MailWatch updater adds duplicate SHOW_GREYLIST definitions
 Issue #276  Bug          - EFA-Configure Option 11 logic error
 

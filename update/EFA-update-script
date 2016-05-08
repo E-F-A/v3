@@ -26,7 +26,6 @@ logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3"
 MIRROR="http://dl.efa-project.org"
 mirrorpath="update"
-yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools*"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
 MAILFROM="$ADMINEMAIL"
 MAILTO="$ADMINEMAIL"
@@ -68,6 +67,7 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
@@ -77,6 +77,7 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
@@ -86,6 +87,7 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.3" ]]
     then
@@ -95,6 +97,7 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
     then
@@ -104,6 +107,7 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.5" ]]
     then
@@ -113,6 +117,7 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.6" ]]
     then
@@ -122,6 +127,7 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.7" ]]
     then
@@ -130,6 +136,7 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.8" ]]
     then
@@ -137,17 +144,25 @@ function get_update_path() {
       update-3.0.0.9
       update-3.0.1.0
       update-3.0.1.1
+      update-3.0.1.2-beta
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.9" ]]
       then
         initialize
         update-3.0.1.0
         update-3.0.1.1
+        update-3.0.1.2-beta
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.0" ]]
       then
         initialize
         update-3.0.1.1
+        update-3.0.1.2-beta
+        finalize
+  elif [[ $CVERSION == "EFA-3.0.1.1" ]]
+      then
+        initialize
+        update-3.0.1.2-beta
         finalize
   fi
 }
@@ -269,6 +284,35 @@ function update-3.0.1.1() {
   #update-kernel
 
   UPDATE="EFA-Update-3.0.1.0-3.0.1.1.tar.gz"
+  download_update
+  check_md5
+
+  # Unpack update
+  cd $STAGING
+  tar xzvf $UPDATE
+  [[ $? -ne 0 ]] && abort
+  # Bypass noexec in /tmp
+  rm -f /var/EFA/update/EFA-Version-Upgrade
+  cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
+  chmod 700 /var/EFA/update/EFA-Version-Upgrade
+  /var/EFA/update/EFA-Version-Upgrade
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to 3.0.1.2-beta
+#----------------------------------------------------------------#
+function update-3.0.1.2-beta() {
+ # Is staging area clean?
+ [[ -n $STAGING ]] && rm -rf $STAGING/*
+
+  check_disk_space
+
+  # Check for kernel update prior to package download
+  VERSION="3.0.1.2-beta"
+  update-kernel
+
+  UPDATE="EFA-Update-3.0.1.1-3.0.1.2-beta.tar.gz"
   download_update
   check_md5
 
@@ -430,10 +474,10 @@ function check_disk_space() {
 # Update Kernel function
 #----------------------------------------------------------------#
 function update-kernel(){
-  # Issue #96 Reconfigure to permit yum update
+  YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
   yum -y update kernel*
-  sed -i "/^exclude=/ c\exclude=$yumexclude" /etc/yum.conf
+  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
   # Kernel update check
   # If the kernel has updated in a previous update, and

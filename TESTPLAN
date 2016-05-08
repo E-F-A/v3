@@ -10,3 +10,13 @@ SHOW_GREYLIST
   Verify that mailwatch update routine does not add duplicate
   Verify that mailwatch update adds SHOW_GREYLIST if missing
   Verify that mailwatch update sets proper boolean flag for SHOW_GREYLIST
+MailScanner
+  Verify proper daemon function
+  Test mail flow
+    spam test
+    non-spam test
+    virus test
+    content test
+  Verify cron job functionality
+    check for potential mailscanner and mailwatch cron conflicts
+  Run Successful Lint tests

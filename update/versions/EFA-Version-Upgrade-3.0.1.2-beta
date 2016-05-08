@@ -58,9 +58,16 @@ function run_update() {
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
+  
+  # Back up MailScanner
+  mkdir -p /var/EFA/backup/$VERSION/usr/lib/MailScanner
+  cp -ra /usr/lib/MailScanner/* /var/EFA/backup/$VERSION/usr/lib/MailScanner
 
   ##### Commit Phase #####
-
+  
+  # Todo: Add EFA testing repo here for beta
+  # Beta only -- EFA testing repo
+  
   # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -rf /var/EFA/lib/EFA-Configure/
@@ -69,7 +76,11 @@ function run_update() {
   cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
   chmod 700 /usr/local/sbin/EFA-Configure
   chmod 600 /var/EFA/lib/EFA-Configure/*
-
+  
+  # Add "MailScanner" to excludes
+  YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
+  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES MailScanner*" /etc/yum.conf
+  
   update-vmtools
   yum clean all
   yum_update
@@ -83,6 +94,34 @@ function run_update() {
     mv /var/www/html/mailscanner/conf.php.tmp /var/www/html/mailscanner/conf.php
   fi
 
+  Issue #165, #267 MailScanner Upgrade
+  YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
+  sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
+  yum install -y bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 MailScanner
+  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
+  cp -f /usr/lib/MailScanner/MailScanner/CustomFunctions/*pm /usr/share/MailScanner/perl/custom
+  rm -f /usr/share/MailScanner/perl/custom/CustomAction.pm
+  cp -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm.rpmsave /usr/share/MailScanner/perl/custom/CustomAction.pm
+  cp -f /etc/MailScanner/reports/en/*{txt,html} /usr/share/MailScanner/reports/en
+  rm -rf /usr/lib/MailScanner
+  rm -rf /etc/MailScanner/reports
+  mv /etc/MailScanner/spamassassin.conf /etc/MailScanner/spamassassin.conf.rpmnew
+  mv /etc/MailScanner/spam.assassin.prefs.conf.rpmsave /etc/MailScanner/spamassassin.conf
+  # Symbolic links for backward compatibility
+  ln -s /usr/share/MailScanner /usr/lib/MailScanner
+  ln -s /usr/share/MailScanner/reports /etc/MailScanner/reports
+  ln -s /usr/share/MailScanner/perl/MailScanner /usr/share/MailScanner/MailScanner
+  ln -s /usr/share/MailScanner/perl/custom /usr/share/MailScanner/perl/MailScanner/CustomFunctions
+  ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
+  ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spam.assassin.prefs.conf
+  sed -i "/^MailScanner Version Number =/ c\MailScanner Version Number = 5.0.0" /etc/MailScanner/MailScanner.conf
+  sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
+  sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
+  # Fix MailScanner runlevel priority
+  chkconfig mailscanner off
+  sed -i "/^# chkconfig:/ c\# chkconfig: 345 80 30" /etc/init.d/mailscanner
+  chkconfig mailscanner on
+  
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
