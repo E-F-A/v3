@@ -90,7 +90,8 @@ function run_update() {
     awk '{if(/^define(\'SHOW_GREYLIST\'/) count++; \
       if(count==2) { sub(/^define(\'SHOW_GREYLIST\'.*$/,""); print; } \
       else print;}' /var/www/html/mailscanner/conf.php > /var/www/html/mailscanner/conf.php.tmp
-    rm -f /var/www/html/mailscanner/conf.php
+      # colorization of my console silly fix: '
+      rm -f /var/www/html/mailscanner/conf.php
     mv /var/www/html/mailscanner/conf.php.tmp /var/www/html/mailscanner/conf.php
   fi
 
@@ -104,6 +105,7 @@ function run_update() {
   cp -f /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm.rpmsave /usr/share/MailScanner/perl/custom/CustomAction.pm
   cp -f /etc/MailScanner/reports/en/*{txt,html} /usr/share/MailScanner/reports/en
   rm -rf /usr/lib/MailScanner
+  # Todo for beta: i8n support, move all languages here
   rm -rf /etc/MailScanner/reports
   mv /etc/MailScanner/spamassassin.conf /etc/MailScanner/spamassassin.conf.rpmnew
   mv /etc/MailScanner/spam.assassin.prefs.conf.rpmsave /etc/MailScanner/spamassassin.conf
@@ -117,6 +119,9 @@ function run_update() {
   sed -i "/^MailScanner Version Number =/ c\MailScanner Version Number = 5.0.0" /etc/MailScanner/MailScanner.conf
   sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
   sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
+
+  # Force mailscanner init to return a code on all failures
+  sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/mailscanner
 
   echo "$VERSION update is complete"
   echo ""

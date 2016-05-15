@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.1.1 build without ks version 20160505
+# EFA 3.0.1.2 build without ks version 20160515
 #
 # Purpose:
 #       This script will 'baseline' an existing CentOS installation
@@ -154,41 +154,89 @@ glibc-devel \
 gcc \
 make \
 opencv \
-perl-Archive-Tar \
-perl-Archive-Zip \
-perl-Compress-Zlib \
-perl-Convert-BinHex \
-perl-Digest-SHA1 \
-perl-DBD-MySQL \
-perl-DBD-SQLite \
-perl-CGI \
-perl-HTML-Parser \
-perl-IO-stringy \
-perl-IO-Socket-INET6 \
-perl-IO-Socket-SSL \
-perl-IO-Zlib \
-perl-MailTools \
-perl-MIME-tools \
-perl-Pod-Escapes \
-perl-Pod-Simple \
-perl-Test-Pod \
-perl-TimeDate \
-perl-Time-HiRes \
-perl-Net-DNS \
-perl-Net-IP \
-perl-Net-SSLeay \
-perl-Encode-Detect \
-perl-Module-Build \
-perl-Business-ISBN \
-perl-Business-ISBN-Data \
-perl-Crypt-OpenSSL-Random \
-perl-Error \
-perl-IO-String \
-perl-Mail-DKIM \
-perl-Test-Manifest \
-perl-YAML \
-perl-libwww-perl \
-perl-URI \
+perl-Archive-Tar
+perl-Archive-Zip
+perl-BerkeleyDB
+perl-Business-ISBN
+perl-Business-ISBN-Data
+perl-Cache-Memcached
+perl-CGI
+perl-Class-Singleton
+perl-Compress-Zlib
+perl-Compress-Raw-Zlib 
+perl-Convert-BinHex
+perl-Convert-TNEF
+perl-Crypt-OpenSSL-Random
+perl-Crypt-OpenSSL-RSA
+perl-Data-Dump
+perl-Date-Manip
+perl-DateTime
+perl-DBI
+perl-DBD-MySQL
+perl-DBD-SQLite
+perl-DBD-Pg
+perl-Digest-SHA1
+perl-Encode-Detect
+perl-Email-Date-Format
+perl-Error
+perl-ExtUtils-CBuilder
+perl-ExtUtils-MakeMaker
+perl-ExtUtils-ParseXS
+perl-File-Copy-Recursive
+perl-File-Tail
+perl-Filesys-Df
+perl-HTML-Parser
+perl-HTML-Tagset
+perl-Inline
+perl-IO-Multiplex
+perl-IO-String
+perl-IO-stringy
+perl-IO-Socket-INET6
+perl-IO-Socket-SSL
+perl-IO-Zlib
+perl-libwww-perl
+perl-List-MoreUtils
+perl-Mail-DKIM
+perl-MailTools
+perl-MIME-tools
+perl-MIME-Lite
+perl-MIME-Types
+perl-Module-Build
+perl-Net-CIDR
+perl-Net-CIDR-Lite
+perl-Net-DNS
+perl-Net-IP
+perl-Net-Netmask
+perl-Net-Patricia 
+perl-Net-Server
+perl-Net-SSLeay
+perl-Module-Build
+perl-OLE-Storage_Lite
+perl-Params-Validate
+perl-Pod-Escapes
+perl-Pod-Simple
+perl-Parse-RecDescent
+perl-String-CRC32
+perl-Sys-Hostname-Long
+perl-Sys-SigAction
+perl-Taint-Runtime
+perl-Test-Harness
+perl-Test-Manifest
+perl-Test-Pod
+perl-Test-Simple
+perl-Text-Balanced
+perl-TimeDate
+perl-Time-HiRes
+perl-URI
+perl-version
+perl-XML-DOM
+perl-XML-LibXML
+perl-XML-NamespaceSupport
+perl-XML-Parser
+perl-XML-RegExp
+perl-XML-SAX
+perl-YAML
+perl-YAML-Syck
 mod_ssl \
 system-config-keyboard \
 openssl-devel

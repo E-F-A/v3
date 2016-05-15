@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.1.1 build script version 20160505
+# EFA 3.0.1.2-beta build script version 20160515
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2016 https://efa-project.org
 #
@@ -25,14 +25,14 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.1.1"
+version="3.0.1.2-beta"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
-yumexclude="kernel* mysql* postfix* mailscanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
+yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
 MAILWATCHVERSION="c71de84"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
@@ -64,13 +64,16 @@ func_efarepo () {
    rpm --import $smirror/rpm/RPM-GPG-KEY-E.F.A.Project
    cd /etc/yum.repos.d/
    /usr/bin/wget $smirror/rpm/EFA.repo
-   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin tnef perl-BerkeleyDB \
-   perl-Convert-TNEF perl-Filesys-Df perl-File-Tail perl-IO-Multiplex perl-Net-Server perl-Net-CIDR \
-   perl-Net-Netmask perl-NetAddr-IP re2c postfix perl-Crypt-OpenSSL-RSA perl-Data-Dump perl-Digest-SHA perl-Mail-SPF \
-   perl-Net-Patricia perl-Parse-RecDescent perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable perl-Test-Pod \
+   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin perl-NetAddr-IP \
+   re2c postfix perl-Digest-SHA perl-Mail-SPF perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
-   perl-IO-Socket-IP perl-libnet perl-Text-Balanced spamassassin
-   }
+   perl-IO-Socket-IP perl-libnet bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 \
+   spamassassin MailScanner
+   
+   # Todo for 3.0.1.2-beta :  Reconcile the following perl modules for MailScanner
+   # ARMOD+=('Mail::IMAPClient'); 
+   # ARMOD+=('Net::LDAP'); 
+}
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -229,16 +232,18 @@ func_postfix () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# install and configure MailScanner
+# Configure MailScanner
 # http://mailscanner.info
 # +---------------------------------------------------+
 func_mailscanner () {
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/MailScanner-4.84.6-1.rpm.tar.gz
-    tar -xvzf MailScanner-4.84.6-1.rpm.tar.gz
-    cd MailScanner-4.84.6-1
-    ./install.sh
-    rm -f /root/.rpmmacros
+    # Installed via rpm now
+    #cd /usr/src/EFA
+    #wget $mirror/$mirrorpath/MailScanner-4.84.6-1.rpm.tar.gz
+    #tar -xvzf MailScanner-4.84.6-1.rpm.tar.gz
+    #cd MailScanner-4.84.6-1
+    #./install.sh
+    #rm -f /root/.rpmmacros
+
     chown postfix:postfix /var/spool/MailScanner/quarantine
     mkdir /var/spool/MailScanner/spamassassin
     chown postfix:postfix /var/spool/MailScanner/spamassassin
@@ -314,7 +319,7 @@ func_mailscanner () {
     sed -i "/^Notify Senders =/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
 
     # Match up envelope header (changed at efa-init but usefull for testing)
-    sed -i '/^envelope_sender_header / c\envelope_sender_header X-yoursite-MailScanner-EFA-From' /etc/MailScanner/spam.assassin.prefs.conf
+    sed -i '/^envelope_sender_header / c\envelope_sender_header X-yoursite-MailScanner-EFA-From' /etc/MailScanner/spamassassin.conf
 
     touch /etc/MailScanner/rules/sig.html.rules
     touch /etc/MailScanner/rules/sig.text.rules
@@ -325,54 +330,66 @@ func_mailscanner () {
     mount -a
 
     # Fix (workaround) the "Insecure dependency in open while running with -T switch at /usr/lib64/perl5/IO/File.pm line 185" error
-    sed -i '/^#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner/ c\#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner\ -U' /usr/sbin/MailScanner
+    # sed -i '/^#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner/ c\#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner\ -U' /usr/sbin/MailScanner
 
     # Remove all reports except en and modify all texts
     cd /usr/src/EFA/
-    wget --no-check-certificate $gitdlurl/MailScanner/reports/en/en-reports-filelist.txt
-    rm -rf /etc/MailScanner/reports
-    mkdir -p /etc/MailScanner/reports/en
-    cd /etc/MailScanner/reports/en
+    wget $gitdlurl/MailScanner/reports/en/en-reports-filelist.txt
+    # rm -rf /etc/MailScanner/reports
+    # mkdir -p /etc/MailScanner/reports/en
+    rm -f /usr/share/MailScanner/reports/en/*
+    cd /usr/share/MailScanner/reports/en
     for report in `cat /usr/src/EFA/en-reports-filelist.txt`
       do
-        wget --no-check-certificate $gitdlurl/MailScanner/reports/en/$report
+        wget $gitdlurl/MailScanner/reports/en/$report
     done
 
     # Add CustomAction.pm for token handling
-    cd /usr/lib/MailScanner/MailScanner/CustomFunctions
+    cd /usr/share/MailScanner/perl/custom
     # Remove as a copy will throw a mailscanner --lint error
     rm -f CustomAction.pm
-    wget --no-check-certificate $gitdlurl/EFA/CustomAction.pm
+    wget $gitdlurl/EFA/CustomAction.pm
 
     # Add EFA-Tokens-Cron
     cd /etc/cron.daily
-    wget --no-check-certificate $gitdlurl/EFA/EFA-Tokens-Cron
+    wget $gitdlurl/EFA/EFA-Tokens-Cron
     chmod 700 EFA-Tokens-Cron
 
     # Force mailscanner init to return a code on all failures
-    sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/MailScanner
+    sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/mailscanner
+
+    # Symbolic links for backward compatibility
+    ln -s /usr/share/MailScanner /usr/lib/MailScanner
+    ln -s /usr/share/MailScanner/reports /etc/MailScanner/reports
+    ln -s /usr/share/MailScanner/perl/MailScanner /usr/share/MailScanner/MailScanner
+    ln -s /usr/share/MailScanner/perl/custom /usr/share/MailScanner/perl/MailScanner/CustomFunctions
+    ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
+    ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spam.assassin.prefs.conf
+
+    sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
+    sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
 
     # Issue #51 -- Redundant Quarantine Clean Scripts Present
-    rm -f /etc/cron.daily/clean.quarantine
+    # rm -f /etc/cron.daily/clean.quarantine
 
     # Remove Mailscanners phishing sites cron (#100, replaced by EFA-MS-Update)
-    rm -f /etc/cron.daily/update_phishing_sites
+    # rm -f /etc/cron.daily/update_phishing_sites
 
     # Issue #77 -- EFA MailScanner 0 byte tmp files
-    cd /usr/lib/MailScanner
-    wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
-    patch < mailscanner-4.84.6-1.patch
-    rm -f mailscanner-4.84.6-1.patch
+    # cd /usr/lib/MailScanner
+    # wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
+    # patch < mailscanner-4.84.6-1.patch
+    # rm -f mailscanner-4.84.6-1.patch
 
-     # Issue 200 Unrar v5 support (mailscanner backport)
-    rm -f /usr/lib/MailScanner/MailScanner/Message.pm
-    wget -O /usr/lib/MailScanner/MailScanner/Message.pm --no-check-certificate $mirror/$mirrorpath/Message.pm
+    # Issue 200 Unrar v5 support (mailscanner backport)
+    # rm -f /usr/lib/MailScanner/MailScanner/Message.pm
+    # wget -O /usr/lib/MailScanner/MailScanner/Message.pm --no-check-certificate $mirror/$mirrorpath/Message.pm
 
     # Issue #177 Correct EFA to new clamav paths using EPEL
-    sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
+    # sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # Future proofing for next MailScanner version...
-    sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
-    sed -i "/^clamd\t\t\/bin\/false/ c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
+    # sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
+    # sed -i "/^clamd\t\t\/bin\/false/ c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
 }
 # +---------------------------------------------------+
 

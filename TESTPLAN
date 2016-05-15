@@ -1,5 +1,5 @@
 ############################################################
-EFA Version 3.0.1.2 TEST PLAN
+EFA Version 3.0.1.2-beta TEST PLAN
 ############################################################
 
 func_apachesettings
@@ -20,3 +20,4 @@ MailScanner
   Verify cron job functionality
     check for potential mailscanner and mailwatch cron conflicts
   Run Successful Lint tests
+  Verify presence of needed perl modules
