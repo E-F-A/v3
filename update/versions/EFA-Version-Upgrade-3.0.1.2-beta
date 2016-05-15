@@ -117,11 +117,7 @@ function run_update() {
   sed -i "/^MailScanner Version Number =/ c\MailScanner Version Number = 5.0.0" /etc/MailScanner/MailScanner.conf
   sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
   sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
-  # Fix MailScanner runlevel priority
-  chkconfig mailscanner off
-  sed -i "/^# chkconfig:/ c\# chkconfig: 345 80 30" /etc/init.d/mailscanner
-  chkconfig mailscanner on
-  
+
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
