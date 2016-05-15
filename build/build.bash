@@ -787,6 +787,9 @@ func_mailwatch () {
     # Add munin to mailwatch
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';\n    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . \$munin_pass . '@'  . \$hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" other.php
 
+    # Issue #210 Add EFA Version to GUI
+    sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 style=\"width:300px;text-align:center\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' /var/www/html/mailscanner/login.php
+
     # Postfix Relay Info
 ########################################################################
   cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'

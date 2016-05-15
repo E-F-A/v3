@@ -24,3 +24,5 @@ MailScanner
     check for potential mailscanner and mailwatch cron conflicts
   Run Successful Lint tests
   Verify presence of needed perl modules
+MailWatch
+  Verify version shows on login screen
