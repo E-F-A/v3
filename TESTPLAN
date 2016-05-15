@@ -5,6 +5,9 @@ EFA Version 3.0.1.2-beta TEST PLAN
 func_apachesettings
   Verify proper operation of func_apachesettings
   Verify that y/n both function properly
+func_greylisting
+  Verify proper disable enable of greylisting
+  Verify preservation of smtpd_recipient_restrictions settings 
 SHOW_GREYLIST
   Verify SHOW_GREYLIST duplicate is removed
   Verify that mailwatch update routine does not add duplicate
