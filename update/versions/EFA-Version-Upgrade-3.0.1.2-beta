@@ -124,7 +124,7 @@ function run_update() {
   sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/mailscanner
   
   # Issue #210 Add EFA Version to GUI
-  sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 style=\"width:300px;text-align:center\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' /var/www/html/mailscanner/login.php
+  sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 style=\\\"width:300px;text-align:center\\\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' /var/www/html/mailscanner/login.php
   
   echo "$VERSION update is complete"
   echo ""
@@ -270,7 +270,7 @@ function update-mailwatch() {
       sed -i "/^    \/\*End EFA\*/ c\    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . \$munin_pass . '@'  . \$hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" /var/www/html/mailscanner/other.php
 
       # Issue #210 Add EFA Version to GUI
-      sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 style=\"width:300px;text-align:center\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' /var/www/html/mailscanner/login.php
+      sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 style=\\\"width:300px;text-align:center\\\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' /var/www/html/mailscanner/login.php
 
       # Issue 204 -- UTF8 Characters Not Rendering in MailWatch
       yum -y install php-mbstring
