@@ -26,3 +26,8 @@ MailScanner
   Verify presence of needed perl modules
 MailWatch
   Verify version shows on login screen
+clamav-unofficial-sigs
+    Test signature operations
+    Verify creation of cron, log, logrotate
+    Verify removal of old files
+    test malwarepatrol cli

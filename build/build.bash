@@ -68,7 +68,7 @@ func_efarepo () {
    re2c postfix perl-Digest-SHA perl-Mail-SPF perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
    perl-IO-Socket-IP perl-libnet bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 \
-   spamassassin MailScanner
+   spamassassin MailScanner clamav-unofficial-sigs
    
    # Todo for 3.0.1.2-beta :  Reconcile the following perl modules for MailScanner
    # ARMOD+=('Mail::IMAPClient'); 
@@ -418,27 +418,28 @@ func_spam_clamav () {
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
     rm -f /etc/cron.daily/freshclam
 
+    # Superceded by Issue #232
     # Sane security scripts
     # http://sanesecurity.co.uk/usage/linux-scripts/
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
-    tar -xvzf clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
-    cd clamav-unofficial-sigs-3.7.2-EFA-1.0
-    cp clamav-unofficial-sigs.sh /usr/local/bin/
-    cp clamav-unofficial-sigs.conf /usr/local/etc/
-    cp clamav-unofficial-sigs.8 /usr/share/man/man8/
-    cp clamav-unofficial-sigs-cron /etc/cron.d/
-    cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
-    sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log 2>&1" /etc/cron.d/clamav-unofficial-sigs-cron
-    chmod 755 /usr/local/bin/clamav-unofficial-sigs.sh
+    #cd /usr/src/EFA
+    #wget $mirror/$mirrorpath/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
+    #tar -xvzf clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
+    #cd clamav-unofficial-sigs-3.7.2-EFA-1.0
+    #cp clamav-unofficial-sigs.sh /usr/local/bin/
+    #cp clamav-unofficial-sigs.conf /usr/local/etc/
+    #cp clamav-unofficial-sigs.8 /usr/share/man/man8/
+    #cp clamav-unofficial-sigs-cron /etc/cron.d/
+    #cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
+    #sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log 2>&1" /etc/cron.d/clamav-unofficial-sigs-cron
+    # chmod 755 /usr/local/bin/clamav-unofficial-sigs.sh
 
     # Issue #177 Correct EFA to new clamav paths using EPEL
-    sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
+    # sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
 
-    sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
-    sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
-    sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
-    sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
+    # sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
+    # sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
+    # sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
+    # sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
 
     # Issue #169 Clean up clamav-unoffical-sigs script (superceded)
     # sed -i '/^mbl_dbs="/ c\#mbl_dbs="' /usr/local/etc/clamav-unofficial-sigs.conf
