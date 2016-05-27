@@ -12,11 +12,11 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
 #----------------------------------------------------------------#
@@ -348,7 +348,7 @@ function check_md5() {
   # Calculate md5
   checksum2=$(md5sum $STAGING/$UPDATE | awk '{print $1}')
   if [[ "$checksum1" != "$checksum2" ]]; then
-    echo "Fatal:  $UPDATE md5 checksum does not match!  Aborting..."
+    echo "Fatal: $UPDATE md5 checksum does not match!Aborting..."
     abort
   fi
 }
@@ -400,12 +400,12 @@ function abort() {
   rm -rf $STAGING
 
   echo "" >> $TMPMAIL
-  echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED. Updates cancelled." >> $TMPMAIL
   echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
 
-  echo "Update to Version $VERSION FAILED.  Updates cancelled."
+  echo "Update to Version $VERSION FAILED. Updates cancelled."
   echo "Please visit http://www.efa-project.org for more information."
   exit 1
 }
@@ -453,12 +453,12 @@ function check_disk_space() {
   for i in $DISKUSE; do
     if [[ $i -ge $THRESHOLD ]]; then
 
-      echo "FATAL:  Update aborted.  Low disk space <=5% detected on one" >> $TMPMAIL
+      echo "FATAL: Update aborted. Low disk space <=5% detected on one" >> $TMPMAIL
       echo "or more local ext4 filesystems!" >> $TMPMAIL
       echo "Free up disk space before continuing."  >> $TMPMAIL
       echo "Please visit https://forum.efa-project.org for assistance." >> $TMPMAIL
 
-      echo "FATAL:  Update aborted.  Low disk space <=5% detected on one"
+      echo "FATAL: Update aborted. Low disk space <=5% detected on one"
       echo "or more local ext4 filesystems!"
       echo "Free up disk space before continuing."
       echo "Please visit https://forums.efa-project.org for assistance."
@@ -491,7 +491,7 @@ function update-kernel(){
     sed -i "/^VMTOOLSVERSION:/ c\VMTOOLSVERSION:0" /etc/EFA-Config
 
     echo "Your system has an updated kernel, but you are not running"
-    echo "on the latest kernel.  Please restart your system and run"
+    echo "on the latest kernel. Please restart your system and run"
     echo "EFA-Update after restart."
 
     echo "From: $MAILFROM" > $TMPMAIL
@@ -501,7 +501,7 @@ function update-kernel(){
     echo "" >> $TMPMAIL
     echo "Update to $VERSION is pending." >> $TMPMAIL
     echo "Your system has an updated kernel, but you are not running" >> $TMPMAIL
-    echo "on the latest kernel.  Please restart your system and run" >> $TMPMAIL
+    echo "on the latest kernel. Please restart your system and run" >> $TMPMAIL
     echo "EFA-Update after restart." >> $TMPMAIL
     cat $TMPMAIL | $SENDMAIL -t
     rm $TMPMAIL
