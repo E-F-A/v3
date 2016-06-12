@@ -1,6 +1,6 @@
 Summary:       clamav-unofficial-sigs Maintained and provided by https://eXtremeSHOK.com
 Name:          clamav-unofficial-sigs
-Version:       5.3.1
+Version:       5.3.2
 Epoch:         1
 Release:       1.efa%{?dist}
 License:       Copyright (c) Adrian Jon Kriel admin@extremeshok.com
@@ -54,5 +54,8 @@ mkdir -p %{buildroot}/var/log/clamav-unofficial-sigs
 %dir %{_var}/log/clamav-unofficial-sigs/
 
 %changelog
+* Sat Jun 11 2016 Shawn Iverson <shawniverson@gmail.com> - 5.3.2-1
+- Updated for EFA https://efa-project.org
+
 * Sun May 22 2016 Shawn Iverson <shawniverson@gmail.com> - 5.3.1-1
 - Created for EFA https://efa-project.org
