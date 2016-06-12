@@ -31,3 +31,6 @@ clamav-unofficial-sigs
     Verify creation of cron, log, logrotate
     Verify removal of old files
     test malwarepatrol cli
+func_mailsettings
+    Verify that empty postmaster results in removal of postfix settings
+    Verify that non-empty postmaster results in addition of postfix settings

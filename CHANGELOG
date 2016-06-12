@@ -9,6 +9,7 @@ Issue #232  Enhancement  - Use CLAMAV-UNOFFICIAL-SIGS maintained by eXtremeSHOK.
 Issue #267  Bug          - SPAM bounce loop
 Issue #275  Bug          - MailWatch updater adds duplicate SHOW_GREYLIST definitions
 Issue #276  Bug          - EFA-Configure Option 11 logic error
+Issue #286  Bug          - Postmaster set to empty interferes with postfix
 
 ############################################################
 EFA Version 3.0.1.1 Changes
