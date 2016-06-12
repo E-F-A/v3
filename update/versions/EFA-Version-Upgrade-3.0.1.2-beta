@@ -139,6 +139,9 @@ function run_update() {
   rm -f /etc/logrotate.d/clamav-unofficial-sigs-logrotate
   yum install -y clamav-unofficial-sigs
   
+  # Issue #287 Rules without Descriptions
+  cp -f $STAGING/Files/descriptions.cf /etc/mail/spamassassin/
+  
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL

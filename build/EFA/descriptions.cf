@@ -1,0 +1,85 @@
+# For EFA -- 6/12/16
+# Rules with no descriptions
+describe FILL_THIS_FORM_FRAUD_PHISH possible phishing email looking with form for capturing information
+describe MALFORMED_FREEMAIL no description
+describe RCVD_FORGED_WROTE2 no description
+describe FSL_FAKE_HOTMAIL_RVCD no description
+describe FROM_MISSP_SPF_FAIL runon From line(?) and failed spf check
+describe HELO_LH_HOME no description
+describe FAKE_REPLY_C The mail's subject begins "Re: ", indicating a reply, but does not include the References: header
+describe MID_DEGREES no description
+describe FSL_INTERIA_ABUSE no description
+describe STOX_AND_PRICE no description
+describe LONG_TERM_PRICE no description
+describe DKIM_POLICY_SIGNSOME no description
+describe MSGID_DOLLARS_RANDOM no description
+describe DKIM_POLICY_SIGNALL no description
+describe RCVD_IN_MSPIKE_ZBI no description
+describe HTTPS_HTTP_MISMATCH Link shows https but href is http
+describe ImageCerberusPLG2 image Cerebrus check 2 - possible image spam
+describe HTML_TITLE_SUBJ_DIFF html mail with differing subject and <title>
+describe DKIM_POLICY_TESTING no description
+describe FSL_HELO_DEVICE no description
+describe GEO_QUERY_STRING no description
+describe THEBAT_UNREG no description
+describe HELO_OEM no description
+describe KB_RATWARE_OUTLOOK_16 no description
+describe X_MAILER_CME_6543_MSN no description
+describe ImageCerberusPLG3 image Cerebrus check 3 - likely image spam
+describe CTYPE_001C_A no description
+describe KB_DATE_CONTAINS_TAB no description
+describe HK_SCAM_N2 Nigerian scam - next of kin
+describe HELO_LOCALHOST no description
+describe JM_I_FEEL_LUCKY no description
+describe JM_TORA_XM no description
+describe HK_PNIS no description
+describe JM_RCVD_QMAILV1 no description
+describe HK_NAME_FM_MR_MRS Mail from freemail account named Mr/Miss/Mrs/etc
+describe STOX_REPLY_TYPE The mail's content type is "text/plain" and has the "reply-type=original" attribute
+describe BUG6152_INVALID_DATE_TZ_ABSURD no description
+describe ImageCerberusPLG4 image Cerebrus check 4 - likely image spam
+describe LOTTERY_PH_004470 lottery spam
+describe DCC_REPUT_13_19 no description
+describe KB_RATWARE_MSGID no description
+describe ImageCerberusPLG5 image Cerebrus check 5 - image spam
+describe MIME_BOUND_EQ_REL no description
+describe TVD_ENHANCE no description
+describe TVD_PH_BODY_META phishing email - you have some problem with your email account type messages
+describe L_SPAM_TOOL_13 no description
+describe STOCK_PRICES no description
+describe SHORT_TERM_PRICE no description
+describe MULTIPART_ALT_NON_TEXT no description
+describe SB_GIF_AND_NO_URIS no description
+describe STOX_REPLY_TYPE_WITHOUT_QUOTES The mail's content type is "text/plain" and has the "reply-type=original" attribute and subject doesn't begin with re:, fw:, or the body doesn't contain quoting > characters
+describe HIGH_CODEPAGE_URI no description
+describe TVD_SPACE_RATIO the ratio of spaces to non-spaces in each paragraph where there are lots of spaces means it is likely spam
+describe HK_SCAM_S7 no description
+describe RCVD_IN_BRBL_LASTEXT The last external relay in the Received chain was listed in the DNSBL Barracuda Reputation Block List (BRBL)
+describe FSL_HELO_BARE_IP_2 helo from bare ip address of untrusted external server
+describe KB_RATWARE_OUTLOOK_08 no description
+describe HK_LOTTO Lottery spam
+describe KB_RATWARE_OUTLOOK_MID no description
+describe TVD_PP_PHISH no description
+describe KB_FAKED_THE_BAT no description
+describe CTYPE_001C_B no description
+describe HELO_LH_LD no description
+describe BASE64_LENGTH_78_79 no description
+describe DOS_STOCK_BAT2 no description
+describe TVD_RCVD_SPACE_BRACKET "UNIX:" is part of the received line in the headers
+describe FSL_HELO_BARE_IP_1 no description
+describe LOTTERY_1 no description
+describe DKIM_VERIFIED no description
+describe FSL_HELO_SETUP no description
+describe KB_RATWARE_OUTLOOK_12 no description
+describe KB_RATWARE_BOUNDARY no description
+describe FSL_HELO_HOME no description
+describe ImageCerberusPLG0 image Cerebrus check 0 - not image spam
+describe FSL_HELO_NON_FQDN_1 no description
+describe TVD_EB_PHISH no description
+describe MSOE_MID_WRONG_CASE fake MS Outlook Express, wrong case on Message-Id: header
+describe CURR_PRICE no description
+describe HELO_FRIEND no description
+describe ImageCerberusPLG1 image Cerebrus check 1 - possible image spam
+describe TVD_FINGER_02 no description
+describe REPLYTO_WITHOUT_TO_CC Reply-To: header exists, but no one CC'd
+describe LIVEFILESTORE no description

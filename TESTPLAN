@@ -34,3 +34,5 @@ clamav-unofficial-sigs
 func_mailsettings
     Verify that empty postmaster results in removal of postfix settings
     Verify that non-empty postmaster results in addition of postfix settings
+descriptions.cf
+    Verify that warnings relating to missing descriptions are suppressed during spamassassin lint test
