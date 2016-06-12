@@ -301,15 +301,26 @@ func_postmasteremail(){
            echo -e "Enter your new postmaster email address"
            echo -e ""
            read -p "> " POSTMASTEREMAIL
-           sed -i "/POSTMASTEREMAIL\:/ c\POSTMASTEREMAIL\:$POSTMASTEREMAIL" /etc/EFA-Config
+           if [[ -n $POSTMASTEREMAIL ]]; then
+             sed -i "/POSTMASTEREMAIL\:/ c\POSTMASTEREMAIL\:$POSTMASTEREMAIL" /etc/EFA-Config
 
-           # Change postfix configuration
-           postconf -e notify_classes="resource, software, delay, bounce"
-           postconf -e 2bounce_notice_recipient="$POSTMASTEREMAIL"
-           postconf -e bounce_notice_recipient="$POSTMASTEREMAIL"
-           postconf -e delay_notice_recipient="$POSTMASTEREMAIL"
-           postconf -e error_notice_recipient="$POSTMASTEREMAIL"
-           
+             # Change postfix configuration
+             postconf -e notify_classes="resource, software, delay, bounce"
+             postconf -e 2bounce_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e bounce_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e delay_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e error_notice_recipient="$POSTMASTEREMAIL"
+
+           else
+             sed -i "/POSTMASTEREMAIL\:/ c\POSTMASTEREMAIL\:" /etc/EFA-Config
+
+             postconf -X notify_classes
+             postconf -X 2bounce_notice_recipient
+             postconf -X bounce_notice_recipient
+             postconf -X delay_notice_recipient
+             postconf -X error_notice_recipient
+
+           fi
            pemenu=1
            ;;
         e) mailmenu=1 && return ;;
