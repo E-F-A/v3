@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="c71de84"
+MAILWATCHVERSION="e20da78"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
@@ -221,6 +221,12 @@ function update-mailwatch() {
         echo "" >> /var/www/html/mailscanner/conf.php
         echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
         echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
+      fi
+      
+      # Issue #291 HIDE_UNKNOWN option for MailWatch
+      HIDEUNKNOWN_PRESENT=`grep define\(\'HIDE_UNKNOWN\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $HIDEUNKNOWN_PRESENT ]]; then
+        sed -i "/^define('LDAP_MS_AD_COMPATIBILITY'/ a\\\n////Hide Unknown Mail from quarantine reports\ndefine('HIDE_UNKNOWN', true);" /var/www/html/mailscanner/conf.php
       fi
 
       # Add favicons back

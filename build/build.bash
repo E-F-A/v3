@@ -33,7 +33,7 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
-MAILWATCHVERSION="c71de84"
+MAILWATCHVERSION="e20da78"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"
@@ -736,7 +736,9 @@ func_mailwatch () {
     sed -i "/^define('SHOW_SFVERSION',/ c\define('SHOW_SFVERSION', false);" conf.php
     # Issue #109 Documentation tab present after MailWatch update testing
     sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" conf.php
-
+    # Issue #291 HIDE_UNKNOWN option for MailWatch
+    sed -i "/^define('HIDE_UNKNOWN',/ c\define('HIDE_UNKNOWN', true);" conf.php
+    
     # Set up a redirect in web root to MailWatch
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html

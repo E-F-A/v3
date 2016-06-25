@@ -11,7 +11,10 @@ Issue #275  Bug          - MailWatch updater adds duplicate SHOW_GREYLIST defini
 Issue #276  Bug          - EFA-Configure Option 11 logic error
 Issue #286  Bug          - Postmaster set to empty interferes with postfix
 Issue #287  Bug          - Rules without Descriptions
+Issue #281  Bug          - 'mail' field LDAP search fails when full email address is used
 Issue #289  Bug          - Release mail image link broken
+Issue #291  Enhancement  - HIDE_UNKNOWN option for MailWatch
+
 
 ############################################################
 EFA Version 3.0.1.1 Changes
