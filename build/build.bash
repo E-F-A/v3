@@ -768,9 +768,7 @@ func_mailwatch () {
     # png image looks much better -- linking to png instead
     ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
-    ln -s EFAlogo-79px.png MW_LOGO
-    # Issue 211 MS_LOGO Missing
-    ln -s EFAlogo-47px.gif MS_LOGO
+	ln -s EFAlogo-79px.png mailwatch-logo.gif
 
     # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
     # mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1

@@ -11,6 +11,7 @@ Issue #275  Bug          - MailWatch updater adds duplicate SHOW_GREYLIST defini
 Issue #276  Bug          - EFA-Configure Option 11 logic error
 Issue #286  Bug          - Postmaster set to empty interferes with postfix
 Issue #287  Bug          - Rules without Descriptions
+Issue #289  Bug          - Release mail image link broken
 
 ############################################################
 EFA Version 3.0.1.1 Changes
@@ -133,8 +134,8 @@ Issue #155 Bug          - GHOST Vulnerability (glibc)
 EFA Version 3.0.0.6 Changes
 ############################################################
 
-Issue #127  Bug			- Greylisting not toggling on 3.0.0.5
-Issue #129	Enhancement	- Increase max spam check size to 2 MB
+Issue #127  Bug         - Greylisting not toggling on 3.0.0.5
+Issue #129  Enhancement - Increase max spam check size to 2 MB
 Issue #130  Bug         - Quarantine report problems after 3.0.0.5 upgrade
 Issue #131  Bug         - Undefined index %orgname%
 
@@ -178,7 +179,7 @@ Issue #111 Bug          - MailWatch.pm Errors after adding password fetch code
 Issue #113 Bug          - Modify EFA-Init to check a variable inside EFA-Config
 Issue #115 Bug          - Greylist option not available in new mailwatch version
 Issue #116 Bug          - Token is missing in 3.0.0.5
-Issue #117 Enhancement	- Lower High spamassassin score from 10 to 7
+Issue #117 Enhancement  - Lower High spamassassin score from 10 to 7
 Issue #119 Bug          - /etc/init.d/vmtoolsd:  Permission denied
 Issue #120 Bug          - EFA-Configure System Restore showing all files
 Issue #123 Enhancement  - Update Kernel, mysql, postfix, clamav, clamd
