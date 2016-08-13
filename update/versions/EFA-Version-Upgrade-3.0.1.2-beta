@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="c71de84"
+MAILWATCHVERSION="1e5ce5f"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
@@ -126,10 +126,10 @@ function run_update() {
 
   # Force mailscanner init to return a code on all failures
   sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/mailscanner
-  
+
   # Issue #210 Add EFA Version to GUI
   sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 style=\\\"width:300px;text-align:center\\\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' /var/www/html/mailscanner/login.php
-  
+
   # Issue #232 CLAMAV-UNOFFICIAL-SIGS maintained by eXtremeSHOK.com
   # Out with the old, in with the new
   rm -f /usr/local/etc/clamav-unofficial-sigs.conf
@@ -138,10 +138,13 @@ function run_update() {
   rm -f /etc/cron.d/clamav-unofficial-sigs-cron
   rm -f /etc/logrotate.d/clamav-unofficial-sigs-logrotate
   yum install -y clamav-unofficial-sigs
-  
+
   # Issue #287 Rules without Descriptions
   cp -f $STAGING/Files/descriptions.cf /etc/mail/spamassassin/
-  
+
+  # Issue #92 Mailwatch Single Recipient Release
+  update-mailwatch
+
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
@@ -174,12 +177,13 @@ function update-mailwatch() {
       cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
-      # No change in MailWatch.pm and SQLBlackWhiteList.pm in commit 20f37a1ecb.  Check all files in next update.
-      # sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
-      # sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+      # Change in MailWatch.pm in latest commit...
+      sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+      sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
       # sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
       # sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
-      # mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      # Todo: Fix path for MailScanner v5
+      mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
       # mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
 
       cd /usr/src/EFA/1.2.0-master
@@ -266,6 +270,16 @@ function update-mailwatch() {
         echo "define('SHOW_GREYLIST', false);" >> /var/www/html/mailscanner/conf.php
       fi
 
+      HIDE_UNKNOWN_PRESENT=`grep define\(\'HIDE_UNKNOWN\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $HIDE_UNKNOWN_PRESENT ]]; then
+        sed -i "/^define('SHOW_GREYLIST'/ a\\\n// Hide Unknown Mail from quarantine reports\ndefine('HIDE_UNKNOWN', false);" /var/www/html/mailscanner/conf.php
+      fi
+
+      AUTO_RELEASE_PRESENT=`grep define\(\'AUTO_RELEASE\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $AUTO_RELEASE_PRESENT ]]; then
+        sed -i "/^define('HIDE_UNKNOWN'/ a\\\n//Quarantine Auto Release\n//Set true to allow auto release of quarantined items from quarantine report\ndefine('AUTO_RELEASE', false);" /var/www/html/mailscanner/conf.php
+      fi
+
       # Is greylisting enabled?  Add back menu item...
       if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
         sed -i "/^define('SHOW_GREYLIST'/ c\define('SHOW_GREYLIST', true);" /var/www/html/mailscanner/conf.php
@@ -290,6 +304,11 @@ function update-mailwatch() {
 
       # Issue 204 -- UTF8 Characters Not Rendering in MailWatch
       yum -y install php-mbstring
+
+      # Create autorelease table
+      MYSQLPW=`grep MYSQLROOTPWD /etc/EFA-Config | awk -F':' '{print $2}'`
+      /usr/bin/mysql -u root -p"$MYSQLPW" mailscanner -e "CREATE TABLE `autorelease` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `msg_id` varchar(255) NOT NULL, `uid` varchar(255) NOT NULL, PRIMARY KEY (`id`) );"
+      MYSQLPW=''
 
       service httpd start
       service MailScanner start

@@ -33,7 +33,7 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
-MAILWATCHVERSION="c71de84"
+MAILWATCHVERSION="1e5ce5f"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"
@@ -109,6 +109,9 @@ func_mysql () {
     cd /usr/src/EFA
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create.sql
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
+
+    # Create autorelease table
+    /usr/bin/mysql -u root -p"$password" mailscanner -e "CREATE TABLE `autorelease` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `msg_id` varchar(255) NOT NULL, `uid` varchar(255) NOT NULL, PRIMARY KEY (`id`) );"
 
     # Create and populate efa db
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/efatokens.sql
