@@ -27,6 +27,10 @@ MailScanner
 MailWatch
   Verify version shows on login screen
   Verify that autorelease functionality on quarantine reports works when enabled
+  Verify that release link image appears
+  HIDE_UNKNOWN option works for reports and is enabled
+  HIDE_UNKNOWN option is added to config during upgrade
+  Successful login using full email address when LDAP mail field is in use
 clamav-unofficial-sigs
     Test signature operations
     Verify creation of cron, log, logrotate

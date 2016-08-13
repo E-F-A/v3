@@ -226,6 +226,12 @@ function update-mailwatch() {
         echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
         echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
       fi
+      
+      # Issue #291 HIDE_UNKNOWN option for MailWatch
+      HIDEUNKNOWN_PRESENT=`grep define\(\'HIDE_UNKNOWN\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $HIDEUNKNOWN_PRESENT ]]; then
+        sed -i "/^define('LDAP_MS_AD_COMPATIBILITY'/ a\\\n////Hide Unknown Mail from quarantine reports\ndefine('HIDE_UNKNOWN', true);" /var/www/html/mailscanner/conf.php
+      fi
 
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
@@ -244,6 +250,9 @@ function update-mailwatch() {
 
       ln -s EFAlogo-79px.png mailwatch-logo.png
       ln -s EFAlogo-47px.gif mailscannerlogo.gif
+	  
+	  # Issue #289 MailWatch logo on release link broken
+	  ln -s EFAlogo-79px.png mailwatch-logo.gif
 
       # Alter color scheme
       sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css

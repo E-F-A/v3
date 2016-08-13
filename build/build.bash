@@ -739,7 +739,9 @@ func_mailwatch () {
     sed -i "/^define('SHOW_SFVERSION',/ c\define('SHOW_SFVERSION', false);" conf.php
     # Issue #109 Documentation tab present after MailWatch update testing
     sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" conf.php
-
+    # Issue #291 HIDE_UNKNOWN option for MailWatch
+    sed -i "/^define('HIDE_UNKNOWN',/ c\define('HIDE_UNKNOWN', true);" conf.php
+    
     # Set up a redirect in web root to MailWatch
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
@@ -771,9 +773,7 @@ func_mailwatch () {
     # png image looks much better -- linking to png instead
     ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
-    ln -s EFAlogo-79px.png MW_LOGO
-    # Issue 211 MS_LOGO Missing
-    ln -s EFAlogo-47px.gif MS_LOGO
+	ln -s EFAlogo-79px.png mailwatch-logo.gif
 
     # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
     # mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
