@@ -41,3 +41,5 @@ func_mailsettings
     Verify that non-empty postmaster results in addition of postfix settings
 descriptions.cf
     Verify that warnings relating to missing descriptions are suppressed during spamassassin lint test
+EFA-SA-Update
+    Verify that kam.cf upodates from correct url source

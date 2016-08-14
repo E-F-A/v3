@@ -12,6 +12,7 @@ Issue #275  Bug             - MailWatch updater adds duplicate SHOW_GREYLIST def
 Issue #276  Bug             - EFA-Configure Option 11 logic error
 Issue #286  Bug             - Postmaster set to empty interferes with postfix
 Issue #287  Bug             - Rules without Descriptions
+Issue #297  Bug             - KAM.cf URL needs updated
 
 ############################################################
 EFA Version 3.0.1.1 Changes
