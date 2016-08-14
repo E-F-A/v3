@@ -393,6 +393,31 @@ func_mailscanner () {
     # Future proofing for next MailScanner version...
     # sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
     # sed -i "/^clamd\t\t\/bin\/false/ c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
+
+    # Issue #294 Attachment Release Issues in MailWatch
+    sed -i "/^Filename Rules =/ c\Filename Rules = %etc-dir%/filename.rules" /etc/MailScanner/MailScanner.conf
+    sed -i "/^Filetype Rules =/ c\Filetype Rules = %etc-dir%/filetype.rules" /etc/MailScanner/MailScanner.conf
+    sed -i "/^Dangerous Content Scanning =/ c\Dangerous Content Scanning = %rules-dir%/content.scanning.rules" /etc/MailScanner/MailScanner.conf
+
+    cat > /etc/MailScanner/filename.rules << 'EOF'
+From:	127.0.0.1	/etc/MailScanner/filename.rules.allowall.conf
+FromOrTo:	default	/etc/MailScanner/filename.rules.conf
+EOF
+    cat > /etc/MailScanner/filetype.rules << 'EOF'
+From:	127.0.0.1	/etc/MailScanner/filetype.rules.allowall.conf
+FromOrTo:	default	/etc/MailScanner/filetype.rules.conf
+EOF
+    cat > /etc/MailScanner/rules/content.scanning.rules << 'EOF'
+From:	127.0.0.1	no
+FromOrTo:	default	yes/
+EOF
+    cat > /etc/MailScanner/filename.rules.allowall.conf << 'EOF'
+allow	.*	-	-
+EOF
+    cat > /etc/MailScanner/filetype.rules.allowall.conf << 'EOF'
+allow	.*	-	-
+EOF
+
 }
 # +---------------------------------------------------+
 

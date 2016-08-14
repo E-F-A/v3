@@ -24,6 +24,7 @@ MailScanner
     check for potential mailscanner and mailwatch cron conflicts
   Run Successful Lint tests
   Verify presence of needed perl modules
+  Verify that quarantined attachements can be released from localhost
 MailWatch
   Verify version shows on login screen
   Verify that autorelease functionality on quarantine reports works when enabled

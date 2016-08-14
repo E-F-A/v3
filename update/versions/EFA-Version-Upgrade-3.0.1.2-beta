@@ -160,6 +160,31 @@ function run_update() {
   cp $STAGING/Scripts/EFA-SA-Update /usr/local/sbin/EFA-SA-Update
   chmod 700 /usr/local/sbin/EFA-SA-Update
   
+  # Issue #294 Attachment Release Issues in MailWatch
+  # (Do not modify if not at default settings)
+  sed -i "/^Filename Rules =%etc-dir%/filename.rules.conf/ c\Filename Rules = %etc-dir%/filename.rules" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Filetype Rules = %etc-dir%/filetype.rules.conf/ c\Filetype Rules = %etc-dir%/filetype.rules" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Dangerous Content Scanning = yes/ c\Dangerous Content Scanning = %rules-dir%/content.scanning.rules" /etc/MailScanner/MailScanner.conf
+  
+  cat > /etc/MailScanner/filename.rules << 'EOF'
+From:	127.0.0.1	/etc/MailScanner/filename.rules.allowall.conf
+FromOrTo:	default	/etc/MailScanner/filename.rules.conf
+EOF
+  cat > /etc/MailScanner/filetype.rules << 'EOF'
+From:	127.0.0.1	/etc/MailScanner/filetype.rules.allowall.conf
+FromOrTo:	default	/etc/MailScanner/filetype.rules.conf
+EOF
+cat > /etc/MailScanner/rules/content.scanning.rules << 'EOF'
+From:	127.0.0.1	no
+FromOrTo:	default	yes/
+EOF
+  cat > /etc/MailScanner/filename.rules.allowall.conf << 'EOF'
+allow	.*	-	-
+EOF
+  cat > /etc/MailScanner/filetype.rules.allowall.conf << 'EOF'
+allow	.*	-	-
+EOF
+
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
 
@@ -268,9 +293,9 @@ function update-mailwatch() {
 
       ln -s EFAlogo-79px.png mailwatch-logo.png
       ln -s EFAlogo-47px.gif mailscannerlogo.gif
-	  
-	  # Issue #289 MailWatch logo on release link broken
-	  ln -s EFAlogo-79px.png mailwatch-logo.gif
+
+      # Issue #289 MailWatch logo on release link broken
+      ln -s EFAlogo-79px.png mailwatch-logo.gif
 
       # Alter color scheme
       sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
