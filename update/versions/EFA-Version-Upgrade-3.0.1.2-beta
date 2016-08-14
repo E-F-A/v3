@@ -131,6 +131,8 @@ function run_update() {
   sed -i "/^ms_cron_ps/ c\ms_cron_ps=0" /etc/MailScanner/defaults
   sed -i "/^ms_cron_check/ c\ms_cron_check=0" /etc/MailScanner/defaults
   sed -i "/^q_days/ c\q_days=0" /etc/MailScanner/defaults
+  # MailScanner no longer managed postfix service
+  chkconfig postfix on
   
   # Force mailscanner init to return a code on all failures
   sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/mailscanner
