@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.1.2-beta build script version 20160515
+# EFA 3.0.1.2-beta build script version 20160821
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2016 https://efa-project.org
 #
@@ -400,24 +400,17 @@ func_mailscanner () {
     sed -i "/^Filetype Rules =/ c\Filetype Rules = %etc-dir%/filetype.rules" /etc/MailScanner/MailScanner.conf
     sed -i "/^Dangerous Content Scanning =/ c\Dangerous Content Scanning = %rules-dir%/content.scanning.rules" /etc/MailScanner/MailScanner.conf
 
-    cat > /etc/MailScanner/filename.rules << 'EOF'
-From:	127.0.0.1	/etc/MailScanner/filename.rules.allowall.conf
-FromOrTo:	default	/etc/MailScanner/filename.rules.conf
-EOF
-    cat > /etc/MailScanner/filetype.rules << 'EOF'
-From:	127.0.0.1	/etc/MailScanner/filetype.rules.allowall.conf
-FromOrTo:	default	/etc/MailScanner/filetype.rules.conf
-EOF
-    cat > /etc/MailScanner/rules/content.scanning.rules << 'EOF'
-From:	127.0.0.1	no
-FromOrTo:	default	yes/
-EOF
-    cat > /etc/MailScanner/filename.rules.allowall.conf << 'EOF'
-allow	.*	-	-
-EOF
-    cat > /etc/MailScanner/filetype.rules.allowall.conf << 'EOF'
-allow	.*	-	-
-EOF
+  echo -e "From:\t127.0.0.1\t/etc/MailScanner/filename.rules.allowall.conf" > /etc/MailScanner/filename.rules
+  echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filename.rules.conf" >> /etc/MailScanner/filename.rules
+
+  echo -e "From:\t127.0.0.1\t/etc/MailScanner/filetype.rules.allowall.conf" > /etc/MailScanner/filetype.rules
+  echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filetype.rules.conf" >> /etc/MailScanner/filetype.rules
+
+  echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/rules/content.scanning.rules
+  echo -e "FromOrTo:\tdefault\tyes" >> /etc/MailScanner/rules/content.scanning.rules
+
+  echo -e "allow\t.*\t-\t-" > /etc/MailScanner/filename.rules.allowall.conf
+  echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
 
 }
 # +---------------------------------------------------+

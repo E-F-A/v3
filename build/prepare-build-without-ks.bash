@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.1.2 build without ks version 20160515
+# EFA 3.0.1.2 build without ks version 20160821
 #
 # Purpose:
 #       This script will 'baseline' an existing CentOS installation
@@ -281,7 +281,7 @@ alsa-lib
 #----------------------------------------------------------------#
 mkdir /var/log/EFA
 mkdir /usr/src/EFA
-/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.1.1/build/build.bash --no-check-certificate
+/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.1.2-beta/build/build.bash --no-check-certificate
 chmod 700 /usr/src/EFA/build.bash
 #----------------------------------------------------------------#
 
@@ -302,11 +302,11 @@ flag=1
 while [ $flag != "0" ]
     do
       if [[ "$YN" == "Y" || "$YN" == "y" ]]; then
-	    logsave /var/log/EFA/build.log /usr/src/EFA/build.bash
+        logsave /var/log/EFA/build.log /usr/src/EFA/build.bash
         flag=0
       elif [[ "$YN" == "" || "$YN" == "N" || "$YN" == "n" ]]; then
-		echo ""
-		echo "Please don't forget to run the build script"
+        echo ""
+        echo "Please don't forget to run the build script"
         exit 1
       else
           echo -n "Do you want to start the build script? (y/N):"

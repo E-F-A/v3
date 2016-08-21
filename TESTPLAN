@@ -3,26 +3,26 @@ EFA Version 3.0.1.2-beta TEST PLAN
 ############################################################
 
 func_apachesettings
-  Verify proper operation of func_apachesettings
-  Verify that y/n both function properly
+  Verify proper operation of func_apachesettings PASSED
+  Verify that y/n both function properly PASSED
 func_greylisting
-  Verify proper disable enable of greylisting
-  Verify preservation of smtpd_recipient_restrictions settings 
+  Verify proper disable enable of greylisting PASSED
+  Verify preservation of smtpd_recipient_restrictions settings PASSED
 SHOW_GREYLIST
-  Verify SHOW_GREYLIST duplicate is removed
-  Verify that mailwatch update routine does not add duplicate
-  Verify that mailwatch update adds SHOW_GREYLIST if missing
-  Verify that mailwatch update sets proper boolean flag for SHOW_GREYLIST
+  Verify SHOW_GREYLIST duplicate is removed PASSED
+  Verify that mailwatch update routine does not add duplicate PASSED
+  Verify that mailwatch update adds SHOW_GREYLIST if missing PASSED
+  Verify that mailwatch update sets proper boolean flag for SHOW_GREYLIST PASSED
 MailScanner
-  Verify proper daemon function
+  Verify proper daemon function PASSED
   Test mail flow
     spam test
     non-spam test
     virus test
     content test
-  Verify cron job functionality
-    check for potential mailscanner and mailwatch cron conflicts
-  Run Successful Lint tests
+  Verify cron job functionality PASSED
+    check for potential mailscanner and mailwatch cron conflicts PASSED
+  Run Successful Lint tests 
   Verify presence of needed perl modules
   Verify that quarantined attachements can be released from localhost
 MailWatch
