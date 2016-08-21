@@ -27,3 +27,4 @@ func_askmalwarepatrol
 func_askrecursion
 func_retention
 func_maintenance
+func_peruser

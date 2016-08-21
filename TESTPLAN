@@ -32,6 +32,7 @@ MailWatch
   HIDE_UNKNOWN option works for reports and is enabled
   HIDE_UNKNOWN option is added to config during upgrade
   Successful login using full email address when LDAP mail field is in use
+  Successful operation of per user spam settings when enabled
 clamav-unofficial-sigs
     Test signature operations
     Verify creation of cron, log, logrotate
@@ -40,6 +41,8 @@ clamav-unofficial-sigs
 func_mailsettings
     Verify that empty postmaster results in removal of postfix settings
     Verify that non-empty postmaster results in addition of postfix settings
+func_peruser
+    Verify all functionality -- able to toggle on and off and cancel successfully
 descriptions.cf
     Verify that warnings relating to missing descriptions are suppressed during spamassassin lint test
 EFA-SA-Update

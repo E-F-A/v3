@@ -7,6 +7,7 @@ Issue #165  Enhancement     - Upgrade MailScanner
 Issue #210  Enhancement     - Add EFA Version to GUI
 Issue #228  Bug             - Greylist toggle overwrites custom smtpd_recipient_restrictions
 Issue #232  Enhancement     - Use CLAMAV-UNOFFICIAL-SIGS maintained by eXtremeSHOK.com
+Issue #265  Enhancement     - Add per user mode for MailWatch
 Issue #267  Bug             - SPAM bounce loop
 Issue #275  Bug             - MailWatch updater adds duplicate SHOW_GREYLIST definitions
 Issue #276  Bug             - EFA-Configure Option 11 logic error

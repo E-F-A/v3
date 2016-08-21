@@ -57,6 +57,7 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_askrecursion
 . /var/EFA/lib/EFA-Configure/func_retention
 . /var/EFA/lib/EFA-Configure/func_maintenance
+. /var/EFA/lib/EFA-Configure/func_peruser
 
 # +---------------------------------------------------+
 
