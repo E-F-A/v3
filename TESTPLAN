@@ -14,15 +14,15 @@ SHOW_GREYLIST
   Verify that mailwatch update adds SHOW_GREYLIST if missing PASSED
   Verify that mailwatch update sets proper boolean flag for SHOW_GREYLIST PASSED
 MailScanner
-  Verify proper daemon function
+  Verify proper daemon function PASSED
   Test mail flow
     spam test
     non-spam test
     virus test
     content test
-  Verify cron job functionality
-    check for potential mailscanner and mailwatch cron conflicts
-  Run Successful Lint tests
+  Verify cron job functionality PASSED
+    check for potential mailscanner and mailwatch cron conflicts PASSED
+  Run Successful Lint tests 
   Verify presence of needed perl modules
   Verify that quarantined attachements can be released from localhost
 MailWatch
