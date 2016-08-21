@@ -102,7 +102,7 @@ function run_update() {
       else print;}' /var/www/html/mailscanner/conf.php > /var/www/html/mailscanner/conf.php.tmp
       # colorization of my console silly fix: '
       rm -f /var/www/html/mailscanner/conf.php
-    mv /var/www/html/mailscanner/conf.php.tmp /var/www/html/mailscanner/conf.php
+      mv /var/www/html/mailscanner/conf.php.tmp /var/www/html/mailscanner/conf.php
   fi
 
   Issue #165, #267 MailScanner Upgrade
