@@ -301,7 +301,7 @@ function update-mailwatch() {
       # Issue #291 HIDE_UNKNOWN option for MailWatch
       HIDEUNKNOWN_PRESENT=`grep define\(\'HIDE_UNKNOWN\' /var/www/html/mailscanner/conf.php`
       if [[ -z $HIDEUNKNOWN_PRESENT ]]; then
-        sed -i "/^define('LDAP_MS_AD_COMPATIBILITY'/ a\\\n////Hide Unknown Mail from quarantine reports\ndefine('HIDE_UNKNOWN', true);" /var/www/html/mailscanner/conf.php
+        sed -i "/^define('HIDE_NON_SPAM'/ a\\\n////Hide Unknown Mail from quarantine reports\ndefine('HIDE_UNKNOWN', true);" /var/www/html/mailscanner/conf.php
       fi
 
       # Add favicons back
