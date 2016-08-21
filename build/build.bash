@@ -368,6 +368,7 @@ func_mailscanner () {
     ln -s /usr/share/MailScanner/perl/custom /usr/share/MailScanner/perl/MailScanner/CustomFunctions
     ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
     ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spam.assassin.prefs.conf
+    ln -s /etc/MailScanner/spamassassin.conf /etc/MailScanner/spam.assassin.prefs.conf
 
     sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
     sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
@@ -522,7 +523,12 @@ func_spam_clamav () {
     echo "user_awl_sql_username           sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
     echo "user_awl_sql_password           $password">>/etc/MailScanner/spam.assassin.prefs.conf
     echo "bayes_sql_override_username     mailwatch">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "#End E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
+    echo "txrep_factory                   Mail::SpamAssassin::SQLBasedAddrList" >> /etc/MailScanner/spam.assassin.prefs.conf
+    echo "txrep_track_messages            0" >> /etc/MailScanner/spam.assassin.prefs.conf
+    echo "user_awl_sql_override_username  TxRep" >> /etc/MailScanner/spam.assassin.prefs.conf
+    echo "user_awl_sql_table              txrep" >> /etc/MailScanner/spam.assassin.prefs.conf
+    echo "use_txrep                       0" >> /etc/MailScanner/spam.assassin.prefs.conf
+    echo "#End E.F.A. mods for MySQL" >> /etc/MailScanner/spam.assassin.prefs.conf
 
     # Add example spam to db
     # source: http://spamassassin.apache.org/gtube/gtube.txt
@@ -532,6 +538,9 @@ func_spam_clamav () {
 
     # Enable Auto White Listing
     sed -i '/^#loadplugin Mail::SpamAssassin::Plugin::AWL/ c\loadplugin Mail::SpamAssassin::Plugin::AWL' /etc/mail/spamassassin/v310.pre
+
+    # Enable TxRep Plugin
+    sed -i "/^#loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
 
     # AWL cleanup tools (just a bit different then esva)
     # http://notes.sagredo.eu/node/86

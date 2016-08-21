@@ -125,6 +125,8 @@ function run_update() {
   ln -s /usr/share/MailScanner/perl/custom /usr/lib/MailScanner/MailScanner/CustomFunctions
   ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
   ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spam.assassin.prefs.conf
+  ln -s /etc/MailScanner/spamassassin.conf /etc/MailScanner/spam.assassin.prefs.conf
+
   sed -i "/^Web Bug Replacement =/ c\Web Bug Replacement = http://dl.efa-project.org/static/1x1spacer.gif" /etc/MailScanner/MailScanner.conf
   sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
   sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
@@ -134,7 +136,7 @@ function run_update() {
   sed -i "/^q_days/ c\q_days=0" /etc/MailScanner/defaults
   # MailScanner no longer managed postfix service
   chkconfig postfix on
-  
+
   # Force mailscanner init to return a code on all failures
   sed -i 's/failure/failure \&\& RETVAL=1/g' /etc/init.d/mailscanner
 
@@ -155,18 +157,22 @@ function run_update() {
 
   # Issue #92 Mailwatch Single Recipient Release
   update-mailwatch
+  # Create autorelease table
+  MYSQLPW=`grep MYSQLROOTPWD /etc/EFA-Config | awk -F':' '{print $2}'`
+  /usr/bin/mysql -u root -p"$MYSQLPW" mailscanner -e "CREATE TABLE `autorelease` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `msg_id` varchar(255) NOT NULL, `uid` varchar(255) NOT NULL, PRIMARY KEY (`id`) );"
+  MYSQLPW=''
 
   # Issue #297 KAM.cf URL needs updated
   rm -f /usr/local/sbin/EFA-SA-Update
   cp $STAGING/Scripts/EFA-SA-Update /usr/local/sbin/EFA-SA-Update
   chmod 700 /usr/local/sbin/EFA-SA-Update
-  
+
   # Issue #294 Attachment Release Issues in MailWatch
   # (Do not modify if not at default settings)
   sed -i "/^Filename Rules =%etc-dir%/filename.rules.conf/ c\Filename Rules = %etc-dir%/filename.rules" /etc/MailScanner/MailScanner.conf
   sed -i "/^Filetype Rules = %etc-dir%/filetype.rules.conf/ c\Filetype Rules = %etc-dir%/filetype.rules" /etc/MailScanner/MailScanner.conf
   sed -i "/^Dangerous Content Scanning = yes/ c\Dangerous Content Scanning = %rules-dir%/content.scanning.rules" /etc/MailScanner/MailScanner.conf
-  
+
   cat > /etc/MailScanner/filename.rules << 'EOF'
 From:	127.0.0.1	/etc/MailScanner/filename.rules.allowall.conf
 FromOrTo:	default	/etc/MailScanner/filename.rules.conf
@@ -185,6 +191,35 @@ EOF
   cat > /etc/MailScanner/filetype.rules.allowall.conf << 'EOF'
 allow	.*	-	-
 EOF
+
+  # Issue #239 Add TxRep Option for SA 3.4.1
+  # Create TxRep table
+  SAUSERPWD=$(grep SAUSERSQLPWD /etc/EFA-Config | awk -F':' '{print $2}')
+  mysql -u sa_user -p sa_bayes -e "CREATE TABLE txrep (username varchar(100) NOT NULL default '', \
+   email varchar(255) NOT NULL default '', \
+   ip varchar(40) NOT NULL default '', \
+   count int(11) NOT NULL default '0', \
+   totscore float NOT NULL default '0', \
+   signedby varchar(255) NOT NULL default '', \
+   PRIMARY KEY (username,email,signedby,ip) \
+   ) ENGINE=InnoDB;"
+  SABAYESPWD=''
+  if [[ -z $(grep "^txrep_factory" /etc/mail/spamassassin/mailscanner.cf) ]]; then
+    echo "txrep_factory                   Mail::SpamAssassin::SQLBasedAddrList" >> /etc/mail/spamassassin/mailscanner.cf
+  fi  
+  if [[ -z $(grep "^txrep_track_messages" /etc/mail/spamassassin/mailscanner.cf) ]]; then
+    echo "txrep_track_messages            0" >> /etc/mail/spamassassin/mailscanner.cf
+  fi  
+  if [[ -z $(grep "^user_awl_sql_override_username" /etc/mail/spamassassin/mailscanner.cf) ]]; then
+    echo "user_awl_sql_override_username  TxRep" >> /etc/mail/spamassassin/mailscanner.cf
+  fi  
+  if [[ -z $(grep "^user_awl_sql_table" /etc/mail/spamassassin/mailscanner.cf) ]]; then
+    echo "user_awl_sql_table              txrep" >> /etc/mail/spamassassin/mailscanner.cf
+  fi  
+  if [[ -z $(grep "^use_txrep" /etc/mail/spamassassin/mailscanner.cf) ]]; then
+    echo "use_txrep                       0" >> /etc/mail/spamassassin/mailscanner.cf
+  fi  
+  sed -i "/^#loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
@@ -357,11 +392,6 @@ function update-mailwatch() {
 
       # Issue 204 -- UTF8 Characters Not Rendering in MailWatch
       yum -y install php-mbstring
-
-      # Create autorelease table
-      MYSQLPW=`grep MYSQLROOTPWD /etc/EFA-Config | awk -F':' '{print $2}'`
-      /usr/bin/mysql -u root -p"$MYSQLPW" mailscanner -e "CREATE TABLE `autorelease` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `msg_id` varchar(255) NOT NULL, `uid` varchar(255) NOT NULL, PRIMARY KEY (`id`) );"
-      MYSQLPW=''
 
       service httpd start
       service MailScanner start

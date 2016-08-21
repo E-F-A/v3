@@ -47,3 +47,5 @@ descriptions.cf
     Verify that warnings relating to missing descriptions are suppressed during spamassassin lint test
 EFA-SA-Update
     Verify that kam.cf upodates from correct url source
+SpamAssassin
+    Verify TxRep works when manually enabled
