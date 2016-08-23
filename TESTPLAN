@@ -22,8 +22,8 @@ MailScanner
     content test
   Verify cron job functionality PASSED
     check for potential mailscanner and mailwatch cron conflicts PASSED
-  Run Successful Lint tests 
-  Verify presence of needed perl modules
+  Run Successful Lint tests PASSED
+  Verify presence of needed perl modules PASSED
   Verify that quarantined attachements can be released from localhost
 MailWatch
   Verify version shows on login screen

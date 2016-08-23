@@ -104,7 +104,7 @@ function run_update() {
     mv /var/www/html/mailscanner/conf.php.tmp2 /var/www/html/mailscanner/conf.php
   fi
 
-  Issue #165, #267 MailScanner Upgrade
+  # Issue #165, #267 MailScanner Upgrade
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
   yum install -y bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 MailScanner
@@ -168,8 +168,8 @@ function run_update() {
 
   # Issue #294 Attachment Release Issues in MailWatch
   # (Do not modify if not at default settings)
-  sed -i "/^Filename Rules =%etc-dir%/filename.rules.conf/ c\Filename Rules = %etc-dir%/filename.rules" /etc/MailScanner/MailScanner.conf
-  sed -i "/^Filetype Rules = %etc-dir%/filetype.rules.conf/ c\Filetype Rules = %etc-dir%/filetype.rules" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Filename Rules =%etc-dir%\/filename.rules.conf/ c\Filename Rules = %etc-dir%/filename.rules" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Filetype Rules = %etc-dir%\/filetype.rules.conf/ c\Filetype Rules = %etc-dir%/filetype.rules" /etc/MailScanner/MailScanner.conf
   sed -i "/^Dangerous Content Scanning = yes/ c\Dangerous Content Scanning = %rules-dir%/content.scanning.rules" /etc/MailScanner/MailScanner.conf
 
   echo -e "From:\t127.0.0.1\t/etc/MailScanner/filename.rules.allowall.conf" > /etc/MailScanner/filename.rules
@@ -196,20 +196,20 @@ function run_update() {
    PRIMARY KEY (username,email,signedby,ip) \
    ) ENGINE=InnoDB;"
   MYSQLPW=''
-  if [[ -z $(grep "^txrep_factory" /etc/mail/spamassassin/mailscanner.cf) ]]; then
-    echo "txrep_factory                   Mail::SpamAssassin::SQLBasedAddrList" >> /etc/mail/spamassassin/mailscanner.cf
+  if [[ -z $(grep "^txrep_factory" /etc/mail/spamassassin/MailScanner.cf) ]]; then
+    echo "txrep_factory                   Mail::SpamAssassin::SQLBasedAddrList" >> /etc/mail/spamassassin/MailScanner.cf
   fi  
-  if [[ -z $(grep "^txrep_track_messages" /etc/mail/spamassassin/mailscanner.cf) ]]; then
-    echo "txrep_track_messages            0" >> /etc/mail/spamassassin/mailscanner.cf
+  if [[ -z $(grep "^txrep_track_messages" /etc/mail/spamassassin/MailScanner.cf) ]]; then
+    echo "txrep_track_messages            0" >> /etc/mail/spamassassin/MailScanner.cf
   fi  
-  if [[ -z $(grep "^user_awl_sql_override_username" /etc/mail/spamassassin/mailscanner.cf) ]]; then
-    echo "user_awl_sql_override_username  TxRep" >> /etc/mail/spamassassin/mailscanner.cf
+  if [[ -z $(grep "^user_awl_sql_override_username" /etc/mail/spamassassin/MailScanner.cf) ]]; then
+    echo "user_awl_sql_override_username  TxRep" >> /etc/mail/spamassassin/MailScanner.cf
   fi  
-  if [[ -z $(grep "^user_awl_sql_table" /etc/mail/spamassassin/mailscanner.cf) ]]; then
-    echo "user_awl_sql_table              txrep" >> /etc/mail/spamassassin/mailscanner.cf
+  if [[ -z $(grep "^user_awl_sql_table" /etc/mail/spamassassin/MailScanner.cf) ]]; then
+    echo "user_awl_sql_table              txrep" >> /etc/mail/spamassassin/MailScanner.cf
   fi  
-  if [[ -z $(grep "^use_txrep" /etc/mail/spamassassin/mailscanner.cf) ]]; then
-    echo "use_txrep                       0" >> /etc/mail/spamassassin/mailscanner.cf
+  if [[ -z $(grep "^use_txrep" /etc/mail/spamassassin/MailScanner.cf) ]]; then
+    echo "use_txrep                       0" >> /etc/mail/spamassassin/MailScanner.cf
   fi  
   sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
 
