@@ -26,17 +26,17 @@ MailScanner
   Verify presence of needed perl modules PASSED
   Verify that quarantined attachements can be released from localhost
 MailWatch
-  Verify version shows on login screen
+  Verify version shows on login screen PASSED
   Verify that autorelease functionality on quarantine reports works when enabled
   Verify that release link image appears
   HIDE_UNKNOWN option works for reports and is enabled
   HIDE_UNKNOWN option is added to config during upgrade
-  Successful login using full email address when LDAP mail field is in use
+  Successful login using full email address when LDAP mail field is in use PASSED
   Successful operation of per user spam settings when enabled
 clamav-unofficial-sigs
     Test signature operations
-    Verify creation of cron, log, logrotate
-    Verify removal of old files
+    Verify creation of cron, log, logrotate PASSED
+    Verify removal of old files PASSED
     test malwarepatrol cli
 func_mailsettings
     Verify that empty postmaster results in removal of postfix settings

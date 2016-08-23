@@ -1,11 +1,9 @@
 # For EFA -- 6/12/16
 # Rules with no descriptions
 describe FILL_THIS_FORM_FRAUD_PHISH possible phishing email looking with form for capturing information
-describe MALFORMED_FREEMAIL no description
 describe RCVD_FORGED_WROTE2 no description
 describe FSL_FAKE_HOTMAIL_RVCD no description
 describe FROM_MISSP_SPF_FAIL runon From line(?) and failed spf check
-describe HELO_LH_HOME no description
 describe FAKE_REPLY_C The mail's subject begins "Re: ", indicating a reply, but does not include the References: header
 describe MID_DEGREES no description
 describe FSL_INTERIA_ABUSE no description
@@ -32,9 +30,7 @@ describe HK_SCAM_N2 Nigerian scam - next of kin
 describe HELO_LOCALHOST no description
 describe JM_I_FEEL_LUCKY no description
 describe JM_TORA_XM no description
-describe HK_PNIS no description
 describe JM_RCVD_QMAILV1 no description
-describe HK_NAME_FM_MR_MRS Mail from freemail account named Mr/Miss/Mrs/etc
 describe STOX_REPLY_TYPE The mail's content type is "text/plain" and has the "reply-type=original" attribute
 describe BUG6152_INVALID_DATE_TZ_ABSURD no description
 describe ImageCerberusPLG4 image Cerebrus check 4 - likely image spam
@@ -43,8 +39,6 @@ describe DCC_REPUT_13_19 no description
 describe KB_RATWARE_MSGID no description
 describe ImageCerberusPLG5 image Cerebrus check 5 - image spam
 describe MIME_BOUND_EQ_REL no description
-describe TVD_ENHANCE no description
-describe TVD_PH_BODY_META phishing email - you have some problem with your email account type messages
 describe L_SPAM_TOOL_13 no description
 describe STOCK_PRICES no description
 describe SHORT_TERM_PRICE no description
@@ -72,7 +66,6 @@ describe DKIM_VERIFIED no description
 describe FSL_HELO_SETUP no description
 describe KB_RATWARE_OUTLOOK_12 no description
 describe KB_RATWARE_BOUNDARY no description
-describe FSL_HELO_HOME no description
 describe ImageCerberusPLG0 image Cerebrus check 0 - not image spam
 describe FSL_HELO_NON_FQDN_1 no description
 describe TVD_EB_PHISH no description
