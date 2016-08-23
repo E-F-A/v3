@@ -104,7 +104,7 @@ function run_update() {
     mv /var/www/html/mailscanner/conf.php.tmp2 /var/www/html/mailscanner/conf.php
   fi
 
-  Issue #165, #267 MailScanner Upgrade
+  # Issue #165, #267 MailScanner Upgrade
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
   yum install -y bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 MailScanner
