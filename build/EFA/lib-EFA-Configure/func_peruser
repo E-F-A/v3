@@ -13,7 +13,7 @@ func_peruser(){
   echo -e "$green[EFA]$clean be scanned! This is a current limitation in MailWatch per user"
   echo -e "$green[EFA]$clean handling of spam scores."
   echo ""
-  if [[ $(grep "Required SpamAssassin Score" /etc/MailScanner/MailScanner.conf | awk -F'=' {'print $2'} | tr -d ' ') == "&SQLSpamScores" ]]
+  if [[ $(grep -e "^Required SpamAssassin Score" /etc/MailScanner/MailScanner.conf | awk -F'=' {'print $2'} | tr -d ' ') == "&SQLSpamScores" ]]
     then
       echo -e "$green[EFA]$clean Per user scoring is $green ENABLED $clean"
       echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean per user scoring? [y/N/c]: "
@@ -95,7 +95,7 @@ func_peruser(){
                 FLAG2=0
               elif [[ -z "$SPAMSCORE" ]]; then
                 MAILWATCHPW=`grep MAILWATCHSQLPWD /etc/EFA-Config | awk -F':' '{print $2}'`
-                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e 'ALTER TABLE `userS` ALTER COLUMN `spamscore` SET DEFAULT '4';'
+                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e 'ALTER TABLE `users` ALTER COLUMN `spamscore` SET DEFAULT '4';'
                 MAILWATCHPW=''
                 sed -i "/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = &SQLSpamScores" /etc/MailScanner/MailScanner.conf
                 FLAG2=0
