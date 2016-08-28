@@ -17,7 +17,7 @@ MailScanner
   Verify proper daemon function PASSED
   Test mail flow
     spam test
-    non-spam test
+    non-spam test  PASSED 
     virus test
     content test
   Verify cron job functionality PASSED

@@ -71,7 +71,7 @@ func_efarepo () {
    perl-Net-DNS-Nameserver spamassassin MailScanner clamav-unofficial-sigs perl-Mail-IMAPClient \
    perl-OLE-Storage_Lite perl-Inline perl-Text-Balanced perl-Net-CIDR-Lite perl-Sys-Hostname-Long tnef perl-Net-Patricia \
    perl-IO-Multiplex perl-File-Tail perl-Data-Dump perl-Sys-SigAction perl-Net-Netmask perl-Filesys-Df perl-Net-CIDR \
-   perl-BerkeleyDB perl-Net-Server perl-Convert-TNEF
+   perl-BerkeleyDB perl-Net-Server perl-Convert-TNEF perl-IP-Country
 
 }
 # +---------------------------------------------------+

@@ -107,7 +107,7 @@ function run_update() {
   # Issue #165, #267 MailScanner Upgrade
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
-  yum install -y bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 perl-Net-DNS-Nameserver perl-Mail-IMAPClient MailScanner
+  yum install -y bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 perl-Net-DNS-Nameserver perl-Mail-IMAPClient perl-IP-Country MailScanner
   rm -f /usr/share/MailScanner/perl/custom/CustomAction.pm
   cp -f /var/EFA/backup/$VERSION/usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm /usr/share/MailScanner/perl/custom/CustomAction.pm
   cp -f /var/EFA/backup/$VERSION/usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /usr/share/MailScanner/perl/custom/MailWatch.pm
