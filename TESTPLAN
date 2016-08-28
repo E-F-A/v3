@@ -16,30 +16,31 @@ SHOW_GREYLIST
 MailScanner
   Verify proper daemon function PASSED
   Test mail flow
-    spam test
+    spam test PASSED
     non-spam test  PASSED 
-    virus test
-    content test
+    virus test PASSED 
+    content test PASSED
   Verify cron job functionality PASSED
     check for potential mailscanner and mailwatch cron conflicts PASSED 
     (test after one week again with quarantine purging)
   Run Successful Lint tests PASSED
   Verify presence of needed perl modules PASSED
-  (check for perl-LDAP and Mail-IMAPClient -- build if needed) FAILED -- need Mail-IMAPClient?
-  Verify that quarantined attachements can be released from localhost
+  (check for perl-LDAP and Mail-IMAPClient -- build if needed) PASSED
+  Verify that quarantined attachements can be released from localhost PASSED
+    (when quarantine viruses is set to yes in MailScanner)
 MailWatch
   Verify version shows on login screen PASSED
-  Verify that autorelease functionality on quarantine reports works when enabled
-  Verify that release link image appears
-  HIDE_UNKNOWN option works for reports and is enabled
+  Verify that autorelease functionality on quarantine reports works when enabled PASSED
+  Verify that release link image appears PASSED
+  HIDE_UNKNOWN option works for reports and is enabled PASSED
   HIDE_UNKNOWN option is added to config during upgrade PASSED
   Successful login using full email address when LDAP mail field is in use PASSED
-  Successful operation of per user spam settings when enabled
+  Successful operation of per user spam settings when enabled PASSED
 clamav-unofficial-sigs
-    Test signature operations
+    Test signature operations PASSED
     Verify creation of cron, log, logrotate PASSED
     Verify removal of old files PASSED
-    test malwarepatrol cli
+    test malwarepatrol cli PASSED
 func_mailsettings
     Verify that empty postmaster results in removal of postfix settings PASSED
     Verify that non-empty postmaster results in addition of postfix settings PASSED
@@ -47,8 +48,8 @@ func_peruser
     Verify all functionality -- able to toggle on and off and cancel successfully PASSED
 descriptions.cf
     Verify that warnings relating to missing descriptions are suppressed during spamassassin lint test REGRESSION
-      (causes more trouble when rules without descriptions drop off of compiled rulesets....do not include)
+      (causes more trouble when rules without descriptions drop off of rulesets....do not include)
 EFA-SA-Update
-    Verify that kam.cf upodates from correct url source
+    Verify that kam.cf upodates from correct url source PASSED
 SpamAssassin
-    Verify TxRep works when manually enabled
+    Verify TxRep works when manually enabled PASSED
