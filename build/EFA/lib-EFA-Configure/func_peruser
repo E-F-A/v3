@@ -60,12 +60,12 @@ func_peruser(){
           FLAG=1
           echo -e "$green[EFA]$clean Per user spam scoring $red DISABLED $clean"
           pause
-        elif [[ "$TMPUSER" == "n" | "$TMPUSER" == "N" | -z "$TMPUSER" ]]; then 
+        elif [[ "$TMPUSER" == "n" || "$TMPUSER" == "N" || -z "$TMPUSER" ]]; then 
           echo -e "$green[EFA]$clean No changes made"
           echo ""
           FLAG=1
           pause
-        elif [[ "$TMPUSER == "C" | "$TMPUSER == "c" ]]; then
+        elif [[ "$TMPUSER" == "C" || "$TMPUSER" == "c" ]]; then
           echo "$green[EFA]$clean No changes made"
           FLAG=1
           pause
@@ -133,12 +133,12 @@ func_peruser(){
           FLAG=1
           echo -e "$green[EFA]$clean Per user spam scoring $green ENABLED $clean"
           pause
-        elif [[ "$TMPUSER" == "n" | "$TMPUSER" == "N" | -z "$TMPUSER" ]]; then 
+        elif [[ "$TMPUSER" == "n" || "$TMPUSER" == "N" || -z "$TMPUSER" ]]; then 
           echo -e "$green[EFA]$clean No changes made"
           echo ""
           FLAG=1
           pause
-        elif [[ "$TMPUSER == "C" | "$TMPUSER == "c" ]]; then
+        elif [[ "$TMPUSER" == "C" || "$TMPUSER" == "c" ]]; then
           echo "$green[EFA]$clean No changes made"
           FLAG=1
           pause
