@@ -108,7 +108,6 @@ function run_update() {
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
   yum install -y bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 perl-Net-DNS-Nameserver perl-Mail-IMAPClient MailScanner
-  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
   rm -f /usr/share/MailScanner/perl/custom/CustomAction.pm
   cp -f /var/EFA/backup/$VERSION/usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm /usr/share/MailScanner/perl/custom/CustomAction.pm
   cp -f /var/EFA/backup/$VERSION/usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /usr/share/MailScanner/perl/custom/MailWatch.pm
@@ -209,6 +208,8 @@ function run_update() {
     echo "use_txrep                       0" >> /etc/mail/spamassassin/MailScanner.cf
   fi  
   sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
+
+  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
