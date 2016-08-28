@@ -68,7 +68,7 @@ func_efarepo () {
    re2c postfix perl-Digest-SHA perl-Mail-SPF perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
    perl-IO-Socket-IP perl-libnet bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 \
-   perl-Net-DNS-Nameserver spamassassin MailScanner clamav-unofficial-sigs perl-Net-LDAP perl-Mail-IMAPClient \
+   perl-Net-DNS-Nameserver spamassassin MailScanner clamav-unofficial-sigs perl-Mail-IMAPClient \
    perl-OLE-Storage_Lite perl-Inline perl-Text-Balanced perl-Net-CIDR-Lite perl-Sys-Hostname-Long tnef perl-Net-Patricia \
    perl-IO-Multiplex perl-File-Tail perl-Data-Dump perl-Sys-SigAction perl-Net-Netmask perl-Filesys-Df perl-Net-CIDR \
    perl-BerkeleyDB perl-Net-Server perl-Convert-TNEF
@@ -421,22 +421,22 @@ func_spam_clamav () {
     /usr/bin/wget -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
 
     # Configure spamassassin bayes and awl DB settings
-    echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_store_module              Mail::SpamAssassin::BayesStore::SQL">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_sql_dsn                   DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_sql_username              sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_sql_password              $password">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "auto_whitelist_factory          Mail::SpamAssassin::SQLBasedAddrList">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_dsn                    DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_sql_username           sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_sql_password           $password">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_sql_override_username     mailwatch">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "txrep_factory                   Mail::SpamAssassin::SQLBasedAddrList" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "txrep_track_messages            0" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_sql_override_username  TxRep" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_sql_table              txrep" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "use_txrep                       0" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "#End E.F.A. mods for MySQL" >> /etc/MailScanner/spam.assassin.prefs.conf
+    echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_store_module              Mail::SpamAssassin::BayesStore::SQL">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_sql_dsn                   DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_sql_username              sa_user">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_sql_password              $password">>/etc/MailScanner/spamassassin.conf
+    echo "auto_whitelist_factory          Mail::SpamAssassin::SQLBasedAddrList">>/etc/MailScanner/spamassassin.conf
+    echo "user_awl_dsn                    DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spamassassin.conf
+    echo "user_awl_sql_username           sa_user">>/etc/MailScanner/spamassassin.conf
+    echo "user_awl_sql_password           $password">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_sql_override_username     mailwatch">>/etc/MailScanner/spamassassin.conf
+    echo "txrep_factory                   Mail::SpamAssassin::SQLBasedAddrList" >> /etc/MailScanner/spamassassin.conf
+    echo "txrep_track_messages            0" >> /etc/MailScanner/spamassassin.conf
+    echo "user_awl_sql_override_username  TxRep" >> /etc/MailScanner/spamassassin.conf
+    echo "user_awl_sql_table              txrep" >> /etc/MailScanner/spamassassin.conf
+    echo "use_txrep                       0" >> /etc/MailScanner/spamassassin.conf
+    echo "#End E.F.A. mods for MySQL" >> /etc/MailScanner/spamassassin.conf
 
     # Add example spam to db
     # source: http://spamassassin.apache.org/gtube/gtube.txt
