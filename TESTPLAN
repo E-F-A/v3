@@ -44,7 +44,8 @@ func_mailsettings
 func_peruser
     Verify all functionality -- able to toggle on and off and cancel successfully
 descriptions.cf
-    Verify that warnings relating to missing descriptions are suppressed during spamassassin lint test
+    Verify that warnings relating to missing descriptions are suppressed during spamassassin lint test REGRESSION
+      (causes more trouble when rules without descriptions drop off of compiled rulesets....do not include)
 EFA-SA-Update
     Verify that kam.cf upodates from correct url source
 SpamAssassin
