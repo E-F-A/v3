@@ -32,7 +32,7 @@ MailWatch
   Verify that autorelease functionality on quarantine reports works when enabled
   Verify that release link image appears
   HIDE_UNKNOWN option works for reports and is enabled
-  HIDE_UNKNOWN option is added to config during upgrade
+  HIDE_UNKNOWN option is added to config during upgrade PASSED
   Successful login using full email address when LDAP mail field is in use PASSED
   Successful operation of per user spam settings when enabled
 clamav-unofficial-sigs
@@ -41,10 +41,10 @@ clamav-unofficial-sigs
     Verify removal of old files PASSED
     test malwarepatrol cli
 func_mailsettings
-    Verify that empty postmaster results in removal of postfix settings
-    Verify that non-empty postmaster results in addition of postfix settings
+    Verify that empty postmaster results in removal of postfix settings PASSED
+    Verify that non-empty postmaster results in addition of postfix settings PASSED
 func_peruser
-    Verify all functionality -- able to toggle on and off and cancel successfully
+    Verify all functionality -- able to toggle on and off and cancel successfully PASSED
 descriptions.cf
     Verify that warnings relating to missing descriptions are suppressed during spamassassin lint test REGRESSION
       (causes more trouble when rules without descriptions drop off of compiled rulesets....do not include)
