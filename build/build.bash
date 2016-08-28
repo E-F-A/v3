@@ -68,7 +68,10 @@ func_efarepo () {
    re2c postfix perl-Digest-SHA perl-Mail-SPF perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
    perl-IO-Socket-IP perl-libnet bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 \
-   perl-Net-DNS-Nameserver spamassassin MailScanner clamav-unofficial-sigs perl-Net-LDAP perl-Mail-IMAPClient
+   perl-Net-DNS-Nameserver spamassassin MailScanner clamav-unofficial-sigs perl-Net-LDAP perl-Mail-IMAPClient \
+   perl-OLE-Storage_Lite perl-Inline perl-Text-Balanced perl-Net-CIDR-Lite perl-Sys-Hostname-Long tnef perl-Net-Patricia \
+   perl-IO-Multiplex perl-File-Tail perl-Data-Dump perl-Sys-SigAction perl-Net-Netmask perl-Filesys-Df perl-Net-CIDR \
+   perl-BerkeleyDB perl-Net-Server perl-Convert-TNEF
 
 }
 # +---------------------------------------------------+
