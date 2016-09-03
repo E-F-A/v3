@@ -32,7 +32,7 @@ password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
-yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools* perl-Net-DNS"
+yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
 MAILWATCHVERSION="d9f7888"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
@@ -63,16 +63,16 @@ func_upgradeOS () {
 func_efarepo () {
    rpm --import $smirror/rpm/RPM-GPG-KEY-E.F.A.Project
    cd /etc/yum.repos.d/
-   /usr/bin/wget $smirror/rpm/EFA.repo
+   /usr/bin/wget $smirror/rpm/EFA-testing.repo
    yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin perl-NetAddr-IP \
    re2c postfix perl-Digest-SHA perl-Mail-SPF perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
    perl-IO-Socket-IP perl-libnet bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 \
-   perl-Net-DNS-Nameserver spamassassin MailScanner clamav-unofficial-sigs
-   
-   # Todo for 3.0.1.2-beta :  Reconcile the following perl modules for MailScanner
-   # ARMOD+=('Mail::IMAPClient'); 
-   # ARMOD+=('Net::LDAP'); 
+   perl-Net-DNS-Nameserver spamassassin MailScanner clamav-unofficial-sigs perl-Mail-IMAPClient \
+   perl-OLE-Storage_Lite perl-Inline perl-Text-Balanced perl-Net-CIDR-Lite perl-Sys-Hostname-Long tnef perl-Net-Patricia \
+   perl-IO-Multiplex perl-File-Tail perl-Data-Dump perl-Sys-SigAction perl-Net-Netmask perl-Filesys-Df perl-Net-CIDR \
+   perl-BerkeleyDB perl-Net-Server perl-Convert-TNEF perl-IP-Country
+
 }
 # +---------------------------------------------------+
 
@@ -111,7 +111,7 @@ func_mysql () {
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
 
     # Create autorelease table
-    /usr/bin/mysql -u root -p"$password" mailscanner -e "CREATE TABLE `autorelease` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `msg_id` varchar(255) NOT NULL, `uid` varchar(255) NOT NULL, PRIMARY KEY (`id`) );"
+    /usr/bin/mysql -u root -p"$password" mailscanner -e 'CREATE TABLE `autorelease` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `msg_id` varchar(255) NOT NULL, `uid` varchar(255) NOT NULL, PRIMARY KEY (`id`) );'
 
     # Create and populate efa db
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/efatokens.sql
@@ -239,13 +239,6 @@ func_postfix () {
 # http://mailscanner.info
 # +---------------------------------------------------+
 func_mailscanner () {
-    # Installed via rpm now
-    #cd /usr/src/EFA
-    #wget $mirror/$mirrorpath/MailScanner-4.84.6-1.rpm.tar.gz
-    #tar -xvzf MailScanner-4.84.6-1.rpm.tar.gz
-    #cd MailScanner-4.84.6-1
-    #./install.sh
-    #rm -f /root/.rpmmacros
 
     chown postfix:postfix /var/spool/MailScanner/quarantine
     mkdir /var/spool/MailScanner/spamassassin
@@ -310,7 +303,9 @@ func_mailscanner () {
     sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = 7" /etc/MailScanner/MailScanner.conf
     # Issue #219 Trailing spaces in subjects in MailScanner trigger duplicate subjects in header
     sed -i "/^Place New Headers At Top Of Message =/ c\Place New Headers At Top Of Message = yes" /etc/MailScanner/MailScanner.conf
-
+    # Issue #206 Default Max Arvhive Depth to Non Zero
+    sed -i "/^Maximum Archive Depth =/ c\Maximum Archive Depth = 3" /etc/MailScanner/MailScanner.conf
+    
     # Issue #132 Increase sa-learn and spamassassin max message size limits
     sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
 
@@ -321,7 +316,7 @@ func_mailscanner () {
     # Issue #203 fix the notify Senders
     sed -i "/^Notify Senders =/ c\Notify Senders = no" /etc/MailScanner/MailScanner.conf
 
-    # Match up envelope header (changed at efa-init but usefull for testing)
+    # Match up envelope header (changed at efa-init but useful for testing)
     sed -i '/^envelope_sender_header / c\envelope_sender_header X-yoursite-MailScanner-EFA-From' /etc/MailScanner/spamassassin.conf
 
     touch /etc/MailScanner/rules/sig.html.rules
@@ -331,9 +326,6 @@ func_mailscanner () {
     mkdir /var/spool/MailScanner/incoming
     echo "none /var/spool/MailScanner/incoming tmpfs noatime 0 0">>/etc/fstab
     mount -a
-
-    # Fix (workaround) the "Insecure dependency in open while running with -T switch at /usr/lib64/perl5/IO/File.pm line 185" error
-    # sed -i '/^#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner/ c\#!\/usr\/bin\/perl -I\/usr\/lib\/MailScanner\ -U' /usr/sbin/MailScanner
 
     # Remove all reports except en and modify all texts
     cd /usr/src/EFA/
@@ -373,44 +365,22 @@ func_mailscanner () {
     sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
     sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
 
-    # Issue #51 -- Redundant Quarantine Clean Scripts Present
-    # rm -f /etc/cron.daily/clean.quarantine
-
-    # Remove Mailscanners phishing sites cron (#100, replaced by EFA-MS-Update)
-    # rm -f /etc/cron.daily/update_phishing_sites
-
-    # Issue #77 -- EFA MailScanner 0 byte tmp files
-    # cd /usr/lib/MailScanner
-    # wget --no-check-certificate $gitdlurl/EFA/mailscanner-4.84.6-1.patch
-    # patch < mailscanner-4.84.6-1.patch
-    # rm -f mailscanner-4.84.6-1.patch
-
-    # Issue 200 Unrar v5 support (mailscanner backport)
-    # rm -f /usr/lib/MailScanner/MailScanner/Message.pm
-    # wget -O /usr/lib/MailScanner/MailScanner/Message.pm --no-check-certificate $mirror/$mirrorpath/Message.pm
-
-    # Issue #177 Correct EFA to new clamav paths using EPEL
-    # sed -i "/^clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/lib\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
-    # Future proofing for next MailScanner version...
-    # sed -i "/^clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper/ c\clamav\t\t\/usr\/share\/MailScanner\/clamav-wrapper\t\/usr" /etc/MailScanner/virus.scanners.conf
-    # sed -i "/^clamd\t\t\/bin\/false/ c\clamd\t\t\/bin\/false\t\t\t\t\/usr" /etc/MailScanner/virus.scanners.conf
-
     # Issue #294 Attachment Release Issues in MailWatch
     sed -i "/^Filename Rules =/ c\Filename Rules = %etc-dir%/filename.rules" /etc/MailScanner/MailScanner.conf
     sed -i "/^Filetype Rules =/ c\Filetype Rules = %etc-dir%/filetype.rules" /etc/MailScanner/MailScanner.conf
     sed -i "/^Dangerous Content Scanning =/ c\Dangerous Content Scanning = %rules-dir%/content.scanning.rules" /etc/MailScanner/MailScanner.conf
 
-  echo -e "From:\t127.0.0.1\t/etc/MailScanner/filename.rules.allowall.conf" > /etc/MailScanner/filename.rules
-  echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filename.rules.conf" >> /etc/MailScanner/filename.rules
+    echo -e "From:\t127.0.0.1\t/etc/MailScanner/filename.rules.allowall.conf" > /etc/MailScanner/filename.rules
+    echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filename.rules.conf" >> /etc/MailScanner/filename.rules
 
-  echo -e "From:\t127.0.0.1\t/etc/MailScanner/filetype.rules.allowall.conf" > /etc/MailScanner/filetype.rules
-  echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filetype.rules.conf" >> /etc/MailScanner/filetype.rules
+    echo -e "From:\t127.0.0.1\t/etc/MailScanner/filetype.rules.allowall.conf" > /etc/MailScanner/filetype.rules
+    echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filetype.rules.conf" >> /etc/MailScanner/filetype.rules
 
-  echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/rules/content.scanning.rules
-  echo -e "FromOrTo:\tdefault\tyes" >> /etc/MailScanner/rules/content.scanning.rules
+    echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/rules/content.scanning.rules
+    echo -e "FromOrTo:\tdefault\tyes" >> /etc/MailScanner/rules/content.scanning.rules
 
-  echo -e "allow\t.*\t-\t-" > /etc/MailScanner/filename.rules.allowall.conf
-  echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
+    echo -e "allow\t.*\t-\t-" > /etc/MailScanner/filename.rules.allowall.conf
+    echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
 
 }
 # +---------------------------------------------------+
@@ -428,65 +398,14 @@ func_spam_clamav () {
     sed -i "/^DatabaseDirectory/ c\DatabaseDirectory /var/lib/clamav" /etc/freshclam.conf
     sed -i "/^DatabaseOwner/ c\DatabaseOwner clam" /etc/freshclam.conf
 
-    # Reverse changes from EPEL version of clamd (superceded by issue #177)
-    #sed -i "/^DatabaseDirectory \/var\/lib\/clamav/ c\DatabaseDirectory /var/clamav" /etc/clamd.conf
-    #sed -i "/^User clam/ c\User clamav" /etc/clamd.conf
-    #rm -rf /var/lib/clamav
-    #userdel clam
-    #chown clamav:clamav /var/run/clamav
     userdel clamav > /dev/null 2&>1
     rm -f /etc/freshclam.conf.rpmnew
 
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
     rm -f /etc/cron.daily/freshclam
 
-    # Superceded by Issue #232
-    # Sane security scripts
-    # http://sanesecurity.co.uk/usage/linux-scripts/
-    #cd /usr/src/EFA
-    #wget $mirror/$mirrorpath/clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
-    #tar -xvzf clamav-unofficial-sigs-3.7.2-EFA-1.0.tar.gz
-    #cd clamav-unofficial-sigs-3.7.2-EFA-1.0
-    #cp clamav-unofficial-sigs.sh /usr/local/bin/
-    #cp clamav-unofficial-sigs.conf /usr/local/etc/
-    #cp clamav-unofficial-sigs.8 /usr/share/man/man8/
-    #cp clamav-unofficial-sigs-cron /etc/cron.d/
-    #cp clamav-unofficial-sigs-logrotate /etc/logrotate.d/
-    #sed -i "/45 \* \* \* \* root / c\45 * * * * root /usr/local/bin/clamav-unofficial-sigs.sh -c /usr/local/etc/clamav-unofficial-sigs.conf >> /var/log/clamav-unofficial-sigs.log 2>&1" /etc/cron.d/clamav-unofficial-sigs-cron
-    # chmod 755 /usr/local/bin/clamav-unofficial-sigs.sh
-
-    # Issue #177 Correct EFA to new clamav paths using EPEL
-    # sed -i '/clam_dbs=/ c\clam_dbs="/var/lib/clamav"' /usr/local/etc/clamav-unofficial-sigs.conf
-
-    # sed -i '/clamd_pid=/ c\clamd_pid="/var/run/clamav/clamd.pid"' /usr/local/etc/clamav-unofficial-sigs.conf
-    # sed -i '/#clamd_socket=/ c\clamd_socket="/var/run/clamav/clamd.sock"' /usr/local/etc/clamav-unofficial-sigs.conf
-    # sed -i '/reload_dbs=/ c\reload_dbs="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
-    # sed -i '/user_configuration_complete="no"/ c\user_configuration_complete="yes"' /usr/local/etc/clamav-unofficial-sigs.conf
-
-    # Issue #169 Clean up clamav-unoffical-sigs script (superceded)
-    # sed -i '/^mbl_dbs="/ c\#mbl_dbs="' /usr/local/etc/clamav-unofficial-sigs.conf
-    # sed -i '/^#mbl_dbs="/ {n; s/.*/#  mbl.ndb/}' /usr/local/etc/clamav-unofficial-sigs.conf
-    # sed -i '/^#mbl_dbs="/ {n;n; s/.*/#"/}' /usr/local/etc/clamav-unofficial-sigs.conf
-
-    # Issue #45 ScamNailer ClamAV ruleset (superceded -- moved to unofficial-sigs)
-    # todo: host this on dl.efa-project.org
-    # http://www.scamnailer.info/
-    # echo -e "#EFA: ScamNailer ClamAV Ruleset\nDatabaseCustomURL http://www.mailscanner.eu/scamnailer.ndb" >> /etc/freshclam.conf
-
-    # Use the EFA packaged version.
-    # Issue #238 - Upgrade Spamassassin to 3.4.1
-    #cd /usr/src/EFA
-    #wget $mirror/$mirrorpath/Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
-    #tar -xvzf Spamassassin-3.4.0a-EFA-Upgrade.tar.gz
-    # Issue #230 build script not building spamassassin
-    #cd Spamassassin-3.4.0-EFA-Upgrade
-    #chmod 755 install.sh
-    #./install.sh
-    #cd /usr/src/EFA
-    #rm -rf Spamassassin*
-
     # Symlink spam.assassin.prefs.conf (previously handled by tarball)
-    ln -s -f /etc/MailScanner/spam.assassin.prefs.conf /etc/mail/spamassassin/mailscanner.cf
+    ln -s -f /etc/MailScanner/spamassassin.conf /etc/mail/spamassassin/mailscanner.cf
 
     # Configure *.pre files (previously handled by tarball)
     sed -i "/^# loadplugin Mail::Spamassassin::Plugin::RelayCountry$/ c\loadplugin Mail::Spamassassin::Plugin::RelayCountry" /etc/mail/spamassassin/init.pre
@@ -497,8 +416,6 @@ func_spam_clamav () {
     ln -s /var/www/html/mailscanner/temp/GeoIP.dat /usr/share/GeoIP/GeoLiteCountry.dat
 
     # PDFInfo (now included in SA 3.4.1)
-    #cd /usr/src/EFA
-    #/usr/bin/wget -O /usr/local/share/perl5/Mail/SpamAssassin/Plugin/PDFInfo.pm $gitdlurl/PDFInfo/PDFInfo.pm
     /usr/bin/wget -O /etc/mail/spamassassin/pdfinfo.cf $gitdlurl/PDFInfo/pdfinfo.cf
     sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::PDFInfo$/ c\loadplugin Mail::SpamAssassin::Plugin::PDFInfo" /etc/mail/spamassassin/v341.pre
 
@@ -506,34 +423,34 @@ func_spam_clamav () {
     /usr/bin/wget -O /etc/mail/spamassassin/KAM.cf $gitdlurl/EFA/KAM.cf
 
     # Configure spamassassin bayes and awl DB settings
-    echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_store_module              Mail::SpamAssassin::BayesStore::SQL">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_sql_dsn                   DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_sql_username              sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_sql_password              $password">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "auto_whitelist_factory          Mail::SpamAssassin::SQLBasedAddrList">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_dsn                    DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_sql_username           sa_user">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_sql_password           $password">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "bayes_sql_override_username     mailwatch">>/etc/MailScanner/spam.assassin.prefs.conf
-    echo "txrep_factory                   Mail::SpamAssassin::SQLBasedAddrList" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "txrep_track_messages            0" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_sql_override_username  TxRep" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "user_awl_sql_table              txrep" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "use_txrep                       0" >> /etc/MailScanner/spam.assassin.prefs.conf
-    echo "#End E.F.A. mods for MySQL" >> /etc/MailScanner/spam.assassin.prefs.conf
-
-    # Add example spam to db
-    # source: http://spamassassin.apache.org/gtube/gtube.txt
-    cd /usr/src/EFA
-    /usr/bin/wget $gitdlurl/EFA/gtube.txt
-    /usr/bin/sa-learn --spam /usr/src/EFA/gtube.txt
+    echo "#Begin E.F.A. mods for MySQL">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_store_module              Mail::SpamAssassin::BayesStore::SQL">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_sql_dsn                   DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_sql_username              sa_user">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_sql_password              $password">>/etc/MailScanner/spamassassin.conf
+    echo "auto_whitelist_factory          Mail::SpamAssassin::SQLBasedAddrList">>/etc/MailScanner/spamassassin.conf
+    echo "user_awl_dsn                    DBI:mysql:sa_bayes:localhost">>/etc/MailScanner/spamassassin.conf
+    echo "user_awl_sql_username           sa_user">>/etc/MailScanner/spamassassin.conf
+    echo "user_awl_sql_password           $password">>/etc/MailScanner/spamassassin.conf
+    echo "bayes_sql_override_username     mailwatch">>/etc/MailScanner/spamassassin.conf
+    echo "txrep_factory                   Mail::SpamAssassin::SQLBasedAddrList" >> /etc/MailScanner/spamassassin.conf
+    echo "txrep_track_messages            0" >> /etc/MailScanner/spamassassin.conf
+    echo "user_awl_sql_override_username  TxRep" >> /etc/MailScanner/spamassassin.conf
+    echo "user_awl_sql_table              txrep" >> /etc/MailScanner/spamassassin.conf
+    echo "use_txrep                       0" >> /etc/MailScanner/spamassassin.conf
+    echo "#End E.F.A. mods for MySQL" >> /etc/MailScanner/spamassassin.conf
 
     # Enable Auto White Listing
     sed -i '/^#loadplugin Mail::SpamAssassin::Plugin::AWL/ c\loadplugin Mail::SpamAssassin::Plugin::AWL' /etc/mail/spamassassin/v310.pre
 
     # Enable TxRep Plugin
-    sed -i "/^#loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
+    sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
+
+    # Add example spam to db
+    # source: http://spamassassin.apache.org/gtube/gtube.txt \
+    cd /usr/src/EFA
+    /usr/bin/wget $gitdlurl/EFA/gtube.txt
+    /usr/bin/sa-learn --spam /usr/src/EFA/gtube.txt
 
     # AWL cleanup tools (just a bit different then esva)
     # http://notes.sagredo.eu/node/86
@@ -558,28 +475,11 @@ func_spam_clamav () {
     mkdir /var/www/.spamassassin
     chown postfix:postfix /var/www/.spamassassin
 
-    # Add Sought Channel to replace Sare and initialize sa-update
-    /usr/bin/sa-update
-    /usr/bin/wget -O /usr/src/EFA/GPG.KEY $gitdlurl/Sought/GPG.KEY
-    /usr/bin/sa-update --import /usr/src/EFA/GPG.KEY
-
-    # Customize sa-update in /etc/sysconfig/update_spamassassin
-    sed -i '/^SAUPDATE=/ c\SAUPDATE=/usr/bin/sa-update' /etc/sysconfig/update_spamassassin
-    sed -i '/^SACOMPILE=/ c\SACOMPILE=/usr/bin/sa-compile' /etc/sysconfig/update_spamassassin
-    sed -i '/^SAUPDATEARGS=/ c\SAUPDATEARGS=" --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org"' /etc/sysconfig/update_spamassassin
-
     # Issue #82 re2c spamassassin rule complilation
     sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
 
-    # Issue #168 Start regular updates on RegistrarBoundaries.pm (superceded in SA 3.4.1)
-    # next 2 lines temp until everything is packaged
-    # cd /usr/src/EFA
-    # wget $smirror/$mirrorpath/RegistrarBoundaries.pm
-    # rm -f /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
-    # mv RegistrarBoundaries.pm /usr/local/share/perl5/Mail/SpamAssassin/Util/RegistrarBoundaries.pm
-
     # and in the end we run sa-update just for the fun of it..
-    /usr/bin/sa-update --gpgkey 6C6191E3 --channel sought.rules.yerp.org --channel updates.spamassassin.org
+    /usr/bin/sa-update --channel updates.spamassassin.org
     /usr/bin/sa-compile
 
     echo "SPAMASSASSINVERSION:$SPAMASSASSINVERSION" >> /etc/EFA-Config
@@ -768,7 +668,7 @@ func_mailwatch () {
     sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" conf.php
     # Issue #291 HIDE_UNKNOWN option for MailWatch
     sed -i "/^define('HIDE_UNKNOWN',/ c\define('HIDE_UNKNOWN', true);" conf.php
-    
+
     # Set up a redirect in web root to MailWatch
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
@@ -800,7 +700,7 @@ func_mailwatch () {
     # png image looks much better -- linking to png instead
     ln -s EFAlogo-79px.png mailwatch-logo.png
     ln -s EFAlogo-47px.gif mailscannerlogo.gif
-	ln -s EFAlogo-79px.png mailwatch-logo.gif
+    ln -s EFAlogo-79px.png mailwatch-logo.gif
 
     # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
     # mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
@@ -863,9 +763,6 @@ EOF
     ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.crond /etc/cron.d/msre_reload.crond
     ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
     chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
-
-    # Issue #156 -- GeoIP Bug
-    # Obsolete superseded with SpamAssassin fix in package
 
     # Install Encoding:FixLatin perl module for mailwatch UTF8 support
     cd /usr/src/EFA
@@ -1125,7 +1022,13 @@ func_imagecerberus () {
 
     # Issue 67 default ImageCeberus score
     sed -i "/^score     ImageCerberusPLG0/ c\score     ImageCerberusPLG0     0.0  0.0  0.0  0.0" /etc/mail/spamassassin/ImageCerberusPLG.cf
-
+    # Issue #284 Lower ImageCerberus Scores by default
+    sed -i "/^score     ImageCerberusPLG1/ c\score     ImageCerberusPLG1     0.1  0.1  0.1  0.1" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i "/^score     ImageCerberusPLG2/ c\score     ImageCerberusPLG2     0.2  0.2  0.2  0.2" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i "/^score     ImageCerberusPLG3/ c\score     ImageCerberusPLG3     0.3  0.3  0.3  0.3" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i "/^score     ImageCerberusPLG4/ c\score     ImageCerberusPLG4     0.4  0.4  0.4  0.4" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i "/^score     ImageCerberusPLG5/ c\score     ImageCerberusPLG5     0.5  0.5  0.5  0.5" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    
     # Add the version to EFA-Config
     echo "IMAGECEBERUSVERSION:$IMAGECEBERUSVERSION" >> /etc/EFA-Config
 }
@@ -1170,21 +1073,6 @@ func_webmin () {
 # Unbound (replaces dnsmasq)
 # +---------------------------------------------------+
 func_unbound () {
-    # old dnsmasq stuff
-    #groupadd -r dnsmasq
-    #useradd -r -g dnsmasq dnsmasq
-    #sed -i '/#listen-address=/ c\listen-address=127.0.0.1' /etc/dnsmasq.conf
-    #sed -i '/#user=/ c\user=dnsmasq' /etc/dnsmasq.conf
-    #sed -i '/#group=/ c\group=dnsmasq' /etc/dnsmasq.conf
-    #sed -i '/#bind-interfaces/ c\bind-interfaces' /etc/dnsmasq.conf
-    #sed -i '/#domain-needed/ c\domain-needed' /etc/dnsmasq.conf
-    #sed -i '/#bogus-priv/ c\bogus-priv' /etc/dnsmasq.conf
-    #sed -i '/#cache-size=/ c\cache-size=1500' /etc/dnsmasq.conf
-    #sed -i '/#no-poll/ c\no-poll' /etc/dnsmasq.conf
-    #sed -i '/#resolv-file=/ c\resolv-file=/etc/resolv.dnsmasq' /etc/dnsmasq.conf
-    #touch /etc/resolv.dnsmasq
-    #echo "nameserver 8.8.8.8" >> /etc/resolv.dnsmasq
-    #echo "nameserver 8.8.4.4" >> /etc/resolv.dnsmasq
     yum -y install unbound
     # disable ipv6 support in unbound
     sed -i "/^\t# do-ip6: yes/ c\\\tdo-ip6: no" /etc/unbound/unbound.conf

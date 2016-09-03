@@ -107,8 +107,7 @@ function run_update() {
   # Issue #165, #267 MailScanner Upgrade
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
-  yum install -y bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 MailScanner
-  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
+  yum install -y bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 perl-Net-DNS-Nameserver perl-Mail-IMAPClient perl-IP-Country MailScanner
   rm -f /usr/share/MailScanner/perl/custom/CustomAction.pm
   cp -f /var/EFA/backup/$VERSION/usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm /usr/share/MailScanner/perl/custom/CustomAction.pm
   cp -f /var/EFA/backup/$VERSION/usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /usr/share/MailScanner/perl/custom/MailWatch.pm
@@ -150,9 +149,6 @@ function run_update() {
   rm -f /etc/cron.d/clamav-unofficial-sigs-cron
   rm -f /etc/logrotate.d/clamav-unofficial-sigs-logrotate
   yum install -y clamav-unofficial-sigs
-
-  # Issue #287 Rules without Descriptions
-  cp -f $STAGING/Files/descriptions.cf /etc/mail/spamassassin/
 
   # Issue #92 Mailwatch Single Recipient Release
   update-mailwatch
@@ -212,6 +208,19 @@ function run_update() {
     echo "use_txrep                       0" >> /etc/mail/spamassassin/MailScanner.cf
   fi  
   sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
+
+  # Issue #284 Lower ImageCerberus Scores by default
+  sed -i "/^score     ImageCerberusPLG1/ c\score     ImageCerberusPLG1     0.1  0.1  0.1  0.1" /etc/mail/spamassassin/ImageCerberusPLG.cf
+  sed -i "/^score     ImageCerberusPLG2/ c\score     ImageCerberusPLG2     0.2  0.2  0.2  0.2" /etc/mail/spamassassin/ImageCerberusPLG.cf
+  sed -i "/^score     ImageCerberusPLG3/ c\score     ImageCerberusPLG3     0.3  0.3  0.3  0.3" /etc/mail/spamassassin/ImageCerberusPLG.cf
+  sed -i "/^score     ImageCerberusPLG4/ c\score     ImageCerberusPLG4     0.4  0.4  0.4  0.4" /etc/mail/spamassassin/ImageCerberusPLG.cf
+  sed -i "/^score     ImageCerberusPLG5/ c\score     ImageCerberusPLG5     0.5  0.5  0.5  0.5" /etc/mail/spamassassin/ImageCerberusPLG.cf
+
+  #Issue #306 EFA-Monitor alert enhancement
+  rm -f /usr/sbin/EFA-Monitor-cron
+  cp -f $STAGING/Scripts/EFA-Monitor-cron /usr/sbin/EFA-Monitor.cron
+  
+  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1

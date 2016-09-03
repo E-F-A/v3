@@ -13,7 +13,7 @@ func_peruser(){
   echo -e "$green[EFA]$clean be scanned! This is a current limitation in MailWatch per user"
   echo -e "$green[EFA]$clean handling of spam scores."
   echo ""
-  if [[ $(grep "Required SpamAssassin Score" /etc/MailScanner/MailScanner.conf | awk -F'=' {'print $2'} | tr -d ' ') == "&SQLSpamScores" ]]
+  if [[ $(grep -e "^Required SpamAssassin Score" /etc/MailScanner/MailScanner.conf | awk -F'=' {'print $2'} | tr -d ' ') == "&SQLSpamScores" ]]
     then
       echo -e "$green[EFA]$clean Per user scoring is $green ENABLED $clean"
       echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean per user scoring? [y/N/c]: "
@@ -24,7 +24,7 @@ func_peruser(){
           if [[ "$TMPUSER" == "Y" || "$TMPUSER" == "y" ]]; then
             echo -e -n "$green[EFA]$clean Please enter your new global Spam Score [1-100, default 4]: "
             read SPAMSCORE
-            FLAG2 = 1
+            FLAG2=1
             while [ $FLAG2 != "0" ]; do
               if [[ "$SPAMSCORE" =~ ^[1-9]|[1-9][0-9]|100$ ]]; then
                 sed -i "/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = $SPAMSCORE" /etc/MailScanner/MailScanner.conf
@@ -41,7 +41,7 @@ func_peruser(){
 
             echo -e -n "$green[EFA]$clean Please enter your new global High Spam Score [1-100, default 7]: "
             read HIGHSPAMSCORE
-            FLAG3 = 1
+            FLAG3=1
             while [ $FLAG3 != "0" ]; do
               if [[ "$HIGHSPAMSCORE" =~ ^[1-9]|[1-9][0-9]|100$ ]]; then
                 sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = $SPAMSCORE" /etc/MailScanner/MailScanner.conf
@@ -57,17 +57,17 @@ func_peruser(){
             done
 
           service MailScanner restart
-          FLAG=1
+          FLAG=0
           echo -e "$green[EFA]$clean Per user spam scoring $red DISABLED $clean"
           pause
-        elif [[ "$TMPUSER" == "n" | "$TMPUSER" == "N" | -z "$TMPUSER" ]]; then 
+        elif [[ "$TMPUSER" == "n" || "$TMPUSER" == "N" || -z "$TMPUSER" ]]; then 
           echo -e "$green[EFA]$clean No changes made"
           echo ""
-          FLAG=1
+          FLAG=0
           pause
-        elif [[ "$TMPUSER == "C" | "$TMPUSER == "c" ]]; then
+        elif [[ "$TMPUSER" == "C" || "$TMPUSER" == "c" ]]; then
           echo "$green[EFA]$clean No changes made"
-          FLAG=1
+          FLAG=0
           pause
         else
           echo -e "       $red ERROR: please make an selection.$clean"
@@ -85,17 +85,17 @@ func_peruser(){
           if [[ "$TMPUSER" == "Y" || "$TMPUSER" == "y" ]]; then
             echo -e -n "$green[EFA]$clean Please enter your new default per user Spam Score [1-100, default 4]: "
             read SPAMSCORE
-            FLAG2 = 1
+            FLAG2=1
             while [ $FLAG2 != "0" ]; do
               if [[ "$SPAMSCORE" =~ ^[1-9]|[1-9][0-9]|100$ ]]; then
                 MAILWATCHPW=`grep MAILWATCHSQLPWD /etc/EFA-Config | awk -F':' '{print $2}'`
-                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e "ALTER TABLE `user` MODIFY COLUMN `spamscore` NOT NULL DEFAULT '$SPAMSCORE';"
+                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e "ALTER TABLE \`users\` ALTER COLUMN \`spamscore\` SET DEFAULT '$SPAMSCORE';"
                 MAILWATCHPW=''
                 sed -i "/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = &SQLSpamScores" /etc/MailScanner/MailScanner.conf
                 FLAG2=0
               elif [[ -z "$SPAMSCORE" ]]; then
                 MAILWATCHPW=`grep MAILWATCHSQLPWD /etc/EFA-Config | awk -F':' '{print $2}'`
-                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e "ALTER TABLE `user` MODIFY COLUMN `spamscore` NOT NULL DEFAULT '4';"
+                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e 'ALTER TABLE `users` ALTER COLUMN `spamscore` SET DEFAULT '4';'
                 MAILWATCHPW=''
                 sed -i "/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = &SQLSpamScores" /etc/MailScanner/MailScanner.conf
                 FLAG2=0
@@ -108,17 +108,17 @@ func_peruser(){
 
             echo -e -n "$green[EFA]$clean Please enter your new per user High Spam Score [1-100, default 7]: "
             read HIGHSPAMSCORE
-            FLAG3 = 1
+            FLAG3=1
             while [ $FLAG3 != "0" ]; do
               if [[ "$HIGHSPAMSCORE" =~ ^[1-9]|[1-9][0-9]|100$ ]]; then
                 MAILWATCHPW=`grep MAILWATCHSQLPWD /etc/EFA-Config | awk -F':' '{print $2}'`
-                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e "ALTER TABLE `user` MODIFY COLUMN `highspamscore` NOT NULL DEFAULT '$HIGHSPAMSCORE';"
+                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e "ALTER TABLE \`users\` ALTER COLUMN \`highspamscore\` SET DEFAULT '$HIGHSPAMSCORE';"
                 MAILWATCHPW=''
                 sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = &SQLHighSpamScores" /etc/MailScanner/MailScanner.conf
                 FLAG3=0
               elif [[ -z "$SPAMSCORE" ]]; then
                 MAILWATCHPW=`grep MAILWATCHSQLPWD /etc/EFA-Config | awk -F':' '{print $2}'`
-                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e "ALTER TABLE `user` MODIFY COLUMN `highspamscore` NOT NULL DEFAULT '7';"
+                /usr/bin/mysql -u mailwatch -p"$MAILWATCHPW" mailscanner -e 'ALTER TABLE `users` ALTER COLUMN `highspamscore` SET DEFAULT '7';'
                 MAILWATCHPW=''
                 sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = &SQLHighSpamScores" /etc/MailScanner/MailScanner.conf
                 FLAG3=0
@@ -130,17 +130,17 @@ func_peruser(){
             done
 
           service MailScanner restart
-          FLAG=1
+          FLAG=0
           echo -e "$green[EFA]$clean Per user spam scoring $green ENABLED $clean"
           pause
-        elif [[ "$TMPUSER" == "n" | "$TMPUSER" == "N" | -z "$TMPUSER" ]]; then 
+        elif [[ "$TMPUSER" == "n" || "$TMPUSER" == "N" || -z "$TMPUSER" ]]; then 
           echo -e "$green[EFA]$clean No changes made"
           echo ""
-          FLAG=1
+          FLAG=0
           pause
-        elif [[ "$TMPUSER == "C" | "$TMPUSER == "c" ]]; then
-          echo "$green[EFA]$clean No changes made"
-          FLAG=1
+        elif [[ "$TMPUSER" == "C" || "$TMPUSER" == "c" ]]; then
+          echo -e "$green[EFA]$clean No changes made"
+          FLAG=0
           pause
         else
           echo -e "       $red ERROR: please make an selection.$clean"
@@ -148,6 +148,6 @@ func_peruser(){
           read TMPUSER
         fi
       done
-     
+    fi
 }
 # +---------------------------------------------------+
