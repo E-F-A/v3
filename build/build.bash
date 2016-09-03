@@ -438,17 +438,17 @@ func_spam_clamav () {
     echo "use_txrep                       0" >> /etc/MailScanner/spamassassin.conf
     echo "#End E.F.A. mods for MySQL" >> /etc/MailScanner/spamassassin.conf
 
-    # Add example spam to db
-    # source: http://spamassassin.apache.org/gtube/gtube.txt
-    cd /usr/src/EFA
-    /usr/bin/wget $gitdlurl/EFA/gtube.txt
-    /usr/bin/sa-learn --spam /usr/src/EFA/gtube.txt
-
     # Enable Auto White Listing
     sed -i '/^#loadplugin Mail::SpamAssassin::Plugin::AWL/ c\loadplugin Mail::SpamAssassin::Plugin::AWL' /etc/mail/spamassassin/v310.pre
 
     # Enable TxRep Plugin
     sed -i "/^#loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
+
+    # Add example spam to db
+    # source: http://spamassassin.apache.org/gtube/gtube.txt \
+    cd /usr/src/EFA
+    /usr/bin/wget $gitdlurl/EFA/gtube.txt
+    /usr/bin/sa-learn --spam /usr/src/EFA/gtube.txt
 
     # AWL cleanup tools (just a bit different then esva)
     # http://notes.sagredo.eu/node/86
