@@ -360,7 +360,7 @@ func_mailscanner () {
     ln -s /usr/share/MailScanner/perl/custom /usr/share/MailScanner/perl/MailScanner/CustomFunctions
     ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
     ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spamassassin.conf
-    ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/MailScanner/spamassassin.conf
+    ln -s /etc/MailScanner/spamassassin.conf /etc/MailScanner/spam.assassin.prefs.conf
 
     sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
     sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
