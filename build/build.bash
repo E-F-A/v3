@@ -1022,7 +1022,13 @@ func_imagecerberus () {
 
     # Issue 67 default ImageCeberus score
     sed -i "/^score     ImageCerberusPLG0/ c\score     ImageCerberusPLG0     0.0  0.0  0.0  0.0" /etc/mail/spamassassin/ImageCerberusPLG.cf
-
+    # Issue #284 Lower ImageCerberus Scores by default
+    sed -i "/^score     ImageCerberusPLG1/ c\score     ImageCerberusPLG1     0.1  0.1  0.1  0.1" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i "/^score     ImageCerberusPLG2/ c\score     ImageCerberusPLG2     0.2  0.2  0.2  0.2" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i "/^score     ImageCerberusPLG3/ c\score     ImageCerberusPLG3     0.3  0.3  0.3  0.3" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i "/^score     ImageCerberusPLG4/ c\score     ImageCerberusPLG4     0.4  0.4  0.4  0.4" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    sed -i "/^score     ImageCerberusPLG5/ c\score     ImageCerberusPLG5     0.5  0.5  0.5  0.5" /etc/mail/spamassassin/ImageCerberusPLG.cf
+    
     # Add the version to EFA-Config
     echo "IMAGECEBERUSVERSION:$IMAGECEBERUSVERSION" >> /etc/EFA-Config
 }

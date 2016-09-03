@@ -12,6 +12,7 @@ Issue #239  Enhancement     - Add TxRep Config for SA 3.4.1
 Issue #265  Enhancement     - Add per user mode for MailWatch
 Issue #267  Bug             - SPAM bounce loop
 Issue #275  Bug             - MailWatch updater adds duplicate SHOW_GREYLIST definitions
+Issue #284  Enhancement     - Lower ImageCerberus Scores by default
 Issue #276  Bug             - EFA-Configure Option 11 logic error
 Issue #286  Bug             - Postmaster set to empty interferes with postfix
 Issue #287  Regression      - Rules without Descriptions (removed from beta)

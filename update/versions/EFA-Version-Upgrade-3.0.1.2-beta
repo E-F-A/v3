@@ -209,6 +209,13 @@ function run_update() {
   fi  
   sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::TxRep/ c\loadplugin Mail::SpamAssassin::Plugin::TxRep" /etc/mail/spamassassin/v341.pre
 
+  # Issue #284 Lower ImageCerberus Scores by default
+  sed -i "/^score     ImageCerberusPLG1/ c\score     ImageCerberusPLG1     0.1  0.1  0.1  0.1" /etc/mail/spamassassin/ImageCerberusPLG.cf
+  sed -i "/^score     ImageCerberusPLG2/ c\score     ImageCerberusPLG2     0.2  0.2  0.2  0.2" /etc/mail/spamassassin/ImageCerberusPLG.cf
+  sed -i "/^score     ImageCerberusPLG3/ c\score     ImageCerberusPLG3     0.3  0.3  0.3  0.3" /etc/mail/spamassassin/ImageCerberusPLG.cf
+  sed -i "/^score     ImageCerberusPLG4/ c\score     ImageCerberusPLG4     0.4  0.4  0.4  0.4" /etc/mail/spamassassin/ImageCerberusPLG.cf
+  sed -i "/^score     ImageCerberusPLG5/ c\score     ImageCerberusPLG5     0.5  0.5  0.5  0.5" /etc/mail/spamassassin/ImageCerberusPLG.cf
+
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
   # Exit Maintenance Mode
