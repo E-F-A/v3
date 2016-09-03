@@ -717,7 +717,7 @@ function func_configure-system() {
   echo "nameserver 127.0.0.1" > /etc/resolv.conf
   # +--------------------------------------------------+
   
-  service unbound restart
+  service unbound start
   
   # +--------------------------------------------------+
   # Issue #190 EFA-Init Link test
