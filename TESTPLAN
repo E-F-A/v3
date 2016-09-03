@@ -22,7 +22,7 @@ MailScanner
     content test PASSED
   Verify cron job functionality PASSED
     check for potential mailscanner and mailwatch cron conflicts PASSED 
-    (test after one week again with quarantine purging)
+    (test after one week again with quarantine purging) PASSED
   Run Successful Lint tests PASSED
   Verify presence of needed perl modules PASSED
   (check for perl-LDAP and Mail-IMAPClient -- build if needed) PASSED
