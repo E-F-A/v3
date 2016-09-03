@@ -98,7 +98,8 @@ function AlertOnFailure() {
   echo "" >> $TMPMAIL
   echo "Service $mService down and restarted ( $attemptCount attempts in past day, max attempts is $MaxRestartAttempts )" >> $TMPMAIL
   echo "" >> $TMPMAIL
-  echo "Please examine your EFA logs and resources to determine cause of failure." >> $TMPMAIL
+  HOST=$(hostname)
+  echo "Please examine your EFA logs on $HOST and resources to determine cause of failure." >> $TMPMAIL
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
 }
