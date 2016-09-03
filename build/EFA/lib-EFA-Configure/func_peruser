@@ -139,7 +139,7 @@ func_peruser(){
           FLAG=0
           pause
         elif [[ "$TMPUSER" == "C" || "$TMPUSER" == "c" ]]; then
-          echo "$green[EFA]$clean No changes made"
+          echo -e "$green[EFA]$clean No changes made"
           FLAG=0
           pause
         else

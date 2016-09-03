@@ -217,8 +217,8 @@ function run_update() {
   sed -i "/^score     ImageCerberusPLG5/ c\score     ImageCerberusPLG5     0.5  0.5  0.5  0.5" /etc/mail/spamassassin/ImageCerberusPLG.cf
 
   #Issue #306 EFA-Monitor alert enhancement
-  rm -f /var/EFA/EFA-Monitor.cron
-  cp -f $STAGING/Scripts/EFA-Monitor.cron /var/EFA
+  rm -f /usr/sbin/EFA-Monitor-cron
+  cp -f $STAGING/Scripts/EFA-Monitor-cron /usr/sbin/EFA-Monitor.cron
   
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
