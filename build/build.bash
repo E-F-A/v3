@@ -359,8 +359,8 @@ func_mailscanner () {
     ln -s /usr/share/MailScanner/perl/MailScanner /usr/share/MailScanner/MailScanner
     ln -s /usr/share/MailScanner/perl/custom /usr/share/MailScanner/perl/MailScanner/CustomFunctions
     ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
-    ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spam.assassin.prefs.conf
-    ln -s /etc/MailScanner/spamassassin.conf /etc/MailScanner/spam.assassin.prefs.conf
+    ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spamassassin.conf
+    ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/MailScanner/spamassassin.conf
 
     sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
     sed -i "/^ramdisk_sync/ c\ramdisk_sync=1" /etc/MailScanner/defaults
@@ -404,7 +404,7 @@ func_spam_clamav () {
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
     rm -f /etc/cron.daily/freshclam
 
-    # Symlink spam.assassin.prefs.conf (previously handled by tarball)
+    # Symlink spamassassin.conf (previously handled by tarball)
     ln -s -f /etc/MailScanner/spamassassin.conf /etc/mail/spamassassin/mailscanner.cf
 
     # Configure *.pre files (previously handled by tarball)
@@ -981,8 +981,8 @@ func_dcc () {
 
     ln -s /var/dcc/libexec/cron-dccd /usr/bin/cron-dccd
     ln -s /var/dcc/libexec/cron-dccd /etc/cron.monthly/cron-dccd
-    echo "dcc_home /var/dcc" >> /etc/MailScanner/spam.assassin.prefs.conf
-    sed -i '/^dcc_path / c\dcc_path /usr/local/bin/dccproc' /etc/MailScanner/spam.assassin.prefs.conf
+    echo "dcc_home /var/dcc" >> /etc/MailScanner/spamassassin.conf
+    sed -i '/^dcc_path / c\dcc_path /usr/local/bin/dccproc' /etc/MailScanner/spamassassin.conf
     sed -i '/^DCCIFD_ENABLE=/ c\DCCIFD_ENABLE=on' /var/dcc/dcc_conf
     sed -i '/^DBCLEAN_LOGDAYS=/ c\DBCLEAN_LOGDAYS=1' /var/dcc/dcc_conf
     sed -i '/^DCCIFD_LOGDIR=/ c\DCCIFD_LOGDIR="/var/dcc/log"' /var/dcc/dcc_conf
