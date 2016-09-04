@@ -382,6 +382,10 @@ func_mailscanner () {
 
     echo -e "allow\t.*\t-\t-" > /etc/MailScanner/filename.rules.allowall.conf
     echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
+    
+    # Issue #309 Anacron daily notifications from mailscanner
+    sed -i '/^\/usr\/sbin\/ms-cron DAILY/ c\/usr/sbin/ms-cron DAILY >/dev/null 2>&1' /etc/cron.daily/mailscanner
+    sed -i '/^\/usr\/sbin\/ms-cron MAINT/ c\/usr/sbin/ms-cron MAINT >/dev/null 2>&1' /etc/cron.daily/mailscanner
 
 }
 # +---------------------------------------------------+
