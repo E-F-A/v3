@@ -359,7 +359,7 @@ func_mailscanner () {
     ln -s /usr/share/MailScanner/perl/MailScanner /usr/share/MailScanner/MailScanner
     ln -s /usr/share/MailScanner/perl/custom /usr/share/MailScanner/perl/MailScanner/CustomFunctions
     ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
-    ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spam.assassin.prefs.conf
+    ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spamassassin.conf
     ln -s /etc/MailScanner/spamassassin.conf /etc/MailScanner/spam.assassin.prefs.conf
 
     sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
@@ -404,7 +404,7 @@ func_spam_clamav () {
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
     rm -f /etc/cron.daily/freshclam
 
-    # Symlink spam.assassin.prefs.conf (previously handled by tarball)
+    # Symlink spamassassin.conf (previously handled by tarball)
     ln -s -f /etc/MailScanner/spamassassin.conf /etc/mail/spamassassin/mailscanner.cf
 
     # Configure *.pre files (previously handled by tarball)
@@ -605,19 +605,19 @@ func_mailwatch () {
     # Issue #66 grab all passwords from EFA-Config
     #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" MailWatch.pm
     sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
-    mv MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+    mv MailWatch.pm /usr/share/MailScanner/perl/custom/
 
     # Set up SQLBlackWhiteList
     sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
     #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$password';" SQLBlackWhiteList.pm
     sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
-    mv SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
+    mv SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom/
 
     # Set up SQLSpamSettings
     sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" SQLSpamSettings.pm
     #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" SQLSpamSettings.pm
     sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" SQLSpamSettings.pm
-    mv SQLSpamSettings.pm /usr/lib/MailScanner/MailScanner/CustomFunctions
+    mv SQLSpamSettings.pm /usr/share/MailScanner/perl/custom/
 
 
     # Set up MailWatch tools
@@ -981,8 +981,8 @@ func_dcc () {
 
     ln -s /var/dcc/libexec/cron-dccd /usr/bin/cron-dccd
     ln -s /var/dcc/libexec/cron-dccd /etc/cron.monthly/cron-dccd
-    echo "dcc_home /var/dcc" >> /etc/MailScanner/spam.assassin.prefs.conf
-    sed -i '/^dcc_path / c\dcc_path /usr/local/bin/dccproc' /etc/MailScanner/spam.assassin.prefs.conf
+    echo "dcc_home /var/dcc" >> /etc/MailScanner/spamassassin.conf
+    sed -i '/^dcc_path / c\dcc_path /usr/local/bin/dccproc' /etc/MailScanner/spamassassin.conf
     sed -i '/^DCCIFD_ENABLE=/ c\DCCIFD_ENABLE=on' /var/dcc/dcc_conf
     sed -i '/^DBCLEAN_LOGDAYS=/ c\DBCLEAN_LOGDAYS=1' /var/dcc/dcc_conf
     sed -i '/^DCCIFD_LOGDIR=/ c\DCCIFD_LOGDIR="/var/dcc/log"' /var/dcc/dcc_conf

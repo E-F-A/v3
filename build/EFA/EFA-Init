@@ -809,12 +809,12 @@ function func_configure-system() {
 
   # +--------------------------------------------------+
   echo -e "$green[EFA]$clean - Configuring spamassassin"
-  sed -i '/bayes_ignore_header/d' /etc/MailScanner/spam.assassin.prefs.conf
-  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA">>/etc/MailScanner/spam.assassin.prefs.conf
-  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamCheck">>/etc/MailScanner/spam.assassin.prefs.conf
-  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamScore">>/etc/MailScanner/spam.assassin.prefs.conf
-  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-Information">>/etc/MailScanner/spam.assassin.prefs.conf
-  sed -i "/^envelope_sender_header / c\envelope_sender_header X-$ORGNAME-MailScanner-EFA-From" /etc/MailScanner/spam.assassin.prefs.conf
+  sed -i '/bayes_ignore_header/d' /etc/MailScanner/spamassassin.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA">>/etc/MailScanner/spamassassin.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamCheck">>/etc/MailScanner/spamassassin.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamScore">>/etc/MailScanner/spamassassin.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-Information">>/etc/MailScanner/spamassassin.conf
+  sed -i "/^envelope_sender_header / c\envelope_sender_header X-$ORGNAME-MailScanner-EFA-From" /etc/MailScanner/spamassassin.conf
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
@@ -869,8 +869,8 @@ function func_configure-system() {
   SAUSERSQLPWD=$PASSWD
   /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SAUSERSQLPWD') WHERE User='sa_user';"
   /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
-  sed -i "/bayes_sql_password/ c\bayes_sql_password              $SAUSERSQLPWD" /etc/MailScanner/spam.assassin.prefs.conf
-  sed -i "/user_awl_sql_password/ c\user_awl_sql_password           $SAUSERSQLPWD" /etc/MailScanner/spam.assassin.prefs.conf
+  sed -i "/bayes_sql_password/ c\bayes_sql_password              $SAUSERSQLPWD" /etc/MailScanner/spamassassin.conf
+  sed -i "/user_awl_sql_password/ c\user_awl_sql_password           $SAUSERSQLPWD" /etc/MailScanner/spamassassin.conf
   sed -i "/\usr\/bin\/mysql -usa_user / c\\/usr\/bin\/mysql -usa_user -p$SAUSERSQLPWD < \/etc\/trim-awl.sql" /usr/sbin/trim-awl
 
   # mailwatch SQL password
