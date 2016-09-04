@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.1.2 build without ks version 20160821
+# EFA 3.0.1.3 build without ks version 20160904
 #
 # Purpose:
 #       This script will 'baseline' an existing CentOS installation
@@ -154,89 +154,75 @@ glibc-devel \
 gcc \
 make \
 opencv \
-perl-Archive-Tar
-perl-Archive-Zip
-perl-BerkeleyDB
-perl-Business-ISBN
-perl-Business-ISBN-Data
-perl-Cache-Memcached
-perl-CGI
-perl-Class-Singleton
-perl-Compress-Zlib
-perl-Compress-Raw-Zlib 
-perl-Convert-BinHex
-perl-Convert-TNEF
-perl-Crypt-OpenSSL-Random
-perl-Crypt-OpenSSL-RSA
-perl-Data-Dump
-perl-Date-Manip
-perl-DateTime
-perl-DBI
-perl-DBD-MySQL
-perl-DBD-SQLite
-perl-DBD-Pg
-perl-Digest-SHA1
-perl-Encode-Detect
-perl-Email-Date-Format
-perl-Error
-perl-ExtUtils-CBuilder
-perl-ExtUtils-MakeMaker
-perl-ExtUtils-ParseXS
-perl-File-Copy-Recursive
-perl-File-Tail
-perl-Filesys-Df
-perl-HTML-Parser
-perl-HTML-Tagset
-perl-Inline
-perl-IO-Multiplex
-perl-IO-String
-perl-IO-stringy
-perl-IO-Socket-INET6
-perl-IO-Socket-SSL
-perl-IO-Zlib
-perl-libwww-perl
-perl-List-MoreUtils
-perl-Mail-DKIM
-perl-MailTools
-perl-MIME-tools
-perl-MIME-Lite
-perl-MIME-Types
-perl-Module-Build
-perl-Net-CIDR
-perl-Net-CIDR-Lite
-perl-Net-DNS
-perl-Net-IP
-perl-Net-Netmask
-perl-Net-Patricia 
-perl-Net-Server
-perl-Net-SSLeay
-perl-Module-Build
-perl-OLE-Storage_Lite
-perl-Params-Validate
-perl-Pod-Escapes
-perl-Pod-Simple
-perl-Parse-RecDescent
-perl-String-CRC32
-perl-Sys-Hostname-Long
-perl-Sys-SigAction
-perl-Taint-Runtime
-perl-Test-Harness
-perl-Test-Manifest
-perl-Test-Pod
-perl-Test-Simple
-perl-Text-Balanced
-perl-TimeDate
-perl-Time-HiRes
-perl-URI
-perl-version
-perl-XML-DOM
-perl-XML-LibXML
-perl-XML-NamespaceSupport
-perl-XML-Parser
-perl-XML-RegExp
-perl-XML-SAX
-perl-YAML
-perl-YAML-Syck
+perl-Archive-Tar \
+perl-Archive-Zip \
+perl-Business-ISBN \
+perl-Business-ISBN-Data \
+perl-Cache-Memcached \
+perl-CGI \
+perl-Class-Singleton \
+perl-Compress-Zlib \
+perl-Compress-Raw-Zlib \
+perl-Convert-BinHex \
+perl-Crypt-OpenSSL-Random \
+perl-Crypt-OpenSSL-RSA \
+perl-Date-Manip \
+perl-DateTime \
+perl-DBI \
+perl-DBD-MySQL \
+perl-DBD-SQLite \
+perl-DBD-Pg \
+perl-Digest-SHA1 \
+perl-Encode-Detect \
+perl-Email-Date-Format \
+perl-Error \
+perl-ExtUtils-CBuilder \
+perl-ExtUtils-MakeMaker \
+perl-ExtUtils-ParseXS \
+perl-File-Copy-Recursive \
+perl-HTML-Parser \
+perl-HTML-Tagset \
+perl-IO-String \
+perl-IO-stringy \
+perl-IO-Socket-INET6 \
+perl-IO-Socket-SSL \
+perl-IO-Zlib \
+perl-libwww-perl \
+perl-List-MoreUtils \
+perl-Mail-DKIM \
+perl-MailTools \
+perl-MIME-tools \
+perl-MIME-Lite \
+perl-MIME-Types \
+perl-Module-Build \
+perl-Net-DNS \
+perl-Net-IP \
+perl-Net-SSLeay \
+perl-Module-Build \
+perl-Params-Validate \
+perl-Pod-Escapes \
+perl-Pod-Simple \
+perl-Parse-RecDescent \
+perl-String-CRC32 \
+perl-Taint-Runtime \
+perl-Test-Harness \
+perl-Test-Manifest \
+perl-Test-Pod \
+perl-Test-Simple \
+perl-TimeDate \
+perl-Time-HiRes \
+perl-URI \
+perl-version \
+perl-XML-DOM \
+perl-XML-LibXML \
+perl-XML-NamespaceSupport \
+perl-XML-Parser \
+perl-XML-RegExp \
+perl-XML-SAX \
+perl-YAML \
+perl-YAML-Syck \
+python-setuptools \
+libevent \
 mod_ssl \
 system-config-keyboard \
 openssl-devel
@@ -281,8 +267,7 @@ alsa-lib
 #----------------------------------------------------------------#
 mkdir /var/log/EFA
 mkdir /usr/src/EFA
-/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.1.2/build/build.bash --no-check-certificate
-chmod 700 /usr/src/EFA/build.bash
+/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.1.3/build/build.bash --no-check-certificatechmod 700 /usr/src/EFA/build.bash
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
