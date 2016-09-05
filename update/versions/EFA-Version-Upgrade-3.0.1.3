@@ -79,7 +79,7 @@ function run_update() {
   # Issue #308 ClamAV Status Page blank
   sed -i '/^Incoming Work Group =/ c\Incoming Work Group = mtagroup' /etc/MailScanner/MailScanner.conf
   sed -i '/^Incoming Work Permissions =/ c\Incoming Work Permissions = 0660' /etc/MailScanner/MailScanner.conf
-  touch /var/spool/MailScanner/incoming/clamav-tmp
+  mkdir -p /var/spool/MailScanner/incoming/clamav-tmp
   chown -R postfix:mtagroup /var/spool/MailScanner/incoming
   chmod -R ug+rwx /var/spool/MailScanner/incoming
   usermod apache -G mtagroup
