@@ -306,7 +306,7 @@ func_mailscanner () {
     sed -i "/^Place New Headers At Top Of Message =/ c\Place New Headers At Top Of Message = yes" /etc/MailScanner/MailScanner.conf
     # Issue #206 Default Max Arvhive Depth to Non Zero
     sed -i "/^Maximum Archive Depth =/ c\Maximum Archive Depth = 3" /etc/MailScanner/MailScanner.conf
-    
+
     # Issue #132 Increase sa-learn and spamassassin max message size limits
     sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = 2048k" /etc/MailScanner/MailScanner.conf
 
@@ -382,7 +382,7 @@ func_mailscanner () {
 
     echo -e "allow\t.*\t-\t-" > /etc/MailScanner/filename.rules.allowall.conf
     echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
-    
+
     # Issue #309 Anacron daily notifications from mailscanner
     sed -i '/^\/usr\/sbin\/ms-cron DAILY/ c\/usr/sbin/ms-cron DAILY >/dev/null 2>&1' /etc/cron.daily/mailscanner
     sed -i '/^\/usr\/sbin\/ms-cron MAINT/ c\/usr/sbin/ms-cron MAINT >/dev/null 2>&1' /etc/cron.daily/mailscanner
@@ -728,6 +728,8 @@ func_mailwatch () {
 
     # Issue #308 ClamAV Status Page blank
     usermod apache -G mtagroup
+    touch /var/spool/MailScanner/incoming/clamav-tmp
+    chown postfix:mtagroup /var/spool/MailScanner/incoming/clamav-tmp
 
     # Postfix Relay Info
 ########################################################################
