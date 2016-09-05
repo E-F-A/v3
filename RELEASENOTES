@@ -109,6 +109,20 @@ You can kill the logsave process (Ctrl+C if running interactively)
 This is a known issue and is benign.  It has been reported to MailScanner
 developers.
 
+5) Updating with multiple AV Scanners present
+
+Starting with update 3.0.1.2, MailScanner has undergone a major upgrade to v5.
+
+One of the changes includes the introduction of a new group called "mtagroup."
+
+You may see MailScanner failing to scan emails as a result of the upgrade or a scanning loop occurring.
+
+If you are running any 3rd party antivirus scanners, please be sure to add the users to the mtagroup:
+
+sudo usermod someavaccount -G mtagroup
+
+An AV daemon restart and/or a reboot may be needed for the change to take effect.
+
 #######################################################################
 
 ########################## Reporting Issues ###########################
