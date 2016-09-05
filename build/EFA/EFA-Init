@@ -1053,7 +1053,7 @@ function func_end() {
   # aka update kam.cf early
   service MailScanner start >/dev/null 2>&1
   /usr/local/sbin/EFA-SA-Update -update
-  touch /var/spool/MailScanner/incoming/clamav-tmp
+  mkdir -p /var/spool/MailScanner/incoming/clamav-tmp
   chown postfix:mtagroup /var/spool/MailScanner/incoming/clamav-tmp
   chmod ug+rwx /var/spool/MailScanner/incoming/clamav-tmp
   service MailScanner stop
