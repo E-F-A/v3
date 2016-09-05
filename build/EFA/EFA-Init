@@ -1051,8 +1051,11 @@ function func_end() {
 
   # Issue 135 Lots of legit mails blocked on SpamAssassin KAM_BODY_URIBL_PCCC
   # aka update kam.cf early
-  service MailScanner start
+  service MailScanner start >/dev/null 2>&1
   /usr/local/sbin/EFA-SA-Update -update
+  touch /var/spool/MailScanner/incoming/clamav-tmp
+  chown postfix:mtagroup /var/spool/MailScanner/incoming/clamav-tmp
+  chmod ug+rwx /var/spool/MailScanner/incoming/clamav-tmp
   service MailScanner stop
 
   # Enable EFA Service Monitoring now

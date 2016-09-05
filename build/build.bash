@@ -729,8 +729,6 @@ func_mailwatch () {
 
     # Issue #308 ClamAV Status Page blank
     usermod apache -G mtagroup
-    touch /var/spool/MailScanner/incoming/clamav-tmp
-    chown postfix:mtagroup /var/spool/MailScanner/incoming/clamav-tmp
 
     # Postfix Relay Info
 ########################################################################
