@@ -15,7 +15,7 @@ EFA Version 3.0.1.2 Changes
 
 Issue #92   Bug/Enhancement - Mailwatch Single Recipient Release
 Issue #165  Enhancement     - Upgrade MailScanner
-Issue #206  Enhancement     - Default Max Arvhive Depth to Non Zero
+Issue #206  Enhancement     - Default Max Archive Depth to Non Zero
 Issue #210  Enhancement     - Add EFA Version to GUI
 Issue #228  Bug             - Greylist toggle overwrites custom smtpd_recipient_restrictions
 Issue #232  Enhancement     - Use CLAMAV-UNOFFICIAL-SIGS maintained by eXtremeSHOK.com

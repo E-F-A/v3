@@ -961,6 +961,9 @@ function func_end() {
   pause
   cd /etc/postfix/ssl
   openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650
+  # Regenerate DH key
+  rm -f /etc/postfix/ssl/dhparam.pem
+  openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
@@ -1021,7 +1024,8 @@ function func_end() {
 
   # +--------------------------------------------------+
   # Enable services at boot
-  chkconfig MailScanner on
+  chkconfig mailscanner on
+  chkconfig postfix on
   chkconfig httpd on
   chkconfig mysqld on
   chkconfig unbound on
@@ -1047,8 +1051,11 @@ function func_end() {
 
   # Issue 135 Lots of legit mails blocked on SpamAssassin KAM_BODY_URIBL_PCCC
   # aka update kam.cf early
-  service MailScanner start
+  service MailScanner start >/dev/null 2>&1
   /usr/local/sbin/EFA-SA-Update -update
+  mkdir -p /var/spool/MailScanner/incoming/clamav-tmp
+  chown postfix:mtagroup /var/spool/MailScanner/incoming/clamav-tmp
+  chmod ug+rwx /var/spool/MailScanner/incoming/clamav-tmp
   service MailScanner stop
 
   # Enable EFA Service Monitoring now
