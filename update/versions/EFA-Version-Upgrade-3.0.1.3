@@ -80,7 +80,6 @@ function run_update() {
   chown -R postfix:mtagroup /var/spool/MailScanner/incoming
   chmod -R ug+rwx /var/spool/MailScanner/incoming
   usermod apache -G mtagroup
-  service MailScanner restart
 
   # Issue #309 Anacron daily notifications from mailscanner
   sed -i '/^\/usr\/sbin\/ms-cron DAILY/ c\/usr/sbin/ms-cron DAILY >/dev/null 2>&1' /etc/cron.daily/mailscanner
@@ -90,6 +89,8 @@ function run_update() {
   sed -i '/^Quarantine Group =/ c\Quarantine Group = mtagroup' /etc/MailScanner/MailScanner.conf
   chown -R postfix:mtagroup /var/spool/MailScanner/quarantine
   chmod -R ug+rwx /var/spool/MailScanner/quarantine
+
+  service MailScanner restart
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
