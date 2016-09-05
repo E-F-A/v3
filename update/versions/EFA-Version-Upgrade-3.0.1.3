@@ -63,15 +63,18 @@ function run_update() {
 
   # Enter Maintenance Mode
   mv -f /etc/cron.d/EFA-Monitor.cron /var/EFA > /dev/null 2>&1
-  YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
-  sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
-  
+
   # Latest version of EFA-Configure with libraries
   # No changes in this update
 
   update-vmtools
   yum clean all
   yum_update
+
+  YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
+  sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
+
+  yum -y update clamav clamd
 
   # Issue #308 ClamAV Status Page blank
   sed -i '/^Incoming Work Group =/ c\Incoming Work Group = mtagroup' /etc/MailScanner/MailScanner.conf
