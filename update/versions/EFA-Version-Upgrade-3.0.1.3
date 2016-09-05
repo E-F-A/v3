@@ -74,7 +74,7 @@ function run_update() {
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
-  yum -y update clamav clamd
+  yum -y update clamav clamd mysql mysql-server
 
   # Issue #308 ClamAV Status Page blank
   sed -i '/^Incoming Work Group =/ c\Incoming Work Group = mtagroup' /etc/MailScanner/MailScanner.conf
@@ -88,10 +88,13 @@ function run_update() {
   sed -i '/^\/usr\/sbin\/ms-cron DAILY/ c\/usr/sbin/ms-cron DAILY >/dev/null 2>&1' /etc/cron.daily/mailscanner
   sed -i '/^\/usr\/sbin\/ms-cron MAINT/ c\/usr/sbin/ms-cron MAINT >/dev/null 2>&1' /etc/cron.daily/mailscanner
 
-  #Issue #311 Quarantine permissions issue
+  # Issue #311 Quarantine permissions issue
   sed -i '/^Quarantine Group =/ c\Quarantine Group = mtagroup' /etc/MailScanner/MailScanner.conf
   chown -R postfix:mtagroup /var/spool/MailScanner/quarantine
   chmod -R ug+rwx /var/spool/MailScanner/quarantine
+
+  # Issue #312 MailScanner access to EFA-Config denied
+  chown root:mtagroup /etc/EFA-Config
 
   service MailScanner restart
 

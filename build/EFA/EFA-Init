@@ -1014,7 +1014,8 @@ function func_end() {
 
   sed -i "/CONFIGURED:/ c\CONFIGURED:YES" /etc/EFA-Config
 
-  chown root:apache /etc/EFA-Config
+  # Issue #312 MailSCanner access to EFA-Config denied
+  chown root:mtagroup /etc/EFA-Config
   chmod 640 /etc/EFA-Config
   # +--------------------------------------------------+
 
