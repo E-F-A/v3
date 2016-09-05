@@ -260,7 +260,8 @@ func_mailscanner () {
     sed -i '/^Incoming Work Group =/ c\Incoming Work Group = mtagroup' /etc/MailScanner/MailScanner.conf
     sed -i '/^Incoming Work Permissions =/ c\Incoming Work Permissions = 0660' /etc/MailScanner/MailScanner.conf
     sed -i '/^Quarantine User =/ c\Quarantine User = postfix' /etc/MailScanner/MailScanner.conf
-    sed -i '/^Quarantine Group =/ c\Quarantine Group = apache' /etc/MailScanner/MailScanner.conf
+    # Issue #311 Quarantine Permissions issue
+    sed -i '/^Quarantine Group =/ c\Quarantine Group = mtagroup' /etc/MailScanner/MailScanner.conf
     sed -i '/^Quarantine Permissions =/ c\Quarantine Permissions = 0660' /etc/MailScanner/MailScanner.conf
     sed -i '/^Deliver Unparsable TNEF =/ c\Deliver Unparsable TNEF = yes' /etc/MailScanner/MailScanner.conf
     sed -i '/^Maximum Archive Depth =/ c\Maximum Archive Depth = 0' /etc/MailScanner/MailScanner.conf

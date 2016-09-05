@@ -86,6 +86,11 @@ function run_update() {
   sed -i '/^\/usr\/sbin\/ms-cron DAILY/ c\/usr/sbin/ms-cron DAILY >/dev/null 2>&1' /etc/cron.daily/mailscanner
   sed -i '/^\/usr\/sbin\/ms-cron MAINT/ c\/usr/sbin/ms-cron MAINT >/dev/null 2>&1' /etc/cron.daily/mailscanner
 
+  #Issue #311 Quarantine permissions issue
+  sed -i '/^Quarantine Group =/ c\Quarantine Group = mtagroup' /etc/MailScanner/MailScanner.conf
+  chown -R postfix:mtagroup /var/spool/MailScanner/quarantine
+  chmod -R ug+rwx /var/spool/MailScanner/quarantine
+
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
