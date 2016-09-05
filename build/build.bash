@@ -1148,15 +1148,14 @@ func_services () {
     chkconfig smartd off
     chkconfig abrtd off
     chkconfig portreserve off
-    # Postfix is launched by MailScanner
-    chkconfig postfix off
     # auditd is something for an future release..
     chkconfig auditd off
 
     # These services we disable for now and enable them after EFA-Init.
     # Most of these are not enabled by default but add them here just to
     # make sure we don't forget them at EFA-Init.
-    chkconfig MailScanner off
+    chkconfig mailscanner off
+    chkconfig postfix off
     chkconfig httpd off
     chkconfig mysqld off
     chkconfig saslauthd off

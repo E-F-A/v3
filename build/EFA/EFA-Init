@@ -1021,7 +1021,8 @@ function func_end() {
 
   # +--------------------------------------------------+
   # Enable services at boot
-  chkconfig MailScanner on
+  chkconfig mailscanner on
+  chkconfig postfix on
   chkconfig httpd on
   chkconfig mysqld on
   chkconfig unbound on
