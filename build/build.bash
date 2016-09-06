@@ -404,7 +404,7 @@ func_spam_clamav () {
     sed -i "/^DatabaseDirectory/ c\DatabaseDirectory /var/lib/clamav" /etc/freshclam.conf
     sed -i "/^DatabaseOwner/ c\DatabaseOwner clam" /etc/freshclam.conf
 
-    userdel clamav > /dev/null 2&>1
+    userdel clamav >/dev/null 2&>1
     rm -f /etc/freshclam.conf.rpmnew
 
     # remove freshclam from /etc/cron.daily (redundant to /etc/cron.hourly/update_virus_scanners)
