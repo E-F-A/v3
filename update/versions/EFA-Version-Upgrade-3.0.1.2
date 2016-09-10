@@ -164,18 +164,24 @@ function run_update() {
   sed -i "/^Filetype Rules = %etc-dir%\/filetype.rules.conf/ c\Filetype Rules = %etc-dir%/filetype.rules" /etc/MailScanner/MailScanner.conf
   sed -i "/^Dangerous Content Scanning = yes/ c\Dangerous Content Scanning = %rules-dir%/content.scanning.rules" /etc/MailScanner/MailScanner.conf
 
-  echo -e "From:\t127.0.0.1\t/etc/MailScanner/filename.rules.allowall.conf" > /etc/MailScanner/filename.rules
-  echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filename.rules.conf" >> /etc/MailScanner/filename.rules
-
-  echo -e "From:\t127.0.0.1\t/etc/MailScanner/filetype.rules.allowall.conf" > /etc/MailScanner/filetype.rules
-  echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filetype.rules.conf" >> /etc/MailScanner/filetype.rules
-
-  echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/rules/content.scanning.rules
-  echo -e "FromOrTo:\tdefault\tyes" >> /etc/MailScanner/rules/content.scanning.rules
-
-  echo -e "allow\t.*\t-\t-" > /etc/MailScanner/filename.rules.allowall.conf
-  echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
-
+  # Issue # 316 Update doesn't check files exist before writing rules files
+  if [[ ! -e /etc/MailScanner/filename.rules ]]; then
+    echo -e "From:\t127.0.0.1\t/etc/MailScanner/filename.rules.allowall.conf" > /etc/MailScanner/filename.rules
+    echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filename.rules.conf" >> /etc/MailScanner/filename.rules
+  fi
+  if [[ ! -e /etc/MailScanner/filetype.rules ]]; then
+    echo -e "From:\t127.0.0.1\t/etc/MailScanner/filetype.rules.allowall.conf" > /etc/MailScanner/filetype.rules
+    echo -e "FromOrTo:\tdefault\t/etc/MailScanner/filetype.rules.conf" >> /etc/MailScanner/filetype.rules
+  fi
+  if [[ ! -e /etc/MailScanner/rules/content.scanning.rules ]]; then
+    echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/rules/content.scanning.rules
+    echo -e "FromOrTo:\tdefault\tyes" >> /etc/MailScanner/rules/content.scanning.rules
+  fi
+  if [[ ! -e /etc/MailScanner/filename.rules.allowall.conf ]]; then
+    echo -e "allow\t.*\t-\t-" > /etc/MailScanner/filename.rules.allowall.conf
+    echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
+  fi
+  
   # Issue #239 Add TxRep Option for SA 3.4.1
   # Create TxRep table
   MYSQLPW=`grep MYSQLROOTPWD /etc/EFA-Config | awk -F':' '{print $2}'`

@@ -19,6 +19,7 @@ Issue #287  Regression      - Rules without Descriptions (removed from beta)
 Issue #294  Bug             - Attachment Release Issues in MailWatch
 Issue #297  Bug             - KAM.cf URL needs updated
 Issue #306  Enhancement     - EFA-Monitor alert enhancement
+Issue #316  Bug             - Update doesn't check files exist before writing rules files
 
 Sought Rules dropped (no longer maintained)
 
