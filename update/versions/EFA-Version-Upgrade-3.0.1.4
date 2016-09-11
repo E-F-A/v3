@@ -104,7 +104,7 @@ function update-mailwatch() {
 
       mkdir -p /var/EFA/backup/$VERSION/ > /dev/null 2>&1
       mv /var/www/html/mailscanner /var/EFA/backup/$VERSION/ > /dev/null 2>&1
-      # mv /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
+      mv /usr/share/MailScanner/perl/custom/MailWatch.pm /var/EFA/backup/$VERSION > /dev/null 2>&1
       # mv /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
       mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/ > /dev/null 2>&1
 
@@ -114,12 +114,11 @@ function update-mailwatch() {
       cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
-      # sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
-      # sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+      sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
+      sed -i "/^my(\$db_pass) =/ c\my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
       # sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
       # sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\n  my(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
-      # Todo: Fix path for MailScanner v5
-      # mv -f MailWatch.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
+      mv -f MailWatch.pm /usr/share/MailScanner/perl/custom/
       # mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
 
       cd /usr/src/EFA/1.2.0-master
