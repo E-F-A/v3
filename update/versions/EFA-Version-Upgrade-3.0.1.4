@@ -247,7 +247,7 @@ function update-mailwatch() {
       sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 style=\\\"width:300px;text-align:center\\\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' /var/www/html/mailscanner/login.php
 
       # Issue 204 -- UTF8 Characters Not Rendering in MailWatch
-      yum -y install php-mbstring
+      # yum -y install php-mbstring
 
       service httpd start
       service MailScanner start
