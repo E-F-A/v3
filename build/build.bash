@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.1.3 build script version 20160904
+# EFA 3.0.1.4 build script version 20160911
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2016 https://efa-project.org
 #
@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.1.3"
+version="3.0.1.4"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -33,7 +33,7 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="d9f7888"
+MAILWATCHVERSION="02c11da"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"

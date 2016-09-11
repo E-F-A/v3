@@ -67,12 +67,13 @@ function run_update() {
   # Latest version of EFA-Configure with libraries
   # No changes in this update
 
-  update-vmtools
   yum clean all
   yum_update
 
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
+
+  update-vmtools
 
   # Issue #315 Regression in Quarantine Reports
   update-mailwatch
