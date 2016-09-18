@@ -26,7 +26,7 @@ function func_ask-highspammailwatch() {
         sed -i "/^define('HIDE_HIGH_SPAM'/ c\define('HIDE_HIGH_SPAM', false);" /var/www/html/mailscanner/conf.php
         echo -e "$green[EFA]$clean Hide High Spam (and High MCP) $green DISABLE $clean"
         hidecheck=0
-      elif if [[ "$TMPHIDESPAM" == "C" || "$TMPHIDESPAM" == "c" ]]; then 
+      elif [[ "$TMPHIDESPAM" == "C" || "$TMPHIDESPAM" == "c" ]]; then 
         echo -e "$green[EFA]$clean No action taken, exiting."
         hidecheck=0
       else

@@ -86,6 +86,9 @@ function run_update() {
 
   # Issue #323 clamav-unofficial-sigs not running
   /usr/bin/clamav-unofficial-sigs.sh
+  
+  # Issue #322 Geoip update during EFA-Init (add script via update)
+  cp -f $STAGING/Scripts/geoip_update_cmd.php /usr/local/sbin/geoip_update_cmd.php
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1

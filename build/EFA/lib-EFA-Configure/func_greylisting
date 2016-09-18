@@ -67,7 +67,7 @@ func_greylisting(){
           echo -e "$green[EFA]$clean No changes made"
           echo ""
           pause
-        elif [[ "$TMPGREY" == "Y" || "$TMPGREY" == "y" ]]; then
+        elif [[ "$TMPGREY" == "C" || "$TMPGREY" == "c" ]]; then
           echo -e "$green[EFA]$clean No action taken, exiting."
           sleep 2
         else
