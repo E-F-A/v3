@@ -3,6 +3,7 @@ EFA Version 3.0.1.5 Changes
 ############################################################
 
 Issue #320  Bug             - /root/.spamassassin inaccessible
+Issue #323  Bug             - clamav-unofficial-sigs not running
 
 ############################################################
 EFA Version 3.0.1.4 Changes

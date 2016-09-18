@@ -789,6 +789,10 @@ function func_configure-system() {
 
   service clamd start
   freshclam
+
+  # Issue #323 clamav-unofficial-sigs not running
+  /usr/bin/clamav-unofficial-sigs.sh
+
   sa-update
   # +--------------------------------------------------+
 
