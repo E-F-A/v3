@@ -81,8 +81,8 @@ function run_update() {
 
   update-vmtools
 
-  # Issue #315 Regression in Quarantine Reports
-  update-mailwatch
+  # Issue #320 /root/.spamassassin inaccessible
+  sed -i "/^define('SA_PREFS', MS_CONFIG_DIR . 'spam.assassin.prefs.conf');/ c\define('SA_PREFS', MS_CONFIG_DIR . 'spamassassin.conf');" /var/www/html/mailscanner/conf.php
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1

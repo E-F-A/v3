@@ -674,7 +674,9 @@ func_mailwatch () {
     sed -i "/^define('SHOW_DOC',/ c\define('SHOW_DOC', false);" conf.php
     # Issue #291 HIDE_UNKNOWN option for MailWatch
     sed -i "/^define('HIDE_UNKNOWN',/ c\define('HIDE_UNKNOWN', true);" conf.php
-
+    # Issue #320 /root/.spamassassin inaccessible
+    sed -i "/^define('SA_PREFS', MS_CONFIG_DIR . 'spam.assassin.prefs.conf');/ c\define('SA_PREFS', MS_CONFIG_DIR . 'spamassassin.conf');" conf.php
+    
     # Set up a redirect in web root to MailWatch
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html

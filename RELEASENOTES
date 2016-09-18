@@ -109,6 +109,10 @@ You can kill the logsave process (Ctrl+C if running interactively)
 
 Starting with update 3.0.1.2, MailScanner has undergone a major upgrade to v5.
 
+Notice:  Some commercial virus scanners may not be have wrappers in v5. If this 
+affects you, please reach out to mailscanner via the mailscanner listserv forum for
+further assistance.
+
 One of the changes includes the introduction of a new group called "mtagroup."
 
 You may see MailScanner failing to scan emails as a result of the upgrade or a scanning loop occurring.
