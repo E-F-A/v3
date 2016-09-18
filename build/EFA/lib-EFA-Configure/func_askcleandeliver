@@ -12,7 +12,7 @@ function func_ask-cleandeliver() {
   echo -e "$green[EFA]$clean checks.  When this option is enabled, cleaned"
   echo -e "$green[EFA]$clean messages are automatically delivered."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean cleaned message delivery ? [y/N]: "
+  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean cleaned message delivery ? [y/N/c]: "
 
   local TMPDELIVER
   read TMPDELIVER
@@ -25,20 +25,23 @@ function func_ask-cleandeliver() {
         echo -e "$green[EFA]$clean Cleaned Message Delivery $green DISABLED $clean"
         sleep 2
         flag=0
-      
+        service MailScanner reload
       elif [[ "$TMPDELIVER" == "" || "$TMPDELIVER" == "N" || "$TMPDELIVER" == "n" ]]; then 
         sed -i '/Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = Yes' /etc/MailScanner/MailScanner.conf
         echo -e "$green[EFA]$clean Cleaned Message Delivery $green ENABLED $clean"
         flag=0
         sleep 2
+        service MailScanner reload
+      elif [[ "$TMPDELIVER" == "C" || "$TMPDELIVER" == "c" ]]; then 
+        echo -e "$green[EFA]$clean No action taken, exiting."
+        sleep 2
+        flag=0
       else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean cleaned message delivery? [y/N]: "
+          echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean cleaned message delivery? [y/N/c]: "
           read TMPDELIVER
       fi
   done
-
-  service MailScanner reload
 
 }
 # +---------------------------------------------------+

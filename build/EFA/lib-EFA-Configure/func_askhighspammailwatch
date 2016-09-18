@@ -12,7 +12,7 @@ function func_ask-highspammailwatch() {
   echo -e "$green[EFA]$clean Very useful to hide suggestive and offensive spam"
   echo -e "$green[EFA]$clean common in the high category."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N]: "
+  echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N/c]: "
   read TMPHIDESPAM
   hidecheck=1
   while [ $hidecheck != "0" ]
@@ -26,9 +26,12 @@ function func_ask-highspammailwatch() {
         sed -i "/^define('HIDE_HIGH_SPAM'/ c\define('HIDE_HIGH_SPAM', false);" /var/www/html/mailscanner/conf.php
         echo -e "$green[EFA]$clean Hide High Spam (and High MCP) $green DISABLE $clean"
         hidecheck=0
+      elif if [[ "$TMPHIDESPAM" == "C" || "$TMPHIDESPAM" == "c" ]]; then 
+        echo -e "$green[EFA]$clean No action taken, exiting."
+        hidecheck=0
       else
         echo -e "       $red ERROR: please make an selection.$clean"
-        echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N]: "
+        echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N/c]: "
         read TMPHIDESPAM
       fi
   done

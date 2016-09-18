@@ -10,7 +10,7 @@ function func_apache-settings() {
   echo -e "By default, EFA uses port 443"
   echo -e "You can enable port 443 for secure access."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Enable port 443? (Y/n): "
+  echo -e -n "$green[EFA]$clean Enable port 443? (Y/n/c): "
   local TMPSECURE
   read TMPSECURE
 
@@ -50,10 +50,14 @@ function func_apache-settings() {
         sleep 2
 
         flag=1
+      elif [[ $TMPSECURE == "c" || $TMPSECURE == "C" ]]; then
+        echo -e "$green[EFA]$clean No action taken, exiting."
+        sleep 2
+        flag=1
       else
         echo -e "Choice $green\"$TMPSECURE\"$clean is not a valid choice."
         echo -e ""
-        echo -e -n "$green[EFA]$clean Enable port 443? (Y/n): "
+        echo -e -n "$green[EFA]$clean Enable port 443? (Y/n/c): "
         read TMPSECURE 
       fi
     done
@@ -88,17 +92,17 @@ function func_apache-settings() {
       else
         echo -e "Choice $green\"$TMPREDIRECT\"$clean is not a valid choice."
         echo -e ""
-        echo -e -n "$green[EFA]$clean Enable port 443? (Y/n): "
+        echo -e -n "$green[EFA]$clean Redirect port 80 to port 443? (Y/n): "
         read TMPREDIRECT 
       fi
     done
   fi
 
-  
-  service iptables reload
-  service httpd reload
+  if [[ $TMPSECURE != "c" && $TMPSECURE != "C" ]]; then
+    service iptables reload
+    service httpd reload
+    sleep 2
+  fi
 
-  sleep 2
-  
 }
 # +---------------------------------------------------+

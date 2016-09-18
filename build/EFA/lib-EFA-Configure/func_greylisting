@@ -19,7 +19,7 @@ func_greylisting(){
     then
       # DISABLE greylisting
       echo -e "$green[EFA]$clean Greylisting is currently $green ENABLED $clean"
-      echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean greylisting? [y/N]: "
+      echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean greylisting? [y/N/c]: "
       read TMPGREY
         if [[ "$TMPGREY" == "Y" || "$TMPGREY" == "y" ]]; then
           # Issue #228 Greylist toggle overwrites custom smtpd_recipient_restrictions
@@ -38,15 +38,18 @@ func_greylisting(){
           echo -e "$green[EFA]$clean No changes made"
           echo ""
           pause
+        elif [[ "$TMPGREY" == "C" || "$TMPGREY" == "c" ]]; then
+          echo -e "$green[EFA]$clean No action taken, exiting."
+          sleep 2
         else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean greylisting? [y/N]: "
+          echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean greylisting? [y/N/c]: "
           read TMPGREY
         fi
     else
       # ENABLE Greylisting
       echo -e "$green[EFA]$clean Greylisting is currently $red DISABLED $clean"
-      echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean greylisting? [y/N]: "
+      echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean greylisting? [y/N/c]: "
       read TMPGREY
         if [[ "$TMPGREY" == "Y" || "$TMPGREY" == "y" ]]; then
           # Issue #228 Greylist toggle overwrites custom smtpd_recipient_restrictions
@@ -64,9 +67,12 @@ func_greylisting(){
           echo -e "$green[EFA]$clean No changes made"
           echo ""
           pause
+        elif [[ "$TMPGREY" == "Y" || "$TMPGREY" == "y" ]]; then
+          echo -e "$green[EFA]$clean No action taken, exiting."
+          sleep 2
         else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean greylisting? [y/N]: "
+          echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean greylisting? [y/N/c]: "
           read TMPGREY
         fi
   fi

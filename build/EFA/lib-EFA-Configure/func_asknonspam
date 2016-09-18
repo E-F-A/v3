@@ -14,14 +14,14 @@ function func_ask-nonspam() {
   echo -e "$green[EFA]$clean You can also choose to deliver non spam without"
   echo -e "$green[EFA]$clean storing it."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N]: "
+  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N/c]: "
 
   read TMPSTORENSPAM
   STORENSPAM=""
   spamcheck=1
   while [ $spamcheck != "0" ]
     do 
-      if [[ "$TMPSTORENSPAM" == "Y" || "$TMPSTORENSPAM" == "y" ]]; then 
+      if [[ "$TMPSTORENSPAM" == "Y" || "$TMPSTORENSPAM" == "y" ]]; then
         # Set non spam delivery behavior
         STORENSPAM="deliver header \"X-Spam-Status:No\""
         echo -e "$green[EFA]$clean Non spam storage $green DISABLED $clean"
@@ -40,9 +40,12 @@ function func_ask-nonspam() {
         #sed -i '/Non Spam Actions =/ c\Non Spam Actions = store deliver header "X-Spam-Status:No custom(nonspam)"' /etc/MailScanner/MailScanner.conf
         echo -e "$green[EFA]$clean Non spam storage $green ENABLED $clean"
         spamcheck=0
+      elif [[ "$TMPSTORENSPAM" == "C" || "$TMPSTORENSPAM" == "c" ]]; then
+        echo -e "$green[EFA]$clean No action taken."
+        spamcheck=0
       else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N]: "
+          echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N/c]: "
           read TMPSTORENSPAM
       fi
   done
@@ -57,32 +60,37 @@ function func_ask-nonspam() {
   echo -e ""
   echo -e "$green[EFA]$clean You can choose to disable the signature entirely."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean non spam signatures ? [y/N]: "
+  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean non spam signatures ? [y/N/c]: "
 
   read TMPNSPAMSIG
   NSPAMSIG=""
   spamcheck=1
   while [ $spamcheck != "0" ]
     do 
-      if [[ "$TMPNSPAMSIG" == "Y" || "$TMPNSPAMSIG" == "y" ]]; then 
+      if [[ "$TMPNSPAMSIG" == "Y" || "$TMPNSPAMSIG" == "y" ]]; then
         # Set non spam delivery behavior
         NSPAMSIG=""
         echo -e "$green[EFA]$clean Non spam signatures $green DISABLED $clean"
         spamcheck=0
+        sed -i "/Non Spam Actions =/ c\Non Spam Actions = $STORENSPAM $NSPAMSIG" /etc/MailScanner/MailScanner.conf
+        service MailScanner reload
+        sleep 2
       elif [[ "$TMPNSPAMSIG" == "" || "$TMPNSPAMSIG" == "N" || "$TMPNSPAMSIG" == "n" ]]; then 
         NSPAMSIG="custom(nonspam)"
         echo -e "$green[EFA]$clean Non spam signatures $green ENABLED $clean"
         spamcheck=0
+        sed -i "/Non Spam Actions =/ c\Non Spam Actions = $STORENSPAM $NSPAMSIG" /etc/MailScanner/MailScanner.conf
+        service MailScanner reload
+        sleep 2
+      if [[ "$TMPNSPAMSIG" == "C" || "$TMPNSPAMSIG" == "c" ]]; then
+        echo -e "$green[EFA]$clean No action taken, exiting."
+        spamcheck=0
+        sleep 2
       else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean non spam signatures? [y/N]: "
+          echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean non spam signatures? [y/N/c]: "
           read TMPSPAMSIG
       fi
   done
-
-  sed -i "/Non Spam Actions =/ c\Non Spam Actions = $STORENSPAM $NSPAMSIG" /etc/MailScanner/MailScanner.conf
-  
-  service MailScanner reload
-  sleep 2
 }
 # +---------------------------------------------------+

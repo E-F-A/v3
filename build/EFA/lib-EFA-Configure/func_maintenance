@@ -10,7 +10,7 @@ func_maintenance-mode() {
   [[ -f /etc/cron.d/EFA-Monitor.cron ]] && modeStatus="0" || modeStatus="1"
   
   if [[ "$modeStatus" -eq "0" ]]; then
-    echo -en "$green[EFA]$clean : Enter EFA Maintenance Mode? (y/N):"
+    echo -en "$green[EFA]$clean : Enter EFA Maintenance Mode? (y/N/c):"
     read MAINTENANCE
 
     FLAG=1
@@ -26,14 +26,17 @@ func_maintenance-mode() {
         echo -e ""
         echo -e "$green[EFA]$clean No action taken"
         FLAG=0
+      elif [[ $MAINTENANCE =~ ^[cC]$ ]]; then
+        echo -e "$green[EFA]$clean No action taken, exiting."
+        FLAG=0
       else
         echo -e "$red[ERROR]$clean Invalid input"
-        echo -en "$green[EFA]$clean : Enter EFA Maintenance Mode? (y/N):"
+        echo -en "$green[EFA]$clean : Enter EFA Maintenance Mode? (y/N/c):"
         read MAINTENANCE
       fi
     done
   else
-    echo -en "$green[EFA]$clean : Exit EFA Maintenance Mode? (Y/n):"
+    echo -en "$green[EFA]$clean : Exit EFA Maintenance Mode? (Y/n/c):"
     read MAINTENANCE
 
     FLAG=1
@@ -49,9 +52,12 @@ func_maintenance-mode() {
         echo -e ""
         echo -e "$green[EFA]$clean No action taken"
         FLAG=0
+      elif [[ $MAINTENANCE =~ ^[cC]$ ]]; then
+        echo -e "$green[EFA]$clean No action taken, exiting."
+        FLAG=0
       else
         echo -e "$red[ERROR]$clean Invalid input"
-        echo -en "$green[EFA]$clean : Exit EFA Maintenance Mode? (Y/n):"
+        echo -en "$green[EFA]$clean : Exit EFA Maintenance Mode? (Y/n/c):"
         read MAINTENANCE
       fi
     done

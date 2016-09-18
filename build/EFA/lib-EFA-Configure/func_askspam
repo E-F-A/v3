@@ -14,13 +14,13 @@ function func_ask-spam() {
   echo -e "$green[EFA]$clean This is useful with mail servers that have an"
   echo -e "$green[EFA]$clean integrated spam folder."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean spam delivery? [y/N]: "
+  echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean spam delivery? [y/N/c]: "
   read TMPDELIVERSPAM
   DELIVERSPAM=""
   spamcheck=1
   while [ $spamcheck != "0" ]
     do 
-      if [[ "$TMPDELIVERSPAM" == "Y" || "$TMPDELIVERSPAM" == "y" ]]; then 
+      if [[ "$TMPDELIVERSPAM" == "Y" || "$TMPDELIVERSPAM" == "y" ]]; then
         # Set spam delivery behavior
         DELIVERSPAM="deliver header \"X-Spam-Status:Yes\""
         echo -e "$green[EFA]$clean Spam delivery $green ENABLED $clean"
@@ -30,9 +30,12 @@ function func_ask-spam() {
         DELIVERSPAM="store"
         echo -e "$green[EFA]$clean Spam delivery $green DISABLED $clean"
         spamcheck=0
+      elif [[ "$TMPDELIVERSPAM" == "C" || "$TMPDELIVERSPAM" == "c" ]]; then
+        echo -e "$green[EFA]$clean No action taken, exiting."
+        spamcheck=0
       else
           echo -e "       $red ERROR: please make an selection.$clean"
-  echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean spam delivery? [y/N]: "
+          echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean spam delivery? [y/N/c]: "
           read TMPDELIVERSPAM
       fi
   done
@@ -73,9 +76,10 @@ function func_ask-spam() {
       done
   fi
 
-  sed -i "/^Spam Actions =/ c\Spam Actions = $DELIVERSPAM $SPAMNOTIFY" /etc/MailScanner/MailScanner.conf
-
-  service MailScanner reload
-  sleep 2
+  if [[ "$TMPDELIVERSPAM" != "C" && "$TMPDELIVERSPAM" != "c" ]]; then
+    sed -i "/^Spam Actions =/ c\Spam Actions = $DELIVERSPAM $SPAMNOTIFY" /etc/MailScanner/MailScanner.conf
+    service MailScanner reload
+    sleep 2
+  fi
 }
 # +---------------------------------------------------+
