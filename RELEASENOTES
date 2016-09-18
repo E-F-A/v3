@@ -1,5 +1,5 @@
 ######################################################################
-# EFA 3.0.1.4 RELEASE NOTES
+# EFA 3.0.1.5 RELEASE NOTES
 ######################################################################
 # Copyright (C) 2015-2016  https://efa-project.org
 #
@@ -17,17 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
 
-Welcome to EFA Version 3.0.1.4!
+Welcome to EFA Version 3.0.1.5!
 
 Many thanks goes to the developers of EFA and maintainers of all
 3rd party packages!
 
-These release notes will help guide you through the 3.0.1.4 update.
+These release notes will help guide you through the 3.0.1.5 update.
 
 Many fixes and enhancements have been made to EFA.  Please review the
 CHANGELOG for further information.
 
-https://raw.githubusercontent.com/E-F-A/v3/3.0.1.4/CHANGELOG
+https://raw.githubusercontent.com/E-F-A/v3/3.0.1.5/CHANGELOG
 
 ###################### How To Update ##################################
 
@@ -36,7 +36,8 @@ to updating or to back up the entire appliance.
 
 1) Stop mail flow temporarily (at firewalls/mailservers)
 2) Snapshot your VM and its memory using your hypervisor tools
-3) If the update fails for any reason, immediately roll back to snapshot
+3) If the update fails for any reason, collect relevant logs or screen
+outputs/screenshots and revert to your snapshot
 4) Report failure at https://forum.efa-project.org
 
 Launch EFA-Configure from console or secure shell
@@ -48,7 +49,7 @@ Choose option 14) Update Now
 The first time you run this update, the kernel may update. If this
 happens, the script will halt to give you an opportunity to restart.
 After restarting and booting to the new kernel, rerun EFA-Update to
-continue the update process to 3.0.1.4.
+continue the update process to 3.0.1.5.
 
 EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
@@ -62,7 +63,7 @@ possible from MailWatch under Tools/Links.
 ################ Important Info -- Custom Tweaks ######################
 
 Many EFA users have modified their EFA installations and made tweaks
-that may "disappear" after an update to 3.0.1.4.
+that may "disappear" after an update to 3.0.1.5.
 
 Updated files have been automatically backed up to the following
 location:
@@ -71,21 +72,21 @@ location:
 
 (Other versions may be present if updating from an older version)
 
-You may need to re-implement customizations after update to 3.0.1.4
+You may need to re-implement customizations after update to 3.0.1.5
 For example, if you are using Active Directory integration,
 this will need to be turned back on (see MailWatch Changes below)
 
 ########################## Known Issues ###############################
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
-install itself after updating to 3.0.1.4.  Reapply VMware-Tools
-after updating to 3.0.1.4.  Run the following command to remove
+install itself after updating to 3.0.1.5.  Reapply VMware-Tools
+after updating to 3.0.1.5.  Run the following command to remove
 open-vm-tools:
 
 sudo rpm -e open-vm-tools
 
 2) Error, "could not search" when logging into MailWatch after
-updating to 3.0.1.4
+updating to 3.0.1.5
 
 This occurs when Active Directory integration is enabled.
 
@@ -103,11 +104,6 @@ This is a known issue.  This is usually caused from processes that
 spawned off of the script and have not closed.
 
 You can kill the logsave process (Ctrl+C if running interactively)
-
-4) WARNINGS from MailScanner upgrade
-
-This is a known issue and is benign.  It has been reported to MailScanner
-developers.
 
 5) Updating with multiple AV Scanners present
 
