@@ -31,7 +31,7 @@ function func_autoupdates() {
           echo ""
           pause
         elif [[ "$TMPUPDATES" == "C" || "$TMPUPDATES" == "c" ]]; then
-          echo -e "$green[EFA]$clean No action taken, exiting.
+          echo -e "$green[EFA]$clean No action taken, exiting."
           sleep 2
         else
           echo -e "       $red ERROR: please make an selection.$clean"
@@ -55,7 +55,7 @@ function func_autoupdates() {
           sleep 2
         else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean Auto Updates? [y/N]: "
+          echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean Auto Updates? [y/N/c]: "
           read TMPUPDATES
         fi
   fi

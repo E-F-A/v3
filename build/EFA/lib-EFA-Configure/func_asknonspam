@@ -82,7 +82,7 @@ function func_ask-nonspam() {
         sed -i "/Non Spam Actions =/ c\Non Spam Actions = $STORENSPAM $NSPAMSIG" /etc/MailScanner/MailScanner.conf
         service MailScanner reload
         sleep 2
-      if [[ "$TMPNSPAMSIG" == "C" || "$TMPNSPAMSIG" == "c" ]]; then
+      elif [[ "$TMPNSPAMSIG" == "C" || "$TMPNSPAMSIG" == "c" ]]; then
         echo -e "$green[EFA]$clean No action taken, exiting."
         spamcheck=0
         sleep 2
