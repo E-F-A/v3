@@ -783,6 +783,9 @@ EOF
     perl Makefile.PL
     make
     make install
+    
+    # Issue #322 Geoip update during EFA-Init
+    wget -O /usr/local/sbin/geoip_update_cmd.php $gitdlurl/EFA/geoip_update_cmd.php
 
     # Add mailwatch version to EFA-Config
     echo "MAILWATCHVERSION:$MAILWATCHVERSION" >> /etc/EFA-Config

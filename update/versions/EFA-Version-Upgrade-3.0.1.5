@@ -83,7 +83,7 @@ function run_update() {
 
   # Issue #320 /root/.spamassassin inaccessible
   sed -i "/^define('SA_PREFS', MS_CONFIG_DIR . 'spam.assassin.prefs.conf');/ c\define('SA_PREFS', MS_CONFIG_DIR . 'spamassassin.conf');" /var/www/html/mailscanner/conf.php
-  
+
   # Issue #323 clamav-unofficial-sigs not running
   /usr/bin/clamav-unofficial-sigs.sh
 

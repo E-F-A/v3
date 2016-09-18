@@ -794,6 +794,7 @@ function func_configure-system() {
   /usr/bin/clamav-unofficial-sigs.sh
 
   sa-update
+
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
@@ -928,7 +929,11 @@ function func_configure-system() {
   randompw
   MUNINPWD=$PASSWD
   htpasswd -b /etc/munin/munin-htpasswd munin $MUNINPWD
-}
+
+  # Issue 322 Geoip update during EFA-Init
+  /usr/bin/php /usr/local/sbin/geoip_update_cmd.php
+
+   }
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
