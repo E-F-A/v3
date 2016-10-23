@@ -24,7 +24,7 @@ function func_sethostname() {
   dncheck=1
   while [ $dncheck != 0 ]
    do
-     if [[ $DOMAINNAME =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+     if [[ $DOMAINNAME =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,15}$ ]]
       then
         dncheck=0
       else
