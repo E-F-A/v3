@@ -84,6 +84,13 @@ function run_update() {
   # Issue #328 ClamAV Not Updating
   sed -i '/^ms_cron_av=/ c\ms_cron_av=1' /etc/MailScanner/defaults
   
+  # Issue #331 Move Version into Mailwatch
+  sed -i '/^    return ("1.2.0 - RC2/ c\    return ("1.2.0 - RC2 running on " . file_get_contents( "/etc/EFA-Version", NULL, NULL, 0, 15 ));' /var/www/html/mailscanner/functions.php
+  sed -i '/^        $filever = fopen/d' /var/www/html/mailscanner/login.php
+  sed -i '/^        echo "<h5 style=\\\"width:300px;text-align:center\\\">Version/d' /var/www/html/mailscanner/login.php
+  sed -i '/^        fclose($filever);/d' /var/www/html/mailscanner/login.php
+
+  
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf

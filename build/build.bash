@@ -730,7 +730,9 @@ func_mailwatch () {
     sed -i "/^    echo '<li><a href=\"geoip_update.php\">/a\    /*Begin EFA*/\n    echo '<li><a href=\"mailgraph.php\">View Mailgraph Statistics</a>';\n    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';\n    \$efa_config = preg_grep('/^MUNINPWD/', file('/etc/EFA-Config'));\n    foreach(\$efa_config as \$num => \$line) {\n      if (\$line) {\n        \$munin_pass = chop(preg_replace('/^MUNINPWD:(.*)/','\$1', \$line));\n      }\n    }\n    echo '<li><a href=\"https://munin:' . \$munin_pass . '@'  . \$hostname . '/munin\">View Munin Statistics</a>';\n    /*End EFA*/" other.php
 
     # Issue #210 Add EFA Version to GUI
-    sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 style=\\\"width:300px;text-align:center\\\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' /var/www/html/mailscanner/login.php
+    #sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 #style=\\\"width:300px;text-align:center\\\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' #/var/www/html/mailscanner/login.php
+    # Issue #331 Move Version into Mailwatch
+    sed -i '/^    return ("1.2.0 - RC2/ c\    return ("1.2.0 - RC2 running on " . file_get_contents( "/etc/EFA-Version", NULL, NULL, 0, 15 ));' /var/www/html/mailscanner/functions.php
 
     # Issue #308 ClamAV Status Page blank
     usermod apache -G mtagroup
