@@ -1,4 +1,16 @@
 ############################################################
+EFA Version 3.0.1.6 TEST PLAN
+############################################################
+
+MailWatch
+  Verify version removed from login
+  Verify version in footer
+EFA-Configure
+  Verify support for long TLDs
+MailScanner/ClamAV
+  Verify that ClamAV is updating via cron
+
+############################################################
 EFA Version 3.0.1.2 TEST PLAN
 ############################################################
 
