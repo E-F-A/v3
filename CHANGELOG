@@ -2,7 +2,8 @@
 EFA Version 3.0.1.6 Changes
 ############################################################
 
-PR #332    Bug              - Increase the number of characters allowed for the TLD
+Issue #328  Bug             - ClamAV Not Updating
+PR #332     Bug             - Increase the number of characters allowed for the TLD
 
 ############################################################
 EFA Version 3.0.1.5 Changes

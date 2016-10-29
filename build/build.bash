@@ -387,6 +387,9 @@ func_mailscanner () {
     # Issue #309 Anacron daily notifications from mailscanner
     sed -i '/^\/usr\/sbin\/ms-cron DAILY/ c\/usr/sbin/ms-cron DAILY >/dev/null 2>&1' /etc/cron.daily/mailscanner
     sed -i '/^\/usr\/sbin\/ms-cron MAINT/ c\/usr/sbin/ms-cron MAINT >/dev/null 2>&1' /etc/cron.daily/mailscanner
+    
+    # Issue #328 ClamAV not updating
+    sed -i '/^ms_cron_av=/ c\ms_cron_av=1' /etc/MailScanner/defaults
 
 }
 # +---------------------------------------------------+
