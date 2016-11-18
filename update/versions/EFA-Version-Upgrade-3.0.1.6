@@ -99,7 +99,7 @@ function run_update() {
   ln -s /etc/mail/spamassassin/v340.pre /etc/MailScanner/mcp/v340.pre
   ln -s /etc/mail/spamassassin/v341.pre /etc/MailScanner/mcp/v341.pre
   mkdir -p /var/spool/postifx/.spamassassin
-  chmod postfix:postfix /var/spool/postfix/.spamassassin
+  chown postfix:postfix /var/spool/postfix/.spamassassin
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1

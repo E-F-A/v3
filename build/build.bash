@@ -496,7 +496,7 @@ func_spam_clamav () {
   ln -s /etc/mail/spamassassin/v340.pre /etc/MailScanner/mcp/v340.pre
   ln -s /etc/mail/spamassassin/v341.pre /etc/MailScanner/mcp/v341.pre
   mkdir -p /var/spool/postifx/.spamassassin
-  chmod postfix:postfix /var/spool/postfix/.spamassassin
+  chown postfix:postfix /var/spool/postfix/.spamassassin
 
     # and in the end we run sa-update just for the fun of it..
     /usr/bin/sa-update --channel updates.spamassassin.org
