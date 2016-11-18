@@ -7,6 +7,7 @@ MailWatch
   Verify version in footer
 EFA-Configure
   Verify support for long TLDs
+  Verify functionality of Recursion
 MailScanner/ClamAV
   Verify that ClamAV is updating via cron
 MailScanner

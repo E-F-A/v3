@@ -32,7 +32,7 @@ function func_ask-recursion() {
         sed -i "/^RECURSION:/ c\RECURSION:DISABLED" /etc/EFA-Config
         echo -e "$green[EFA]$clean Recursion is now DISABLED.  Please set your DNS entries."
       elif [[ $RECURSE =~ ^[Cc]$ ]]; then
-        echo -e "$green[EFA]$clean No action taken, exiting.
+        echo -e "$green[EFA]$clean No action taken, exiting."
         recursecheck=1
       else
         echo -e "       $red ERROR: Invalid choice$clean"
