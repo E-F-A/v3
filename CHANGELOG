@@ -5,6 +5,7 @@ EFA Version 3.0.1.6 Changes
 Issue #328  Bug             - ClamAV Not Updating
 Issue #331  Enhancement     - Move Version into MailWatch
 PR #332     Bug             - Increase the number of characters allowed for the TLD
+Issue #326  Bug             - MCP not functional
 
 ############################################################
 EFA Version 3.0.1.5 Changes

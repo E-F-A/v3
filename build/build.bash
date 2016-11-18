@@ -487,6 +487,17 @@ func_spam_clamav () {
     # Issue #82 re2c spamassassin rule complilation
     sed -i "/^# loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody/ c\loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody" /etc/mail/spamassassin/v320.pre
 
+  # Issue #326 MCP not functional
+  ln -s /etc/mail/spamassassin/init.pre /etc/MailScanner/mcp/init.pre
+  ln -s /etc/mail/spamassassin/v310.pre /etc/MailScanner/mcp/v310.pre
+  ln -s /etc/mail/spamassassin/v312.pre /etc/MailScanner/mcp/v312.pre
+  ln -s /etc/mail/spamassassin/v320.pre /etc/MailScanner/mcp/v320.pre
+  ln -s /etc/mail/spamassassin/v330.pre /etc/MailScanner/mcp/v330.pre
+  ln -s /etc/mail/spamassassin/v340.pre /etc/MailScanner/mcp/v340.pre
+  ln -s /etc/mail/spamassassin/v341.pre /etc/MailScanner/mcp/v341.pre
+  mkdir -p /var/spool/postifx/.spamassassin
+  chmod postfix:postfix /var/spool/postfix/.spamassassin
+
     # and in the end we run sa-update just for the fun of it..
     /usr/bin/sa-update --channel updates.spamassassin.org
     /usr/bin/sa-compile
