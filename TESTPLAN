@@ -14,6 +14,8 @@ MailScanner
   Verify that MCP rules process properly
 MailWatch
   Verify successful upgrade to RC3
+Postfix
+  Verify successful upgrade to postfix 3.1.3
 
 ############################################################
 EFA Version 3.0.1.2 TEST PLAN
