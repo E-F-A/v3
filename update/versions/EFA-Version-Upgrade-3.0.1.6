@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="02c11da"
+MAILWATCHVERSION="1.2.0-RC3"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
@@ -85,7 +85,7 @@ function run_update() {
   sed -i '/^ms_cron_av=/ c\ms_cron_av=1' /etc/MailScanner/defaults
   
   # Issue #331 Move Version into Mailwatch
-  sed -i '/^    return ("1.2.0 - RC2/ c\    return ("1.2.0 - RC2 running on " . file_get_contents( "/etc/EFA-Version", NULL, NULL, 0, 15 ));' /var/www/html/mailscanner/functions.php
+  sed -i '/^    return ("1.2.0 - RC3/ c\    return ("1.2.0 - RC3 running on " . file_get_contents( "/etc/EFA-Version", NULL, NULL, 0, 15 ));' /var/www/html/mailscanner/functions.php
   sed -i '/^        $filever = fopen/d' /var/www/html/mailscanner/login.php
   sed -i '/^        echo "<h5 style=\\\"width:300px;text-align:center\\\">Version/d' /var/www/html/mailscanner/login.php
   sed -i '/^        fclose($filever);/d' /var/www/html/mailscanner/login.php

@@ -12,6 +12,8 @@ MailScanner/ClamAV
   Verify that ClamAV is updating via cron
 MailScanner
   Verify that MCP rules process properly
+MailWatch
+  Verify successful upgrade to RC3
 
 ############################################################
 EFA Version 3.0.1.2 TEST PLAN
