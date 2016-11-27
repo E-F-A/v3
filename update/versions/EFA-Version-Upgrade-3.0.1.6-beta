@@ -92,7 +92,10 @@ function run_update() {
 
   # Issue #328 ClamAV Not Updating
   sed -i '/^ms_cron_av=/ c\ms_cron_av=1' /etc/MailScanner/defaults
-  
+
+  # Update MailWatch
+  update-mailwatch
+
   # Issue #331 Move Version into Mailwatch
   sed -i '/^    return ("1.2.0 - RC3/ c\    return ("1.2.0 - RC3 running on " . file_get_contents( "/etc/EFA-Version", NULL, NULL, 0, 15 ));' /var/www/html/mailscanner/functions.php
   sed -i '/^        $filever = fopen/d' /var/www/html/mailscanner/login.php
@@ -109,9 +112,6 @@ function run_update() {
   ln -s /etc/mail/spamassassin/v341.pre /etc/MailScanner/mcp/v341.pre
   mkdir -p /var/spool/postfix/.spamassassin
   chown postfix:postfix /var/spool/postfix/.spamassassin
-  
-  # Update MailWatch
-  update-mailwatch
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
