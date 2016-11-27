@@ -46,11 +46,9 @@ to updating or to back up the entire appliance.
 outputs/screenshots and revert to your snapshot
 4) Report failure at https://forum.efa-project.org
 
-Launch EFA-Configure from console or secure shell
-
-sudo /usr/local/sbin/EFA-Configure
-
-Choose option 14) Update Now
+wget https://dl.efa-project.org/update/EFA-update-script-3.0.1.6-beta
+chmod u+x EFA-update-script-3.0.1.6-beta
+sudo ./EFA-update-script-3.0.1.6-beta
 
 The first time you run this update, the kernel may update. If this
 happens, the script will halt to give you an opportunity to restart.
