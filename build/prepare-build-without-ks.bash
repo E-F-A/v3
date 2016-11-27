@@ -267,7 +267,8 @@ alsa-lib
 #----------------------------------------------------------------#
 mkdir /var/log/EFA
 mkdir /usr/src/EFA
-/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.1.5/build/build.bash --no-check-certificatechmod 700 /usr/src/EFA/build.bash
+/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.1.6-beta/build/build.bash --no-check-certificate
+chmod 700 /usr/src/EFA/build.bash
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#

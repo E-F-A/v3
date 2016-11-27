@@ -218,6 +218,11 @@ function get_update_path() {
         initialize
         update-3.0.1.5
         finalize
+  elif [[ $CVERSION == "EFA-3.0.1.5" ]]
+      then
+        initialize
+        update-3.0.1.6-beta
+        finalize
   fi
 }
 #----------------------------------------------------------------#
@@ -454,6 +459,35 @@ function update-3.0.1.5() {
   update-kernel
 
   UPDATE="EFA-Update-3.0.1.4-3.0.1.5.tar.gz"
+  download_update
+  check_md5
+
+  # Unpack update
+  cd $STAGING
+  tar xzvf $UPDATE
+  [[ $? -ne 0 ]] && abort
+  # Bypass noexec in /tmp
+  rm -f /var/EFA/update/EFA-Version-Upgrade
+  cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
+  chmod 700 /var/EFA/update/EFA-Version-Upgrade
+  /var/EFA/update/EFA-Version-Upgrade
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to 3.0.1.6-beta
+#----------------------------------------------------------------#
+function update-3.0.1.6-beta() {
+ # Is staging area clean?
+ [[ -n $STAGING ]] && rm -rf $STAGING/*
+
+  check_disk_space
+
+  # Check for kernel update prior to package download
+  VERSION="3.0.1.6-beta"
+  update-kernel
+
+  UPDATE="EFA-Update-3.0.1.5-3.0.1.6-beta.tar.gz"
   download_update
   check_md5
 

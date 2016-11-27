@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20161029
+# Version 20161126
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2016 https://efa-project.org
 #
@@ -22,7 +22,7 @@
 #----------------------------------------------------------------#
 # Variables
 #----------------------------------------------------------------#
-VERSION="3.0.1.6"
+VERSION="3.0.1.6-beta"
 logdir="/var/log/EFA"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
 MAILFROM="$ADMINEMAIL"
@@ -63,6 +63,10 @@ function run_update() {
 
   # Enter Maintenance Mode
   mv -f /etc/cron.d/EFA-Monitor.cron /var/EFA > /dev/null 2>&1
+  
+  # Add EFA testing repo here for beta
+  rm -f /etc/yum.repos.d/EFA.repo
+  cp -f $STAGING/Files/EFA-beta.repo /etc/yum.repos.d/
 
   # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
