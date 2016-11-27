@@ -107,7 +107,7 @@ function run_update() {
   ln -s /etc/mail/spamassassin/v330.pre /etc/MailScanner/mcp/v330.pre
   ln -s /etc/mail/spamassassin/v340.pre /etc/MailScanner/mcp/v340.pre
   ln -s /etc/mail/spamassassin/v341.pre /etc/MailScanner/mcp/v341.pre
-  mkdir -p /var/spool/postifx/.spamassassin
+  mkdir -p /var/spool/postfix/.spamassassin
   chown postfix:postfix /var/spool/postfix/.spamassassin
 
   # Exit Maintenance Mode
