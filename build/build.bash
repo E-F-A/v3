@@ -1362,6 +1362,7 @@ func_cleanup () {
     rm -rf /tmp/*
 
     # Clean networking in preparation for creating VM Images
+    # TODO don't clean if we run from a VPS install where a static IP is needed.
     rm -f /etc/udev/rules.d/70-persistent-net.rules
     echo -e "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0
     echo -e "BOOTPROTO=dhcp" >> /etc/sysconfig/network-scripts/ifcfg-eth0
