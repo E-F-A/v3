@@ -387,7 +387,7 @@ func_mailscanner () {
     # Issue #309 Anacron daily notifications from mailscanner
     sed -i '/^\/usr\/sbin\/ms-cron DAILY/ c\/usr/sbin/ms-cron DAILY >/dev/null 2>&1' /etc/cron.daily/mailscanner
     sed -i '/^\/usr\/sbin\/ms-cron MAINT/ c\/usr/sbin/ms-cron MAINT >/dev/null 2>&1' /etc/cron.daily/mailscanner
-    
+
     # Issue #328 ClamAV not updating
     sed -i '/^ms_cron_av=/ c\ms_cron_av=1' /etc/MailScanner/defaults
 
@@ -690,7 +690,7 @@ func_mailwatch () {
     sed -i "/^define('HIDE_UNKNOWN',/ c\define('HIDE_UNKNOWN', true);" conf.php
     # Issue #320 /root/.spamassassin inaccessible
     sed -i "/^define('SA_PREFS', MS_CONFIG_DIR . 'spam.assassin.prefs.conf');/ c\define('SA_PREFS', MS_CONFIG_DIR . 'spamassassin.conf');" conf.php
-    
+
     # Set up a redirect in web root to MailWatch
     touch /var/www/html/index.html
     echo "<!DOCTYPE html>" > /var/www/html/index.html
@@ -1058,7 +1058,7 @@ func_imagecerberus () {
     sed -i "/^score     ImageCerberusPLG3/ c\score     ImageCerberusPLG3     0.3  0.3  0.3  0.3" /etc/mail/spamassassin/ImageCerberusPLG.cf
     sed -i "/^score     ImageCerberusPLG4/ c\score     ImageCerberusPLG4     0.4  0.4  0.4  0.4" /etc/mail/spamassassin/ImageCerberusPLG.cf
     sed -i "/^score     ImageCerberusPLG5/ c\score     ImageCerberusPLG5     0.5  0.5  0.5  0.5" /etc/mail/spamassassin/ImageCerberusPLG.cf
-    
+
     # Add the version to EFA-Config
     echo "IMAGECEBERUSVERSION:$IMAGECEBERUSVERSION" >> /etc/EFA-Config
 }
@@ -1381,6 +1381,7 @@ func_cleanup () {
 
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
+    # TODO make this not happen if we run the script from a VPS install
     dd if=/dev/zero of=/filler bs=1000
     rm -f /filler
     dd if=/dev/zero of=/tmp/filler bs=1000
