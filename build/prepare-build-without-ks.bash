@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.1.3 build without ks version 20160904
+# EFA 3.0.1.5 build without ks version 20161211
 #
 # Purpose:
 #       This script will 'baseline' an existing CentOS installation
@@ -43,17 +43,17 @@ fi
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
-# Check if we use centos 6.6
+# Check if we use centos 6.8
 #----------------------------------------------------------------#
 CENTOS=`cat /etc/centos-release`
 
-if [[ "$CENTOS" == "CentOS release 6.7 (Final)" ]]
+if [[ "$CENTOS" == "CentOS release 6.8 (Final)" ]]
   then
-    echo "Good you are running CentOS 6.7 x64"
+    echo "Good you are running CentOS 6.8 x64"
 else
-  echo "You are not running CentOS 6.7"
+  echo "You are not running CentOS 6.8"
   echo "Unsupported system, stopping now"
-  echo "If you are running CentOS 6.6 please do a manual upgrade to 6.7 before starting this build"
+  echo "If you are running CentOS 6.x please do a manual upgrade to 6.8 before starting this build"
   exit 1
 fi
 #----------------------------------------------------------------#
