@@ -33,7 +33,7 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="1.2.0-RC3"
+MAILWATCHVERSION="c4c06fa"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"
@@ -612,9 +612,9 @@ func_mailwatch () {
 
     # Fetch MailWatch
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
-    unzip -d . MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
-    cd 1.2.0-master
+    wget $mirror/$mirrorpath/MailWatch-1.2.0-develop-GIT-$MAILWATCHVERSION.zip
+    unzip -d . MailWatch-1.2.0-develop-GIT-$MAILWATCHVERSION.zip
+    cd 1.2.0-develop
 
     # Set php parameters needed
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini

@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="1.2.0-RC3"
+MAILWATCHVERSION="c4c06fa"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
@@ -144,9 +144,9 @@ function update-mailwatch() {
       mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/ > /dev/null 2>&1
 
       #### Commit Phase #####
-      rm -rf /usr/src/EFA/1.2.0-master
-      unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
-      cd /usr/src/EFA/1.2.0-master/MailScanner_perl_scripts
+      rm -rf usr/src/EFA/1.2.0-develop
+      unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-develop-GIT-$MAILWATCHVERSION.zip
+      cd /usr/src/EFA/1.2.0-develop/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
       sed -i "/^my(\$db_user) =/ c\my(\$db_user) = 'mailwatch';" MailWatch.pm
@@ -156,7 +156,7 @@ function update-mailwatch() {
       mv -f MailWatch.pm /usr/share/MailScanner/perl/custom/
       # mv -f SQLBlackWhiteList.pm /usr/lib/MailScanner/MailScanner/CustomFunctions/
 
-      cd /usr/src/EFA/1.2.0-master
+      cd /usr/src/EFA/1.2.0-develop
       mv tools /usr/local/bin/mailwatch
       rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
       chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
@@ -190,6 +190,7 @@ function update-mailwatch() {
         echo "// Define MailWatch logo name" >> /var/www/html/mailscanner/conf.php
         echo "define('MW_LOGO', 'mailwatch-logo.png');" >> /var/www/html/mailscanner/conf.php
       fi
+
       MS_LOGO_PRESENT=$(grep "^define('MS_LOGO'" /var/www/html/mailscanner/conf.php)
       if [[ -z $MS_LOGO_PRESENT ]]; then
         echo "" >> /var/www/html/mailscanner/conf.php
@@ -279,7 +280,7 @@ function update-mailwatch() {
       sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
 
       # Cleanup
-      rm -rf /usr/src/EFA/1.2.0-master
+      rm -rf /usr/src/EFA/1.2.0-develop
 
       # Update the version of mailwatch in EFA-Config
       sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config

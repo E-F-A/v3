@@ -8,7 +8,7 @@ Issue #331  Enhancement     - Move Version into MailWatch
 PR    #332  Bug             - Increase the number of characters allowed for the TLD
 Issue #326  Bug             - MCP not functional
 Issue #335  Bug             - EFA-Configure Recusion Toggle Broken
-Issue #334, #234, #212 Bug  - MailWatch 1.2.0-RC3
+Issue #334, #234, #212 Bug  - MailWatch Update
 Issue #340  Bug             - Inline Signature bug in EFA-Configure
 Issue #341  Bug             - LANG option missing in MailWatch update
 
