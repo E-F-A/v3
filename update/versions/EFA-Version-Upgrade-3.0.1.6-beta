@@ -202,6 +202,15 @@ function update-mailwatch() {
       if [[ -z $HIDEUNKNOWN_PRESENT ]]; then
         sed -i "/^define('HIDE_NON_SPAM'/ a\\\n////Hide Unknown Mail from quarantine reports\ndefine('HIDE_UNKNOWN', true);" /var/www/html/mailscanner/conf.php
       fi
+      
+      # Add new LANG option for MailWatch
+      LANG_PRESENT=`grep define\(\'LANG\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $LANG_PRESENT ]]; then
+        echo "" >> /var/www/html ailscanner/conf.php
+        echo "// Define language (de, en, fr, it, nl, pt_br);" >> /var/www/html/mailscanner/conf.php
+        echo "// See http://www.lingoes.net/en/translator/langcode.htm" >> /var/www/html/mailscanner/conf.php
+        echo "define('LANG', 'en');" >> /var/www/html/mailscanner/conf.php
+
 
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
