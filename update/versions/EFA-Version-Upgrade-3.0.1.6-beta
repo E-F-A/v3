@@ -210,7 +210,7 @@ function update-mailwatch() {
         echo "// Define language (de, en, fr, it, nl, pt_br);" >> /var/www/html/mailscanner/conf.php
         echo "// See http://www.lingoes.net/en/translator/langcode.htm" >> /var/www/html/mailscanner/conf.php
         echo "define('LANG', 'en');" >> /var/www/html/mailscanner/conf.php
-
+      fi
 
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
