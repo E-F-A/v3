@@ -196,13 +196,13 @@ function update-mailwatch() {
         echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
         echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
       fi
-      
+
       # Issue #291 HIDE_UNKNOWN option for MailWatch
       HIDEUNKNOWN_PRESENT=`grep define\(\'HIDE_UNKNOWN\' /var/www/html/mailscanner/conf.php`
       if [[ -z $HIDEUNKNOWN_PRESENT ]]; then
         sed -i "/^define('HIDE_NON_SPAM'/ a\\\n////Hide Unknown Mail from quarantine reports\ndefine('HIDE_UNKNOWN', true);" /var/www/html/mailscanner/conf.php
       fi
-      
+
       # Add new LANG option for MailWatch
       LANG_PRESENT=`grep define\(\'LANG\' /var/www/html/mailscanner/conf.php`
       if [[ -z $LANG_PRESENT ]]; then
