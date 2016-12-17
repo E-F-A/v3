@@ -3,19 +3,20 @@ EFA Version 3.0.1.6-beta TEST PLAN
 ############################################################
 
 MailWatch
-  Verify version removed from login
-  Verify version in footer
+  Verify version removed from login PASSED
+  Verify version in footer PASSED
 EFA-Configure
-  Verify support for long TLDs
-  Verify functionality of Recursion
+  Verify support for long TLDs PASSED
+  Verify functionality of Recursion PASSED
+  Verify choosing cancel in Non Spam Settings returns to menu PASSED
 MailScanner/ClamAV
-  Verify that ClamAV is updating via cron
+  Verify that ClamAV is updating via cron PASSED
 MailScanner
-  Verify that MCP rules process properly
+  Verify that MCP rules process properly PASSED
 MailWatch
-  Verify successful upgrade to RC3
+  Verify successful upgrade to RC3 (alignment of login screen not right)
 Postfix
-  Verify successful upgrade to postfix 3.1.3
+  Verify successful upgrade to postfix 3.1.3 PASSED
 
 ############################################################
 EFA Version 3.0.1.2 TEST PLAN
