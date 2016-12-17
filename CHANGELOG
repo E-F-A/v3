@@ -9,6 +9,7 @@ PR    #332  Bug             - Increase the number of characters allowed for the 
 Issue #326  Bug             - MCP not functional
 Issue #335  Bug             - EFA-Configure Recusion Toggle Broken
 Issue #334, #234, #212 Bug  - MailWatch 1.2.0-RC3
+Issue #340  Bug             - Inline Signature bug in EFA-Configure
 
 Postfix updated to version 3.1.3
 
