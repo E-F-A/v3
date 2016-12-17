@@ -42,7 +42,8 @@ function func_ask-nonspam() {
         spamcheck=0
       elif [[ "$TMPSTORENSPAM" == "C" || "$TMPSTORENSPAM" == "c" ]]; then
         echo -e "$green[EFA]$clean No action taken."
-        spamcheck=0
+        sleep 2
+        return
       else
           echo -e "       $red ERROR: please make an selection.$clean"
           echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean storing non spam ? [y/N/c]: "
