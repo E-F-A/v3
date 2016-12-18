@@ -14,8 +14,8 @@ MailScanner/ClamAV
 MailScanner
   Verify that MCP rules process properly PASSED
 MailWatch
-  Verify successful upgrade to development branch c4c06fa
-  Verify presence of LANG option in conf.php
+  Verify successful upgrade to development branch c4c06fa PASSED
+  Verify presence of LANG option in conf.php PASSED
 Postfix
   Verify successful upgrade to postfix 3.1.3 PASSED
 
