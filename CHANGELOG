@@ -1,14 +1,14 @@
 ############################################################
-EFA Version 3.0.1.6-beta Changes
+EFA Version 3.0.1.6 Changes
 ############################################################
 
 Issue #263  Bug             - Postfix Install Mangling of main.cf
+Issue #326  Bug             - MCP not functional
 Issue #328  Bug             - ClamAV Not Updating
 Issue #331  Enhancement     - Move Version into MailWatch
 PR    #332  Bug             - Increase the number of characters allowed for the TLD
-Issue #326  Bug             - MCP not functional
-Issue #335  Bug             - EFA-Configure Recusion Toggle Broken
 Issue #334, #234, #212 Bug  - MailWatch Update
+Issue #335  Bug             - EFA-Configure Recusion Toggle Broken
 Issue #340  Bug             - Inline Signature bug in EFA-Configure
 Issue #341  Bug             - LANG option missing in MailWatch update
 
