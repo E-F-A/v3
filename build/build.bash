@@ -3,7 +3,7 @@ action=$1
 # +--------------------------------------------------------------------+
 # EFA 3.0.1.6-beta build script version 20161225
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013~2016 https://efa-project.org
+# Copyright (C) 2013~2017 https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
