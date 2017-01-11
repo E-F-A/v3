@@ -2,7 +2,7 @@
 # CustomAction.pm
 # Version 20140309
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2015 http://www.efa-project.org
+# Copyright (C) 2012~2017 http://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
