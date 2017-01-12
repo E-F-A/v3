@@ -3,8 +3,8 @@ EFA Version 3.0.1.7 TEST PLAN
 ############################################################
 
 MailWatch
-  Version version in footer present
-  Verify Issue #346 fixed
+  Version version in footer present PASSED
+  Verify Issue #346 fixed PASSED
 
 ############################################################
 EFA Version 3.0.1.6 TEST PLAN
