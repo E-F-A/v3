@@ -4,7 +4,17 @@ EFA Version 3.0.1.7 TEST PLAN
 
 MailWatch
   Version version in footer present FAILED
-  Verify Issue #346 fixed PASSED
+  Verify Issue #346 fixed FAILED
+  Verify New MailWatch Functionality
+    All menus intact
+    All tools intact
+    B/W lists functioning
+    reports functioning
+    msre functioning
+    greylisting functioning
+    test username/pw security
+    individual email reports functioning
+    SA Learn and reporting functioning
 
 ############################################################
 EFA Version 3.0.1.6 TEST PLAN

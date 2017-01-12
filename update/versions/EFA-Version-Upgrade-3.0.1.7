@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="61adb4a"
+MAILWATCHVERSION="161844b"
 MAILWATCHRELEASE="1.2.0 - RC4"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
@@ -108,9 +108,8 @@ function update-mailwatch() {
       #### Commit Phase #####
       rm -rf usr/src/EFA/1.2.0-develop
       rm -rf usr/src/EFA/1.2.0-master
-      rm -rf usr/src/EFA/1.2.0-1.2.0-rc.4
       unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
-      cd /usr/src/EFA/1.2.0-1.2.0-rc.4/MailScanner_perl_scripts
+      cd /usr/src/EFA/1.2.0-develop/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
       sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatch.pm
@@ -123,7 +122,7 @@ function update-mailwatch() {
       mv -f SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom
       mv -f SQLSpamSettings.pm /usr/share/MailScanner/perl/custom/
 
-      cd /usr/src/EFA/1.2.0-1.2.0-rc.4
+      cd /usr/src/EFA/1.2.0-develop
       mv tools /usr/local/bin/mailwatch
       rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
       chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
@@ -247,7 +246,8 @@ function update-mailwatch() {
       sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
 
       # Cleanup
-      rm -rf /usr/src/EFA/1.2.0-1.2.0-rc.4
+      rm -rf /usr/src/EFA/1.2.0-develop
+      rm -rf /usr/src/EFA/1.2.0-master
 
       # Update the version of mailwatch in EFA-Config
       sed -i "/MAILWATCHVERSION:/ c\MAILWATCHVERSION:$MAILWATCHVERSION" /etc/EFA-Config
