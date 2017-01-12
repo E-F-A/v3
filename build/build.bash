@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.1.6-beta build script version 20161225
+# EFA 3.0.1.7 build script version 20170112
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2017 https://efa-project.org
 #
@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.1.6"
+version="3.0.1.7"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -33,7 +33,8 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="c4c06fa"
+MAILWATCHVERSION="61adb4a"
+MAILWATCHRELEASE="1.2.0 - RC4"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"
@@ -612,9 +613,9 @@ func_mailwatch () {
 
     # Fetch MailWatch
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/MailWatch-1.2.0-develop-GIT-$MAILWATCHVERSION.zip
-    unzip -d . MailWatch-1.2.0-develop-GIT-$MAILWATCHVERSION.zip
-    cd 1.2.0-develop
+    wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+    unzip -d . MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
+    cd 1.2.0-1.2.0-rc.4
 
     # Set php parameters needed
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
@@ -628,9 +629,9 @@ func_mailwatch () {
     mv MailWatch.pm /usr/share/MailScanner/perl/custom/
 
     # Set up SQLBlackWhiteList
-    sed -i "/^  my(\$db_user) =/ c\  my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
+    sed -i "/^    my(\$db_user) =/ c\    my(\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
     #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$password';" SQLBlackWhiteList.pm
-    sed -i "/^  my(\$db_pass) =/ c\  my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\n  open(\$fh, \"<\", \$pw_config);\n  if(\!\$fh) {\n    MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n    return;\n  }\n  my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n  \$db_pass =~ s/MAILWATCHSQLPWD://;\n  \$db_pass =~ s/\\\n//;\n  close(\$fh);" SQLBlackWhiteList.pm
+    sed -i "/^    my(\$db_pass) =/ c\    my(\$fh);\nmy(\$pw_config) = '/etc/EFA-Config';\n    open(\$fh, \"<\", \$pw_config);\n    if(\!\$fh) {\n      MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n      return;\n    }\n    my(\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n    \$db_pass =~ s/MAILWATCHSQLPWD://;\n    \$db_pass =~ s/\\\n//;\n    close(\$fh);" SQLBlackWhiteList.pm
     mv SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom/
 
     # Set up SQLSpamSettings
@@ -743,7 +744,7 @@ func_mailwatch () {
     # Issue #210 Add EFA Version to GUI
     #sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 #style=\\\"width:300px;text-align:center\\\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' #/var/www/html/mailscanner/login.php
     # Issue #331 Move Version into Mailwatch
-    sed -i '/^    return ("1.2.0 - RC3/ c\    return ("1.2.0 - RC3 running on " . file_get_contents( "/etc/EFA-Version", NULL, NULL, 0, 15 ));' /var/www/html/mailscanner/functions.php
+    sed -i "/^    return (\"$MAILWATCHRELEASE/ c\    return (\"$MAILWATCHRELEASE running on \" . file_get_contents( \"/etc/EFA-Version\", NULL, NULL, 0, 15 ));" /var/www/html/mailscanner/functions.php
 
     # Issue #308 ClamAV Status Page blank
     usermod apache -G mtagroup
