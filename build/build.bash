@@ -615,7 +615,7 @@ func_mailwatch () {
     cd /usr/src/EFA
     wget $mirror/$mirrorpath/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
     unzip -d . MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
-    cd 1.2.0-1.2.0-rc.4
+    cd 1.2.0-develop
 
     # Set php parameters needed
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
