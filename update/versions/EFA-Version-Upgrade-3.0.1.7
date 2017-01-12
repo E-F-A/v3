@@ -38,6 +38,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 MAILWATCHVERSION="161844b"
 MAILWATCHRELEASE="1.2.0 - RC4"
+MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
@@ -108,8 +109,8 @@ function update-mailwatch() {
       #### Commit Phase #####
       rm -rf usr/src/EFA/1.2.0-develop
       rm -rf usr/src/EFA/1.2.0-master
-      unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-master-GIT-$MAILWATCHVERSION.zip
-      cd /usr/src/EFA/1.2.0-develop/MailScanner_perl_scripts
+      unzip -d /usr/src/EFA $STAGING/Files/MailWatch-1.2.0-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
+      cd /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
       sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatch.pm
