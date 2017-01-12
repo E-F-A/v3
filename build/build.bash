@@ -744,7 +744,7 @@ func_mailwatch () {
     # Issue #210 Add EFA Version to GUI
     #sed -i '/^        <\/form>/{n;s/$/\n        \$filever = fopen("\/etc\/EFA-Version", "r");\n        echo "<h5 #style=\\\"width:300px;text-align:center\\\">Version " . fgets(\$filever) . "<\/h5>";\n        fclose($filever);/}' #/var/www/html/mailscanner/login.php
     # Issue #331 Move Version into Mailwatch
-     sed -i "/^    return ('$MAILWATCHRELEASE/ c\    return ('$MAILWATCHRELEASE running on ' . file_get_contents( '/etc/EFA-Version', NULL, NULL, 0, 15 ));" /var/www/html/mailscanner/functions.php
+    sed -i "/^    return '$MAILWATCHRELEASE/ c\    return '$MAILWATCHRELEASE running on ' . file_get_contents( '/etc/EFA-Version', NULL, NULL, 0, 15 );" /var/www/html/mailscanner/functions.php
 
     # Issue #308 ClamAV Status Page blank
     usermod apache -G mtagroup

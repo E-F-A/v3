@@ -259,7 +259,7 @@ function update-mailwatch() {
       # yum -y install php-mbstring
       
       # EFA Version
-      sed -i "/^    return ('$MAILWATCHRELEASE/ c\    return ('$MAILWATCHRELEASE running on ' . file_get_contents( '/etc/EFA-Version', NULL, NULL, 0, 15 ));" /var/www/html/mailscanner/functions.php
+      sed -i "/^    return '$MAILWATCHRELEASE/ c\    return '$MAILWATCHRELEASE running on ' . file_get_contents( '/etc/EFA-Version', NULL, NULL, 0, 15 );" /var/www/html/mailscanner/functions.php
 
       service httpd start
       service MailScanner start
