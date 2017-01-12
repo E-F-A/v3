@@ -37,7 +37,7 @@ STAGING="/tmp/EFA-Staging"
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
 MAILWATCHVERSION="61adb4a"
-MAILWATCHRELEASE="v1.2.0 - RC4"
+MAILWATCHRELEASE="1.2.0 - RC4"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
@@ -259,7 +259,7 @@ function update-mailwatch() {
       # yum -y install php-mbstring
       
       # EFA Version
-      sed -i "/^    return (\"$MAILWATCHRELEASE/ c\    return (\"$MAILWATCHRELEASE running on \" . file_get_contents( \"/etc/EFA-Version\", NULL, NULL, 0, 15 ));" /var/www/html/mailscanner/functions.php
+      sed -i "/^    return ('$MAILWATCHRELEASE/ c\    return ('$MAILWATCHRELEASE running on ' . file_get_contents( '/etc/EFA-Version', NULL, NULL, 0, 15 ));" /var/www/html/mailscanner/functions.php
 
       service httpd start
       service MailScanner start
