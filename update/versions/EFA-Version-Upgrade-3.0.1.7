@@ -235,6 +235,14 @@ function update-mailwatch() {
       if [[ -z $AUTO_RELEASE_PRESENT ]]; then
         sed -i "/^define('HIDE_UNKNOWN'/ a\\\n//Quarantine Auto Release\n//Set true to allow auto release of quarantined items from quarantine report\ndefine('AUTO_RELEASE', false);" /var/www/html/mailscanner/conf.php
       fi
+      
+      DANGEROUS_CONTENT_PRESENT=`\grep define\(\'DOMAINADMIN_CAN_RELEASE_DANGEROUS_CONTENTS\'`
+      if [[ -z $DANGEROUS_CONTENT_PRESENT ]]; then
+        echo "" >> /var/www/html/mailscanner/conf.php
+        echo "//Give Domain Admins ability to release dangerous content, like viruses" >> /var/www/html/mailscanner/conf.php
+        echo "define('DOMAINADMIN_CAN_RELEASE_DANGEROUS_CONTENTS', false);" >> /var/www/html/mailscanner/conf.php
+        echo "define('DOMAINADMIN_CAN_SEE_DANGEROUS_CONTENTS', false);" >> /var/www/html/mailscanner/conf.php
+      fi
 
       # Is greylisting enabled?  Add back menu item...
       if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
