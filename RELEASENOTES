@@ -1,5 +1,5 @@
 ######################################################################
-# EFA 3.0.1.6 RELEASE NOTES
+# EFA 3.0.1.7 RELEASE NOTES
 ######################################################################
 # Copyright (C) 2015-2017  https://efa-project.org
 #
@@ -17,17 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
 
-Welcome to EFA Version 3.0.1.6!
+Welcome to EFA Version 3.0.1.7!
 
 Many thanks goes to the developers of EFA and maintainers of all
 3rd party packages!
 
-These release notes will help guide you through the 3.0.1.6 update.
+These release notes will help guide you through the 3.0.1.7 update.
 
 Many fixes and enhancements have been made to EFA.  Please review the
 CHANGELOG for further information.
 
-https://raw.githubusercontent.com/E-F-A/v3/3.0.1.6/CHANGELOG
+https://raw.githubusercontent.com/E-F-A/v3/3.0.1.7/CHANGELOG
 
 ###################### How To Update ##################################
 
@@ -49,7 +49,7 @@ Choose option 14) Update Now
 The first time you run this update, the kernel may update. If this
 happens, the script will halt to give you an opportunity to restart.
 After restarting and booting to the new kernel, rerun EFA-Update to
-continue the update process to 3.0.1.6.
+continue the update process to 3.0.1.7.
 
 EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
@@ -63,7 +63,7 @@ possible from MailWatch under Tools/Links.
 ################ Important Info -- Custom Tweaks ######################
 
 Many EFA users have modified their EFA installations and made tweaks
-that may "disappear" after an update to 3.0.1.6.
+that may "disappear" after an update to 3.0.1.7.
 
 Updated files have been automatically backed up to the following
 location:
@@ -75,14 +75,14 @@ location:
 ########################## Known Issues ###############################
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
-install itself after updating to 3.0.1.6.  Reapply VMware-Tools
-after updating to 3.0.1.6.  Run the following command to remove
+install itself after updating to 3.0.1.7.  Reapply VMware-Tools
+after updating to 3.0.1.7.  Run the following command to remove
 open-vm-tools:
 
 sudo rpm -e open-vm-tools
 
 2) Error, "could not search" when logging into MailWatch after
-updating to 3.0.1.6
+updating to 3.0.1.7
 
 This occurs when Active Directory integration is enabled.
 
