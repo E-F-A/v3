@@ -236,7 +236,7 @@ function update-mailwatch() {
         sed -i "/^define('HIDE_UNKNOWN'/ a\\\n//Quarantine Auto Release\n//Set true to allow auto release of quarantined items from quarantine report\ndefine('AUTO_RELEASE', false);" /var/www/html/mailscanner/conf.php
       fi
       
-      DANGEROUS_CONTENT_PRESENT=`\grep define\(\'DOMAINADMIN_CAN_RELEASE_DANGEROUS_CONTENTS\'`
+      DANGEROUS_CONTENT_PRESENT=`grep define\(\'DOMAINADMIN_CAN_RELEASE_DANGEROUS_CONTENTS\' /var/www/html/mailscanner/conf.php`
       if [[ -z $DANGEROUS_CONTENT_PRESENT ]]; then
         echo "" >> /var/www/html/mailscanner/conf.php
         echo "//Give Domain Admins ability to release dangerous content, like viruses" >> /var/www/html/mailscanner/conf.php
