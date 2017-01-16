@@ -3,7 +3,7 @@ EFA Version 3.0.1.8 TEST PLAN
 ############################################################
 
 MailWatch
-  Confirm missing settings are present in conf.php
+  Confirm missing settings are present in conf.php PASSED
 
 ############################################################
 EFA Version 3.0.1.7 TEST PLAN

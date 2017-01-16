@@ -75,7 +75,7 @@ function run_update() {
   # Update MailWatch
   update-mailwatch
   
-  # Issue #347 Missing defines in latest MAILWATCHBRANCH
+  # Issue #347 Missing defines in latest MAILWATCH
   SHOW_MORE_INFO_ON_REPORT_GRAPH_PRESENT=`grep define\(\'SHOW_MORE_INFO_ON_REPORT_GRAPH\' /var/www/html/mailscanner/conf.php`
   if [[ -z $SHOW_MORE_INFO_ON_REPORT_GRAPH_PRESENT ]]; then
      sed -i "/^define('SHOW_DOC'/ a\\\n// Show supplemental Postfix info in report, enable when using Postix_relay tool\ndefine('SHOW_MORE_INFO_ON_REPORT_GRAPH', false);" /var/www/html/mailscanner/conf.php
