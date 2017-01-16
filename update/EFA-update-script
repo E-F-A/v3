@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20170112
+# Version 20170116
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2017 https://efa-project.org
 #
@@ -73,6 +73,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.1" ]]
     then
@@ -88,6 +89,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.2" ]]
     then
@@ -103,6 +105,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.3" ]]
     then
@@ -118,6 +121,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.4" ]]
     then
@@ -133,6 +137,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.5" ]]
     then
@@ -148,6 +153,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.6" ]]
     then
@@ -163,6 +169,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.7" ]]
     then
@@ -177,6 +184,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.8" ]]
     then
@@ -190,6 +198,7 @@ function get_update_path() {
       update-3.0.1.5
       update-3.0.1.6
       update-3.0.1.7
+      update-3.0.1.8
       finalize
   elif [[ $CVERSION == "EFA-3.0.0.9" ]]
       then
@@ -202,6 +211,7 @@ function get_update_path() {
         update-3.0.1.5
         update-3.0.1.6
         update-3.0.1.7
+        update-3.0.1.8
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.0" ]]
       then
@@ -213,6 +223,7 @@ function get_update_path() {
         update-3.0.1.5
         update-3.0.1.6
         update-3.0.1.7
+        update-3.0.1.8
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.1" ]]
       then
@@ -223,6 +234,7 @@ function get_update_path() {
         update-3.0.1.5
         update-3.0.1.6
         update-3.0.1.7
+        update-3.0.1.8
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.2" ]]
       then
@@ -232,6 +244,7 @@ function get_update_path() {
         update-3.0.1.5
         update-3.0.1.6
         update-3.0.1.7
+        update-3.0.1.8
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.3" ]]
       then
@@ -240,6 +253,7 @@ function get_update_path() {
         update-3.0.1.5
         update-3.0.1.6
         update-3.0.1.7
+        update-3.0.1.8
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.4" ]]
       then
@@ -247,17 +261,25 @@ function get_update_path() {
         update-3.0.1.5
         update-3.0.1.6
         update-3.0.1.7
+        update-3.0.1.8
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.5" ]]
       then
         initialize
         update-3.0.1.6
         update-3.0.1.7
+        update-3.0.1.8
         finalize
   elif [[ $CVERSION == "EFA-3.0.1.6" ]]
       then
         initialize
         update-3.0.1.7
+        update-3.0.1.8
+        finalize
+  elif [[ $CVERSION == "EFA-3.0.1.7" ]]
+      then
+        initialize
+        update-3.0.1.8
         finalize
   fi
 }
@@ -553,6 +575,35 @@ function update-3.0.1.7() {
   update-kernel
 
   UPDATE="EFA-Update-3.0.1.6-3.0.1.7.tar.gz"
+  download_update
+  check_md5
+
+  # Unpack update
+  cd $STAGING
+  tar xzvf $UPDATE
+  [[ $? -ne 0 ]] && abort
+  # Bypass noexec in /tmp
+  rm -f /var/EFA/update/EFA-Version-Upgrade
+  cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
+  chmod 700 /var/EFA/update/EFA-Version-Upgrade
+  /var/EFA/update/EFA-Version-Upgrade
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Update to 3.0.1.8
+#----------------------------------------------------------------#
+function update-3.0.1.8() {
+ # Is staging area clean?
+ [[ -n $STAGING ]] && rm -rf $STAGING/*
+
+  check_disk_space
+
+  # Check for kernel update prior to package download
+  VERSION="3.0.1.8"
+  update-kernel
+
+  UPDATE="EFA-Update-3.0.1.7-3.0.1.8.tar.gz"
   download_update
   check_md5
 
