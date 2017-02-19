@@ -296,6 +296,7 @@ function update-3.0.0.7() {
   cd /var/EFA/update
   chmod 700 EFA-Version-Upgrade-3.0.0.7
   ./EFA-Version-Upgrade-3.0.0.7
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -325,6 +326,7 @@ function update-3.0.0.8() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -354,6 +356,7 @@ function update-3.0.0.9() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -384,6 +387,7 @@ function update-3.0.1.0() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -413,6 +417,7 @@ function update-3.0.1.1() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -442,6 +447,7 @@ function update-3.0.1.2() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -471,6 +477,7 @@ function update-3.0.1.3() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -500,6 +507,7 @@ function update-3.0.1.4() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -529,6 +537,7 @@ function update-3.0.1.5() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -558,6 +567,7 @@ function update-3.0.1.6() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -587,6 +597,7 @@ function update-3.0.1.7() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
@@ -616,6 +627,7 @@ function update-3.0.1.8() {
   cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
   chmod 700 /var/EFA/update/EFA-Version-Upgrade
   /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
 }
 #----------------------------------------------------------------#
 
