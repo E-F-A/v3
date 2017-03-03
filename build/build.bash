@@ -556,9 +556,11 @@ func_apache () {
     # Add mod_security
     yum -y install mod_security mod_security_crs mod_security_crs-extras
 
+    # Allow access on IP for users that don't use FQDN's
+    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n&.' /etc/httpd/conf.d/mod_security.conf
+
     # set X-XSS-Protection header
     sed -i 's.</VirtualHost>.Header set X-XSS-Protection "1; mode=block"\n\n&.' /etc/httpd/conf.d/ssl.conf
-
 }
 # +---------------------------------------------------+
 
