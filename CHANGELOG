@@ -2,7 +2,8 @@
 EFA Version 3.0.1.9 Changes
 ############################################################
 
-
+- Added Apache mod_security by default
+- Added Apache X-XSS-Protection header
 
 ############################################################
 EFA Version 3.0.1.8 Changes
