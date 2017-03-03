@@ -552,6 +552,13 @@ func_apache () {
 
     # Secure PHP (this might break some stuff so need to test carefully)
     sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellcmd,eval,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,syslog,system,xmlrpc_entity_decode,curl_multi_exec' /etc/php.ini
+
+    # Add mod_security
+    yum -y install mod_security mod_security_crs mod_security_crs-extras
+
+    # set X-XSS-Protection header
+    sed -i 's.</VirtualHost>.Header set X-XSS-Protection "1; mode=block"\n\n&.' /etc/httpd/conf.d/ssl.conf
+
 }
 # +---------------------------------------------------+
 
