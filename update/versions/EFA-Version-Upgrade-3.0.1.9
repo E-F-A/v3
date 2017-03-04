@@ -75,12 +75,24 @@ function run_update() {
   # Update MailWatch
   #update-mailwatch
 
-  # Install Apache Mod_Security
-  yum -y install mod_security mod_security_crs mod_security_crs-extras
-  /etc/init.d/httpd restart
+  # Install Apache Mod_Security & Mod_evasive
+  yum -y install mod_security mod_security_crs mod_security_crs-extras mod_evasive
+    # Allow access on IP for users that don't use FQDN's
+    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n&.' /etc/httpd/conf.d/mod_security.conf
 
-  # set X-XSS-Protection header
-  sed -i 's.</VirtualHost>.Header set X-XSS-Protection "1; mode=block"\n\n&.' /etc/httpd/conf.d/ssl.conf
+  Configure some Apache Security Items
+    # set X-XSS-Protection header
+    sed -i 's.</VirtualHost>.Header set X-XSS-Protection "1; mode=block"\n\n&.' /etc/httpd/conf.d/ssl.conf
+
+    # Remove Server Signatures
+    sed -i "/^ServerSignature/ c\ServerSignature Off" /etc/httpd/conf/httpd.conf
+    sed -i "/^ServerTokens/ c\ServerTokens Prod" /etc/httpd/conf/httpd.conf
+    # Remove indexing
+    sed -i "/^    Options Indexes FollowSymLinks/ c\    Options -Indexes FollowSymLinks" /etc/httpd/conf/httpd.conf
+
+
+  # restart httpd after the changes
+  /etc/init.d/httpd restart
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
