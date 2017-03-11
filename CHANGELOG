@@ -4,6 +4,7 @@ EFA Version 3.0.1.9 Changes
 
 - Added Apache mod_security by default
 - Added Apache X-XSS-Protection header
+- Updated MailWatch
 
 ############################################################
 EFA Version 3.0.1.8 Changes

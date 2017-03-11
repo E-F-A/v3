@@ -36,8 +36,8 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="161844b"
-MAILWATCHRELEASE="1.2.0 - RC4"
+MAILWATCHVERSION="b512ca8"
+MAILWATCHRELEASE="1.2.0 - RC6"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
@@ -73,7 +73,7 @@ function run_update() {
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
   # Update MailWatch
-  #update-mailwatch
+  update-mailwatch
 
   # Update SQL Grey Web Interface
   update_sgwi
@@ -81,19 +81,18 @@ function run_update() {
 
   # Install Apache Mod_Security & Mod_evasive
   yum -y install mod_security mod_security_crs mod_security_crs-extras mod_evasive
-    # Allow access on IP for users that don't use FQDN's
-    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n&.' /etc/httpd/conf.d/mod_security.conf
+  # Allow access on IP for users that don't use FQDN's
+  sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n&.' /etc/httpd/conf.d/mod_security.conf
 
-  Configure some Apache Security Items
-    # set X-XSS-Protection header
-    sed -i 's.</VirtualHost>.Header set X-XSS-Protection "1; mode=block"\n\n&.' /etc/httpd/conf.d/ssl.conf
+  # Configure some Apache Security Items
+  # set X-XSS-Protection header
+  sed -i 's.</VirtualHost>.Header set X-XSS-Protection "1; mode=block"\n\n&.' /etc/httpd/conf.d/ssl.conf
 
-    # Remove Server Signatures
-    sed -i "/^ServerSignature/ c\ServerSignature Off" /etc/httpd/conf/httpd.conf
-    sed -i "/^ServerTokens/ c\ServerTokens Prod" /etc/httpd/conf/httpd.conf
-    # Remove indexing
-    sed -i "/^    Options Indexes FollowSymLinks/ c\    Options -Indexes FollowSymLinks" /etc/httpd/conf/httpd.conf
-
+  # Remove Server Signatures
+  sed -i "/^ServerSignature/ c\ServerSignature Off" /etc/httpd/conf/httpd.conf
+  sed -i "/^ServerTokens/ c\ServerTokens Prod" /etc/httpd/conf/httpd.conf
+  # Remove indexing
+  sed -i "/^    Options Indexes FollowSymLinks/ c\    Options -Indexes FollowSymLinks" /etc/httpd/conf/httpd.conf
 
   # restart httpd after the changes
   /etc/init.d/httpd restart
@@ -128,6 +127,8 @@ function update-mailwatch() {
       mv /usr/share/MailScanner/perl/custom/SQLBlackWhiteList.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
       mv /usr/share/MailScanner/perl/custom/SQLSpamSettings.pm /var/EFA/backup/$VERSION/ > /dev/null 2>&1
       mv /usr/local/bin/mailwatch/tools /var/EFA/backup/$VERSION/ > /dev/null 2>&1
+      mv /etc/cron.hourly/mailwatch_relay.sh /var/EFA/backup/$VERSION > /dev/null 2>&1
+      mv /etc/cron.daily/mailwatch /var/EFA/backup/$VERSION > /dev/null 2>&1
 
       #### Commit Phase #####
       rm -rf usr/src/EFA/1.2.0-develop
@@ -136,15 +137,27 @@ function update-mailwatch() {
       cd /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
-      sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatch.pm
-      sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
-      sed -i "/^    my (\$db_user) =/ c\    my (\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
-      sed -i "/^    my (\$db_pass) =/ c\    my (\$fh);\n    my (\$pw_config) = '/etc/EFA-Config';\n    open(\$fh, \"<\", \$pw_config);\n    if(\!\$fh) {\n      MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n      return;\n    }\n    my (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n    \$db_pass =~ s/MAILWATCHSQLPWD://;\n    \$db_pass =~ s/\\\n//;\n    close(\$fh);" SQLBlackWhiteList.pm
-      sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" SQLSpamSettings.pm
-      sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" SQLSpamSettings.pm
+      sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" 00MailWatchConf.pm
+      sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" 00MailWatchConf.pm
+      mv -f 00MailWatchConf.pm /usr/share/MailScanner/perl/custom/
       mv -f MailWatch.pm /usr/share/MailScanner/perl/custom/
       mv -f SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom
       mv -f SQLSpamSettings.pm /usr/share/MailScanner/perl/custom/
+
+      # Update cron jobs to new filenamesv
+      cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
+#!/bin/bash
+
+/usr/bin/php /var/www/html/mailscanner/mailwatch_postfix_relay.php --refresh
+/usr/bin/php /var/www/html/mailscanner/mailwatch_mailscanner_relay.php --refresh
+EOF
+
+      cat > /etc/cron.daily/mailwatch << 'EOF'
+#!/bin/bash
+/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_db_clean.php >> /dev/null 2>&1
+/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
+/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1      
+EOF
 
       cd /usr/src/EFA/1.2.0-develop
       mv tools /usr/local/bin/mailwatch
@@ -163,6 +176,41 @@ function update-mailwatch() {
       # Merge conf.php and conf.php.example changes
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
 
+      PWSALTPRESENT=`grep define\(\'PW_SALT\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $PWSALTPRESENT ]]; then
+         SALT=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
+         sed -i "/^define('DB_DSN'/ a\\\n// Password settings\n// Optional password salt, to increase cryptographic strength of\n// password hashing, 22 characters minimum\ndefine('PW_SALT', $SALT);" 
+      fi
+
+      LDAPFILTERPRESENT=`grep define\(\'LDAP_FILTER\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $LDAPFILTERPRESENT ]]; then
+         sed -i "/^define('LDAP_SITE'/ a\define('LDAP_FILTER', 'mail=%s'); //%s will be replaced by username eg. 'mail=%', 'mail=SMTP:%s', 'sAMAccountName=%s'" /var/www/html/mailscanner/conf.php
+      fi
+
+      LDAPUSERNAMEFIELDPRESENT=`grep define\(\'LDAP_BIND_PREFIX\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $LDAPUSERNAMEFIELDPRESENT ]]; then
+         sed -i "/^define('LDAP_EMAIL_FIELD'/ a\\\n// The value of the LDAP_USERNAME_FIELD will be extended by LDAP_BIND_PREFIX and LDAP_BIND_SUFFIX to created the binding username.\ndefine('LDAP_USERNAME_FIELD', 'cn');\n// define('LDAP_BIND_PREFIX', 'cn=');\n// define('LDAP_BIND_SUFFIX', ',' . LDAP_DN);\n" /var/www/html/mailscanner/conf.php
+      fi
+
+      # Update definition names that have changed
+      sed -i "s/^define('QUARANTINE_MAIL_HOST'/define('MAILWATCH_MAIL_HOST'/" /var/www/html/mailscanner/conf.php
+      sed -i "s/^define('QUARANTINE_MAIL_PORT'/define('MAILWATCH_MAIL_PORT'/" /var/www/html/mailscanner/conf.php
+      sed -i "s/^define('QUARANTINE_FROM_ADDR'/define('MAILWATCH_FROM_ADDR'/" /var/www/html/mailscanner/conf.php
+      sed -i "/^define('QUARANTINE_REPORT_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'http://' . rtrim(gethostname()) . '/mailscanner');" /var/www/html/mailscanner/conf.php
+
+      # Dump MS_LOGO no longer used
+      sed -i "/^define('MS_LOGO'/d" /var/www/html/mailscanner/conf.php
+
+      DISPLAYVIRUSREPORT=`grep define\(\'DISPLAY_VIRUS_REPORT\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $DISPLAYVIRUSREPORT ]]; then
+        sed -i "/^define('VIRUS_INFO'/ a\\\n// Display Virus on message listing\ndefine('DISPLAY_VIRUS_REPORT', true);" /var/www/html/mailscanner/conf.php
+      fi
+      
+      VIRUSREGEXPRESENT=`grep define\(\'VIRUS_REGEX\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $VIRUSREGEXPRESENT ]]; then
+        sed -i "/^define('DISPLAY_VIRUS_REPORT'/ a\\\n// Override VIRUS_REGEX??// define('VIRUS_REGEX', '/(\S+) was infected by (\S+)/'); // SophosSAVI" /var/www/html/mailscanner/conf.php
+      fi
+      
       NONSPAMPRESENT=`grep define\(\'HIDE_NON_SPAM\' /var/www/html/mailscanner/conf.php`
       if [[ -z $NONSPAMPRESENT ]]; then
         sed -i "/^define('HIDE_HIGH_SPAM'/ a\\\n// Hide Non Spam from quarantine reports\ndefine('HIDE_NON_SPAM', false);" /var/www/html/mailscanner/conf.php
@@ -179,13 +227,6 @@ function update-mailwatch() {
         echo "" >> /var/www/html/mailscanner/conf.php
         echo "// Define MailWatch logo name" >> /var/www/html/mailscanner/conf.php
         echo "define('MW_LOGO', 'mailwatch-logo.png');" >> /var/www/html/mailscanner/conf.php
-      fi
-
-      MS_LOGO_PRESENT=$(grep "^define('MS_LOGO'" /var/www/html/mailscanner/conf.php)
-      if [[ -z $MS_LOGO_PRESENT ]]; then
-        echo "" >> /var/www/html/mailscanner/conf.php
-        echo "// Define MailScanner logo name" >> /var/www/html/mailscanner/conf.php
-        echo "define('MS_LOGO', 'mailscannerlogo.gif');" >> /var/www/html/mailscanner/conf.php
       fi
 
       # Issue #291 HIDE_UNKNOWN option for MailWatch
@@ -267,6 +308,11 @@ function update-mailwatch() {
         echo "define('DOMAINADMIN_CAN_SEE_DANGEROUS_CONTENTS', false);" >> /var/www/html/mailscanner/conf.php
       fi
 
+      PWDRESETPRESENT=`grep define\(\'PWD_RESET\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $PWDRESETPRESENT ]]; then
+        sed -i "/^define('DOMAINADMIN_CAN_SEE_DANGEROUS_CONTENTS'/ a\\\n/* Password Reset */\n// Give users the ability to reset a forgotten password.\ndefine('PWD_RESET', false);\n// Number of hours link is valid for.\ndefine('RESET_LINK_EXPIRE',1);\n// Set the following 2 variables (and uncomment) if you wish to define\n// an alternative sender name and address for password resets.\n// NOTE: Both must be set, otherwise it will use the default settings.\n// define('PWD_RESET_FROM_NAME', 'Some other name'); // Set if you wish reset email sent from alternative name.\n// define('PWD_RESET_FROM_ADDRESS', 'support@yourdomain.com'); // Set is you wish reset email sent from alternative address.\n/* End Password Reset */" /var/www/html/mailscanner/conf.php
+      fi
+
       # Issue #347 - Missing defines in latest MailWatch
       SHOW_MORE_INFO_ON_REPORT_GRAPH_PRESENT=`grep define\(\'SHOW_MORE_INFO_ON_REPORT_GRAPH\' /var/www/html/mailscanner/conf.php`
       if [[ -z $SHOW_MORE_INFO_ON_REPORT_GRAPH_PRESENT ]]; then
@@ -278,9 +324,9 @@ function update-mailwatch() {
         sed -i "/^define('LDAP_PORT'/ a\define('LDAP_PROTOCOL_VERSION', 3);" /var/www/html/mailscanner/conf.php
       fi
 
-      QUARANTINE_MAIL_PORT_PRESENT=`grep define\(\'QUARANTINE_MAIL_PORT\' /var/www/html/mailscanner/conf.php`
-      if [[ -z $QUARANTINE_MAIL_PORT_PRESENT ]]; then
-        sed -i "/^define('QUARANTINE_MAIL_HOST'/ a\define('QUARANTINE_MAIL_PORT', '25');" /var/www/html/mailscanner/conf.php
+      MAILWATCH_MAIL_PORT_PRESENT=`grep define\(\'QUARANTINE_MAIL_PORT\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $MAILWATCH_MAIL_PORT_PRESENT ]]; then
+        sed -i "/^define('MAILWATCH_MAIL_HOST'/ a\define('MAILWATCH_MAIL_PORT', '25');" /var/www/html/mailscanner/conf.php
       fi
 
       MS_SHARE_DIR_PRESENT=`grep define\(\'MS_SHARE_DIR\' /var/www/html/mailscanner/conf.php`
@@ -307,6 +353,9 @@ function update-mailwatch() {
 
       # Issue #39 Add link for Webmin in MailWatch
       sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
+
+      # Upgrade database
+      /usr/bin/php /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/upgrade.php
 
       # Cleanup
       rm -rf /usr/src/EFA/1.2.0-develop
