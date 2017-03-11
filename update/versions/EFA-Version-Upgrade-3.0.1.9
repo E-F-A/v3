@@ -77,6 +77,9 @@ function run_update() {
 
   service mysqld stop 
   # Switch to mariadb
+  rpm -e mysql-server
+  rpm -e mysql-libs
+  rpm -e mysql
   yum -y install MariaDB-server
   service mysqld start
   
