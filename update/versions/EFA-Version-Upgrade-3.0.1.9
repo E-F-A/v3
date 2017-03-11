@@ -78,9 +78,8 @@ function run_update() {
   service mysqld stop 
   # Switch to mariadb
   rpm -e mysql-server
-  rpm -e mysql-libs
-  rpm -e mysql
   yum -y install MariaDB-server
+  ln -s /etc/init.d/mysql /etc/init.d/mysqld
   service mysqld start
   
   # Update MailWatch
@@ -190,7 +189,7 @@ EOF
       PWSALTPRESENT=`grep define\(\'PW_SALT\' /var/www/html/mailscanner/conf.php`
       if [[ -z $PWSALTPRESENT ]]; then
          SALT=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
-         sed -i "/^define('DB_DSN'/ a\\\n// Password settings\n// Optional password salt, to increase cryptographic strength of\n// password hashing, 22 characters minimum\ndefine('PW_SALT', $SALT);" /var/www/html/mailscanner/conf.php
+         sed -i "/^define('DB_DSN'/ a\\\n// Password settings\n// Optional password salt, to increase cryptographic strength of\n// password hashing, 22 characters minimum\ndefine('PW_SALT', '$SALT');" /var/www/html/mailscanner/conf.php
       fi
 
       LDAPFILTERPRESENT=`grep define\(\'LDAP_FILTER\' /var/www/html/mailscanner/conf.php`
