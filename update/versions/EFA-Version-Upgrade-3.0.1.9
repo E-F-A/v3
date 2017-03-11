@@ -251,16 +251,13 @@ EOF
 
       # Add back EFA Branding
       cd /var/www/html/mailscanner/images
-      cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-47px.gif .
       cp /var/EFA/backup/$VERSION/mailscanner/images/EFAlogo-79px.png .
       mv mailwatch-logo.png mailwatch-logo.png.orig
-      mv mailscannerlogo.gif mailscannerlogo.gif.orig
-
+      
       # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
       sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
 
       ln -s EFAlogo-79px.png mailwatch-logo.png
-      ln -s EFAlogo-47px.gif mailscannerlogo.gif
 
       # Issue #289 MailWatch logo on release link broken
       ln -s EFAlogo-79px.png mailwatch-logo.gif
