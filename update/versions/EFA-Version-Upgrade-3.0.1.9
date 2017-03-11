@@ -73,7 +73,7 @@ function run_update() {
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
   # Add mariadb repo
-  cp -f $STAGING/Files/mariadb.repo /etc/yum.conf.d/mariadb.repo
+  cp -f $STAGING/Files/mariadb.repo /etc/yum.repos.d/mariadb.repo
 
   service mysqld stop 
   # Switch to mariadb
@@ -329,7 +329,7 @@ EOF
         sed -i "/^define('LDAP_PORT'/ a\define('LDAP_PROTOCOL_VERSION', 3);" /var/www/html/mailscanner/conf.php
       fi
 
-      MAILWATCH_MAIL_PORT_PRESENT=`grep define\(\'QUARANTINE_MAIL_PORT\' /var/www/html/mailscanner/conf.php`
+      MAILWATCH_MAIL_PORT_PRESENT=`grep define\(\'MAILWATCH_MAIL_PORT\' /var/www/html/mailscanner/conf.php`
       if [[ -z $MAILWATCH_MAIL_PORT_PRESENT ]]; then
         sed -i "/^define('MAILWATCH_MAIL_HOST'/ a\define('MAILWATCH_MAIL_PORT', '25');" /var/www/html/mailscanner/conf.php
       fi
