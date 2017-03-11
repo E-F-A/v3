@@ -72,6 +72,14 @@ function run_update() {
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
+  # Add mariadb repo
+  cp -f $STAGING/Files/mariadb.repo /etc/yum.conf.d/mariadb.repo
+
+  service mysqld stop 
+  # Switch to mariadb
+  yum -y install MariaDB-server
+  service mysqld start
+  
   # Update MailWatch
   update-mailwatch
 
@@ -179,7 +187,7 @@ EOF
       PWSALTPRESENT=`grep define\(\'PW_SALT\' /var/www/html/mailscanner/conf.php`
       if [[ -z $PWSALTPRESENT ]]; then
          SALT=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
-         sed -i "/^define('DB_DSN'/ a\\\n// Password settings\n// Optional password salt, to increase cryptographic strength of\n// password hashing, 22 characters minimum\ndefine('PW_SALT', $SALT);" 
+         sed -i "/^define('DB_DSN'/ a\\\n// Password settings\n// Optional password salt, to increase cryptographic strength of\n// password hashing, 22 characters minimum\ndefine('PW_SALT', $SALT);" /var/www/html/mailscanner/conf.php
       fi
 
       LDAPFILTERPRESENT=`grep define\(\'LDAP_FILTER\' /var/www/html/mailscanner/conf.php`
