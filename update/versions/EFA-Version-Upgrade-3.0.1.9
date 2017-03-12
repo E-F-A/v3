@@ -138,7 +138,7 @@ function upgrade-mariadb() {
   yum -y remove mysql-server
   [ $? -ne 0 ] && abort
 
-  yum install mysql-server
+  yum -y install mysql-server
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
@@ -160,7 +160,8 @@ function upgrade-mariadb() {
      abort
   fi
 
-  mysql_upgrade
+  MYSQLROOTPWD=$(grep "MYSQLROOTPWD" /etc/EFA-Config | awk -F':' '{print $2}')
+  mysql_upgrade -u root -p$MYSQLROOTPWD
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
@@ -179,7 +180,7 @@ function upgrade-mariadb() {
   service mysql stop
 
   # Phase 2 Upgrade to MariaDB 10.1
-  yum remove mysql-server mysql-client
+  yum -y remove mysql-server mysql-client
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
@@ -232,7 +233,7 @@ function upgrade-mariadb() {
      abort
   fi
 
-  mysql_upgrade
+  mysql_upgrade -u root -p$MYSQLROOTPWD
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
