@@ -501,7 +501,7 @@ EOF
       sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
 
       # Upgrade database
-      /usr/bin/php /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/upgrade.php
+      /usr/bin/php /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/upgrade.php --skip-user-confirm
 
       # Cleanup
       rm -rf /usr/src/EFA/1.2.0-develop
