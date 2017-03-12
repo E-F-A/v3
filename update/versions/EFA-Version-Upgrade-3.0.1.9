@@ -201,7 +201,7 @@ function upgrade-mariadb() {
   cp -f $STAGING/Files/mariadb.repo /etc/yum.repos.d/mariadb.repo
   yum clean all
 
-  yum -y install mysql-server mysql-client
+  yum -y install MariaDB-server MariaDB-client
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
@@ -501,7 +501,7 @@ EOF
       sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
 
       # Upgrade database
-      /usr/bin/php /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/upgrade.php --skip-user-confirm
+      /usr/bin/php /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/upgrade.php --skip-user-confirm /var/www/html/mailscanner/functions.php
 
       # Cleanup
       rm -rf /usr/src/EFA/1.2.0-develop
