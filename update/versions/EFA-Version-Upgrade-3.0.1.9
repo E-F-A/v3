@@ -72,16 +72,9 @@ function run_update() {
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
-  # Add mariadb repo
-  cp -f $STAGING/Files/mariadb.repo /etc/yum.repos.d/mariadb.repo
+  # Upgrade to MariaDB
+  upgrade-mariadb
 
-  service mysqld stop 
-  # Switch to mariadb
-  rpm -e mysql-server
-  yum -y install MariaDB-server
-  ln -s /etc/init.d/mysql /etc/init.d/mysqld
-  service mysqld start
-  
   # Update MailWatch
   update-mailwatch
 
@@ -115,6 +108,151 @@ function run_update() {
   echo ""
   echo "" >> $TMPMAIL
   echo "Update to $VERSION complete." >> $TMPMAIL
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Upgrade to MariaDB function
+#----------------------------------------------------------------#
+function upgrade-mariadb() {
+
+  CHECKMARIADB=$(rpm -qa | grep MariaDB-server)
+  if [[ -n $CHECKMARIADB ]]; then 
+    echo "Upgrade of databases not needed, MariaDB already installed"
+    return
+  fi
+
+  # Additional backup
+  mkdir -p /var/EFA/backup/$VERSION/etc > /dev/null 2>&1
+  mkdir -p /var/EFA/backup/$VERSION/var/lib > /dev/null 2>&1
+  cp /etc/my.cnf /var/EFA/backup/$VERSION/etc/my.cnf
+  cp -R /var/lib/mysql /var/EFA/backup/$VERSION/var/lib/mysql
+
+  # Phase 1 Upgrade to MariaDB 5.5
+  # Add mariadb5 repo
+  cp -f $STAGING/Files/mariadb5.repo /etc/yum.repos.d/mariadb5.repo
+
+  service mysqld stop
+
+  yum clean all
+  yum -y remove mysql-server
+  [ $? -ne 0 ] && abort
+
+  yum install mysql-server
+  if [[ $? -ne 0 ]]; then
+     # Something went wrong, rollback
+     echo "MariaDB Upgrade Failed, rolling back"
+     rm -f /etc/yum.repos.d/mariadb5.repo
+     yum clean all
+     yum -y install mysql-server
+     service mysqld start
+     abort
+  fi
+
+  service mysql start
+  if [[ $? -ne 0 ]]; then
+     # Something went wrong, rollback
+     echo "MariaDB Upgrade Failed, rolling back"
+     rm -f /etc/yum.repos.d/mariadb5.repo
+     yum clean all
+     yum -y install mysql-server
+     service mysqld start
+     abort
+  fi
+
+  mysql_upgrade
+  if [[ $? -ne 0 ]]; then
+     # Something went wrong, rollback
+     echo "MariaDB Upgrade Failed, rolling back"
+     yum -y remove mysql-server mysql-client
+     service mysql stop
+     # Restore DBs
+     mv /var/lib/mysql /var/lib/mysql_mariadb_failed
+     cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     rm -f /etc/yum.repos.d/mariadb5.repo
+     yum clean all
+     yum -y install mysql-server
+     service mysqld start
+     abort
+  fi
+
+  service mysql stop
+
+  # Phase 2 Upgrade to MariaDB 10.1
+  yum remove mysql-server mysql-client
+  if [[ $? -ne 0 ]]; then
+     # Something went wrong, rollback
+     echo "MariaDB Upgrade Failed, rolling back"
+     # Restore DBs
+     mv /var/lib/mysql /var/lib/mysql_mariadb_failed
+     cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     # Try to remove again...
+     yum remove mysql-server mysql-client
+     rm -f /etc/yum.repos.d/mariadb5.repo
+     yum clean all
+     yum -y install mysql-server
+     service mysqld start
+     abort
+  fi
+
+  # Phase 2 Upgrade to MariaDB 10.1
+  rm -f /etc/yum.repos.d/mariadb5.repo
+  cp -f $STAGING/Files/mariadb.repo /etc/yum.repos.d/mariadb.repo
+  yum clean all
+
+  yum -y install mysql-server mysql-client
+  if [[ $? -ne 0 ]]; then
+     # Something went wrong, rollback
+     echo "MariaDB Upgrade Failed, rolling back"
+     # Remove existing packages
+     yum -y remove mysql-server mysql-client
+     # Restore DBs
+     mv /var/lib/mysql /var/lib/mysql_mariadb_failed
+     cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     rm -f /etc/yum.repos.d/mariadb.repo
+     yum clean all
+     yum -y install mysql-server
+     service mysqld start
+     abort
+  fi
+
+  service mysql start
+  if [[ $? -ne 0 ]]; then
+     # Something went wrong, rollback
+     echo "MariaDB Upgrade Failed, rolling back"
+     # Remove existing packages
+     yum -y remove mysql-server mysql-client
+     # Restore DBs
+     mv /var/lib/mysql /var/lib/mysql_mariadb_failed
+     cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     rm -f /etc/yum.repos.d/mariadb.repo
+     yum clean all
+     yum -y install mysql-server
+     service mysqld start
+     abort
+  fi
+
+  mysql_upgrade
+  if [[ $? -ne 0 ]]; then
+     # Something went wrong, rollback
+     echo "MariaDB Upgrade Failed, rolling back"
+     # Remove existing packages
+     service mysql stop
+     yum -y remove mysql-server mysql-client
+     # Restore DBs
+     mv /var/lib/mysql /var/lib/mysql_mariadb_failed
+     cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     rm -f /etc/yum.repos.d/mariadb.repo
+     yum clean all
+     yum -y install mysql-server
+     service mysqld start
+     abort
+  fi
+
+  ln -s /etc/init.d/mysql /etc/init.d/mysqld
+  chkconfig mysql on
+
+  # Success!
 }
 #----------------------------------------------------------------#
 
