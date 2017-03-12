@@ -138,7 +138,7 @@ function upgrade-mariadb() {
   yum -y remove mysql-server
   [ $? -ne 0 ] && abort
 
-  yum -y install mysql-server
+  yum -y install MariaDB-server
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
@@ -153,6 +153,7 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
+     yum -y remove MariaDB-server MariaDB-client
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
      yum -y install mysql-server
@@ -165,7 +166,7 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
-     yum -y remove mysql-server mysql-client
+     yum -y remove MariaDB-server MariaDB-client
      service mysql stop
      # Restore DBs
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
@@ -188,7 +189,7 @@ function upgrade-mariadb() {
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
      # Try to remove again...
-     yum remove mysql-server mysql-client
+     yum -y remove MariaDB-server MariaDB-client
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
      yum -y install mysql-server
@@ -206,7 +207,7 @@ function upgrade-mariadb() {
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
      # Remove existing packages
-     yum -y remove mysql-server mysql-client
+     yum -y remove MariaDB-server MariaDB-client
      # Restore DBs
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
@@ -222,7 +223,7 @@ function upgrade-mariadb() {
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
      # Remove existing packages
-     yum -y remove mysql-server mysql-client
+     yum -y remove MariaDB-server MariaDB-client
      # Restore DBs
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
@@ -239,7 +240,7 @@ function upgrade-mariadb() {
      echo "MariaDB Upgrade Failed, rolling back"
      # Remove existing packages
      service mysql stop
-     yum -y remove mysql-server mysql-client
+     yum -y remove MariaDB-server MariaDB-client
      # Restore DBs
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
@@ -635,7 +636,7 @@ update_sgwi () {
     ln -s ../mailscanner/checklogin.php checklogin.php
     ln -s ../mailscanner/conf.php conf.php
     mkdir images
-    cp ../../mailscanner/images/EFAlogo-79px.png ./images/mailwatch-logo.png
+    cp ../mailscanner/images/EFAlogo-79px.png ./images/mailwatch-logo.png
     cp ../mailscanner/images/favicon.png ./images/favicon.png
     sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (\$_SESSION['user_type'] != 'A') die('Access Denied');\n//End EFA" /var/www/html/sgwi/index.php
     sed -i "/^<?php/ a\//Begin EFA\nsession_start();\nrequire('login.function.php');\n\nif (\$_SESSION['user_type'] != 'A') die('Access Denied');\n//End EFA" /var/www/html/sgwi/awl.php
