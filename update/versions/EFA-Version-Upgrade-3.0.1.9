@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="b512ca8"
+MAILWATCHVERSION="0e186a2"
 MAILWATCHRELEASE="1.2.0 - RC6"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
@@ -326,12 +326,6 @@ EOF
       # Merge conf.php and conf.php.example changes
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
 
-      PWSALTPRESENT=`grep define\(\'PW_SALT\' /var/www/html/mailscanner/conf.php`
-      if [[ -z $PWSALTPRESENT ]]; then
-         SALT=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
-         sed -i "/^define('DB_DSN'/ a\\\n// Password settings\n// Optional password salt, to increase cryptographic strength of\n// password hashing, 22 characters minimum\ndefine('PW_SALT', '$SALT');" /var/www/html/mailscanner/conf.php
-      fi
-
       LDAPFILTERPRESENT=`grep define\(\'LDAP_FILTER\' /var/www/html/mailscanner/conf.php`
       if [[ -z $LDAPFILTERPRESENT ]]; then
          sed -i "/^define('LDAP_SITE'/ a\define('LDAP_FILTER', 'mail=%s'); //%s will be replaced by username eg. 'mail=%', 'mail=SMTP:%s', 'sAMAccountName=%s'" /var/www/html/mailscanner/conf.php
@@ -350,6 +344,11 @@ EOF
 
       # Dump MS_LOGO no longer used
       sed -i "/^define('MS_LOGO'/d" /var/www/html/mailscanner/conf.php
+
+      QUARANTINEFILTERSCOMBINEDPRESENT=`grep define\(\'QUARANTINE_FILTERS_COMBINED\' /var/www/mailscanner/conf.php`
+      if [[ -z $QUARANTINEFILTERSCOMBINEDPRESENT ]]; then
+        sed -i "/^define('QUARANTINE_DAYS_TO_KEEP'/ a\//Set QUARANTINE_FILTERS_COMBINED to true to combine quarantine report into a single report when user filters are present\ndefine('QUARANTINE_FILTERS_COMBINED', false);" /var/www/html/mailscanner/conf.php
+      fi
 
       DISPLAYVIRUSREPORT=`grep define\(\'DISPLAY_VIRUS_REPORT\' /var/www/html/mailscanner/conf.php`
       if [[ -z $DISPLAYVIRUSREPORT ]]; then
