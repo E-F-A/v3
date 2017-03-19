@@ -309,7 +309,7 @@ EOF
 /usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1      
 EOF
 
-      cd /usr/src/EFA/1.2.0-develop
+      cd /usr/src/EFA/1.2.0-$MAILWATCHBRANCH
       mv tools /usr/local/bin/mailwatch
       rm -f /usr/local/bin/mailwatch/tools/Cron_jobs/INSTALL
       chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
