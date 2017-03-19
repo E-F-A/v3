@@ -345,7 +345,7 @@ EOF
       # Dump MS_LOGO no longer used
       sed -i "/^define('MS_LOGO'/d" /var/www/html/mailscanner/conf.php
 
-      QUARANTINEFILTERSCOMBINEDPRESENT=`grep define\(\'QUARANTINE_FILTERS_COMBINED\' /var/www/mailscanner/conf.php`
+      QUARANTINEFILTERSCOMBINEDPRESENT=`grep define\(\'QUARANTINE_FILTERS_COMBINED\' /var/www/html/mailscanner/conf.php`
       if [[ -z $QUARANTINEFILTERSCOMBINEDPRESENT ]]; then
         sed -i "/^define('QUARANTINE_DAYS_TO_KEEP'/ a\//Set QUARANTINE_FILTERS_COMBINED to true to combine quarantine report into a single report when user filters are present\ndefine('QUARANTINE_FILTERS_COMBINED', false);" /var/www/html/mailscanner/conf.php
       fi
@@ -354,12 +354,12 @@ EOF
       if [[ -z $DISPLAYVIRUSREPORT ]]; then
         sed -i "/^define('VIRUS_INFO'/ a\\\n// Display Virus on message listing\ndefine('DISPLAY_VIRUS_REPORT', true);" /var/www/html/mailscanner/conf.php
       fi
-      
+
       VIRUSREGEXPRESENT=`grep define\(\'VIRUS_REGEX\' /var/www/html/mailscanner/conf.php`
       if [[ -z $VIRUSREGEXPRESENT ]]; then
         sed -i "/^define('DISPLAY_VIRUS_REPORT'/ a\\\n// Override VIRUS_REGEX??// define('VIRUS_REGEX', '/(\S+) was infected by (\S+)/'); // SophosSAVI" /var/www/html/mailscanner/conf.php
       fi
-      
+
       NONSPAMPRESENT=`grep define\(\'HIDE_NON_SPAM\' /var/www/html/mailscanner/conf.php`
       if [[ -z $NONSPAMPRESENT ]]; then
         sed -i "/^define('HIDE_HIGH_SPAM'/ a\\\n// Hide Non Spam from quarantine reports\ndefine('HIDE_NON_SPAM', false);" /var/www/html/mailscanner/conf.php
@@ -387,7 +387,7 @@ EOF
       # Add new LANG option for MailWatch
       LANG_PRESENT=`grep define\(\'LANG\' /var/www/html/mailscanner/conf.php`
       if [[ -z $LANG_PRESENT ]]; then
-        echo "" >> /var/www/html ailscanner/conf.php
+        echo "" >> /var/www/html/mailscanner/conf.php
         echo "// Define language (de, en, fr, it, nl, pt_br);" >> /var/www/html/mailscanner/conf.php
         echo "// See http://www.lingoes.net/en/translator/langcode.htm" >> /var/www/html/mailscanner/conf.php
         echo "define('LANG', 'en');" >> /var/www/html/mailscanner/conf.php
