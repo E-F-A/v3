@@ -645,6 +645,8 @@ func_mailwatch () {
 
     # Set up connection for MailWatch
     cd MailScanner_perl_scripts
+    # Quickfix for MailScanner failure issue in commit
+    sed -i "/^#!/usr/bin/perl/ a\\\npackage MailScanner::CustomConfig;" MailWatchConf.pm
     sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatchConf.pm
     sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatchConf.pm
     mv MailWatchConf.pm /usr/share/MailScanner/perl/custom/
