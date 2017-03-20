@@ -645,9 +645,9 @@ func_mailwatch () {
 
     # Set up connection for MailWatch
     cd MailScanner_perl_scripts
-    sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" 00MailWatchConf.pm
-    sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" 00MailWatchConf.pm
-    mv 00MailWatchConf.pm /usr/share/MailScanner/perl/custom/
+    sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatchConf.pm
+    sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatchConf.pm
+    mv MailWatchConf.pm /usr/share/MailScanner/perl/custom/
     mv MailWatch.pm /usr/share/MailScanner/perl/custom/
     mv SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom/
     mv SQLSpamSettings.pm /usr/share/MailScanner/perl/custom/
