@@ -92,18 +92,8 @@ func_epelrepo () {
 # add MariaDB repository
 # +---------------------------------------------------+
 func_mariadbrepo () {
-  cat > /etc/yum.repos.d/mariadb.repo << 'EOF'
-# MariaDB 10.1 CentOS repository list - created 2017-03-11 20:22 UTC
-# http://downloads.mariadb.org/mariadb/repositories/
-[mariadb]
-name = MariaDB
-baseurl = http://yum.mariadb.org/10.1/centos6-amd64
-mirrorlist=https://dl.efa-project.org/rpm/mirrors-mariadb
-gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
-failovermethod=priority
-gpgcheck=1
-enabled=1
-EOF
+  cd /etc/yum.repos.d/
+  /usr/bin/wget $smirror/build/$VERSION/mariadb.repo
 }
 # +---------------------------------------------------+
 
