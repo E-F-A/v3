@@ -326,6 +326,11 @@ EOF
       # Merge conf.php and conf.php.example changes
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
 
+      LDAPSSLPRESENT=`grep define\(\'LDAP_SSL\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $LDAPSSLPRESENT ]]; then
+        sed -i "/^define('USE_LDAP'/ a\define('LDAP_SSL', false); // Set to true if using LDAP with SSL encryption." /var/www/html/mailscanner/conf.php
+      fi
+
       LDAPFILTERPRESENT=`grep define\(\'LDAP_FILTER\' /var/www/html/mailscanner/conf.php`
       if [[ -z $LDAPFILTERPRESENT ]]; then
          sed -i "/^define('LDAP_SITE'/ a\define('LDAP_FILTER', 'mail=%s'); //%s will be replaced by username eg. 'mail=%', 'mail=SMTP:%s', 'sAMAccountName=%s'" /var/www/html/mailscanner/conf.php
