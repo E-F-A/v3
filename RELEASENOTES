@@ -1,5 +1,5 @@
 ######################################################################
-# EFA 3.0.1.8 RELEASE NOTES
+# EFA 3.0.1.9 RELEASE NOTES
 ######################################################################
 # Copyright (C) 2015-2017  https://efa-project.org
 #
@@ -17,17 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
 
-Welcome to EFA Version 3.0.1.8!
+Welcome to EFA Version 3.0.1.9!
 
 Many thanks goes to the developers of EFA and maintainers of all
 3rd party packages!
 
-These release notes will help guide you through the 3.0.1.8 update.
+These release notes will help guide you through the 3.0.1.9 update.
 
 Many fixes and enhancements have been made to EFA.  Please review the
 CHANGELOG for further information.
 
-https://raw.githubusercontent.com/E-F-A/v3/3.0.1.8/CHANGELOG
+https://raw.githubusercontent.com/E-F-A/v3/3.0.1.9/CHANGELOG
 
 ###################### How To Update ##################################
 
@@ -49,7 +49,7 @@ Choose option 14) Update Now
 The first time you run this update, the kernel may update. If this
 happens, the script will halt to give you an opportunity to restart.
 After restarting and booting to the new kernel, rerun EFA-Update to
-continue the update process to 3.0.1.8.
+continue the update process to 3.0.1.9.
 
 EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
@@ -60,10 +60,45 @@ possible from MailWatch under Tools/Links.
 
 #######################################################################
 
+#################### Important Security Notice ########################
+
+///////Everyone is STRONGLY encouraged to update to 3.0.1.9 NOW\\\\\\\\\
+
+A recent set of vulnerabilities have been discovered in the MailWatch and
+SGWI interfaces that can allow an attacker to escalate privileges in eFa.
+
+Because of these vulnerabilities, if you are using the same password for
+the console as you are for MailWatch (many folks are), please take a moment
+to change make your MailWatch admin password different from the console.
+Doing so will limit the success of a shared credential attack via MailWatch
+on eFa to gain root access.
+
+If you cannnot update to 3.0.1.9 or have problems, the following steps are
+strongly recommended to keep your appliance safe until you can update
+successfully:
+
+1) Rotate your admin passwords in the console and MailWatch UI and make
+   each one different than the other to prevent a shared credential
+   attack.
+
+2) Install mod_security and mod_evasive to provide some security in front
+   of the vulnerable code.
+   
+3) Inform your MailWatch users (especially admins) to avoid opening multiple
+   tabs and performing general web browsing while working in MailWatch
+   
+##################### Important database changes ######################
+
+MailWatch 1.2.0 Release requires utf8mb4 character set support.
+CentOS 6.8 lacks this support in the stock mysql rpms.
+Therefore, upgrades to 3.0.1.9 will migrate the database from mysql
+to MariaDB 10.1.  This may be a big jump for some users and may want
+to perform additional testing prior to upgrading.
+
 ################ Important Info -- Custom Tweaks ######################
 
 Many EFA users have modified their EFA installations and made tweaks
-that may "disappear" after an update to 3.0.1.8.
+that may "disappear" after an update to 3.0.1.9.
 
 Updated files have been automatically backed up to the following
 location:
@@ -75,14 +110,14 @@ location:
 ########################## Known Issues ###############################
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
-install itself after updating to 3.0.1.8.  Reapply VMware-Tools
-after updating to 3.0.1.8.  Run the following command to remove
+install itself after updating to 3.0.1.9.  Reapply VMware-Tools
+after updating to 3.0.1.9.  Run the following command to remove
 open-vm-tools:
 
 sudo rpm -e open-vm-tools
 
 2) Error, "could not search" when logging into MailWatch after
-updating to 3.0.1.8
+updating to 3.0.1.9
 
 This occurs when Active Directory integration is enabled.
 
