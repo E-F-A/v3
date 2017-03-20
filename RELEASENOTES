@@ -55,9 +55,6 @@ EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
 if present.
 
-After updating, please run "Update GeoIP Database" update as soon as
-possible from MailWatch under Tools/Links.
-
 #######################################################################
 
 #################### Important Security Notice ########################
@@ -83,10 +80,10 @@ successfully:
 
 2) Install mod_security and mod_evasive to provide some security in front
    of the vulnerable code.
-   
+
 3) Inform your MailWatch users (especially admins) to avoid opening multiple
    tabs and performing general web browsing while working in MailWatch
-   
+
 ##################### Important database changes ######################
 
 MailWatch 1.2.0 Release requires utf8mb4 character set support.
