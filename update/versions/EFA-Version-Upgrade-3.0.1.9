@@ -534,6 +534,8 @@ function efa_version()
 EOF
       sed -i "/^    echo mailwatch_version/a \    echo ' running on ' . efa_version();" /var/www/html/mailscanner/functions.php
 
+      /usr/local/sbin/geoip_update_cmd.php
+
       service httpd start
       service MailScanner start
   fi
