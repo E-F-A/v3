@@ -103,6 +103,7 @@ func_mariadbrepo () {
 func_mariadb () {
     echo "Mysql configuration"
     ln -s /etc/init.d/mysql /etc/init.d/mysqld
+    chkconfig mysql off
     service mysqld start
 
     # remove default security flaws from MySQL.

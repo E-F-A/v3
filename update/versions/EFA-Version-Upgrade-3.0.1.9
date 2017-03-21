@@ -252,7 +252,8 @@ function upgrade-mariadb() {
   fi
 
   ln -s /etc/init.d/mysql /etc/init.d/mysqld
-  chkconfig mysql on
+  chkconfig mysqld on
+  chkconfig mysql off
 
   # Success!
 }
