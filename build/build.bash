@@ -93,7 +93,7 @@ func_epelrepo () {
 # +---------------------------------------------------+
 func_mariadbrepo () {
   cd /etc/yum.repos.d/
-  /usr/bin/wget $smirror/build/$VERSION/mariadb.repo
+  /usr/bin/wget $smirror/build/$version/mariadb.repo
 }
 # +---------------------------------------------------+
 
