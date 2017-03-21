@@ -84,8 +84,8 @@ function run_update() {
 
   # Install Apache Mod_Security & Mod_evasive
   yum -y install mod_security mod_security_crs mod_security_crs-extras mod_evasive
-  # Allow access on IP for users that don't use FQDN's
-  sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n&.' /etc/httpd/conf.d/mod_security.conf
+  # Allow access on IP for users that don't use FQDN's and allow root@ email addresses
+  sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n    SecRuleRemoveById 950908\n\n&.' /etc/httpd/conf.d/mod_security.conf
 
   # Configure some Apache Security Items
   # set X-XSS-Protection header
@@ -515,6 +515,9 @@ EOF
       else
         sed -i "/^define('SHOW_GREYLIST'/ c\define('SHOW_GREYLIST', false);" /var/www/html/mailscanner/conf.php
       fi
+
+      # Little CSS fix for overall menu width
+      sed -i "/^    min-width: 960px;/ c\    min-width: 1060px;" /var/www/html/mailscanner/style.css
 
       # Issue #39 Add link for Webmin in MailWatch
       sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php

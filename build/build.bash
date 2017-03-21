@@ -562,8 +562,8 @@ func_apache () {
     sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellcmd,eval,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,syslog,system,xmlrpc_entity_decode,curl_multi_exec' /etc/php.ini
 
     # Add mod_security
-    # Allow access on IP for users that don't use FQDN's
-    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n&.' /etc/httpd/conf.d/mod_security.conf
+    # Allow access on IP for users that don't use FQDN's and allow root@ email addresses
+    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n    SecRuleRemoveById 950908\n\n&.' /etc/httpd/conf.d/mod_security.conf
 
     # Remove Server Signatures
     sed -i "/^ServerSignature/ c\ServerSignature Off" /etc/httpd/conf/httpd.conf
@@ -819,6 +819,9 @@ EOF
     perl Makefile.PL
     make
     make install
+    
+    # Little CSS fix for overall menu width
+    sed -i "/^    min-width: 960px;/ c\    min-width: 1060px;" /var/www/html/mailscanner/style.css
 
     # Issue #322 Geoip update during EFA-Init
     wget -O /usr/local/sbin/geoip_update_cmd.php $gitdlurl/EFA/geoip_update_cmd.php
