@@ -297,7 +297,7 @@ function update-mailwatch() {
       mv -f SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom
       mv -f SQLSpamSettings.pm /usr/share/MailScanner/perl/custom/
 
-      # Update cron jobs to new filenamesv
+      # Update cron jobs to new filenames
       cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
 #!/bin/bash
 
@@ -311,6 +311,17 @@ EOF
 /usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
 /usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1      
 EOF
+
+      touch /var/www/html/index.html
+      echo "<!DOCTYPE html>" > /var/www/html/index.html
+      echo "<html>" >> /var/www/html/index.html
+      echo " <head>" >> /var/www/html/index.html
+      echo "  <title>MailWatch</title>" >> /var/www/html/index.html
+      echo "  <meta http-equiv=\"refresh\" content=\"0; url=/mailscanner/\" />" >> /var/www/html/index.html
+      echo " </head>" >> /var/www/html/index.html
+      echo " <body>" >> /var/www/html/index.html
+      echo " </body>" >> /var/www/html/index.html
+      echo "</html>" >> /var/www/html/index.html
 
       cd /usr/src/EFA/1.2.0-$MAILWATCHBRANCH
       mv tools /usr/local/bin/mailwatch
