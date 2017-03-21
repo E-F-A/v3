@@ -1,0 +1,41 @@
+#!/bin/sh
+
+TMP="/var/tmp"
+TMPFOLDER="$TMP/eFaDebug"
+TMPMAIL="$TMP/eFaDebugMail"
+
+# Delete the TMP Folder if it exists and create a new one
+if [ ! -d "$TMPFOLDER" ]; then
+        rm -rf "$TMPFOLDER"
+        mkdir "$TMPFOLDER"
+fi
+
+mkdir $TMPFOLDER/configs
+mkdir $TMPFOLDER/stats
+mkdir $TMPFOLDER/logs
+
+# Generate some stats from the running system
+ifconfig                >> $TMPFOLDER/stats/ifconfig.txt
+ps -ef f                >> $TMPFOLDER/stats/ps.txt
+df -h                   >> $TMPFOLDER/stats/df.txt
+netstat -an             >> $TMPFOLDER/stats/netstat.txt
+iptables -L -v -n       >> $TMPFOLDER/stats/iptables.txt
+getenforce              >> $TMPFOLDER/stats/getenforce.txt
+uptime                  >> $TMPFOLDER/stats/uptime.txt
+blkid                   >> $TMPFOLDER/stats/blkid.txt
+yum list installed      >> $TMPFOLDER/stats/yum.txt
+lspci                   >> $TMPFOLDER/stats/lspci.txt
+cat /proc/meminfo       >> $TMPFOLDER/stats/meminfo.txt
+cat /proc/cpuinfo       >> $TMPFOLDER/stats/cpuinfo.txt
+cat /proc/vmstat        >> $TMPFOLDER/stats/vmstat.txt
+cat /proc/version       >> $TMPFOLDER/stats/version.txt
+
+tar czf $TMPFOLDER/configs/etc.tar.gz /etc/
+tar czf $TMPFOLDER/logs/logs.tar.gz /var/log/
+
+# Generate tar.gz file with all files
+echo "please enter a password for the debug file"
+echo "Share the password and debug file with eFa developers only!"
+zip -q -r -e $TMP/eFaDebugFile-`hostname`.zip $TMPFOLDER
+
+rm -rf $TMPFOLDER
