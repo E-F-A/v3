@@ -142,9 +142,13 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -153,10 +157,13 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
-     yum -y remove MariaDB-server MariaDB-client
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -166,14 +173,19 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
-     yum -y remove MariaDB-server MariaDB-client
      service mysql stop
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -185,14 +197,18 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
-     # Try to remove again...
-     yum -y remove MariaDB-server MariaDB-client
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -207,13 +223,18 @@ function upgrade-mariadb() {
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
      # Remove existing packages
-     yum -y remove MariaDB-server MariaDB-client
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -222,14 +243,20 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
+     service mysql stop
      # Remove existing packages
-     yum -y remove MariaDB-server MariaDB-client
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -240,13 +267,18 @@ function upgrade-mariadb() {
      echo "MariaDB Upgrade Failed, rolling back"
      # Remove existing packages
      service mysql stop
-     yum -y remove MariaDB-server MariaDB-client
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
