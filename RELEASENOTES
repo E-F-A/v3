@@ -66,7 +66,7 @@ SGWI interfaces that can allow an attacker to escalate privileges in eFa.
 
 Because of these vulnerabilities, if you are using the same password for
 the console as you are for MailWatch (many folks are), please take a moment
-to change make your MailWatch admin password different from the console.
+to make your MailWatch admin password different from the console.
 Doing so will limit the success of a shared credential attack via MailWatch
 on eFa to gain root access.
 
