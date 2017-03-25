@@ -664,15 +664,15 @@ func_mailwatch () {
     # Issue #166 MailWatch cron job not executing contents
     cat > /etc/cron.daily/mailwatch << 'EOF'
 #!/bin/bash
-/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_db_clean.php >> /dev/null 2>&1
-/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
-/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_db_clean.php >> /dev/null 2>&1
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1
 EOF
     cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
 #!/bin/bash
 
-/usr/bin/php /var/www/html/mailscanner/mailwatch_postfix_relay.php --refresh
-/usr/bin/php /var/www/html/mailscanner/mailwatch_mailscanner_relay.php --refresh
+/usr/bin/php /usr/local/bin/tools/Postfix_relay/mailwatch_postfix_relay.php --refresh
+/usr/bin/php /usr/local/bin/tools/Postfix_relay/mailwatch_mailscanner_relay.php --refresh
 EOF
     chmod +x /etc/cron.daily/mailwatch
     chmod +x /etc/cron.hourly/mailwatch_relay.sh
