@@ -666,7 +666,7 @@ func_mailwatch () {
 #!/bin/bash
 /usr/bin/mailwatch/tools/Cron_jobs/mailwatch_db_clean.php >> /dev/null 2>&1
 /usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
-/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1      
+/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1
 EOF
     cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
 #!/bin/bash
@@ -819,7 +819,7 @@ EOF
     perl Makefile.PL
     make
     make install
-    
+
     # Little CSS fix for overall menu width
     sed -i "/^    min-width: 960px;/ c\    min-width: 1060px;" /var/www/html/mailscanner/style.css
 
@@ -1407,14 +1407,14 @@ func_cleanup () {
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
     # TODO make this not happen if we run the script from a VPS install
-    dd if=/dev/zero of=/filler bs=1000
-    rm -f /filler
-    dd if=/dev/zero of=/tmp/filler bs=1000
-    rm -f /tmp/filler
-    dd if=/dev/zero of=/boot/filler bs=1000
-    rm -f /boot/filler
-    dd if=/dev/zero of=/var/filler bs=1000
-    rm -f /var/filler
+    #dd if=/dev/zero of=/filler bs=1000
+    #rm -f /filler
+    #dd if=/dev/zero of=/tmp/filler bs=1000
+    #rm -f /tmp/filler
+    #dd if=/dev/zero of=/boot/filler bs=1000
+    #rm -f /boot/filler
+    #dd if=/dev/zero of=/var/filler bs=1000
+    #rm -f /var/filler
 
 }
 # +---------------------------------------------------+
