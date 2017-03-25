@@ -57,6 +57,14 @@ function run_update() {
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
 
+  ##### Additional Space check for db upgrade #####
+  VARFREE=$(df -P /var | awk '{print $4}' | grep [0-9])
+  DBSIZE=$(du -c /var/lib/mysql | grep total | awk '{print $1}')
+  if [[ $VARFREE < $(($DBSIZE * 3)) ]]; then
+    echo "Error:  Free space on /var not sufficient to safely upgrade to MariaDB"
+    abort
+  fi
+  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
@@ -124,9 +132,7 @@ function upgrade-mariadb() {
 
   # Additional backup
   mkdir -p /var/EFA/backup/$VERSION/etc > /dev/null 2>&1
-  mkdir -p /var/EFA/backup/$VERSION/var/lib > /dev/null 2>&1
   cp /etc/my.cnf /var/EFA/backup/$VERSION/etc/my.cnf
-  cp -R /var/lib/mysql /var/EFA/backup/$VERSION/var/lib/mysql
 
   # Phase 1 Upgrade to MariaDB 5.5
   # Add mariadb5 repo
