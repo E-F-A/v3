@@ -1407,14 +1407,14 @@ func_cleanup () {
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
     # TODO make this not happen if we run the script from a VPS install
-    #dd if=/dev/zero of=/filler bs=1000
-    #rm -f /filler
-    #dd if=/dev/zero of=/tmp/filler bs=1000
-    #rm -f /tmp/filler
-    #dd if=/dev/zero of=/boot/filler bs=1000
-    #rm -f /boot/filler
-    #dd if=/dev/zero of=/var/filler bs=1000
-    #rm -f /var/filler
+    dd if=/dev/zero of=/filler bs=4096
+    rm -f /filler
+    dd if=/dev/zero of=/tmp/filler bs=4096
+    rm -f /tmp/filler
+    dd if=/dev/zero of=/boot/filler bs=4096
+    rm -f /boot/filler
+    dd if=/dev/zero of=/var/filler bs=4096
+    rm -f /var/filler
 
 }
 # +---------------------------------------------------+
