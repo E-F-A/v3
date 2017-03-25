@@ -671,8 +671,8 @@ EOF
     cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
 #!/bin/bash
 
-/usr/bin/php /usr/local/bin/tools/Postfix_relay/mailwatch_postfix_relay.php --refresh
-/usr/bin/php /usr/local/bin/tools/Postfix_relay/mailwatch_mailscanner_relay.php --refresh
+/usr/bin/php /usr/local/bin/tools/Postfix_relay/mailwatch_postfix_relay.php --refresh >>/dev/null 2>&1
+/usr/bin/php /usr/local/bin/tools/Postfix_relay/mailwatch_mailscanner_relay.php --refresh >>/dev/null 2>&1
 EOF
     chmod +x /etc/cron.daily/mailwatch
     chmod +x /etc/cron.hourly/mailwatch_relay.sh
