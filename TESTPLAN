@@ -1,4 +1,14 @@
 ############################################################
+EFA Version 3.0.1.9 TEST PLAN
+############################################################
+
+Confirm Successful upgrade to MariaDB PASSED
+Confirm Successful upgrade to MailWatch 1.2.0 PASSED
+Confirm Successful upgrade to SQLGrey Web Interface PASSED
+Internal testing of MailWatch Security PASSED
+Internal testing of SGWI Security PASSED
+
+############################################################
 EFA Version 3.0.1.8 TEST PLAN
 ############################################################
 

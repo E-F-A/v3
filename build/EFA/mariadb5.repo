@@ -1,0 +1,9 @@
+# MariaDB 5.5 CentOS repository list - created 2017-03-12 11:48 UTC
+# http://downloads.mariadb.org/mariadb/repositories/
+[mariadb]
+name = MariaDB
+baseurl = http://yum.mariadb.org/5.5/centos6-amd64
+mirrorlist=https://dl.efa-project.org/rpm/mirrors-mariadb-5.5-centos6
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=1
+enabled=1

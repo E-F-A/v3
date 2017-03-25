@@ -36,9 +36,9 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="1.2.0"
-MAILWATCHRELEASE="1.2.0"
-MAILWATCHBRANCH="1.2.0"
+MAILWATCHVERSION="0ad6969"
+MAILWATCHRELEASE="1.2.1-dev"
+MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="0.7.0"
 WEBMINVERSION="1.770-1"
@@ -57,6 +57,14 @@ function run_update() {
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
 
+  ##### Additional Space check for db upgrade #####
+  VARFREE=$(df -P /var | awk '{print $4}' | grep [0-9])
+  DBSIZE=$(du -c /var/lib/mysql | grep total | awk '{print $1}')
+  if [[ $VARFREE < $(($DBSIZE * 3)) ]]; then
+    echo "Error:  Free space on /var not sufficient to safely upgrade to MariaDB"
+    abort
+  fi
+  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
@@ -84,8 +92,8 @@ function run_update() {
 
   # Install Apache Mod_Security & Mod_evasive
   yum -y install mod_security mod_security_crs mod_security_crs-extras mod_evasive
-  # Allow access on IP for users that don't use FQDN's
-  sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n&.' /etc/httpd/conf.d/mod_security.conf
+  # Allow access on IP for users that don't use FQDN's and allow root@ email addresses
+  sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n    SecRuleRemoveById 950908\n\n&.' /etc/httpd/conf.d/mod_security.conf
 
   # Configure some Apache Security Items
   # set X-XSS-Protection header
@@ -124,9 +132,7 @@ function upgrade-mariadb() {
 
   # Additional backup
   mkdir -p /var/EFA/backup/$VERSION/etc > /dev/null 2>&1
-  mkdir -p /var/EFA/backup/$VERSION/var/lib > /dev/null 2>&1
   cp /etc/my.cnf /var/EFA/backup/$VERSION/etc/my.cnf
-  cp -R /var/lib/mysql /var/EFA/backup/$VERSION/var/lib/mysql
 
   # Phase 1 Upgrade to MariaDB 5.5
   # Add mariadb5 repo
@@ -142,9 +148,13 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -153,10 +163,13 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
-     yum -y remove MariaDB-server MariaDB-client
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -166,14 +179,19 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
-     yum -y remove MariaDB-server MariaDB-client
      service mysql stop
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -185,14 +203,18 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
-     # Try to remove again...
-     yum -y remove MariaDB-server MariaDB-client
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb5.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -207,13 +229,18 @@ function upgrade-mariadb() {
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
      # Remove existing packages
-     yum -y remove MariaDB-server MariaDB-client
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -222,14 +249,20 @@ function upgrade-mariadb() {
   if [[ $? -ne 0 ]]; then
      # Something went wrong, rollback
      echo "MariaDB Upgrade Failed, rolling back"
+     service mysql stop
      # Remove existing packages
-     yum -y remove MariaDB-server MariaDB-client
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
@@ -240,19 +273,25 @@ function upgrade-mariadb() {
      echo "MariaDB Upgrade Failed, rolling back"
      # Remove existing packages
      service mysql stop
-     yum -y remove MariaDB-server MariaDB-client
+     rpm -e --nodeps MariaDB-server
+     rpm -e --nodeps MariaDB-common
+     rpm -e --nodeps MariaDB-client
+     rpm -e --nodeps MariaDB-compat
      # Restore DBs
+     rm -rf /var/lib/mysql_mariadb_failed >/dev/null 2>&1
      mv /var/lib/mysql /var/lib/mysql_mariadb_failed
      cp -R /var/EFA/backup/$VERSION/var/lib/mysql /var/lib/mysql
+     chown -R mysql:mysql /var/lib/mysql
      rm -f /etc/yum.repos.d/mariadb.repo
      yum clean all
-     yum -y install mysql-server
+     yum -y install mysql-server mysql mysql-libs
      service mysqld start
      abort
   fi
 
   ln -s /etc/init.d/mysql /etc/init.d/mysqld
-  chkconfig mysql on
+  chkconfig mysqld on
+  chkconfig mysql off
 
   # Success!
 }
@@ -287,27 +326,40 @@ function update-mailwatch() {
       cd /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/MailScanner_perl_scripts
 
       # Issue #66  Grab Passwords from /etc/EFA-Config
-      sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" 00MailWatchConf.pm
-      sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" 00MailWatchConf.pm
-      mv -f 00MailWatchConf.pm /usr/share/MailScanner/perl/custom/
+      # Quickfix for MailScanner failure issue in commit
+      sed -i "/^#!\/usr\/bin\/perl/ a\\\npackage MailScanner::CustomConfig;" MailWatchConf.pm
+      sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatchConf.pm
+      sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatchConf.pm
+      mv -f MailWatchConf.pm /usr/share/MailScanner/perl/custom/
       mv -f MailWatch.pm /usr/share/MailScanner/perl/custom/
       mv -f SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom
       mv -f SQLSpamSettings.pm /usr/share/MailScanner/perl/custom/
 
-      # Update cron jobs to new filenamesv
+      # Update cron jobs to new filenames
       cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
 #!/bin/bash
 
-/usr/bin/php /var/www/html/mailscanner/mailwatch_postfix_relay.php --refresh
-/usr/bin/php /var/www/html/mailscanner/mailwatch_mailscanner_relay.php --refresh
+/usr/bin/php /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_postfix_relay.php --refresh >>/dev/null 2>&1
+/usr/bin/php /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_mailscanner_relay.php --refresh >>/dev/null 2>&1
 EOF
-
       cat > /etc/cron.daily/mailwatch << 'EOF'
 #!/bin/bash
-/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_db_clean.php >> /dev/null 2>&1
-/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
-/usr/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1      
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_db_clean.php >> /dev/null 2>&1
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1      
 EOF
+      chmod +x /etc/cron.daily/mailwatch
+      chmod +x /etc/cron.hourly/mailwatch_relay.sh
+      touch /var/www/html/index.html
+      echo "<!DOCTYPE html>" > /var/www/html/index.html
+      echo "<html>" >> /var/www/html/index.html
+      echo " <head>" >> /var/www/html/index.html
+      echo "  <title>MailWatch</title>" >> /var/www/html/index.html
+      echo "  <meta http-equiv=\"refresh\" content=\"0; url=/mailscanner/\" />" >> /var/www/html/index.html
+      echo " </head>" >> /var/www/html/index.html
+      echo " <body>" >> /var/www/html/index.html
+      echo " </body>" >> /var/www/html/index.html
+      echo "</html>" >> /var/www/html/index.html
 
       cd /usr/src/EFA/1.2.0-$MAILWATCHBRANCH
       mv tools /usr/local/bin/mailwatch
@@ -325,6 +377,11 @@ EOF
 
       # Merge conf.php and conf.php.example changes
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
+
+      LDAPSSLPRESENT=`grep define\(\'LDAP_SSL\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $LDAPSSLPRESENT ]]; then
+        sed -i "/^define('USE_LDAP'/ a\define('LDAP_SSL', false); // Set to true if using LDAP with SSL encryption." /var/www/html/mailscanner/conf.php
+      fi
 
       LDAPFILTERPRESENT=`grep define\(\'LDAP_FILTER\' /var/www/html/mailscanner/conf.php`
       if [[ -z $LDAPFILTERPRESENT ]]; then
@@ -497,6 +554,9 @@ EOF
         sed -i "/^define('SHOW_GREYLIST'/ c\define('SHOW_GREYLIST', false);" /var/www/html/mailscanner/conf.php
       fi
 
+      # Little CSS fix for overall menu width
+      sed -i "/^    min-width: 960px;/ c\    min-width: 1060px;" /var/www/html/mailscanner/style.css
+
       # Issue #39 Add link for Webmin in MailWatch
       sed -i "/^    echo '<li><a href=\"mailgraph.php\">/a\    \$hostname = gethostname\(\);\n    echo '<li><a href=\"https://' \. \$hostname \. ':10000\">Webmin</a>';" other.php
 
@@ -528,6 +588,8 @@ function efa_version()
 }
 EOF
       sed -i "/^    echo mailwatch_version/a \    echo ' running on ' . efa_version();" /var/www/html/mailscanner/functions.php
+
+      /usr/bin/php /usr/local/sbin/geoip_update_cmd.php
 
       service httpd start
       service MailScanner start

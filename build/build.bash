@@ -25,16 +25,16 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.1.8"
+version="3.0.1.9"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
-yumexclude="kernel* mysql* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="161844b"
-MAILWATCHRELEASE="1.2.0 - RC4"
+yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
+MAILWATCHVERSION="0ad6969"
+MAILWATCHRELEASE="1.2.1-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
@@ -66,14 +66,15 @@ func_efarepo () {
    rpm --import $smirror/rpm/RPM-GPG-KEY-E.F.A.Project
    cd /etc/yum.repos.d/
    /usr/bin/wget $smirror/rpm/EFA.repo
-   yum install -y unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin perl-NetAddr-IP \
+   yum install -y MariaDB-server MariaDB-client unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin perl-NetAddr-IP \
    re2c postfix perl-Digest-SHA perl-Mail-SPF perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
    perl-IO-Socket-IP perl-libnet bzip2-devel perl-File-ShareDir-Install perl-LDAP perl-IO-Compress-Bzip2 \
    perl-Net-DNS-Nameserver spamassassin MailScanner clamav-unofficial-sigs perl-Mail-IMAPClient \
    perl-OLE-Storage_Lite perl-Inline perl-Text-Balanced perl-Net-CIDR-Lite perl-Sys-Hostname-Long tnef perl-Net-Patricia \
    perl-IO-Multiplex perl-File-Tail perl-Data-Dump perl-Sys-SigAction perl-Net-Netmask perl-Filesys-Df perl-Net-CIDR \
-   perl-BerkeleyDB perl-Net-Server perl-Convert-TNEF perl-IP-Country
+   perl-BerkeleyDB perl-Net-Server perl-Convert-TNEF perl-IP-Country mod_security mod_security_crs mod_security_crs-extras \
+   mod_evasive
 
 }
 # +---------------------------------------------------+
@@ -88,10 +89,21 @@ func_epelrepo () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# configure MySQL
+# add MariaDB repository
 # +---------------------------------------------------+
-func_mysql () {
+func_mariadbrepo () {
+  cd /etc/yum.repos.d/
+  /usr/bin/wget $smirror/build/$version/mariadb.repo
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# configure MariaDB
+# +---------------------------------------------------+
+func_mariadb () {
     echo "Mysql configuration"
+    ln -s /etc/init.d/mysql /etc/init.d/mysqld
+    chkconfig mysql off
     service mysqld start
 
     # remove default security flaws from MySQL.
@@ -111,9 +123,6 @@ func_mysql () {
     cd /usr/src/EFA
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/create.sql
     /usr/bin/mysql -u root -p"$password" < /usr/src/EFA/create.sql
-
-    # Create autorelease table
-    /usr/bin/mysql -u root -p"$password" mailscanner -e 'CREATE TABLE `autorelease` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `msg_id` varchar(255) NOT NULL, `uid` varchar(255) NOT NULL, PRIMARY KEY (`id`) );'
 
     # Create and populate efa db
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/efatokens.sql
@@ -363,7 +372,6 @@ func_mailscanner () {
     ln -s /usr/share/MailScanner/perl/MailScanner /usr/share/MailScanner/MailScanner
     ln -s /usr/share/MailScanner/perl/custom /usr/share/MailScanner/perl/MailScanner/CustomFunctions
     ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
-    ln -s /etc/MailScanner/mcp/mcp.spamassassin.conf /etc/MailScanner/mcp/mcp.spamassassin.conf
     ln -s /etc/MailScanner/spamassassin.conf /etc/MailScanner/spam.assassin.prefs.conf
 
     sed -i "/^run_mailscanner/ c\run_mailscanner=1" /etc/MailScanner/defaults
@@ -554,9 +562,8 @@ func_apache () {
     sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellcmd,eval,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,syslog,system,xmlrpc_entity_decode,curl_multi_exec' /etc/php.ini
 
     # Add mod_security
-    yum -y install mod_security mod_security_crs mod_security_crs-extras mod_evasive
-      # Allow access on IP for users that don't use FQDN's
-      sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n&.' /etc/httpd/conf.d/mod_security.conf
+    # Allow access on IP for users that don't use FQDN's and allow root@ email addresses
+    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n    SecRuleRemoveById 950908\n\n&.' /etc/httpd/conf.d/mod_security.conf
 
     # Remove Server Signatures
     sed -i "/^ServerSignature/ c\ServerSignature Off" /etc/httpd/conf/httpd.conf
@@ -638,24 +645,14 @@ func_mailwatch () {
 
     # Set up connection for MailWatch
     cd MailScanner_perl_scripts
-    sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatch.pm
-    # Issue #66 grab all passwords from EFA-Config
-    #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" MailWatch.pm
-    sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatch.pm
+    # Quickfix for MailScanner failure issue in commit
+    sed -i "/^#!\/usr\/bin\/perl/ a\\\npackage MailScanner::CustomConfig;" MailWatchConf.pm
+    sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatchConf.pm
+    sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatchConf.pm
+    mv MailWatchConf.pm /usr/share/MailScanner/perl/custom/
     mv MailWatch.pm /usr/share/MailScanner/perl/custom/
-
-    # Set up SQLBlackWhiteList
-    sed -i "/^    my (\$db_user) =/ c\    my (\$db_user) = 'mailwatch';" SQLBlackWhiteList.pm
-    #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$password';" SQLBlackWhiteList.pm
-    sed -i "/^    my (\$db_pass) =/ c\    my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\n    open(\$fh, \"<\", \$pw_config);\n    if(\!\$fh) {\n      MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n      return;\n    }\n    my (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n    \$db_pass =~ s/MAILWATCHSQLPWD://;\n    \$db_pass =~ s/\\\n//;\n    close(\$fh);" SQLBlackWhiteList.pm
     mv SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom/
-
-    # Set up SQLSpamSettings
-    sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" SQLSpamSettings.pm
-    #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$password';" SQLSpamSettings.pm
-    sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" SQLSpamSettings.pm
     mv SQLSpamSettings.pm /usr/share/MailScanner/perl/custom/
-
 
     # Set up MailWatch tools
     cd ..
@@ -665,11 +662,20 @@ func_mailwatch () {
     chmod +x /usr/local/bin/mailwatch/tools/Cron_jobs/*
     touch /etc/cron.daily/mailwatch
     # Issue #166 MailWatch cron job not executing contents
-    echo "#!/bin/bash" > /etc/cron.daily/mailwatch
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/db_clean.php >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_maint.php --clean >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
-    echo "/usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php >> /dev/null 2>&1" >> /etc/cron.daily/mailwatch
+    cat > /etc/cron.daily/mailwatch << 'EOF'
+#!/bin/bash
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_db_clean.php >> /dev/null 2>&1
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1
+EOF
+    cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
+#!/bin/bash
+
+/usr/bin/php /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_postfix_relay.php --refresh >>/dev/null 2>&1
+/usr/bin/php /usr/local/bin/mailwatch/tools/Postfix_relay/mailwatch_mailscanner_relay.php --refresh >>/dev/null 2>&1
+EOF
     chmod +x /etc/cron.daily/mailwatch
+    chmod +x /etc/cron.hourly/mailwatch_relay.sh
     # Issue #30 filter non-spam from quarantine reports (regression fix)
     # sed -i "/^ ((to_address=%s) OR (to_domain=%s))$/ a\AND\n a.isspam>0" /usr/local/bin/mailwatch/tools/Cron_jobs/quarantine_report.php
 
@@ -717,7 +723,6 @@ func_mailwatch () {
     echo "  <meta http-equiv=\"refresh\" content=\"0; url=/mailscanner/\" />" >> /var/www/html/index.html
     echo " </head>" >> /var/www/html/index.html
     echo " <body>" >> /var/www/html/index.html
-    echo "   <a href=\"/mailscanner/\">Click Here for MailWatch</a>" >> /var/www/html/index.html
     echo " </body>" >> /var/www/html/index.html
     echo "</html>" >> /var/www/html/index.html
 
@@ -731,20 +736,17 @@ func_mailwatch () {
 
     # EFA Branding
     cd /var/www/html/mailscanner/images
-    wget --no-check-certificate $gitdlurl/EFA/EFAlogo-47px.gif
     wget --no-check-certificate $gitdlurl/EFA/EFAlogo-79px.png
     #mv mailwatch-logo.gif mailwatch-logo.gif.orig
     mv mailwatch-logo.png mailwatch-logo.png.orig
-    mv mailscannerlogo.gif mailscannerlogo.gif.orig
     # png image looks much better -- linking to png instead
     ln -s EFAlogo-79px.png mailwatch-logo.png
-    ln -s EFAlogo-47px.gif mailscannerlogo.gif
     ln -s EFAlogo-79px.png mailwatch-logo.gif
 
     # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
     # mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
     # ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
-    sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/login.php
+    sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/style.css
 
     # Change the yellow to match website colors..
     sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
@@ -770,21 +772,12 @@ function efa_version()
   return file_get_contents( '/etc/EFA-Version', NULL, NULL, 0, 15 );
 }
 EOF
-      sed -i "/^    echo mailwatch_version/a \    echo ' running on ' . efa_version();" /var/www/html/mailscanner/functions.php
+    sed -i "/^    echo mailwatch_version/a \    echo ' running on ' . efa_version();" /var/www/html/mailscanner/functions.php
+
+    /usr/bin/php /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/upgrade.php --skip-user-confirm /var/www/html/mailscanner/functions.php
 
     # Issue #308 ClamAV Status Page blank
     usermod apache -G mtagroup
-
-    # Postfix Relay Info
-########################################################################
-  cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
-#!/bin/bash
-
-/usr/bin/php /var/www/html/mailscanner/postfix_relay.php --refresh
-/usr/bin/php /var/www/html/mailscanner/mailscanner_relay.php --refresh
-EOF
-########################################################################
-    chmod 755 /etc/cron.hourly/mailwatch_relay.sh
 
     # Place the learn and release scripts
     cd /var/www/cgi-bin
@@ -827,6 +820,9 @@ EOF
     make
     make install
 
+    # Little CSS fix for overall menu width
+    sed -i "/^    min-width: 960px;/ c\    min-width: 1060px;" /var/www/html/mailscanner/style.css
+
     # Issue #322 Geoip update during EFA-Init
     wget -O /usr/local/sbin/geoip_update_cmd.php $gitdlurl/EFA/geoip_update_cmd.php
 
@@ -844,15 +840,16 @@ EOF
 # +---------------------------------------------------+
 func_sgwi () {
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/sqlgreywebinterface-1.1.6.tgz
-    tar -xzvf sqlgreywebinterface-1.1.6.tgz
-    cd sqlgreywebinterface-1.1.6
+    wget $mirror/$mirrorpath/sqlgreywebinterface-1.1.9.tgz
+    tar -xzvf sqlgreywebinterface-1.1.9.tgz
+    cd sqlgreywebinterface-1.1.9
     # Place next to mailwatch
     mkdir /var/www/html/sgwi
     mv * /var/www/html/sgwi
 
     # add db credential
     # Issue #66 Grab all passwords from EFA-Config
+    sed -i '/^$db_user/ c\$db_user        = "sqlgrey";' /var/www/html/sgwi/includes/config.inc.php
     sed -i "/^\$db_pass/ c\$efa_array = preg_grep('/^SQLGREYSQLPWD/', file('/etc/EFA-Config'));\nforeach(\$efa_array as \$num => \$line) {\n  if (\$line) {\n    \$db_pass = chop(preg_replace('/^SQLGREYSQLPWD:(.*)/','\$1',\$line));\n  }\n}" /var/www/html/sgwi/includes/config.inc.php
 
     # Add greylist to mailwatch menu
@@ -1410,13 +1407,13 @@ func_cleanup () {
     # zero disks for better compression (when creating VM images)
     # this can take a while so disabled for now until we start creating images.
     # TODO make this not happen if we run the script from a VPS install
-    dd if=/dev/zero of=/filler bs=1000
+    dd if=/dev/zero of=/filler bs=4096
     rm -f /filler
-    dd if=/dev/zero of=/tmp/filler bs=1000
+    dd if=/dev/zero of=/tmp/filler bs=4096
     rm -f /tmp/filler
-    dd if=/dev/zero of=/boot/filler bs=1000
+    dd if=/dev/zero of=/boot/filler bs=4096
     rm -f /boot/filler
-    dd if=/dev/zero of=/var/filler bs=1000
+    dd if=/dev/zero of=/var/filler bs=4096
     rm -f /var/filler
 
 }
@@ -1436,8 +1433,9 @@ function main() {
     func_prebuild
     func_upgradeOS
     func_epelrepo
+    func_mariadbrepo
     func_efarepo
-    func_mysql
+    func_mariadb
     func_postfix
     func_mailscanner
     func_spam_clamav
