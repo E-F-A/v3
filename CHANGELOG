@@ -5,6 +5,7 @@ EFA Version 3.0.1.9 Changes
 Added Apache mod_security by default
 Added Apache X-XSS-Protection header
 Updated MailWatch and Sqlgrey Web Interface (Security Fixes)
+Changed and updated database engine to MariaDB (10.1)
 
 ############################################################
 EFA Version 3.0.1.8 Changes

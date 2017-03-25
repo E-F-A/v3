@@ -86,7 +86,7 @@ successfully:
 
 ##################### Important database changes ######################
 
-MailWatch 1.2.0 Release requires utf8mb4 character set support.
+MailWatch 1.2.1-dev has utf8mb4 character set support.
 CentOS 6.8 lacks this support in the stock mysql rpms.
 Therefore, upgrades to 3.0.1.9 will migrate the database from mysql
 to MariaDB 10.1.  This may be a big jump for some users and may want
