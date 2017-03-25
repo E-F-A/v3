@@ -346,7 +346,7 @@ EOF
 #!/bin/bash
 /usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_db_clean.php >> /dev/null 2>&1
 /usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_maint.php --clean >> /dev/null 2>&1
-/usr/localbin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1      
+/usr/local/bin/mailwatch/tools/Cron_jobs/mailwatch_quarantine_report.php >> /dev/null 2>&1      
 EOF
       chmod +x /etc/cron.daily/mailwatch
       chmod +x /etc/cron.hourly/mailwatch_relay.sh
