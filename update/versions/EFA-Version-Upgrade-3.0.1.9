@@ -59,7 +59,7 @@ function run_update() {
 
   ##### Additional Space check for db upgrade #####
   VARFREE=$(df -P /var | awk '{print $4}' | grep [0-9])
-  DBSIZE=$(du -c /var/lib/mysql | grep total | awk '{print $1}')
+  DBSIZE=$(du -c /var/lib/mysql | tail -n1 | awk '{print $1}')
   if [[ $VARFREE -lt $(($DBSIZE * 3)) ]]; then
     echo "Error:  Free space on /var not sufficient to safely upgrade to MariaDB"
     abort
