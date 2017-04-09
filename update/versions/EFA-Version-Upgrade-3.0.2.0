@@ -75,27 +75,19 @@ function run_update() {
   # Update MailWatch
   update-mailwatch
 
-  # Mod Security Exceptions (TODO:  Document each rule)
-  RULE1PRESENT=$(grep 960017 /etc/httpd/conf.d/mod_security.conf)
-  if [ -z $RULE1PRESENT ]; then
-    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n\n\n&.' /etc/httpd/conf.d/mod_security.conf
-  fi
-  RULE2PRESENT=$(grep 950908 /etc/httpd/conf.d/mod_security.conf)
-  if [ -z $RULE2PRESENT ]; then
-    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960908\n\n\n&.' /etc/httpd/conf.d/mod_security.conf
-  fi
-  RULE3PRESENT=$(grep 950109 /etc/httpd/conf.d/mod_security.conf)
-  if [ -z $RULE3PRESENT ]; then
-    sed -i 's.</IfModule>.\n    SecRuleRemoveById 950109\n\n\n&.' /etc/httpd/conf.d/mod_security.conf
-  fi
-  RULE4PRESENT=$(grep 981173 /etc/httpd/conf.d/mod_security.conf)
-  if [ -z $RULE4PRESENT ]; then
-    sed -i 's.</IfModule>.\n    SecRuleRemoveById 981173\n\n\n&.' /etc/httpd/conf.d/mod_security.conf
-  fi
-  RULE5PRESENT=$(grep 981249 /etc/httpd/conf.d/mod_security.conf)
-  if [ -z $RULE5PRESENT ]; then
-    sed -i 's.</IfModule>.\n    SecRuleRemoveById 981249\n\n\n&.' /etc/httpd/conf.d/mod_security.conf
-  fi
+  # Mod Security Exceptions
+  cat > /etc/httpd/modsecurity.d/eFa_exceptions.conf << 'EOF'
+# Allow IP for hostname in URL
+SecRuleRemoveById 960017
+# SQL Injection false positive
+SecRuleRemoveById 950908
+# Multipart URL encoding false positive
+SecRuleRemoveById 950109
+# Unlimited special characters (such as passwords)
+SecRuleRemoveById 981173
+# SQL injection false positive
+SecRuleRemoveById 981249
+EOF
 
    # restart httpd after the changes
   /etc/init.d/httpd restart

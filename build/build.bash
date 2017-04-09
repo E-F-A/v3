@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.1.9"
+version="3.0.2.0"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -33,8 +33,8 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="0ad6969"
-MAILWATCHRELEASE="1.2.1-dev"
+MAILWATCHVERSION="a2c71e3"
+MAILWATCHRELEASE="1.2.3-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
