@@ -76,17 +76,29 @@ function run_update() {
   update-mailwatch
 
   # Mod Security Exceptions
-  cat > /etc/httpd/modsecurity.d/eFa_exceptions.conf << 'EOF'
-# Allow IP for hostname in URL
-SecRuleRemoveById 960017
-# SQL Injection false positive
-SecRuleRemoveById 950908
-# Multipart URL encoding false positive
-SecRuleRemoveById 950109
-# Unlimited special characters (such as passwords)
-SecRuleRemoveById 981173
-# SQL injection false positive
-SecRuleRemoveById 981249
+  cat >> /etc/httpd/conf.d/mod_security.conf << 'EOF'
+# BEGIN eFa exceptions block
+<IfModule mod_security2.c>
+    # Allow IP for hostname in URL
+    SecRuleRemoveById 960017
+    # SQL Injection false positive
+    SecRuleRemoveById 950908
+    # Multipart URL encoding false positive
+    SecRuleRemoveById 950109
+    # Special characters false positive
+    SecRuleRemoveById 981173
+    # SQL injection false positive
+    SecRuleRemoveById 981249
+    # Common injection testing false positive
+    SecRuleRemoveById 981318
+    # Character anomaly false positive
+    SecRuleRemoveById 960024
+    # SQL Authentication Bypass attempt false positive
+    SecRuleRemoveById 981245
+    # SQL Injection Probings false positive
+    SecRuleRemoveById 981243
+</IfModule>
+# END eFa exceptions block
 EOF
 
    # restart httpd after the changes
