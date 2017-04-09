@@ -1,4 +1,16 @@
 ############################################################
+EFA Version 3.0.2.0 TEST PLAN
+############################################################
+
+Confirm successful MailWatch update
+   Perform complex password tests
+   Perform W/B List tests (long)
+   Test report filters
+   Test session handling and timeouts
+   Confirm new options in conf.php present
+Confirm mod_security exceptions are active
+
+############################################################
 EFA Version 3.0.1.9 TEST PLAN
 ############################################################
 
