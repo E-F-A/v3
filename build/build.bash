@@ -610,6 +610,8 @@ func_apache () {
     SecRuleRemoveById 973335
     # PHP Injection attack false positive
     SecRuleRemoveById 959151
+    # SQL Hex Encoding false postitive
+    SecRuleRemoveById 981260
 </IfModule>
 # END eFa exceptions block
 EOF
