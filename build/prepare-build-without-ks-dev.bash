@@ -43,17 +43,17 @@ fi
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
-# Check if we use centos 6.8
+# Check if we use centos 6.9
 #----------------------------------------------------------------#
 CENTOS=`cat /etc/centos-release`
 
-if [[ "$CENTOS" == "CentOS release 6.8 (Final)" ]]
+if [[ "$CENTOS" == "CentOS release 6.9 (Final)" ]]
   then
-    echo "Good you are running CentOS 6.8 x64"
+    echo "Good you are running CentOS 6.9 x64"
 else
-  echo "You are not running CentOS 6.8"
+  echo "You are not running CentOS 6.9"
   echo "Unsupported system, stopping now"
-  echo "If you are running CentOS 6.x please do a manual upgrade to 6.8 before starting this build"
+  echo "If you are running CentOS 6.x please do a manual upgrade to 6.9 before starting this build"
   exit 1
 fi
 #----------------------------------------------------------------#
