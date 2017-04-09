@@ -709,6 +709,36 @@ function update-3.0.1.9() {
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
+# Update to 3.0.2.0
+#----------------------------------------------------------------#
+function update-3.0.2.0() {
+ # Is staging area clean?
+ [[ -n $STAGING ]] && rm -rf $STAGING/*
+
+  check_disk_space
+
+  # Check for kernel update prior to package download
+  VERSION="3.0.2.0"
+  update-kernel
+
+  UPDATE="EFA-Update-3.0.1.9-3.0.2.0.tar.gz"
+  download_update
+  check_md5
+
+  # Unpack update
+  cd $STAGING
+  tar xzvf $UPDATE
+  [[ $? -ne 0 ]] && abort
+  # Bypass noexec in /tmp
+  rm -f /var/EFA/update/EFA-Version-Upgrade
+  cp $STAGING/EFA-Version-Upgrade /var/EFA/update/EFA-Version-Upgrade
+  chmod 700 /var/EFA/update/EFA-Version-Upgrade
+  /var/EFA/update/EFA-Version-Upgrade
+  [[ $? -ne 0 ]] && abort
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
 # Function to download file
 #----------------------------------------------------------------#
 function download_update() {
