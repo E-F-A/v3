@@ -74,6 +74,10 @@ function run_update() {
 
   # Update MailWatch
   update-mailwatch
+  
+  # Cleanup of mod_security
+  sed -i "/SecRuleRemoveById 960017/d" /etc/httpd/conf.d/mod_security.conf
+  sed -i "/SecRuleRemoveById 950908/d" /etc/httpd/conf.d/mod_security.conf
 
   # Mod Security Exceptions
   cat >> /etc/httpd/conf.d/mod_security.conf << 'EOF'
@@ -97,6 +101,32 @@ function run_update() {
     SecRuleRemoveById 981245
     # SQL Injection Probings false positive
     SecRuleRemoveById 981243
+    # SQL Tautology false positive
+    SecRuleRemoveById 950901
+    # SQL Comment Sequence false positive
+    SecRuleRemoveById 981231
+    # SQL Comment-/Space-Obfuscated false positive
+    SecRuleRemoveById 981257
+    # MySQL Injections false positive
+    SecRuleRemoveById 981240
+    # SQL Operator false positive
+    SecRuleRemoveById 981319
+    # MSSQL Code execution false positive
+    SecRuleRemoveById 981255
+    # SQL Injection bypass false positive
+    SecRuleRemoveById 981244
+    # IE XSS Filters false positive
+    SecRuleRemoveById 973333
+    # HTML Tag Handler false positive
+    SecRuleRemoveById 973300
+    # SQL Injection bypass false positive
+    SecRuleRemoveById 981246
+    # SQL Injection probing false positive
+    SecRuleRemoveById 981242
+    # IE XSS Filters false positive
+    SecRuleRemoveById 973335
+    # PHP Injection attack false positive
+    SecRuleRemoveById 959151
 </IfModule>
 # END eFa exceptions block
 EOF
@@ -269,7 +299,7 @@ EOF
       # Add session handling option
       SESSIONNAME_PRESENT=`grep define\(\'SESSION_NAME\' /var/www/html/mailscanner/conf.php`
       if [[ -z $SESSIONNAME_PRESENT ]]; then
-          sed -i "/^define('LANG'/ a\\\n//Session Handling - conflicts can exist when the your environment makes use of multiple php sessions on the same server\n// to resolve this, uncomment the following option.  See https://github.com/mailwatch/MailWatch/issues/730 for more info\n//define('SESSION_NAME', 'MailWatch');" /var/www/html/mailscanner/conf.php
+          sed -i "/^define('LANG'/ a\\\n// Session Handling - conflicts can exist when the your environment makes use of multiple php sessions on the same server\n// to resolve this, uncomment the following option.  See https://github.com/mailwatch/MailWatch/issues/730 for more info\n// define('SESSION_NAME', 'MailWatch');" /var/www/html/mailscanner/conf.php
       fi
 
       # Add favicons back

@@ -584,6 +584,32 @@ func_apache () {
     SecRuleRemoveById 981245
     # SQL Injection Probings false positive
     SecRuleRemoveById 981243
+    # SQL Tautology false positive
+    SecRuleRemoveById 950901
+    # SQL Comment Sequence false positive
+    SecRuleRemoveById 981231
+    # SQL Comment-/Space-Obfuscated false positive
+    SecRuleRemoveById 981257
+    # MySQL Injections false positive
+    SecRuleRemoveById 981240
+    # SQL Operator false positive
+    SecRuleRemoveById 981319
+    # MSSQL Code execution false positive
+    SecRuleRemoveById 981255
+    # SQL Injection bypass false positive
+    SecRuleRemoveById 981244
+    # IE XSS Filters false positive
+    SecRuleRemoveById 973333
+    # HTML Tag Handler false positive
+    SecRuleRemoveById 973300
+    # SQL Injection bypass false positive
+    SecRuleRemoveById 981246
+    # SQL Injection probing false positive
+    SecRuleRemoveById 981242
+    # IE XSS Filters false positive
+    SecRuleRemoveById 973335
+    # PHP Injection attack false positive
+    SecRuleRemoveById 959151
 </IfModule>
 # END eFa exceptions block
 EOF
