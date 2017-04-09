@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.1.9"
+version="3.0.2.0"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -33,8 +33,8 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="0ad6969"
-MAILWATCHRELEASE="1.2.1-dev"
+MAILWATCHVERSION="a2c71e3"
+MAILWATCHRELEASE="1.2.3-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
@@ -562,8 +562,57 @@ func_apache () {
     sed -i '/disable_functions =/ c\disable_functions = apache_child_terminate,apache_setenv,define_syslog_variables,escapeshellcmd,eval,fp,fput,ftp_connect,ftp_exec,ftp_get,ftp_login,ftp_nb_fput,ftp_put,ftp_raw,ftp_rawlist,highlight_file,ini_alter,ini_get_all,ini_restore,inject_code,openlog,phpAds_remoteInfo,phpAds_XmlRpc,phpAds_xmlrpcDecode,phpAds_xmlrpcEncode,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,syslog,system,xmlrpc_entity_decode,curl_multi_exec' /etc/php.ini
 
     # Add mod_security
-    # Allow access on IP for users that don't use FQDN's and allow root@ email addresses
-    sed -i 's.</IfModule>.\n    SecRuleRemoveById 960017\n    SecRuleRemoveById 950908\n\n&.' /etc/httpd/conf.d/mod_security.conf
+    # Mod Security Exceptions
+    cat >> /etc/httpd/conf.d/mod_security.conf << 'EOF'
+# BEGIN eFa exceptions block
+<IfModule mod_security2.c>
+    # Allow IP for hostname in URL
+    SecRuleRemoveById 960017
+    # SQL Injection false positive
+    SecRuleRemoveById 950908
+    # Multipart URL encoding false positive
+    SecRuleRemoveById 950109
+    # Special characters false positive
+    SecRuleRemoveById 981173
+    # SQL injection false positive
+    SecRuleRemoveById 981249
+    # Common injection testing false positive
+    SecRuleRemoveById 981318
+    # Character anomaly false positive
+    SecRuleRemoveById 960024
+    # SQL Authentication Bypass attempt false positive
+    SecRuleRemoveById 981245
+    # SQL Injection Probings false positive
+    SecRuleRemoveById 981243
+    # SQL Tautology false positive
+    SecRuleRemoveById 950901
+    # SQL Comment Sequence false positive
+    SecRuleRemoveById 981231
+    # SQL Comment-/Space-Obfuscated false positive
+    SecRuleRemoveById 981257
+    # MySQL Injections false positive
+    SecRuleRemoveById 981240
+    # SQL Operator false positive
+    SecRuleRemoveById 981319
+    # MSSQL Code execution false positive
+    SecRuleRemoveById 981255
+    # SQL Injection bypass false positive
+    SecRuleRemoveById 981244
+    # IE XSS Filters false positive
+    SecRuleRemoveById 973333
+    # HTML Tag Handler false positive
+    SecRuleRemoveById 973300
+    # SQL Injection bypass false positive
+    SecRuleRemoveById 981246
+    # SQL Injection probing false positive
+    SecRuleRemoveById 981242
+    # IE XSS Filters false positive
+    SecRuleRemoveById 973335
+    # PHP Injection attack false positive
+    SecRuleRemoveById 959151
+</IfModule>
+# END eFa exceptions block
+EOF
 
     # Remove Server Signatures
     sed -i "/^ServerSignature/ c\ServerSignature Off" /etc/httpd/conf/httpd.conf
@@ -630,23 +679,21 @@ func_sqlgrey () {
 
 # +---------------------------------------------------+
 # configure MailWatch
-# https://github.com/mailwatch/1.2.0
+# https://github.com/mailwatch/MailWatch
 # +---------------------------------------------------+
 func_mailwatch () {
 
     # Fetch MailWatch
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/MailWatch-1.2.0-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
-    unzip -d . MailWatch-1.2.0-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
-    cd 1.2.0-$MAILWATCHBRANCH
+    wget $mirror/$mirrorpath/MailWatch-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
+    unzip -d . MailWatch-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
+    cd MailWatch-$MAILWATCHBRANCH
 
     # Set php parameters needed
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
 
     # Set up connection for MailWatch
     cd MailScanner_perl_scripts
-    # Quickfix for MailScanner failure issue in commit
-    sed -i "/^#!\/usr\/bin\/perl/ a\\\npackage MailScanner::CustomConfig;" MailWatchConf.pm
     sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatchConf.pm
     sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatchConf.pm
     mv MailWatchConf.pm /usr/share/MailScanner/perl/custom/
@@ -774,7 +821,7 @@ function efa_version()
 EOF
     sed -i "/^    echo mailwatch_version/a \    echo ' running on ' . efa_version();" /var/www/html/mailscanner/functions.php
 
-    /usr/bin/php /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/upgrade.php --skip-user-confirm /var/www/html/mailscanner/functions.php
+    /usr/bin/php /usr/src/EFA/MailWatch-$MAILWATCHBRANCH/upgrade.php --skip-user-confirm /var/www/html/mailscanner/functions.php
 
     # Issue #308 ClamAV Status Page blank
     usermod apache -G mtagroup

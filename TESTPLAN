@@ -1,4 +1,19 @@
 ############################################################
+EFA Version 3.0.2.0 TEST PLAN
+############################################################
+
+Confirm successful MailWatch update PASSED
+   Perform complex password tests PASSED WITH EXCEPTIONS*
+   Perform W/B List tests (long) PASSED
+   Test report filters PASSED
+   Test session handling and timeouts PASSED
+   Confirm new options in conf.php present PASSED
+Confirm mod_security exceptions are active PASSED
+
+* very complex passwords or passwords that resemble attack
+  strings may still trigger mod_security
+
+############################################################
 EFA Version 3.0.1.9 TEST PLAN
 ############################################################
 
