@@ -630,23 +630,21 @@ func_sqlgrey () {
 
 # +---------------------------------------------------+
 # configure MailWatch
-# https://github.com/mailwatch/1.2.0
+# https://github.com/mailwatch/MailWatch
 # +---------------------------------------------------+
 func_mailwatch () {
 
     # Fetch MailWatch
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/MailWatch-1.2.0-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
-    unzip -d . MailWatch-1.2.0-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
-    cd 1.2.0-$MAILWATCHBRANCH
+    wget $mirror/$mirrorpath/MailWatch-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
+    unzip -d . MailWatch-$MAILWATCHBRANCH-GIT-$MAILWATCHVERSION.zip
+    cd MailWatch-$MAILWATCHBRANCH
 
     # Set php parameters needed
     sed -i '/^short_open_tag =/ c\short_open_tag = On' /etc/php.ini
 
     # Set up connection for MailWatch
     cd MailScanner_perl_scripts
-    # Quickfix for MailScanner failure issue in commit
-    sed -i "/^#!\/usr\/bin\/perl/ a\\\npackage MailScanner::CustomConfig;" MailWatchConf.pm
     sed -i "/^my (\$db_user) =/ c\my (\$db_user) = 'mailwatch';" MailWatchConf.pm
     sed -i "/^my (\$db_pass) =/ c\my (\$fh);\nmy (\$pw_config) = '/etc/EFA-Config';\nopen(\$fh, \"<\", \$pw_config);\nif(\!\$fh) {\n  MailScanner::Log::WarnLog(\"Unable to open %s to retrieve password\", \$pw_config);\n  return;\n}\nmy (\$db_pass) = grep(/^MAILWATCHSQLPWD/,<\$fh>);\n\$db_pass =~ s/MAILWATCHSQLPWD://;\n\$db_pass =~ s/\\\n//;\nclose(\$fh);" MailWatchConf.pm
     mv MailWatchConf.pm /usr/share/MailScanner/perl/custom/
@@ -774,7 +772,7 @@ function efa_version()
 EOF
     sed -i "/^    echo mailwatch_version/a \    echo ' running on ' . efa_version();" /var/www/html/mailscanner/functions.php
 
-    /usr/bin/php /usr/src/EFA/1.2.0-$MAILWATCHBRANCH/upgrade.php --skip-user-confirm /var/www/html/mailscanner/functions.php
+    /usr/bin/php /usr/src/EFA/MailWatch-$MAILWATCHBRANCH/upgrade.php --skip-user-confirm /var/www/html/mailscanner/functions.php
 
     # Issue #308 ClamAV Status Page blank
     usermod apache -G mtagroup
