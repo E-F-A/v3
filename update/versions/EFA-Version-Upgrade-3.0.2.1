@@ -73,6 +73,7 @@ function run_update() {
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
   # More Mod Security Exceptions
+  # todo: test presence before inserting
   sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # SQL Hex Encoding false postitive\n    SecRuleRemoveById 981260\n/;};}' /etc/httpd/conf.d/mod_security.conf
 
   # restart httpd after the changes
