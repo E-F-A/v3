@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="a2c71e3"
+MAILWATCHVERSION="409e3fc"
 MAILWATCHRELEASE="1.2.3-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
@@ -72,9 +72,14 @@ function run_update() {
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
+  # Update MailWatch
+  update-mailwatch
+
   # More Mod Security Exceptions
-  # todo: test presence before inserting
-  sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # SQL Hex Encoding false postitive\n    SecRuleRemoveById 981260\n/;};}' /etc/httpd/conf.d/mod_security.conf
+  RULE1PRESENT=$(grep SecRuleRemoveById 981260 /etc/httpd/conf.d/mod_security.conf)
+  if [[ -z $RULE1PRESENT ]]; then
+    sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # SQL Hex Encoding false positive\n    SecRuleRemoveById 981260\n/;};}' /etc/httpd/conf.d/mod_security.conf
+  fi
 
   # restart httpd after the changes
   /etc/init.d/httpd restart
