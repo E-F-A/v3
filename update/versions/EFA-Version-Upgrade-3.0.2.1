@@ -76,7 +76,7 @@ function run_update() {
   update-mailwatch
 
   # More Mod Security Exceptions
-  RULE1PRESENT=$(grep SecRuleRemoveById 981260 /etc/httpd/conf.d/mod_security.conf)
+  RULE1PRESENT=$(grep "SecRuleRemoveById 981260" /etc/httpd/conf.d/mod_security.conf)
   if [[ -z $RULE1PRESENT ]]; then
     sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # SQL Hex Encoding false positive\n    SecRuleRemoveById 981260\n/;};}' /etc/httpd/conf.d/mod_security.conf
   fi
