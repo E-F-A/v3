@@ -2,10 +2,10 @@
 EFA Version 3.0.2.1 TEST PLAN
 ############################################################
 
-Confirm successful MailWatch update 
-   Perform complex password tests 
-   Test report display 
-Confirm mod_security exceptions are active
+Confirm successful MailWatch update PASSED
+   Perform complex password tests PASSED
+   Test report display PASSED
+Confirm mod_security exceptions are active PASSED
 
 * very complex passwords or passwords that resemble attack
   strings may still trigger mod_security
