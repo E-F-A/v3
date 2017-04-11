@@ -84,7 +84,7 @@ show_menu() {
       local choice
       read choice
       case $choice in
-                    0) clear; SSHPID=`ps aux | egrep "sshd: [a-zA-Z]+@" | awk {' print $2 '}`; kill $SSHPID ;;
+                    0) clear; SSHTTY=`/usr/bin/tty |awk -F '/' '{print $3"/"$4}'`; SSHPID=`ps aux | egrep "sshd: [a-zA-Z]+@" | grep -w $SSHTTY | awk '{print $2}'`; kill $SSHPID ;;
                     1) exit 0 ;;
                     2) func_reboot ;;
                     3) func_halt ;;
