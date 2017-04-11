@@ -933,6 +933,9 @@ function func_configure-system() {
   # Issue 322 Geoip update during EFA-Init
   /usr/bin/php /usr/local/sbin/geoip_update_cmd.php
 
+  # Reset ownership on geoip dat files
+  chown apache:apache /var/www/html/mailscanner/temp/*dat
+
    }
 # +---------------------------------------------------+
 

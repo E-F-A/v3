@@ -6,6 +6,7 @@ Issue #356 Bug               - Search and Reports Not Functioning
 
 Update MailWatch again to resolve issue
 Exception to mod_security (hex passwords)
+Reset ownership on geoip dat files
 
 ############################################################
 EFA Version 3.0.2.0 Changes

@@ -392,6 +392,8 @@ EOF
       sed -i "/^    echo mailwatch_version/a \    echo ' running on ' . efa_version();" /var/www/html/mailscanner/functions.php
 
       /usr/bin/php /usr/local/sbin/geoip_update_cmd.php
+      # Reset ownership on geoip dat files
+      chown apache:apache /var/www/html/mailscanner/temp/*dat
 
       service httpd start
       service MailScanner start
