@@ -1,4 +1,13 @@
 ############################################################
+EFA Version 3.0.2.2 Changes
+############################################################
+
+Issue #358 Bug               - Certain emails from detail.php do not populate B/W Lists
+Issue #363 Bug               - Check for failed yum kernel update
+
+MailWatch update to resolve timeout issues
+
+############################################################
 EFA Version 3.0.2.1 Changes
 ############################################################
 
