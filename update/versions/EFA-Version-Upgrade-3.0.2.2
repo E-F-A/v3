@@ -76,9 +76,9 @@ function run_update() {
   update-mailwatch
 
   # More Mod Security Exceptions
-  RULE1PRESENT=$(grep "SecRuleRemoveById 981260" /etc/httpd/conf.d/mod_security.conf)
+  RULE1PRESENT=$(grep "SecRuleRemoveById 950005" /etc/httpd/conf.d/mod_security.conf)
   if [[ -z $RULE1PRESENT ]]; then
-    sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # SQL Hex Encoding false positive\n    SecRuleRemoveById 981260\n/;};}' /etc/httpd/conf.d/mod_security.conf
+    sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # Remote file access attempt false positive\n    SecRuleRemoveById 950005\n/;};}' /etc/httpd/conf.d/mod_security.conf
   fi
 
   # restart httpd after the changes
@@ -346,7 +346,12 @@ EOF
 
       RESOLVE_IP_ON_DISPLAY_PRESENT=`grep define\(\'RESOLVE_IP_ON_DISPLAY\' /var/www/html/mailscanner/conf.php`
       if [[ -z $RESOLVE_IP_ON_DISPLAY_PRESENT ]]; then
-        sed -i "/^define('DISPLAY_IP', false);/ a\// Set to true if you want to DNS resolve the IP address displayed (will slow page load)\ndefine('RESOLVE_IP_ON_DISPLAY', false);" /var/www/html/mailscanner/conf.php
+        sed -i "/^define('DISPLAY_IP'/ a\// Set to true if you want to DNS resolve the IP address displayed (will slow page load)\ndefine('RESOLVE_IP_ON_DISPLAY', false);" /var/www/html/mailscanner/conf.php
+      fi
+
+      USER_SELECTABLE_LANG_PRESENT=`grep define\(\'USER_SELECTABLE_LANG\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $USER_SELECTABLE_LANG_PRESENT ]]; then
+        sed -i "/^define('LANG'/ a\\\n// Optional: If USER_SELECTABLE_LANG is defined and the value contains more than one language then the user gets a dropdown\n// in the gui to change the language of his browser. The selectable languages are defined as a comma separated list.\n//define('USER_SELECTABLE_LANG', 'de,en,fr,it,nl,pt_br');" /var/www/html/mailscanner/conf.php
       fi
 
       # Is greylisting enabled?  Add back menu item...
