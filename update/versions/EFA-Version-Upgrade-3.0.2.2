@@ -89,7 +89,10 @@ function run_update() {
   if [[ -z $RULE1PRESENT ]]; then
     sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # Remote file access attempt false positive\n    SecRuleRemoveById 950005\n/;};}' /etc/httpd/conf.d/mod_security.conf
   fi
-
+  RULE2PRESENT=$(grep "SecRuleRemoveById 981247" /etc/httpd/conf.d/mod_security.conf)
+  if [[ -z $RULE2PRESENT ]]; then
+    sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # Concat SQL injection false positive\n    SecRuleRemoveById 981247\n/;};}' /etc/httpd/conf.d/mod_security.conf    
+  fi
   # restart httpd after the changes
   /etc/init.d/httpd restart
 
