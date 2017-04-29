@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.1 build script version 20170411
+# EFA 3.0.2.2 build script version 20170415
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2017 https://efa-project.org
 #
@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.2.1"
+version="3.0.2.2"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -33,7 +33,7 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="409e3fc"
+MAILWATCHVERSION="289c9f2"
 MAILWATCHRELEASE="1.2.3-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
@@ -155,6 +155,11 @@ func_mariadb () {
     cd /usr/src/EFA
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/awl_mysql.sql
     /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/awl_mysql.sql
+    
+    # Issue #357 Fonts not rendering in MailWatch
+    sed -i "/^\[mysqld\]/ a\character-set-server = utf8mb4" /etc/my.cnf.d/server.cnf
+    sed -i "/^\[mysqld\]/ a\init-connect = 'SET NAMES utf8mb4'" /etc/my.cnf.d/server.cnf
+    sed -i "/^\[mysqld\]/ a\collation-server = utf8mb4_unicode_ci" /etc/my.cnf.d/server.cnf
 }
 # +---------------------------------------------------+
 
@@ -213,7 +218,7 @@ func_postfix () {
     postconf -e "smtpd_helo_restrictions =  check_helo_access hash:/etc/postfix/helo_access, reject_invalid_hostname"
     postconf -e "smtpd_sender_restrictions = permit_sasl_authenticated, check_sender_access hash:/etc/postfix/sender_access, reject_non_fqdn_sender, reject_unknown_sender_domain"
     postconf -e "smtpd_data_restrictions =  reject_unauth_pipelining"
-    postconf -e "smtpd_client_restrictions = permit_sasl_authenticated, reject_rbl_client zen.spamhaus.org"
+    postconf -e "smtpd_client_restrictions = permit_sasl_authenticated, reject_rbl_client zen.spamhaus.org, reject_unknown_client_hostname"
     postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_non_fqdn_recipient, reject_unknown_recipient_domain, check_recipient_access hash:/etc/postfix/recipient_access, check_policy_service inet:127.0.0.1:2501"
     postconf -e "masquerade_domains = \$mydomain"
     #other configuration files
@@ -508,6 +513,14 @@ func_spam_clamav () {
   mkdir -p /var/spool/postfix/.spamassassin
   chown postfix:postfix /var/spool/postfix/.spamassassin
 
+  # Issue #366 Clear Spamassassin-Temp
+  cat > /etc/cron.daily/eFa-SAClean << 'EOF'
+#!/bin/sh
+# MailScanner_incoming SA Cleanup
+/usr/sbin/tmpwatch -u 48 /var/spool/MailScanner/incoming/SpamAssassin-Temp 
+EOF
+  chmod ugo+x /etc/cron.daily/eFa-SAClean
+
     # and in the end we run sa-update just for the fun of it..
     /usr/bin/sa-update --channel updates.spamassassin.org
     /usr/bin/sa-compile
@@ -612,6 +625,10 @@ func_apache () {
     SecRuleRemoveById 959151
     # SQL Hex Encoding false postitive
     SecRuleRemoveById 981260
+    # Remote file access attempt false positive
+    SecRuleRemoveById 950005
+    # Concat SQL injection false positive
+    SecRuleRemoveById 981247
 </IfModule>
 # END eFa exceptions block
 EOF
