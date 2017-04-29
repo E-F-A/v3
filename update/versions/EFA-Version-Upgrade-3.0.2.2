@@ -118,6 +118,12 @@ function run_update() {
 EOF
   chmod ugo+x /etc/cron.daily/eFa-SAClean
 
+  # Disallow clients with no proper MX/PTR forward and reverse mapping (major cause of spam issue in eFa v3 with latest postfix)
+  REJECTUNKNOWNCLIENTHOSTNAMEPRESENT=$(grep "reject_unknown_client_hostname" /etc/postfix/main.cf)
+  if [[ -z $REJECTUNKNOWNCLIENTHOSTNAMEPRESENT ]]; then
+    sed -i "s/^smtpd_client_restrictions = \(.*\)$/smtpd_client_restrictions = \1, reject_unknown_client_hostname/" /etc/postfix/main.cf
+  fi
+
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf

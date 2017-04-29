@@ -9,6 +9,7 @@ Issue #363 Bug               - Check for failed yum kernel update
 Issue #366 Bug               - Clear SpamAssassin-Temp
 
 MailWatch update to resolve timeout issues and directory traversal
+reject_unknown_client_hostname added to postfix configuration
 
 ############################################################
 EFA Version 3.0.2.1 Changes

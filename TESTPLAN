@@ -9,6 +9,7 @@ Confirm successful MailWatch update PASSED
 Confirm mod_security exceptions are active PASSED
 Confirm eFa-SAClean is present PASSED
   Confirm that temp directory is cleaned PASSED
+Confirm reject_unknown_client_hostname present
 
 * very complex passwords or passwords that resemble attack
   strings may still trigger mod_security
