@@ -513,6 +513,14 @@ func_spam_clamav () {
   mkdir -p /var/spool/postfix/.spamassassin
   chown postfix:postfix /var/spool/postfix/.spamassassin
 
+  # Issue #366 Clear Spamassassin-Temp
+  cat > /etc/cron.daily/eFa-SAClean << 'EOF'
+#!/bin/sh
+# MailScanner_incoming SA Cleanup
+/usr/sbin/tmpwatch -u 48 /var/spool/MailScanner/incoming/SpamAssassin-Temp 
+EOF
+  chmod ugo+x /etc/cron.daily/eFa-SAClean
+
     # and in the end we run sa-update just for the fun of it..
     /usr/bin/sa-update --channel updates.spamassassin.org
     /usr/bin/sa-compile

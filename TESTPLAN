@@ -7,6 +7,8 @@ Confirm successful MailWatch update
   Check directory traversal to reports in MailScanner Config View
   Check utf8mb4 glyphs are rendering in MailWatch
 Confirm mod_security exceptions are active
+Confirm eFA-SAClean is present
+  Confirm that temp directory is cleaned
 
 * very complex passwords or passwords that resemble attack
   strings may still trigger mod_security

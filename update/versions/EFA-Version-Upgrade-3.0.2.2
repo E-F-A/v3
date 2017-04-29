@@ -110,6 +110,14 @@ function run_update() {
     sed -i "/^[mysqld]/ a\collation-server = utf8mb4_unicode_ci" /etc/my.cnf.d/server.cnf
   fi
 
+  # Issue #366 Clear Spamassassin-Temp
+  cat > /etc/cron.daily/eFa-SAClean << 'EOF'
+#!/bin/sh
+# MailScanner_incoming SA Cleanup
+/usr/sbin/tmpwatch -u 48 /var/spool/MailScanner/incoming/SpamAssassin-Temp 
+EOF
+  chmod ugo+x /etc/cron.daily/eFa-SAClean
+
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
