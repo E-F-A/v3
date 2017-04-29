@@ -99,15 +99,15 @@ function run_update() {
   # Issue #357 Fonts not rendering in MailWatch
   CHARACTERSETSERVER=$(grep "^character-set-server" /etc/my.cnf.d/server.cnf)
   if [[ -z $CHARACTERSETSERVER ]]; then
-    sed -i "/^[mysqld]/ a\character-set-server = utf8mb4" /etc/my.cnf.d/server.cnf
+    sed -i "/^\[mysqld\]/ a\character-set-server = utf8mb4" /etc/my.cnf.d/server.cnf
   fi
   INITCONNECTPRESENT=$(grep "^init-connect" /etc/my.cnf.d/server.cnf)
   if [[ -z $INITCONNECTPRESENT ]]; then
-    sed -i "/^[mysqld]/ a\init-connect = 'SET NAMES utf8mb4'" /etc/my.cnf.d/server.cnf
+    sed -i "/^\[mysqld\]/ a\init-connect = 'SET NAMES utf8mb4'" /etc/my.cnf.d/server.cnf
   fi
   COLLATIONSERVERPRESENT=$(grep "^collation-server" /etc/my.cnf.d/server.cnf)
   if [[ -z $COLLATIONSERVERPRESENT ]]; then
-    sed -i "/^[mysqld]/ a\collation-server = utf8mb4_unicode_ci" /etc/my.cnf.d/server.cnf
+    sed -i "/^\[mysqld\]/ a\collation-server = utf8mb4_unicode_ci" /etc/my.cnf.d/server.cnf
   fi
 
   # Issue #366 Clear Spamassassin-Temp

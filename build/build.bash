@@ -157,9 +157,9 @@ func_mariadb () {
     /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/awl_mysql.sql
     
     # Issue #357 Fonts not rendering in MailWatch
-    sed -i "/^[mysqld]/ a\character-set-server = utf8mb4" /etc/my.cnf.d/server.cnf
-    sed -i "/^[mysqld]/ a\init-connect = 'SET NAMES utf8mb4'" /etc/my.cnf.d/server.cnf
-    sed -i "/^[mysqld]/ a\collation-server = utf8mb4_unicode_ci" /etc/my.cnf.d/server.cnf
+    sed -i "/^\[mysqld\]/ a\character-set-server = utf8mb4" /etc/my.cnf.d/server.cnf
+    sed -i "/^\[mysqld\]/ a\init-connect = 'SET NAMES utf8mb4'" /etc/my.cnf.d/server.cnf
+    sed -i "/^\[mysqld\]/ a\collation-server = utf8mb4_unicode_ci" /etc/my.cnf.d/server.cnf
 }
 # +---------------------------------------------------+
 
