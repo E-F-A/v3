@@ -6,7 +6,7 @@ Issue #358 Bug               - Certain emails from detail.php do not populate B/
 Issue #362 Bug               - mod_security disable id 981247
 Issue #363 Bug               - Check for failed yum kernel update
 
-MailWatch update to resolve timeout issues
+MailWatch update to resolve timeout issues and directory traversal
 
 ############################################################
 EFA Version 3.0.2.1 Changes
