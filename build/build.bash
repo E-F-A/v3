@@ -155,6 +155,11 @@ func_mariadb () {
     cd /usr/src/EFA
     /usr/bin/wget --no-check-certificate $gitdlurl/MYSQL/awl_mysql.sql
     /usr/bin/mysql -u root -p"$password" sa_bayes < /usr/src/EFA/awl_mysql.sql
+    
+    # Issue #357 Fonts not rendering in MailWatch
+    sed -i "/^[mysqld]/ a\character-set-server = utf8mb4" /etc/my.cnf.d/server.cnf
+    sed -i "/^[mysqld]/ a\init-connect = 'SET NAMES utf8mb4'" /etc/my.cnf.d/server.cnf
+    sed -i "/^[mysqld]/ a\collation-server = utf8mb4_unicode_ci" /etc/my.cnf.d/server.cnf
 }
 # +---------------------------------------------------+
 
@@ -612,6 +617,10 @@ func_apache () {
     SecRuleRemoveById 959151
     # SQL Hex Encoding false postitive
     SecRuleRemoveById 981260
+    # Remote file access attempt false positive
+    SecRuleRemoveById 950005
+    # Concat SQL injection false positive
+    SecRuleRemoveById 981247
 </IfModule>
 # END eFa exceptions block
 EOF

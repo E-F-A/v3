@@ -96,6 +96,20 @@ function run_update() {
   # restart httpd after the changes
   /etc/init.d/httpd restart
 
+  # Issue #357 Fonts not rendering in MailWatch
+  CHARACTERSETSERVER=$(grep "^character-set-server" /etc/my.cnf.d/server.cnf)
+  if [[ -z $CHARACTERSETSERVER ]]; then
+    sed -i "/^[mysqld]/ a\character-set-server = utf8mb4" /etc/my.cnf.d/server.cnf
+  fi
+  INITCONNECTPRESENT=$(grep "^init-connect" /etc/my.cnf.d/server.cnf)
+  if [[ -z $INITCONNECTPRESENT ]]; then
+    sed -i "/^[mysqld]/ a\init-connect = 'SET NAMES utf8mb4'" /etc/my.cnf.d/server.cnf
+  fi
+  COLLATIONSERVERPRESENT=$(grep "^collation-server" /etc/my.cnf.d/server.cnf)
+  if [[ -z $COLLATIONSERVERPRESENT ]]; then
+    sed -i "/^[mysqld]/ a\collation-server = utf8mb4_unicode_ci" /etc/my.cnf.d/server.cnf
+  fi
+
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
