@@ -121,7 +121,7 @@ EOF
   # Disallow clients with no proper MX/PTR forward and reverse mapping (major cause of spam issue in eFa v3 with latest postfix)
   REJECTUNKNOWNCLIENTHOSTNAMEPRESENT=$(grep "reject_unknown_client_hostname" /etc/postfix/main.cf)
   if [[ -z $REJECTUNKNOWNCLIENTHOSTNAMEPRESENT ]]; then
-    sed -i "s/^smtpd_client_restrictions = \(.*\)$/smtpd_client_restrictions = \1, reject_unknown_client_hostname/" /etc/postfix/main.cf
+    sed -i "s/^smtpd_client_restrictions = \(.*\)$/smtpd_client_restrictions = \1, reject_unknown_reverse_client_hostname/" /etc/postfix/main.cf
   fi
 
   # Exit Maintenance Mode
