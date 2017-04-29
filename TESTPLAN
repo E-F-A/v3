@@ -2,13 +2,13 @@
 EFA Version 3.0.2.2 TEST PLAN
 ############################################################
 
-Confirm successful MailWatch update
-  Check timeout function
-  Check directory traversal to reports in MailScanner Config View
-  Check utf8mb4 glyphs are rendering in MailWatch
-Confirm mod_security exceptions are active
-Confirm eFA-SAClean is present
-  Confirm that temp directory is cleaned
+Confirm successful MailWatch update PASSED
+  Check timeout function PASSED
+  Check directory traversal to reports in MailScanner Config View PASSED
+  Check utf8mb4 glyphs are rendering in MailWatch FAILED
+Confirm mod_security exceptions are active PASSED
+Confirm eFa-SAClean is present PASSED
+  Confirm that temp directory is cleaned PASSED
 
 * very complex passwords or passwords that resemble attack
   strings may still trigger mod_security
