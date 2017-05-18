@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.2 build script version 20170415
+# EFA 3.0.2.3 build script version 20170518
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2017 https://efa-project.org
 #
@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.2.2"
+version="3.0.2.3"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -629,6 +629,10 @@ func_apache () {
     SecRuleRemoveById 950005
     # Concat SQL injection false positive
     SecRuleRemoveById 981247
+    # SQL injection common DB name false positive
+    SecRuleRemoveById 981320
+    # SQL SELECT Statement Anomaly Detection Alert false positive
+    SecRuleRemoveById 981317
 </IfModule>
 # END eFa exceptions block
 EOF

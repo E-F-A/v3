@@ -5,7 +5,12 @@ EFA Version 3.0.2.3 TEST PLAN
 Confirm EFA-Configure Apache Settings Menu
   Check HTTPS
   Check Modsecurity
-
+Confirm mod_security exceptions are active
+  981320
+  981317
+  
+* very complex passwords or passwords that resemble attack
+  strings may still trigger mod_security
 
 ############################################################
 EFA Version 3.0.2.2 TEST PLAN
