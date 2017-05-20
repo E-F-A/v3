@@ -147,7 +147,7 @@ function func_modsecurity()
   echo -e "By default, EFA uses modsecurity"
   echo -e "You can disable modsecurity.  Bear in mind this might increase your security exposure."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Disable modsecurity? (Y/N/c): "
+  echo -e -n "$green[EFA]$clean Disable modsecurity? (y/N/c): "
   local TMPMODSECURITY
   read TMPMODSECURITY
   
@@ -155,7 +155,7 @@ function func_modsecurity()
   while [ $flag == "0" ]
     do
       if [[ $TMPMODSECURITY == "y" || $TMPMODSECURITY == "Y" ]]; then
-        sed -i "/^LoadModule security2_module modules/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
+        sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
         service httpd restart
         echo -e ""
         echo -e "Modsecurity $red[Disabled]$clean"
@@ -163,7 +163,7 @@ function func_modsecurity()
         sleep 2
         flag=1
       elif [[ $TMPMODSECURITY == "n" || $TMPMODSECURITY == "N" || -z $TMPMODSECURITY ]]; then
-        sed -i "/^#LoadModule security2_module modules/mod_security2.so/ c\LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
+        sed -i "/^#LoadModule security2_module modules\/mod_security2.so/ c\LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
         service httpd restart
 
         echo -e "Modsecurity $green[Enabled]$clean"

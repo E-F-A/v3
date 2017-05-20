@@ -2,15 +2,15 @@
 EFA Version 3.0.2.3 TEST PLAN
 ############################################################
 
-Confirm EFA-Configure Apache Settings Menu
-  Check HTTPS
-  Check Modsecurity
-Confirm mod_security exceptions are active
-  981320
-  981317
-Confirm successful MailWatch Upgrade
-   Confirm SESSION_TIMEOUT present
-   Confirm MAILWATCH_SMTP_HOSTNAME present
+Confirm EFA-Configure Apache Settings Menu PASSED
+  Check HTTPS PASSED
+  Check Modsecurity PASSED
+Confirm mod_security exceptions are active PASSED
+  981320 PASSED
+  981317 PASSED
+Confirm successful MailWatch Upgrade PASSED
+   Confirm SESSION_TIMEOUT present PASSED
+   Confirm MAILWATCH_SMTP_HOSTNAME present PASSED
 
 * very complex passwords or passwords that resemble attack
   strings may still trigger mod_security
