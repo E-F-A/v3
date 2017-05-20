@@ -266,7 +266,7 @@ EOF
 
       SESSIONTIMEOUT_PRESENT=`grep define\(\'SESSION_TIMEOUT\' /var/www/html/mailscanner/conf.php`
       if [[ -z $SESSIONTIMEOUT_PRESENT ]]; then
-          sed -i "/define('SESSION_NAME' a\\\n// Session Timeout - Sets the global session timeout value, default is 600 sec (10 minutes) if not defined\n// Range is 0 to 99999 seconds.  Setting to 0 will disable session timeout and active session statuses.\n// This can also be set individually per user in the MailWatch GUI for greater flexibility.\n//define('SESSION_TIMEOUT', 600);" /var/www/html/mailscanner/conf.php
+          sed -i "/define('SESSION_NAME'/ a\\\n// Session Timeout - Sets the global session timeout value, default is 600 sec (10 minutes) if not defined\n// Range is 0 to 99999 seconds.  Setting to 0 will disable session timeout and active session statuses.\n// This can also be set individually per user in the MailWatch GUI for greater flexibility.\n//define('SESSION_TIMEOUT', 600);" /var/www/html/mailscanner/conf.php
       fi
 
       # Add favicons back
@@ -353,7 +353,7 @@ EOF
 
       MAILWATCHSMTPHOSTNAME_PRESENT=`grep define\(\'MAILWATCH_SMTP_HOSTNAME\' /var/www/html/mailscanner/conf.php`
       if [[ -z $MAILWATCHSMTPHOSTNAME_PRESENT ]]; then
-          sed -i "/^define('MAILWATCH_MAIL_PORT' a\// This is required if you use a remote SMTP server to send MailWatch emails (reports etc).\n//define('MAILWATCH_SMTP_HOSTNAME', gethostname());" /var/www/html/mailscanner/conf.php
+          sed -i "/^define('MAILWATCH_MAIL_PORT'/ a\// This is required if you use a remote SMTP server to send MailWatch emails (reports etc).\n//define('MAILWATCH_SMTP_HOSTNAME', gethostname());" /var/www/html/mailscanner/conf.php
       fi
 
       
