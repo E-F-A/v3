@@ -1,4 +1,14 @@
 ############################################################
+EFA Version 3.0.2.3 Changes
+############################################################
+
+Issue #367 Bug               - mod_security disable id 981320 (and 981317)
+Issue #369 Bug               - Variable type mismatch in viewmail.php
+
+Configurable mod_security option added to EFA-Configure
+Update MailWatch to resolve various issues found after 3.0.2.2
+
+############################################################
 EFA Version 3.0.2.2 Changes
 ############################################################
 
