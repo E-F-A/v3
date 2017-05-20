@@ -8,7 +8,10 @@ Confirm EFA-Configure Apache Settings Menu
 Confirm mod_security exceptions are active
   981320
   981317
-  
+Confirm successful MailWatch Upgrade
+   Confirm SESSION_TIMEOUT present
+   Confirm MAILWATCH_SMTP_HOSTNAME present
+
 * very complex passwords or passwords that resemble attack
   strings may still trigger mod_security
 

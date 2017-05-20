@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="289c9f2"
+MAILWATCHVERSION="2833716"
 MAILWATCHRELEASE="1.2.3-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
@@ -91,7 +91,7 @@ function run_update() {
   fi
   RULE2PRESENT=$(grep "SecRuleRemoveById 981317" /etc/httpd/conf.d/mod_security.conf)
   if [[ -z $RULE2PRESENT ]]; then
-    sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # SQL SELECT Statement Anomaly Detection Alert false positive\n    SecRuleRemoveById 981317\n/;};}' /etc/httpd/conf.d/mod_security.conf    
+    sed -i '/<\/IfModule>/{N;/\n# END eFa exceptions block/{s/^/    # SQL SELECT Statement Anomaly Detection Alert false positive\n    SecRuleRemoveById 981317\n/;};}' /etc/httpd/conf.d/mod_security.conf
   fi
   # restart httpd after the changes
   /etc/init.d/httpd restart
@@ -262,6 +262,16 @@ EOF
       SESSIONNAME_PRESENT=`grep define\(\'SESSION_NAME\' /var/www/html/mailscanner/conf.php`
       if [[ -z $SESSIONNAME_PRESENT ]]; then
           sed -i "/^define('LANG'/ a\\\n// Session Handling - conflicts can exist when the your environment makes use of multiple php sessions on the same server\n// to resolve this, uncomment the following option.  See https://github.com/mailwatch/MailWatch/issues/730 for more info\n// define('SESSION_NAME', 'MailWatch');" /var/www/html/mailscanner/conf.php
+      fi
+
+      SESSIONTIMEOUT_PRESENT=`grep define\(\'SESSION_TIMEOUT\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $SESSIONTIMEOUT_PRESENT ]]; then
+          sed -i "/define('SESSION_NAME') a\\\n// Session Timeout - Sets the global session timeout value, default is 600 sec (10 minutes) if not defined\n// Range is 0 to 99999 seconds.  Setting to 0 will disable session timeout and active session statuses.\n// This can also be set individually per user in the MailWatch GUI for greater flexibility.\n//define('SESSION_TIMEOUT', 600);" /var/www/html/mailscanner/conf.php
+      fi
+
+      MAILWATCHSMTPHOSTNAME_PRESENT=`grep define\(\'MAILWATCH_SMTP_HOSTNAME\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $MAILWATCHSMTPHOSTNAME_PRESENT ]]; then
+          sed -i "/^define('MAILWATCH_MAIL_PORT' a\// This is required if you use a remote SMTP server to send MailWatch emails (reports etc).\n//define('MAILWATCH_SMTP_HOSTNAME', gethostname());" /var/www/html/mailscanner/conf.php
       fi
 
       # Add favicons back
