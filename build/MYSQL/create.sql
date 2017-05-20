@@ -124,6 +124,8 @@ CREATE TABLE IF NOT EXISTS `maillog` (
   `time` time DEFAULT NULL,
   `headers` mediumtext COLLATE utf8_unicode_ci,
   `quarantined` tinyint(1) DEFAULT '0',
+  `rblspamreport` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `token` CHAR(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`maillog_id`),
   KEY `maillog_datetime_idx` (`date`,`time`),
   KEY `maillog_id_idx` (`id`(20)),
@@ -134,8 +136,8 @@ CREATE TABLE IF NOT EXISTS `maillog` (
   KEY `from_domain_idx` (`from_domain`(50)),
   KEY `to_domain_idx` (`to_domain`(50)),
   KEY `maillog_quarantined` (`quarantined`),
-  KEY `timestamp_idx` (`timestamp`),
-  FULLTEXT KEY `subject_idx` (`subject`)
+  KEY `timestamp_idx` (`timestamp`)
+  /*!50604 , FULLTEXT KEY `subject_idx` (`subject`) */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -258,6 +260,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `resetid` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `resetexpire` bigint(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastreset` bigint(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `login_expiry` bigint(20) COLLATE utf8_unicode_ci DEFAULT '-1',
+  `last_login` bigint(20) COLLATE utf8_unicode_ci DEFAULT '-1',
+  `login_timeout` smallint(5) COLLATE utf8_unicode_ci DEFAULT '-1',
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
