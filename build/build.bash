@@ -1462,6 +1462,9 @@ func_cleanup () {
     rm -f /etc/udev/rules.d/70-persistent-net.rules
     echo -e "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0
     echo -e "BOOTPROTO=dhcp" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+    
+    # Disable dhclient DHCP Naming
+    echo -e "DHCP_HOSTNAME=eFa" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 
     # SELinux is giving me headaches disabling until everything works correctly
     # When everything works we should enable SELinux and try to fix all permissions..
