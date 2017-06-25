@@ -782,6 +782,8 @@ EOF
     sed -i "/^define('HIDE_UNKNOWN',/ c\define('HIDE_UNKNOWN', true);" conf.php
     # Issue #320 /root/.spamassassin inaccessible
     sed -i "/^define('SA_PREFS', MS_CONFIG_DIR . 'spam.assassin.prefs.conf');/ c\define('SA_PREFS', MS_CONFIG_DIR . 'spamassassin.conf');" conf.php
+    # Set MailWatch Home
+    sed -i "/^define('MAILWATCH_HOME',/ c\define('MAILWATCH_HOME', '/var/www/html/mailscanner');" conf.php
 
     # Set up a redirect in web root to MailWatch
     touch /var/www/html/index.html
