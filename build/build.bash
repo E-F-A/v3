@@ -914,9 +914,9 @@ EOF
 # +---------------------------------------------------+
 func_sgwi () {
     cd /usr/src/EFA
-    wget $mirror/$mirrorpath/sqlgreywebinterface-1.1.9.tgz
-    tar -xzvf sqlgreywebinterface-1.1.9.tgz
-    cd sqlgreywebinterface-1.1.9
+    wget $mirror/$mirrorpath/sqlgreywebinterface-1.1.9-2.tgz
+    tar -xzvf sqlgreywebinterface-1.1.9-2.tgz
+    cd sqlgreywebinterface-1.1.9-2
     # Place next to mailwatch
     mkdir /var/www/html/sgwi
     mv * /var/www/html/sgwi
