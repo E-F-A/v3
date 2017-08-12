@@ -1,7 +1,8 @@
+#!/usr/bin/php
 <?php
 
 /*-----------------------------------------------------------------------------
- * eFa v3 MailWatch AD/LDAP Sync Script version 20170728
+ * eFa v3 MailWatch AD/LDAP Sync Script version 20170812
  *-----------------------------------------------------------------------------
  * Copyright (C) 2013~2017 https://efa-project.org
  *
@@ -23,6 +24,8 @@
  *   Translation for 'Error: LDAP is disabled'
  *   Removal of accounts not in LDAP
  *   Removal of aliases not in LDAP
+ *   Update of aliases for existing users
+ *   Update of primary accounts for existing users
  */
 
 // Define location of MailWatch here
@@ -69,7 +72,7 @@ foreach ($alphabet as $character) {
     // Prepare to perform search
     $ldap_search_results = ldap_search($ds, LDAP_DN, "(&(" . LDAP_USERNAME_FIELD . "=" . $character . "*)(" . sprintf(LDAP_FILTER, '*') . "))",array(LDAP_USERNAME_FIELD,'objectclass','displayName','mail','proxyaddresses'),0,0) or die(__('ldpaauth203'));
     
-    if ($DEBUG === true && $ldap_search_results === false || ldap_count_entries($ds, $ldap_search_results) === 0) {
+    if ($DEBUG === true && ( $ldap_search_results === false || ldap_count_entries($ds, $ldap_search_results) === 0 )) {
         echo("No entries for" . $character . '\n');
     }
 
@@ -102,10 +105,12 @@ foreach ($alphabet as $character) {
 
                         // Check for additional aliases
                         $aliases=array();
-                        foreach ($result[LDAP_EMAIL_FIELD] as $alias) {
-                            // Skip primary or dupe
-                            if ($primaryEmail !== preg_replace("/smtp:/i", "", $alias)) {
-                                array_push($aliases, preg_replace("/smtp:/i", "", $alias));
+                        if (isset($result['proxyaddresses'], $result['proxyaddresses'][0])) {
+                            foreach ($result['proxyaddresses'] as $alias) {
+                                // Skip primary or dupe
+                                if ($primaryEmail !== preg_replace("/smtp:/i", "", $alias)) {
+                                    array_push($aliases, preg_replace("/smtp:/i", "", $alias));
+                                }
                             }
                         }
                     }
