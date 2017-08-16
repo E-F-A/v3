@@ -77,6 +77,11 @@ function run_update() {
 
   # Update SGWI
   update-sgwi
+  
+  # Issue #378 Disable mod_security for 3.0.2.4
+  sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
+  service httpd restart
+    
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
