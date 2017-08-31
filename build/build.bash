@@ -1098,13 +1098,13 @@ func_razor () {
 
 # +---------------------------------------------------+
 # Install DCC http://www.rhyolite.com/dcc/
-# (current version = version 1.3.154, December 03, 2013)
+# (current version = version 1.3.159, February 04, 2017)
 # +---------------------------------------------------+
 func_dcc () {
     cd /usr/src/EFA
 
-    wget $mirror/$mirrorpath/dcc-1.3.154.tar.Z
-    tar xvzf dcc-1.3.154.tar.Z
+    wget $mirror/$mirrorpath/dcc-1.3.159.tar.Z
+    tar xvzf dcc-1.3.159.tar.Z
     cd dcc-*
 
     ./configure --disable-dccm
