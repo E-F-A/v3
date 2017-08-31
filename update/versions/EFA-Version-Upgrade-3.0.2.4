@@ -250,11 +250,25 @@ EOF
       if [[ -z $SESSIONNAME_PRESENT ]]; then
           sed -i "/^define('LANG'/ a\\\n// Session Handling - conflicts can exist when the your environment makes use of multiple php sessions on the same server\n// to resolve this, uncomment the following option.  See https://github.com/mailwatch/MailWatch/issues/730 for more info\n// define('SESSION_NAME', 'MailWatch');" /var/www/html/mailscanner/conf.php
       fi
-
+            
       SESSIONTIMEOUT_PRESENT=`grep define\(\'SESSION_TIMEOUT\' /var/www/html/mailscanner/conf.php`
       if [[ -z $SESSIONTIMEOUT_PRESENT ]]; then
           sed -i "/define('SESSION_NAME'/ a\\\n// Session Timeout - Sets the global session timeout value, default is 600 sec (10 minutes) if not defined\n// Range is 0 to 99999 seconds.  Setting to 0 will disable session timeout and active session statuses.\n// This can also be set individually per user in the MailWatch GUI for greater flexibility.\n//define('SESSION_TIMEOUT', 600);" /var/www/html/mailscanner/conf.php
       fi
+      
+      #Add status graph interval configuration for mailwatch v1.2.5
+	    STATUSGRAPH_INTERVAL=`grep define\(\'STATUSGRAPH_INTERVAL\' /var/www/html/mailscanner/conf.php`
+	    if [[ -z $STATUSGRAPH_INTERVAL ]]; then
+	      echo "" >> /var/www/html/mailscanner/conf.php
+	      echo "// Interval for the traffic chart for admins in minutes (default is 60, max 1440 (24h))" >> /var/www/html/mailscanner/conf.php
+	      echo "define('STATUSGRAPH_INTERVAL', 60);" >> /var/www/html/mailscanner/conf.php
+	    fi
+	  
+	  #Fix images config in mailwatch v1.2.5 and remove depracated conf options
+	   sed -i "s/^define('IMAGES_DIR', '.\/images\/'); \/\/ Trailing slash needed/define('IMAGES_DIR', '\/images\/'); \/\/ Trailing slash needed/g" /var/www/html/mailscanner/conf.php
+	   sed -i "s/^define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/\/\/deprecated:define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/g" /var/www/html/mailscanner/conf.php
+	   sed -i "s/^define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/\/\/deprecated:define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/g" /var/www/html/mailscanner/conf.php
+	  
 
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
