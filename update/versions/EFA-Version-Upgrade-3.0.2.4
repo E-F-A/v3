@@ -78,6 +78,7 @@ function run_update() {
   # Update SGWI
   update-sgwi
   
+ 
   # Issue #378 Disable mod_security for 3.0.2.4
   sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
   service httpd restart
@@ -594,6 +595,31 @@ function yum_update() {
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
+# Function to update DCC
+#----------------------------------------------------------------#
+function dcc_update() {
+  /var/dcc/libexec/updatedcc  
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update Pyzor
+#----------------------------------------------------------------#
+function pyzor_update() {
+    cd /usr/src/EFA
+    wget $mirror/$mirrorpath/pyzor-$PYZORVERSION.tar.gz
+    tar xvzf pyzor-$PYZORVERSION.tar.gz
+    cd pyzor-$PYZORVERSION
+    python setup.py build
+    python setup.py install
+    su postfix -s /bin/bash -c 'pyzor discover'
+    # Update version to EFA-Config
+    sed -i "/^PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
+   
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
 # Finalize
 #----------------------------------------------------------------#
 function finalize() {
@@ -622,4 +648,6 @@ function randompw()
 # Where to start
 #----------------------------------------------------------------#
 run_update
+update-pyzor
+update-dcc
 finalize
