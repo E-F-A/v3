@@ -78,11 +78,19 @@ function run_update() {
   # Update SGWI
   update-sgwi
   
+  # Update Pyzor
+  update_pyzor
+  
+  # Update DCC
+  update_dcc
  
   # Issue #378 Disable mod_security for 3.0.2.4
   sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
   service httpd restart
     
+  #Issue #376 - Secure loopback access
+  dbpwd="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/^.*://'`"
+  /usr/bin/mysql -u root -p"$dbpwd" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
@@ -597,7 +605,7 @@ function yum_update() {
 #----------------------------------------------------------------#
 # Function to update DCC
 #----------------------------------------------------------------#
-function dcc_update() {
+function update_dcc() {
   /var/dcc/libexec/updatedcc  
 }
 #----------------------------------------------------------------#
@@ -605,16 +613,20 @@ function dcc_update() {
 #----------------------------------------------------------------#
 # Function to update Pyzor
 #----------------------------------------------------------------#
-function pyzor_update() {
-    cd /usr/src/EFA
-    wget $mirror/$mirrorpath/pyzor-$PYZORVERSION.tar.gz
-    tar xvzf pyzor-$PYZORVERSION.tar.gz
-    cd pyzor-$PYZORVERSION
-    python setup.py build
-    python setup.py install
-    su postfix -s /bin/bash -c 'pyzor discover'
-    # Update version to EFA-Config
-    sed -i "/^PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
+function update_pyzor() {
+
+# Update Pyzor if we have a new version available
+  if [[ $PYZORVERSION != "`grep PYZORVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+       cd /usr/src/EFA
+       wget $mirror/$mirrorpath/pyzor-$PYZORVERSION.tar.gz
+       tar xvzf pyzor-$PYZORVERSION.tar.gz
+       cd pyzor-$PYZORVERSION
+       python setup.py build
+       python setup.py install
+       su postfix -s /bin/bash -c 'pyzor discover'
+       # Update version to EFA-Config
+       sed -i "/^PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
    
 }
 #----------------------------------------------------------------#
@@ -648,6 +660,4 @@ function randompw()
 # Where to start
 #----------------------------------------------------------------#
 run_update
-pyzor_update
-dcc_update
 finalize
