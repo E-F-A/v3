@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.3 build script version 20170518
+# EFA 3.0.2.4 build script version 20170831
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2017 https://efa-project.org
 #
@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.2.3"
+version="3.0.2.4"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -33,13 +33,13 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
-MAILWATCHVERSION="2833716"
-MAILWATCHRELEASE="1.2.3-dev"
-MAILWATCHBRANCH="develop"
+MAILWATCHVERSION="b5ac806"
+MAILWATCHRELEASE="1.2.5"
+MAILWATCHBRANCH="master"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
-WEBMINVERSION="1.770-1"
-PYZORVERSION="0.7.0"
+WEBMINVERSION="1.850-1"
+PYZORVERSION="1.0.0"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -111,7 +111,7 @@ func_mariadb () {
     /usr/bin/mysqladmin -u root -p"$password" -h localhost.localdomain password "$password"
     echo y | /usr/bin/mysqladmin -u root -p"$password" drop 'test'
     /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='';"
-    /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+    /usr/bin/mysql -u root -p"$password" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
 
     # Create the databases
     /usr/bin/mysql -u root -p"$password" -e "CREATE DATABASE sa_bayes"
@@ -1044,7 +1044,7 @@ func_mailgraph () {
 
 # +---------------------------------------------------+
 # Install Pyzor
-# http://downloads.sourceforge.net/project/pyzor/pyzor/0.5.0/pyzor-0.5.0.tar.gz
+# https://github.com/SpamExperts/pyzor/archive/release-1-0-0.tar.gz
 # +---------------------------------------------------+
 func_pyzor () {
 
@@ -1098,13 +1098,13 @@ func_razor () {
 
 # +---------------------------------------------------+
 # Install DCC http://www.rhyolite.com/dcc/
-# (current version = version 1.3.154, December 03, 2013)
+# (current version = version 1.3.159, February 04, 2017)
 # +---------------------------------------------------+
 func_dcc () {
     cd /usr/src/EFA
 
-    wget $mirror/$mirrorpath/dcc-1.3.154.tar.Z
-    tar xvzf dcc-1.3.154.tar.Z
+    wget $mirror/$mirrorpath/dcc-1.3.159.tar.Z
+    tar xvzf dcc-1.3.159.tar.Z
     cd dcc-*
 
     ./configure --disable-dccm

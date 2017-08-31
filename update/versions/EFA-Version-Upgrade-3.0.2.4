@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20170625
+# Version 20170831
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2017 https://efa-project.org
 #
@@ -36,12 +36,12 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="2833716"
-MAILWATCHRELEASE="1.2.3-dev"
-MAILWATCHBRANCH="develop"
+MAILWATCHVERSION="b5ac806"
+MAILWATCHRELEASE="1.2.5"
+MAILWATCHBRANCH="master"
 IMAGECEBERUSVERSION="1.1"
-PYZORVERSION="0.7.0"
-WEBMINVERSION="1.770-1"
+PYZORVERSION="1.0.0"
+WEBMINVERSION="1.850-1"
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -78,10 +78,19 @@ function run_update() {
   # Update SGWI
   update-sgwi
   
+  # Update Pyzor
+  update_pyzor
+  
+  # Update DCC
+  update_dcc
+ 
   # Issue #378 Disable mod_security for 3.0.2.4
   sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
   service httpd restart
     
+  #Issue #376 - Secure loopback access
+  dbpwd="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/^.*://'`"
+  /usr/bin/mysql -u root -p"$dbpwd" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
@@ -250,11 +259,25 @@ EOF
       if [[ -z $SESSIONNAME_PRESENT ]]; then
           sed -i "/^define('LANG'/ a\\\n// Session Handling - conflicts can exist when the your environment makes use of multiple php sessions on the same server\n// to resolve this, uncomment the following option.  See https://github.com/mailwatch/MailWatch/issues/730 for more info\n// define('SESSION_NAME', 'MailWatch');" /var/www/html/mailscanner/conf.php
       fi
-
+            
       SESSIONTIMEOUT_PRESENT=`grep define\(\'SESSION_TIMEOUT\' /var/www/html/mailscanner/conf.php`
       if [[ -z $SESSIONTIMEOUT_PRESENT ]]; then
           sed -i "/define('SESSION_NAME'/ a\\\n// Session Timeout - Sets the global session timeout value, default is 600 sec (10 minutes) if not defined\n// Range is 0 to 99999 seconds.  Setting to 0 will disable session timeout and active session statuses.\n// This can also be set individually per user in the MailWatch GUI for greater flexibility.\n//define('SESSION_TIMEOUT', 600);" /var/www/html/mailscanner/conf.php
       fi
+      
+      #Add status graph interval configuration for mailwatch v1.2.5
+	    STATUSGRAPH_INTERVAL=`grep define\(\'STATUSGRAPH_INTERVAL\' /var/www/html/mailscanner/conf.php`
+	    if [[ -z $STATUSGRAPH_INTERVAL ]]; then
+	      echo "" >> /var/www/html/mailscanner/conf.php
+	      echo "// Interval for the traffic chart for admins in minutes (default is 60, max 1440 (24h))" >> /var/www/html/mailscanner/conf.php
+	      echo "define('STATUSGRAPH_INTERVAL', 60);" >> /var/www/html/mailscanner/conf.php
+	    fi
+	  
+	  #Fix images config in mailwatch v1.2.5 and remove depracated conf options
+	   sed -i "s/^define('IMAGES_DIR', '.\/images\/'); \/\/ Trailing slash needed/define('IMAGES_DIR', '\/images\/'); \/\/ Trailing slash needed/g" /var/www/html/mailscanner/conf.php
+	   sed -i "s/^define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/\/\/deprecated:define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/g" /var/www/html/mailscanner/conf.php
+	   sed -i "s/^define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/\/\/deprecated:define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/g" /var/www/html/mailscanner/conf.php
+	  
 
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
@@ -576,6 +599,35 @@ function abort() {
 function yum_update() {
   yum -y update
   [[ $? -ne 0 ]] && abort
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update DCC
+#----------------------------------------------------------------#
+function update_dcc() {
+  /var/dcc/libexec/updatedcc  
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update Pyzor
+#----------------------------------------------------------------#
+function update_pyzor() {
+
+# Update Pyzor if we have a new version available
+  if [[ $PYZORVERSION != "`grep PYZORVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+       cd /usr/src/EFA
+       wget $mirror/$mirrorpath/pyzor-$PYZORVERSION.tar.gz
+       tar xvzf pyzor-$PYZORVERSION.tar.gz
+       cd pyzor-$PYZORVERSION
+       python setup.py build
+       python setup.py install
+       su postfix -s /bin/bash -c 'pyzor discover'
+       # Update version to EFA-Config
+       sed -i "/^PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
+   
 }
 #----------------------------------------------------------------#
 
