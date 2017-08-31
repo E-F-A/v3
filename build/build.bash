@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.3 build script version 20170518
+# EFA 3.0.2.4 build script version 20170831
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2017 https://efa-project.org
 #
@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.2.3"
+version="3.0.2.4"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -34,12 +34,12 @@ smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
 MAILWATCHVERSION="2833716"
-MAILWATCHRELEASE="1.2.3-dev"
-MAILWATCHBRANCH="develop"
+MAILWATCHRELEASE="1.2.5"
+MAILWATCHBRANCH="master"
 IMAGECEBERUSVERSION="1.1"
 SPAMASSASSINVERSION="3.4.1"
 WEBMINVERSION="1.770-1"
-PYZORVERSION="0.7.0"
+PYZORVERSION="1.0.0"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -1044,7 +1044,7 @@ func_mailgraph () {
 
 # +---------------------------------------------------+
 # Install Pyzor
-# http://downloads.sourceforge.net/project/pyzor/pyzor/0.5.0/pyzor-0.5.0.tar.gz
+# https://github.com/SpamExperts/pyzor/archive/release-1-0-0.tar.gz
 # +---------------------------------------------------+
 func_pyzor () {
 
