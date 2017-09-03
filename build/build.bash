@@ -757,8 +757,8 @@ EOF
     cd /var/www/html/mailscanner
     chown root:apache images
     chmod ug+rwx images
-    chown root:apache images/cache
-    chmod ug+rwx images/cache
+    #chown root:apache images/cache
+    #chmod ug+rwx images/cache
     chown root:apache temp
     chmod ug+rwx temp
 
