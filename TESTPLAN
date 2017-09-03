@@ -2,19 +2,20 @@
 EFA Version 3.0.2.4 TEST PLAN
 ############################################################
 
-Confirm successfull MailWatch upgrade
-  Check viewmail.php
-  Check SA Rule Hits report
-  Check Postfix Relay Info
-Confirm mod_security is disabled
-Confirm Successful MailScanner upgrade
-  SA and MailScanner lint tests
-    Check Pyzor
-    Check DCC
-Confirm /var/spool/MailScanner/quarantine perms
-Confirm /etc/MailScanner/defaults
-Confirm /etc/MailScanner/MailScanner.conf config
-Confirm successful Webmin upgrade
+Update Testing --
+Confirm successfull MailWatch upgrade FAILED -- logo/colors
+  Check viewmail.php PASSED
+  Check SA Rule Hits report PASSED
+  Check Postfix Relay Info PASSED
+Confirm mod_security is disabled PASSED
+Confirm Successful MailScanner upgrade PASSED
+  SA and MailScanner lint tests PASSED
+    Check Pyzor PASSED
+    Check DCC PASSED
+Confirm /var/spool/MailScanner/quarantine perms PASSED
+Confirm /etc/MailScanner/defaults PASSED
+Confirm /etc/MailScanner/MailScanner.conf config PASSED
+Confirm successful Webmin upgrade PASSED
 
 ############################################################
 EFA Version 3.0.2.3 TEST PLAN
