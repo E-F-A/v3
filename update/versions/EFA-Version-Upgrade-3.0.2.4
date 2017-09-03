@@ -302,18 +302,16 @@ EOF
       fi
       
       #Add status graph interval configuration for mailwatch v1.2.5
-	    STATUSGRAPH_INTERVAL=`grep define\(\'STATUSGRAPH_INTERVAL\' /var/www/html/mailscanner/conf.php`
-	    if [[ -z $STATUSGRAPH_INTERVAL ]]; then
-	      echo "" >> /var/www/html/mailscanner/conf.php
-	      echo "// Interval for the traffic chart for admins in minutes (default is 60, max 1440 (24h))" >> /var/www/html/mailscanner/conf.php
-	      echo "define('STATUSGRAPH_INTERVAL', 60);" >> /var/www/html/mailscanner/conf.php
-	    fi
-	  
-	  #Fix images config in mailwatch v1.2.5 and remove depracated conf options
-	   sed -i "s/^define('IMAGES_DIR', '.\/images\/'); \/\/ Trailing slash needed/define('IMAGES_DIR', '\/images\/'); \/\/ Trailing slash needed/g" /var/www/html/mailscanner/conf.php
-	   sed -i "s/^define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/\/\/deprecated:define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/g" /var/www/html/mailscanner/conf.php
-	   sed -i "s/^define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/\/\/deprecated:define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/g" /var/www/html/mailscanner/conf.php
-	  
+        STATUSGRAPH_INTERVAL=`grep define\(\'STATUSGRAPH_INTERVAL\' /var/www/html/mailscanner/conf.php`
+        if [[ -z $STATUSGRAPH_INTERVAL ]]; then
+          echo "" >> /var/www/html/mailscanner/conf.php
+          echo "// Interval for the traffic chart for admins in minutes (default is 60, max 1440 (24h))" >> /var/www/html/mailscanner/conf.php
+          echo "define('STATUSGRAPH_INTERVAL', 60);" >> /var/www/html/mailscanner/conf.php
+        fi
+      
+      sed -i "s/^define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/\/\/deprecated:define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/g" /var/www/html/mailscanner/conf.php
+      sed -i "s/^define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/\/\/deprecated:define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/g" /var/www/html/mailscanner/conf.php
+      
 
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
