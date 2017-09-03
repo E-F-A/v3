@@ -662,7 +662,8 @@ function update_pyzor() {
        # su postfix -s /bin/bash -c 'pyzor discover'
        # Update version to EFA-Config
        sed -i "/^PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
-       rm -rf /usr/src/EFA/pyzor-$PYZORVERSION
+       cd /usr/src/EFA
+       rm -rf pyzor-$PYZORVERSION
    fi
 }
 #----------------------------------------------------------------#
