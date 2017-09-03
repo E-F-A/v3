@@ -36,9 +36,9 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="b5ac806"
-MAILWATCHRELEASE="1.2.5"
-MAILWATCHBRANCH="master"
+MAILWATCHVERSION="6b5b4dc"
+MAILWATCHRELEASE="1.2.6-dev"
+MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
 PYZORVERSION="1.0.0"
 WEBMINVERSION="1.850-1"
@@ -87,6 +87,9 @@ function run_update() {
 
   # Update DCC
   update_dcc
+  
+  # Post rpm Update Webmin
+  update-webmin
 
   # Issue #378 Disable mod_security for 3.0.2.4
   sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
