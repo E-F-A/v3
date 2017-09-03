@@ -256,7 +256,7 @@ func_postfix () {
 # +---------------------------------------------------+
 func_mailscanner () {
 
-    chown postfix:postfix /var/spool/MailScanner/quarantine
+    chown postfix:mtagroup /var/spool/MailScanner/quarantine
     mkdir /var/spool/MailScanner/spamassassin
     chown postfix:postfix /var/spool/MailScanner/spamassassin
     mkdir /var/spool/mqueue

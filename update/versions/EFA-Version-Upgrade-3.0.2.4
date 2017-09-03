@@ -66,6 +66,10 @@ function run_update() {
   # Enter Maintenance Mode
   mv -f /etc/cron.d/EFA-Monitor.cron /var/EFA > /dev/null 2>&1
 
+  # Add EFA testing repo
+  rm -f /etc/yum.repos.d/EFA.repo
+  cp -f $STAGING/Files/EFA-beta.repo /etc/yum.repos.d/
+
   yum clean all
   yum_update
 
@@ -75,22 +79,47 @@ function run_update() {
   # Update MailWatch
   update-mailwatch
 
-  # Update SGWI
-  update-sgwi
-  
   # Update Pyzor
   update_pyzor
-  
+
   # Update DCC
   update_dcc
- 
+
   # Issue #378 Disable mod_security for 3.0.2.4
   sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
   service httpd restart
-    
+
   #Issue #376 - Secure loopback access
   dbpwd="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/^.*://'`"
   /usr/bin/mysql -u root -p"$dbpwd" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
+
+  # Post MailScanner upgrade 5.0.6-4 (https://github.com/MailScanner/v5/issues/88)
+  chown postfix:mtagroup /var/spool/MailScanner/quarantine
+  
+  # Enable restart on ms_cron update
+  MSCRONPRESENT=$(grep ^ms_cron_ps_restart /etc/MailScanner/defaults)
+  if [[ -z $MSCRONPRESENT ]]; then
+    cat >> /etc/MailScanner/defaults << EOF
+
+# Restart MailScanner after Update Safe/Bad Phishing sites
+#
+# Restart MailScanner after update of the Safe/Bad Phishing sites files.
+# This is disabled by default.
+#
+# This is executed during the DAILY cron option.  0 = off, 1 = on
+#
+
+ms_cron_ps_restart=1
+EOF
+  else
+    sed -i "/^ms_cron_ps_restart/ c\ms_cron_ps_restart=1" /etc/MailScanner/defaults
+  fi
+  
+  # Reset Web Bug 1x1 spacer
+  sed -i "/^Web Bug Replacement =/ c\Web Bug Replacement = http://dl.efa-project.org/static/1x1spacer.gif" /etc/MailScanner/MailScanner.conf
+  
+  # Add init.d symlink back for compatibility
+  ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
