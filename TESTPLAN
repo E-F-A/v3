@@ -2,7 +2,7 @@
 EFA Version 3.0.2.4 TEST PLAN
 ############################################################
 
-Update Testing pending, Build Testing pending
+Update Testing passing, Build Testing pending
 Confirm successfull MailWatch upgrade PASSED
   Check viewmail.php PASSED
   Check SA Rule Hits report PASSED
@@ -16,6 +16,7 @@ Confirm /var/spool/MailScanner/quarantine perms PASSED
 Confirm /etc/MailScanner/defaults PASSED
 Confirm /etc/MailScanner/MailScanner.conf config PASSED
 Confirm successful Webmin upgrade PASSED
+Confirm successful SGWI upgrade PASSED
 
 ############################################################
 EFA Version 3.0.2.3 TEST PLAN
