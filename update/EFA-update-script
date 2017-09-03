@@ -24,7 +24,7 @@
 #----------------------------------------------------------------#
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3"
-MIRROR="http://dl.efa-project.org"
+MIRROR="https://dl.efa-project.org"
 mirrorpath="update"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
 MAILFROM="$ADMINEMAIL"
