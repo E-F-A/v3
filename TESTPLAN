@@ -2,7 +2,7 @@
 EFA Version 3.0.2.4 TEST PLAN
 ############################################################
 
-Update Testing passing, Build Testing pending
+Update Testing passing, Build Testing passing
 Confirm successfull MailWatch upgrade PASSED
   Check viewmail.php PASSED
   Check SA Rule Hits report PASSED
