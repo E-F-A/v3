@@ -326,15 +326,13 @@ EOF
       mv mailwatch-logo.png mailwatch-logo.png.orig
       
       # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
-      sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/style.css
+      sed -i 's/#f7ce4a/#719b94/ig' /var/www/html/mailscanner/style.css
+      sed -i 's/#deb531/#518c82/ig' /var/www/html/mailscanner/style.css
 
       ln -s EFAlogo-79px.png mailwatch-logo.png
 
       # Issue #289 MailWatch logo on release link broken
       ln -s EFAlogo-79px.png mailwatch-logo.gif
-
-      # Alter color scheme
-      sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
 
       # Add back Mailgraph link
       cd /var/www/html/mailscanner

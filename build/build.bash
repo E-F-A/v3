@@ -820,10 +820,8 @@ EOF
     # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
     # mv mailwatch-logo-trans-307x84.png mailwatch-logo-trans-307x84.png.orig > /dev/null 2>&1
     # ln -s EFAlogo-79px.png mailwatch-logo-trans-307x84.png
-    sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/style.css
-
-    # Change the yellow to match website colors..
-    sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
+    sed -i 's/#f7ce4a/#719b94/ig' /var/www/html/mailscanner/style.css
+    sed -i 's/#deb531/#518c82/ig' /var/www/html/mailscanner/style.css
 
     # Add Mailgraph link and remove dnsreport link
     # Issue #39 Add link for Webmin in MailWatch
