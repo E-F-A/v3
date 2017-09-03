@@ -647,16 +647,17 @@ function update_pyzor() {
 # Update Pyzor if we have a new version available
   if [[ $PYZORVERSION != "`grep PYZORVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
     then
+       cp $STAGING/Files/pyzor-$PYZORVERSION.tar.gz /usr/src/EFA
        cd /usr/src/EFA
-       wget $mirror/$mirrorpath/pyzor-$PYZORVERSION.tar.gz
-       tar xvzf pyzor-$PYZORVERSION.tar.gz
+       tar xzvf pyzor-$PYZORVERSION.tar.gz
        cd pyzor-$PYZORVERSION
        python setup.py build
        python setup.py install
        su postfix -s /bin/bash -c 'pyzor discover'
        # Update version to EFA-Config
        sed -i "/^PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
-   
+       rm -rf /usr/src/EFA/pyzor-$PYZORVERSION
+   fi
 }
 #----------------------------------------------------------------#
 
