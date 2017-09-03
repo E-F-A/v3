@@ -70,11 +70,14 @@ function run_update() {
   rm -f /etc/yum.repos.d/EFA.repo
   cp -f $STAGING/Files/EFA-beta.repo /etc/yum.repos.d/
 
+  YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
+  sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
+
   yum clean all
   yum_update
 
-  YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
-  sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
+  # Add init.d symlink back for compatibility
+  ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
 
   # Update MailWatch
   update-mailwatch
@@ -118,11 +121,11 @@ EOF
   # Reset Web Bug 1x1 spacer
   sed -i "/^Web Bug Replacement =/ c\Web Bug Replacement = http://dl.efa-project.org/static/1x1spacer.gif" /etc/MailScanner/MailScanner.conf
   
-  # Add init.d symlink back for compatibility
-  ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
-
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
+  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
+  
+  # Restore excludes
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
   echo "$VERSION update is complete"
@@ -202,8 +205,9 @@ EOF
       cd /var/www/html/mailscanner
       chown root:apache images
       chmod ug+rwx images
-      chown root:apache images/cache
-      chmod ug+rwx images/cache
+      # MailWatch 1.2.5 -- no longer uses images/cache
+      # chown root:apache images/cache
+      # chmod ug+rwx images/cache
       chown root:apache temp
       chmod ug+rwx temp
       rm -rf docs
