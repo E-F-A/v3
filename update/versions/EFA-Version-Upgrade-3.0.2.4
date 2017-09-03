@@ -657,7 +657,8 @@ function update_pyzor() {
        cd pyzor-$PYZORVERSION
        python setup.py build
        python setup.py install
-       su postfix -s /bin/bash -c 'pyzor discover'
+       # Discovery no longer exists in pyzor 1.0.0
+       # su postfix -s /bin/bash -c 'pyzor discover'
        # Update version to EFA-Config
        sed -i "/^PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
        rm -rf /usr/src/EFA/pyzor-$PYZORVERSION

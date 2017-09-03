@@ -1064,7 +1064,8 @@ func_pyzor () {
     chmod -R ug+rwx /var/spool/postfix/.pyzor
 
     # and finally initialize the servers file with an discover.
-    su postfix -s /bin/bash -c 'pyzor discover'
+    # Discovery no longer exists in 1.0.0
+    # su postfix -s /bin/bash -c 'pyzor discover'
 
     # Add version to EFA-Config
     echo "PYZORVERSION:$PYZORVERSION" >> /etc/EFA-Config
