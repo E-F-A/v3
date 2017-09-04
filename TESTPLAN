@@ -18,6 +18,7 @@ Confirm /etc/MailScanner/MailScanner.conf config PASSED
 Confirm successful Webmin upgrade PASSED
 Confirm successful SGWI upgrade PASSED
 Confirm preservation of MailScanner reports PASSED
+Confirm ms-sendmail does not get activated
 
 ############################################################
 EFA Version 3.0.2.3 TEST PLAN
