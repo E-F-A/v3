@@ -421,6 +421,9 @@ EOF
       if [[ -z $USER_SELECTABLE_LANG_PRESENT ]]; then
         sed -i "/^define('LANG'/ a\\\n// Optional: If USER_SELECTABLE_LANG is defined and the value contains more than one language then the user gets a dropdown\n// in the gui to change the language of his browser. The selectable languages are defined as a comma separated list.\n//define('USER_SELECTABLE_LANG', 'de,en,fr,it,nl,pt_br');" /var/www/html/mailscanner/conf.php
       fi
+      
+      # Fix IMAGES_DIR
+      sed -i "/^define('IMAGES_DIR',/ c\define('IMAGES_DIR', '/images/'); // Leading and Trailing Slash Needed" /var/www/html/mailscanner/conf.php
 
       # Is greylisting enabled?  Add back menu item...
       if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
