@@ -123,14 +123,14 @@ EOF
   else
     sed -i "/^ms_cron_ps_restart/ c\ms_cron_ps_restart=1" /etc/MailScanner/defaults
   fi
-  
+
   # Reset Web Bug 1x1 spacer
   sed -i "/^Web Bug Replacement =/ c\Web Bug Replacement = http://dl.efa-project.org/static/1x1spacer.gif" /etc/MailScanner/MailScanner.conf
-  
+
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
-  
+
   # Restore excludes
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
