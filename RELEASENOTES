@@ -61,7 +61,7 @@ if present.
 
 Due to security issues found in the handling of domain admins, users
 and domain admins are required to be full email addresses.  This
-requirement can be disabled in /var/www/html/mailwatch/conf.php for
+requirement can be disabled in /var/www/html/mailscanner/conf.php for
 backward compatibility.  However, doing so reduces the security of the
 system.  The security problem is that domain admins have the ability to
 elevate and downgrade privileges of other admins and domain admins.
