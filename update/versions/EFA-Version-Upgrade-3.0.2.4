@@ -66,10 +66,6 @@ function run_update() {
   # Enter Maintenance Mode
   mv -f /etc/cron.d/EFA-Monitor.cron /var/EFA > /dev/null 2>&1
 
-  # Add EFA testing repo
-  rm -f /etc/yum.repos.d/EFA.repo
-  cp -f $STAGING/Files/EFA-beta.repo /etc/yum.repos.d/
-
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
