@@ -1,7 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA update script
-# Version 20170625
+# Version 20170906
 # +--------------------------------------------------------------------+
 # Copyright (C) 2012~2017 https://efa-project.org
 #
@@ -36,12 +36,12 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="2833716"
-MAILWATCHRELEASE="1.2.3-dev"
+MAILWATCHVERSION="c08ef03"
+MAILWATCHRELEASE="1.2.7-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
-PYZORVERSION="0.7.0"
-WEBMINVERSION="1.770-1"
+PYZORVERSION="1.0.0"
+WEBMINVERSION="1.850-1"
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -66,20 +66,69 @@ function run_update() {
   # Enter Maintenance Mode
   mv -f /etc/cron.d/EFA-Monitor.cron /var/EFA > /dev/null 2>&1
 
-  yum clean all
-  yum_update
-
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
+  yum clean all
+  yum_update
+
+  # Add init.d symlink back for compatibility
+  ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
+
   # Update MailWatch
   update-mailwatch
-
+  
   # Update SGWI
-  update-sgwi
+  update_sgwi
+
+  # Update Pyzor
+  yum -y install python-setuptools
+  update_pyzor
+
+  # Update DCC
+  update_dcc
+  
+  # Post rpm Update Webmin
+  update-webmin
+
+  # Issue #378 Disable mod_security for 3.0.2.4
+  sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
+  service httpd restart
+
+  #Issue #376 - Secure loopback access
+  dbpwd="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/^.*://'`"
+  /usr/bin/mysql -u root -p"$dbpwd" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
+
+  # Post MailScanner upgrade 5.0.6-4 (https://github.com/MailScanner/v5/issues/88)
+  chown postfix:mtagroup /var/spool/MailScanner/quarantine
+  
+  # Enable restart on ms_cron update
+  MSCRONPRESENT=$(grep ^ms_cron_ps_restart /etc/MailScanner/defaults)
+  if [[ -z $MSCRONPRESENT ]]; then
+    cat >> /etc/MailScanner/defaults << EOF
+
+# Restart MailScanner after Update Safe/Bad Phishing sites
+#
+# Restart MailScanner after update of the Safe/Bad Phishing sites files.
+# This is disabled by default.
+#
+# This is executed during the DAILY cron option.  0 = off, 1 = on
+#
+
+ms_cron_ps_restart=1
+EOF
+  else
+    sed -i "/^ms_cron_ps_restart/ c\ms_cron_ps_restart=1" /etc/MailScanner/defaults
+  fi
+
+  # Reset Web Bug 1x1 spacer
+  sed -i "/^Web Bug Replacement =/ c\Web Bug Replacement = http://dl.efa-project.org/static/1x1spacer.gif" /etc/MailScanner/MailScanner.conf
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
+  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
+
+  # Restore excludes
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
   echo "$VERSION update is complete"
@@ -159,8 +208,9 @@ EOF
       cd /var/www/html/mailscanner
       chown root:apache images
       chmod ug+rwx images
-      chown root:apache images/cache
-      chmod ug+rwx images/cache
+      # MailWatch 1.2.5 -- no longer uses images/cache
+      # chown root:apache images/cache
+      # chmod ug+rwx images/cache
       chown root:apache temp
       chmod ug+rwx temp
       rm -rf docs
@@ -245,12 +295,31 @@ EOF
       if [[ -z $SESSIONNAME_PRESENT ]]; then
           sed -i "/^define('LANG'/ a\\\n// Session Handling - conflicts can exist when the your environment makes use of multiple php sessions on the same server\n// to resolve this, uncomment the following option.  See https://github.com/mailwatch/MailWatch/issues/730 for more info\n// define('SESSION_NAME', 'MailWatch');" /var/www/html/mailscanner/conf.php
       fi
-
+            
       SESSIONTIMEOUT_PRESENT=`grep define\(\'SESSION_TIMEOUT\' /var/www/html/mailscanner/conf.php`
       if [[ -z $SESSIONTIMEOUT_PRESENT ]]; then
           sed -i "/define('SESSION_NAME'/ a\\\n// Session Timeout - Sets the global session timeout value, default is 600 sec (10 minutes) if not defined\n// Range is 0 to 99999 seconds.  Setting to 0 will disable session timeout and active session statuses.\n// This can also be set individually per user in the MailWatch GUI for greater flexibility.\n//define('SESSION_TIMEOUT', 600);" /var/www/html/mailscanner/conf.php
       fi
 
+      #Add status graph interval configuration for mailwatch v1.2.5
+        STATUSGRAPH_INTERVAL=`grep define\(\'STATUSGRAPH_INTERVAL\' /var/www/html/mailscanner/conf.php`
+        if [[ -z $STATUSGRAPH_INTERVAL ]]; then
+          echo "" >> /var/www/html/mailscanner/conf.php
+          echo "// Interval for the traffic chart for admins in minutes (default is 60, max 1440 (24h))" >> /var/www/html/mailscanner/conf.php
+          echo "define('STATUSGRAPH_INTERVAL', 60);" >> /var/www/html/mailscanner/conf.php
+        fi
+
+      sed -i "s/^define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/\/\/deprecated:define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/g" /var/www/html/mailscanner/conf.php
+      sed -i "s/^define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/\/\/deprecated:define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/g" /var/www/html/mailscanner/conf.php
+
+      ENABLE_SUPER_DOMAIN_ADMINS=`grep define\(\'ENABLE_SUPER_DOMAIN_ADMINS\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $ENABLE_SUPER_DOMAIN_ADMINS ]]; then
+         echo "" >> /var/www/html/mailscanner/conf.php
+         echo "//Allow domain admins to create/edit/delete other domain admins from the same domain (not recommended, only for backward compatibility)" >> /var/www/html/mailscanner/conf.php
+         echo "//define('ENABLE_SUPER_DOMAIN_ADMINS',true);" >> /var/www/html/mailscanner/conf.php
+         echo "//Allow the username of domain admins and normal users to not be in mail format (not recommended, only for backward compatibility)" >> /var/www/html/mailscanner/conf.php
+         echo "//define('ALLOW_NO_USER_DOMAIN',true);" >> /var/www/html/mailscanner/conf.php
+      fi
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
@@ -262,15 +331,13 @@ EOF
       mv mailwatch-logo.png mailwatch-logo.png.orig
       
       # Issue #107 MailWatch login page shows Mailwatch logo and theme after update testing
-      sed -i 's/#f7ce4a/#719b94/g' /var/www/html/mailscanner/style.css
+      sed -i 's/#f7ce4a/#719b94/ig' /var/www/html/mailscanner/style.css
+      sed -i 's/#deb531/#518c82/ig' /var/www/html/mailscanner/style.css
 
       ln -s EFAlogo-79px.png mailwatch-logo.png
 
       # Issue #289 MailWatch logo on release link broken
       ln -s EFAlogo-79px.png mailwatch-logo.gif
-
-      # Alter color scheme
-      sed -i 's/#F7CE4A/#719b94/g' /var/www/html/mailscanner/style.css
 
       # Add back Mailgraph link
       cd /var/www/html/mailscanner
@@ -358,6 +425,9 @@ EOF
       if [[ -z $USER_SELECTABLE_LANG_PRESENT ]]; then
         sed -i "/^define('LANG'/ a\\\n// Optional: If USER_SELECTABLE_LANG is defined and the value contains more than one language then the user gets a dropdown\n// in the gui to change the language of his browser. The selectable languages are defined as a comma separated list.\n//define('USER_SELECTABLE_LANG', 'de,en,fr,it,nl,pt_br');" /var/www/html/mailscanner/conf.php
       fi
+      
+      # Fix IMAGES_DIR
+      sed -i "/^define('IMAGES_DIR',/ c\define('IMAGES_DIR', '/images/'); // Leading and Trailing Slash Needed" /var/www/html/mailscanner/conf.php
 
       # Is greylisting enabled?  Add back menu item...
       if [[ -n "`grep inet:127.0.0.1:2501 /etc/postfix/main.cf`" ]]; then
@@ -571,6 +641,38 @@ function abort() {
 function yum_update() {
   yum -y update
   [[ $? -ne 0 ]] && abort
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update DCC
+#----------------------------------------------------------------#
+function update_dcc() {
+  /var/dcc/libexec/updatedcc  
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to update Pyzor
+#----------------------------------------------------------------#
+function update_pyzor() {
+
+# Update Pyzor if we have a new version available
+  if [[ $PYZORVERSION != "`grep PYZORVERSION /etc/EFA-Config | sed 's/^.*://'`" ]]
+    then
+       cp $STAGING/Files/pyzor-$PYZORVERSION.tar.gz /usr/src/EFA
+       cd /usr/src/EFA
+       tar xzvf pyzor-$PYZORVERSION.tar.gz
+       cd pyzor-$PYZORVERSION
+       python setup.py build
+       python setup.py install
+       # Discovery no longer exists in pyzor 1.0.0
+       # su postfix -s /bin/bash -c 'pyzor discover'
+       # Update version to EFA-Config
+       sed -i "/^PYZORVERSION:/ c\PYZORVERSION:$PYZORVERSION" /etc/EFA-Config
+       cd /usr/src/EFA
+       rm -rf pyzor-$PYZORVERSION
+   fi
 }
 #----------------------------------------------------------------#
 

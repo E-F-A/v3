@@ -1,5 +1,5 @@
 ######################################################################
-# EFA 3.0.2.3 RELEASE NOTES
+# EFA 3.0.2.4 RELEASE NOTES
 ######################################################################
 # Copyright (C) 2015-2017  https://efa-project.org
 #
@@ -17,17 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
 
-Welcome to EFA Version 3.0.2.3!
+Welcome to EFA Version 3.0.2.4!
 
 Many thanks goes to the developers of EFA and maintainers of all
 3rd party packages!
 
-These release notes will help guide you through the 3.0.2.3 update.
+These release notes will help guide you through the 3.0.2.4 update.
 
 Many fixes and enhancements have been made to EFA.  Please review the
 CHANGELOG for further information.
 
-https://raw.githubusercontent.com/E-F-A/v3/3.0.2.3/CHANGELOG
+https://raw.githubusercontent.com/E-F-A/v3/3.0.2.4/CHANGELOG
 
 ###################### How To Update ##################################
 
@@ -49,7 +49,7 @@ Choose option 14) Update Now
 The first time you run this update, the kernel may update. If this
 happens, the script will halt to give you an opportunity to restart.
 After restarting and booting to the new kernel, rerun EFA-Update to
-continue the update process to 3.0.2.3.
+continue the update process to 3.0.2.4.
 
 EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
@@ -57,45 +57,19 @@ if present.
 
 #######################################################################
 
-#################### Important Security Notice ########################
+############# Important Info -- Deprecation Warning ###################
 
-///Everyone is STRONGLY encouraged to update from 3.0.1.8 and below NOW\\\
-
-A recent set of vulnerabilities have been discovered in the MailWatch and
-SGWI interfaces that can allow an attacker to escalate privileges in eFa.
-
-Because of these vulnerabilities, if you are using the same password for
-the console as you are for MailWatch (many folks are), please take a moment
-to make your MailWatch admin password different from the console.
-Doing so will limit the success of a shared credential attack via MailWatch
-on eFa to gain root access.
-
-If you cannnot update or have problems, the following steps are
-strongly recommended to keep your appliance safe until you can update
-successfully:
-
-1) Rotate your admin passwords in the console and MailWatch UI and make
-   each one different than the other to prevent a shared credential
-   attack.
-
-2) Install mod_security and mod_evasive to provide some security in front
-   of the vulnerable code.
-
-3) Inform your MailWatch users (especially admins) to avoid opening multiple
-   tabs and performing general web browsing while working in MailWatch
-
-##################### Important database changes ######################
-
-MailWatch 1.2.1 and newer has utf8mb4 character set support.
-CentOS 6.9 lacks this support in the stock mysql rpms.
-Therefore, upgrades from 3.0.1.8 and below will migrate the database
-from mysql to MariaDB 10.1.  This may be a big jump for some users and
-may want to perform additional testing prior to upgrading.
+Due to security issues found in the handling of domain admins, users
+and domain admins are required to be full email addresses.  This
+requirement can be disabled in /var/www/html/mailwatch/conf.php for
+backward compatibility.  However, doing so reduces the security of the
+system.  The security problem is that domain admins have the ability to
+elevate and downgrade privileges of other admins and domain admins.
 
 ################ Important Info -- Custom Tweaks ######################
 
 Many EFA users have modified their EFA installations and made tweaks
-that may "disappear" after an update to 3.0.2.3.
+that may "disappear" after an update to 3.0.2.4.
 
 Updated files have been automatically backed up to the following
 location:
@@ -107,49 +81,11 @@ location:
 ########################## Known Issues ###############################
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
-install itself after updating to 3.0.2.3.  Reapply VMware-Tools
-after updating to 3.0.2.3.  Run the following command to remove
+install itself after updating to 3.0.2.4.  Reapply VMware-Tools
+after updating to 3.0.2.4.  Run the following command to remove
 open-vm-tools:
 
 sudo rpm -e open-vm-tools
-
-2) Error, "could not search" when logging into MailWatch after
-updating to 3.0.2.3.
-
-This occurs when Active Directory integration is enabled.
-
-Check /var/www/html/mailscanner/conf.php
-
-Change the following line to 'mail' from 'proxyaddresses', if needed...
-define('LDAP_EMAIL_FIELD', 'proxyaddresses');
-
-Change the following
-define('LDAP_MS_AD_COMPATIBILITY', true);
-
-3) EFA-Update hanging at end of update (logsave not exiting)
-
-This is a known issue.  This is usually caused from processes that
-spawned off of the script and have not closed.
-
-You can kill the logsave process (Ctrl+C if running interactively)
-
-5) Updating with multiple AV Scanners present
-
-Starting with update 3.0.1.2, MailScanner has undergone a major upgrade to v5.
-
-Notice:  Some commercial virus scanners may not have wrappers in v5. If this 
-affects you, please reach out to mailscanner via the mailscanner listserv forum for
-further assistance.
-
-One of the changes includes the introduction of a new group called "mtagroup."
-
-You may see MailScanner failing to scan emails as a result of the upgrade or a scanning loop occurring.
-
-If you are running any 3rd party antivirus scanners, please be sure to add the users to the mtagroup:
-
-sudo usermod someavaccount -G mtagroup
-
-An AV daemon restart and/or a reboot may be needed for the change to take effect.
 
 #######################################################################
 

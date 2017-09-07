@@ -1,0 +1,6 @@
+[EFA]
+name=EFA-Project
+baseurl=https://dl.efa-project.org/rpm/CentOS/6/testing/x86_64
+mirrorlist=https://dl.efa-project.org/rpm/mirrors-efa-testing
+failovermethod=priority
+enabled=1
