@@ -303,7 +303,7 @@ EOF
       if [[ -z $SESSIONTIMEOUT_PRESENT ]]; then
           sed -i "/define('SESSION_NAME'/ a\\\n// Session Timeout - Sets the global session timeout value, default is 600 sec (10 minutes) if not defined\n// Range is 0 to 99999 seconds.  Setting to 0 will disable session timeout and active session statuses.\n// This can also be set individually per user in the MailWatch GUI for greater flexibility.\n//define('SESSION_TIMEOUT', 600);" /var/www/html/mailscanner/conf.php
       fi
-      
+
       #Add status graph interval configuration for mailwatch v1.2.5
         STATUSGRAPH_INTERVAL=`grep define\(\'STATUSGRAPH_INTERVAL\' /var/www/html/mailscanner/conf.php`
         if [[ -z $STATUSGRAPH_INTERVAL ]]; then
@@ -311,11 +311,18 @@ EOF
           echo "// Interval for the traffic chart for admins in minutes (default is 60, max 1440 (24h))" >> /var/www/html/mailscanner/conf.php
           echo "define('STATUSGRAPH_INTERVAL', 60);" >> /var/www/html/mailscanner/conf.php
         fi
-      
+
       sed -i "s/^define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/\/\/deprecated:define('CACHE_DIR', '.\/images\/cache\/'); \/\/ JpGraph cache/g" /var/www/html/mailscanner/conf.php
       sed -i "s/^define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/\/\/deprecated:define('TTF_DIR', '.\/lib\/jpgraph\/src\/fonts\/'); \/\/ JpGraph fonts/g" /var/www/html/mailscanner/conf.php
-      
 
+      ENABLE_SUPER_DOMAIN_ADMINS=`grep define\(\'ENABLE_SUPER_DOMAIN_ADMINS\' /var/www/html/mailscanner/conf.php`
+      if [[ -z $ENABLE_SUPER_DOMAIN_ADMINS ]]; then
+         echo "" >> /var/www/html/mailscanner/conf.php
+         echo "//Allow domain admins to create/edit/delete other domain admins from the same domain (not recommended, only for backward compatibility)" >> /var/www/html/mailscanner/conf.php
+         echo "//define('ENABLE_SUPER_DOMAIN_ADMINS',true);" >> /var/www/html/mailscanner/conf.php
+         echo "//Allow the username of domain admins and normal users to not be in mail format (not recommended, only for backward compatibility)" >> /var/www/html/mailscanner/conf.php
+         echo "//define('ALLOW_NO_USER_DOMAIN',true);" >> /var/www/html/mailscanner/conf.php
+      fi
       # Add favicons back
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/
       /bin/cp -f /var/EFA/backup/$VERSION/mailscanner/favicon.ico /var/www/html/mailscanner/images
