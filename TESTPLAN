@@ -7,6 +7,7 @@ Confirm successfull MailWatch upgrade PASSED
   Check viewmail.php PASSED
   Check SA Rule Hits report PASSED
   Check Postfix Relay Info PASSED
+  Check Domain Admin Security Fix
 Confirm mod_security is disabled PASSED
 Confirm Successful MailScanner upgrade PASSED
   SA and MailScanner lint tests PASSED
@@ -18,7 +19,8 @@ Confirm /etc/MailScanner/MailScanner.conf config PASSED
 Confirm successful Webmin upgrade PASSED
 Confirm successful SGWI upgrade PASSED
 Confirm preservation of MailScanner reports PASSED
-Confirm ms-sendmail does not get activated
+Confirm ms-sendmail does not get activated PASSED
+Confirm ms-update-phishing ms-peek fix PASSED
 
 ############################################################
 EFA Version 3.0.2.3 TEST PLAN
