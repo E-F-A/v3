@@ -75,9 +75,16 @@ function run_update() {
   # Add init.d symlink back for compatibility
   ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
 
+  # Issue #388 MailWatch database schema upgrade causing /tmp to fill up
+  # Cannot increase tmp size here, so relocate to /var
+  mkdir /var/lib/mysql/temp
+  chown mysql:mysql /var/lib/mysql/temp
+  sed -i "/^\[mysqld\]/ a\tmpdir = /var/lib/mysql/temp" /etc/my.cnf.d/server.cnf
+  service mysql reload
+
   # Update MailWatch
   update-mailwatch
-  
+
   # Update SGWI
   update_sgwi
 
@@ -87,7 +94,7 @@ function run_update() {
 
   # Update DCC
   update_dcc
-  
+
   # Post rpm Update Webmin
   update-webmin
 
