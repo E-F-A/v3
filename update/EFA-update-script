@@ -1084,17 +1084,17 @@ function get_cversion() {
 #----------------------------------------------------------------#
 function check_disk_space() {
   # Abort update if disk space is low use is >= 95%
-  THRESHOLD="85"
+  THRESHOLD="95"
   DISKUSE=$(df -hP -t ext4 --local | awk '{print $5}' | grep [0-9] | tr -d "%")
   for i in $DISKUSE; do
     if [[ $i -ge $THRESHOLD ]]; then
 
-      echo "FATAL: Update aborted. Low disk space <=15% detected on one" >> $TMPMAIL
+      echo "FATAL: Update aborted. Low disk space <=5% detected on one" >> $TMPMAIL
       echo "or more local ext4 filesystems!" >> $TMPMAIL
       echo "Free up disk space before continuing."  >> $TMPMAIL
       echo "Please visit https://forum.efa-project.org for assistance." >> $TMPMAIL
 
-      echo "FATAL: Update aborted. Low disk space <=15% detected on one"
+      echo "FATAL: Update aborted. Low disk space <=5% detected on one"
       echo "or more local ext4 filesystems!"
       echo "Free up disk space before continuing."
       echo "Please visit https://forums.efa-project.org for assistance."
