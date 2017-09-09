@@ -703,7 +703,7 @@ function finalize() {
 # +---------------------------------------------------+
 # Function to determine space needed for update
 # +---------------------------------------------------+
-funcion checkspace()
+function checkspace()
 {
   # Get size of database area
   DBSIZE=$(du -c /var/lib/mysql | tail -n 1 | awk '{print $1}')
