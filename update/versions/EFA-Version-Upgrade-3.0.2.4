@@ -57,6 +57,9 @@ function run_update() {
   # /Scripts/lib-EFA-Configure                        <- Complete EFA-Configure dir with all files
   # /Scripts/EFA-Configure                            <- EFA-Configure script
 
+  ####### Preflight ######
+  checkspace
+  
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
@@ -412,7 +415,6 @@ EOF
           sed -i "/^define('MAILWATCH_MAIL_PORT'/ a\// This is required if you use a remote SMTP server to send MailWatch emails (reports etc).\n//define('MAILWATCH_SMTP_HOSTNAME', gethostname());" /var/www/html/mailscanner/conf.php
       fi
 
-      
       MS_SHARE_DIR_PRESENT=`grep define\(\'MS_SHARE_DIR\' /var/www/html/mailscanner/conf.php`
       if [[ -z $MS_SHARE_DIR_PRESENT ]]; then
         sed -i "/^define('MS_CONFIG_DIR'/ a\define('MS_SHARE_DIR', '/usr/share/MailScanner/'); // path for ConfigDefs.pl file" /var/www/html/mailscanner/conf.php
@@ -655,7 +657,7 @@ function yum_update() {
 # Function to update DCC
 #----------------------------------------------------------------#
 function update_dcc() {
-  /var/dcc/libexec/updatedcc  
+  /var/dcc/libexec/updatedcc
 }
 #----------------------------------------------------------------#
 
@@ -697,6 +699,27 @@ function finalize() {
   echo "Please reboot the system as soon as possible." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
+
+# +---------------------------------------------------+
+# Function to determine space needed for update
+# +---------------------------------------------------+
+funcion checkspace()
+{
+  # Get size of database area
+  DBSIZE=$(du -c /var/lib/mysql | tail -n 1 | awk '{print $1}')
+   
+  # Get size of free space /var
+  VARSIZE=$(df -P /var | tail -n 1 | awk '{print $4}')
+
+  # Use 2x database size calculation
+  # 1 for backup file
+  # 1 for update
+  if [[ $(($DBSIZE * 2)) -gt $VARSIZE ]]; then
+    echo "Aborted:  Free Space on /var is not sufficient for update!"
+    echo "Free up space or expand /var and try again."
+    abort
+  fi
+}
 
 # +---------------------------------------------------+
 # Function to create a random password
