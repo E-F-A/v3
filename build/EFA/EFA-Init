@@ -1,9 +1,9 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA-Init
-# Version 20150607
+# Version 20170916
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2017 https://efa-project.org
+# Copyright (C) 2012~2017 https://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -496,7 +496,7 @@ function func_ask-ianacode() {
   echo -e "$green[EFA]$clean I need your 2 letter IANA country code, this is used to"
   echo -e "$green[EFA]$clean determine the closest mirror to download software updates from."
   echo -e "$green[EFA]$clean If you don't know your country code please take a look at: "
-  echo -e "$green[EFA]$clean http://www.iso.org/iso/country_names_and_code_elements "
+  echo -e "$green[EFA]$clean https://www.iso.org/obp/ "
   echo ""
   echo -e -n "$green[EFA]$clean Your IANA code (lowercase): "
   read IANACODE
@@ -840,7 +840,7 @@ function func_configure-system() {
   echo -e "$green[EFA]$clean - Configuring MailScanner"
   sed -i "/^%org-name% =/ c\%org-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
   sed -i "/^%org-long-name% =/ c\%org-long-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
-  sed -i "/^%web-site% =/ c\%web-site% = http://www.efa-project.org" /etc/MailScanner/MailScanner.conf
+  sed -i "/^%web-site% =/ c\%web-site% = https://www.efa-project.org" /etc/MailScanner/MailScanner.conf
   sed -i "/^Use Watermarking =/ c\Use Watermarking = yes" /etc/MailScanner/MailScanner.conf
   sed -i "/^Information Header Value =/ c\Information Header Value = Please contact $ADMINEMAIL for more information" /etc/MailScanner/MailScanner.conf
   sed -i "/^Unscanned Header Value =/ c\Unscanned Header Value = Please contact $ADMINEMAIL for details" /etc/MailScanner/MailScanner.conf
