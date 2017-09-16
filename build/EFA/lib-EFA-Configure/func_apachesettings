@@ -146,8 +146,8 @@ function func_modsecurity()
   echo -e ""
   echo -e "As of v3.0.2.4, Modsecurity was disabled moving forward."
   echo -e "You may enable modsecurity again."
-  echo -e "EFA modifications to modsecuirty were discontinued as of v3.0.2.4."
-  echo -e "Please keep in mind that every update you runm you must re-enable modsecuirty."
+  echo -e "EFA provided modifications to modsecurity were discontinued as of v3.0.2.4."
+  echo -e "Please keep in mind that every update you run, you must re-enable modsecurity."
   echo -e ""
   echo -e -n "$green[EFA]$clean Enable modsecurity? (y/N/c): "
   local TMPMODSECURITY
