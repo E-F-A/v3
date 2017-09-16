@@ -88,26 +88,26 @@ function run_update() {
   # Update MailWatch
   update-mailwatch
 
-  # Update SGWI
-  update_sgwi
+  # Update SGWI v3.0.2.4 (disabled v3.0.2.5)
+  #update_sgwi
 
-  # Update Pyzor
-  yum -y install python-setuptools
-  update_pyzor
+  # Update Pyzor v3.0.2.4 (disabled v3.0.2.5)
+  #yum -y install python-setuptools
+  #update_pyzor
 
-  # Update DCC
-  update_dcc
+  # Update DCC v3.0.2.4 (disabled v3.0.2.5)
+  #update_dcc
 
-  # Post rpm Update Webmin
-  update-webmin
+  # Post rpm Update Webmin v3.0.2.4 (disabled v3.0.2.5)
+  #update-webmin
 
-  # Issue #378 Disable mod_security for 3.0.2.4
-  sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
-  service httpd restart
+  # Issue #378 Disable mod_security for 3.0.2.4 (disabled v3.0.2.5)
+  #sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
+  #service httpd restart
 
-  #Issue #376 - Secure loopback access
-  dbpwd="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/^.*://'`"
-  /usr/bin/mysql -u root -p"$dbpwd" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
+  #Issue #376 - Secure loopback access v3.0.2.4 (disabled v3.0.2.5)
+  #dbpwd="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/^.*://'`"
+  #/usr/bin/mysql -u root -p"$dbpwd" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
 
   # Post MailScanner upgrade 5.0.6-4 (https://github.com/MailScanner/v5/issues/88)
   chown postfix:mtagroup /var/spool/MailScanner/quarantine
@@ -136,8 +136,7 @@ EOF
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
-  sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
-
+  
   # Restore excludes
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
 
