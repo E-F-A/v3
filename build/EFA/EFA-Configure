@@ -33,7 +33,7 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_apachesettings
 . /var/EFA/lib/EFA-Configure/func_mailsettings
 . /var/EFA/lib/EFA-Configure/func_systemrestore
-. /var/EFA/lib/EFA-Configure/func_recovermysql
+. /var/EFA/lib/EFA-Configure/func_recovermariadb
 . /var/EFA/lib/EFA-Configure/func_spamsettings
 . /var/EFA/lib/EFA-Configure/func_trustednetworks
 . /var/EFA/lib/EFA-Configure/func_virussettings
@@ -73,7 +73,7 @@ show_menu() {
       echo -e " "
       echo -e "0) Logout from ssh                     8) Mail Settings"
       echo -e "1) Shell                               9) Spam Settings"
-      echo -e "2) Reboot system                      10) Mysql Recovery"
+      echo -e "2) Reboot system                      10) MariaDB Recovery"
       echo -e "3) Halt system                        11) Apache Settings"
       echo -e "4) IP Settings                        12) Virus Settings"
       echo -e "5) Tunables                           13) System Restore"
@@ -94,7 +94,7 @@ show_menu() {
                     7) func_autoupdates ;;
                     8) func_mail-settings ;;
                     9) func_spam-settings ;;
-                   10) func_recover-mysql ;;
+                   10) func_recover-mariadb ;;
                    11) func_apache-settings ;;
                    12) func_virus-settings ;;
                    13) func_system-restore ;;
