@@ -31,15 +31,7 @@ function func_recover-mariadb() {
         echo -e "Stopping MariaDB, MailScanner, and sqlgrey"
         service sqlgrey stop
         service MailScanner stop
-        service mysqld stop
-        #killall -9 mysqld
-
-        echo -e "Removing socket if present"
-        rm -f /var/lib/mysql/mysql.sock
-
-        echo -e "Attempting to start MariaDB"
-        service mysqld start
-
+        
         echo -e "Performing additional database checks"
         mysqlcheck -u root -p$MYSQLPW --repair --all-databases
         pause
