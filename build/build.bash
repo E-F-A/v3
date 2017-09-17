@@ -644,7 +644,7 @@ func_apache () {
 EOF
 
     # Issue #378 Disable mod_security for 3.0.2.4
-    sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/ mod_security.conf
+    sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
 
     # Remove Server Signatures
     sed -i "/^ServerSignature/ c\ServerSignature Off" /etc/httpd/conf/httpd.conf
