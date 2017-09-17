@@ -62,11 +62,44 @@ function func_system-restore() {
                       echo -e
                       cd /var/EFA/backup
                       tar xzvf ${BACKUPLIST[$((choice-1))]} --overwrite
-                      cp -rf /var/EFA/backup/backup/etc/* /etc
-                      cp -rf /var/EFA/backup/backup/var/* /var
-                      cd /var/EFA/backup/backup/sql
                       #fetch SQL root password
                       MYSQLROOTPWD="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/.*://'`"
+                      RESTOREMYSQLROOTPWD="`grep MYSQLROOTPWD /var/EFA/backup/backup/etc/EFA-Config | sed 's/.*://'`"
+                      if [[ "$MYSQLROOTPWD" != "$RESTOREMYSQLROOTPWD" ]]; then
+                        echo "Foreign backup detected, performing import..."
+                        # Restore importable configurations
+                        cp -f /var/EFA/backup/backup/etc/EFA-Config /etc/EFA-Config
+                        cp -f /var/EFA/backup/backup/etc/mail/spamassassin/local.cf /etc/mail/spamassassin/local.cf
+                        cp -rf /var/EFA/backup/backup/etc/MailScanner/* /etc/MailScanner
+                        cp -f /var/EFA/backup/backup/etc/pki/tls/certs/localhost.crt /etc/pki/tls/certs/localhost.crt
+                        cp -f /var/EFA/backup/backup/etc/pki/tls/private/localhost.key /etc/pli/tls/private/localhost.key
+                        cp -rf /var/EFA/backup/backup/etc/postfix/* /etc/postfix
+                        cp -rf /var/EFA/backup/backup/etc/sqlgrey/* /etc/sqlgrey
+                        cp -rf /var/EFA/backup/backup/etc/unbound/conf.d/* /etc/unbound/conf.d
+                        cp -f /var/EFA/backup/backup/var/www/html/mailscanner/conf.php /var/www/html/mailscanner/conf.php
+                        # Import database passwords
+                        RESTORESAUSERSQLPWD="`grep SAUSERSQLPWD /var/EFA/backup/backup/etc/EFA-Config | sed 's/.*://'`"
+                        /usr/bin/mysql -u root -p"$MYSQLROOTPWD" -e "UPDATE mysql.user SET Password=PASSWORD('$RESTORESAUSERSQLPWD') WHERE User='sa_user';"
+                        RESTOREMAILWATCHSQLPWD="`grep MAILWATCHSQLPWD /var/EFA/backup/backup/etc/EFA-Config | sed 's/.*://'`"
+                        /usr/bin/mysql -u root -p"$MYSQLROOTPWD" -e "UPDATE mysql.user SET Password=PASSWORD('$RESTOREMAILWATCHSQLPWD') WHERE User='mailwatch';"
+                        RESTORESQLGREYSQLPWD="`grep SQLGREYSQLPWD /var/EFA/backup/backup/etc/EFA-Config | sed 's/.*://'`"
+                        /usr/bin/mysql -u root -p"$MYSQLROOTPWD" -e "UPDATE mysql.user SET Password=PASSWORD('$RESTORESQLGREYSQLPWD') WHERE User='sqlgrey';"
+                        RESTOREEFASQLPWD="`grep EFASQLPWD /var/EFA/backup/backup/etc/EFA-Config | sed 's/.*://'`"
+                        /usr/bin/mysql -u root -p"$MYSQLROOTPWD" -e "UPDATE mysql.user SET Password=PASSWORD('$RESTOREEFASQLPWD') WHERE User='efa';"
+                        /usr/bin/mysql -u root -p"$MYSQLROOTPWD" -e "FLUSH PRIVILEGES;"
+                        /usr/bin/mysqladmin -u root -p$MYSQLROOTPWD password "$RESTOREMYSQLROOTPWD"
+                        MYSQLROOTPWD=$RESTOREMYSQLROOTPWD
+                        # Update EFA-Config with imported values
+                        sed -i "/^MAILWATCHSQLPWD:/ c\MAILWATCHSQLPWD:$RESTOREMAILWATCHSQLPWD" /etc/EFA-Config
+                        sed -i "/^SAUSERSQLPWD:/ c\SAUSERSQLPWD:$RESTORESAUSERSQLPWD" /etc/EFA-Config
+                        sed -i "/^SQLGREYSQLPWD:/ c\SQLGREYSQLPWD:$RESTORESQLGREYSQLPWD" /etc/EFA-Config
+                        sed -i "/^EFASQLPWD:/ c\EFASQLPWD:$RESTOREEFASQLPWD" /etc/EFA-Config
+                        sed -i "/^MYSQLROOTPWD:/ c\MYSQLROOTPWD:$RESTOREMYSQLROOTPWD" /etc/EFA-Config
+                      else
+                        cp -rf /var/EFA/backup/backup/etc/* /etc
+                        cp -rf /var/EFA/backup/backup/var/* /var
+                      fi
+                      cd /var/EFA/backup/backup/sql
                       # Restore SQL databases
                       mysql --user=root --password=$MYSQLROOTPWD < backup.sql
                       rm -rf /var/EFA/backup/backup
