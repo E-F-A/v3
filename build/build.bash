@@ -573,6 +573,10 @@ func_apache () {
 
     # Issue #139 SSLv3 POODLE Vulnerability
     sed -i "/^SSLProtocol/ c\SSLProtocol all -SSLv2 -SSLv3" /etc/httpd/conf.d/ssl.conf
+    
+    # Harden Apache
+    sed -i "/^SSLCipherSuite/ c\SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP" /etc/httpd/conf.d/ssl.conf
+    sed -i '/^SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP/a SSLHonorCipherOrder on'  /etc/httpd/conf.d/ssl.conf
 
     # Issue #179 default https
     sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
