@@ -75,10 +75,10 @@ function func_lets-encrypt() {
       service httpd start
       #restore selfsigned certs postfix
       echo -e "I'm restoring the self signed certs to Postfix now..."
-      sed -i "/^smtp_tls_CAfile/ c\smtp_tls_CAfile = \/etc\/postfix\/ssl\/smtpd.pem" /etc/postfix/main.cf
-      sed -i "/^smtpd_tls_key_file/ c\smtpd_tls_key_file = \/etc\/postfix\/ssl\/smtpd.pem" /etc/postfix/main.cf
-      sed -i "/^smtpd_tls_cert_file/ c\smtpd_tls_cert_file = \/etc\/postfix\/ssl\/smtpd.pem" /etc/postfix/main.cf
-      sed -i "/^smtpd_tls_CAfile/ c\smtpd_tls_CAfile = \/etc\/postfix\/ssl\/smtpd.pem" /etc/postfix/main.cf
+      sed -i "/^smtp_tls_CAfile/ c\smtp_tls_CAfile = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
+      sed -i "/^smtpd_tls_key_file/ c\smtpd_tls_key_file = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
+      sed -i "/^smtpd_tls_cert_file/ c\smtpd_tls_cert_file = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
+      sed -i "/^smtpd_tls_CAfile/ c\smtpd_tls_CAfile = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
       #sed -i "/^#smtpd_tls_eckey_file/ c\smtpd_tls_eckey_file = \/etc\/postfix\/ssl\/ec_smtpd.pem" /etc/postfix/main.cf
       #sed -i "/^#smtpd_tls_eccert_file/ c\smtpd_tls_eccert_file = \/etc\/postfix\/ssl\/ec_smtpd.pem" /etc/postfix/main.cf
       service postfix stop
