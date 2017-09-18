@@ -22,7 +22,7 @@
 #----------------------------------------------------------------#
 # Variables
 #----------------------------------------------------------------#
-VERSION="3.0.2.4"
+VERSION="3.0.2.5"
 logdir="/var/log/EFA"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
 MAILFROM="$ADMINEMAIL"
@@ -100,10 +100,13 @@ function run_update() {
 
   # Post rpm Update Webmin v3.0.2.4 (disabled v3.0.2.5)
   #update-webmin
+  
+  # Regen new certs
+  regen_certs
 
-  # Issue #378 Disable mod_security for 3.0.2.4 (disabled v3.0.2.5)
-  #sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
-  #service httpd restart
+  # Issue #378 Disable mod_security for 3.0.2.4
+  sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
+  service httpd restart
 
   #Issue #376 - Secure loopback access v3.0.2.4 (disabled v3.0.2.5)
   #dbpwd="`grep MYSQLROOTPWD /etc/EFA-Config | sed 's/^.*://'`"
@@ -657,6 +660,38 @@ function yum_update() {
 #----------------------------------------------------------------#
 function update_dcc() {
   /var/dcc/libexec/updatedcc
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to generate new certs
+#----------------------------------------------------------------#
+function regen_certs() {
+  cd /etc/postfix/ssl
+  rm -f smtpd.pem
+  openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256
+  
+  sed -i "/^smtp_tls_CAfile/ c\smtp_tls_CAfile = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
+  sed -i "/^smtpd_tls_key_file/ c\smtpd_tls_key_file = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
+  sed -i "/^smtpd_tls_cert_file/ c\smtpd_tls_cert_file = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
+  sed -i "/^smtpd_tls_CAfile/ c\smtpd_tls_CAfile = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
+  
+  mkdir /etc/pki/tls/backup
+  mv /etc/pki/tls/certs/localhost.crt /etc/pki/tls/backup
+  mv /etc/pki/tls/private/localhost.key /etc/pki/tls/backup
+  #mv /etc/pki/tls/certs/server-chain.crt /etc/pki/tls/backup
+  
+  ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/localhost.crt
+  ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/private/localhost.key
+  ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/server-chain.crt
+ }
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to generate new certs
+#----------------------------------------------------------------#
+function update_certs() {
+
 }
 #----------------------------------------------------------------#
 
