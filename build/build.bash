@@ -1191,6 +1191,20 @@ func_imagecerberus () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# imageCerberus to replace fuzzyocr
+# http://sourceforge.net/projects/imagecerberus/
+# +---------------------------------------------------+
+func_install-certbot () {
+mkdir /opt/certbot
+cd /opt/certbot
+wget https://dl.eff.org/certbot-auto --no-check-certificate
+chmod a+x ./certbot-auto
+
+}
+# +---------------------------------------------------+
+
+
+# +---------------------------------------------------+
 # Webmin (http://www.webmin.com/)
 # +---------------------------------------------------+
 func_webmin () {
@@ -1564,6 +1578,7 @@ function main() {
     func_dcc
     func_imagecerberus
     func_webmin
+    func_install-certbot
     func_unbound
     func_munin
     func_kernsettings
@@ -1584,6 +1599,7 @@ function main() {
     func_pyzor
     func_razor
     func_dcc
+    func_install-certbot
     func_imagecerberus
     func_unbound
     func_kernsettings
