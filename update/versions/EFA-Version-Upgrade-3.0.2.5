@@ -98,6 +98,9 @@ function run_update() {
   # Update DCC v3.0.2.4 (disabled v3.0.2.5)
   #update_dcc
 
+  # Use new DCC servers
+  dcc_servers
+
   # Post rpm Update Webmin v3.0.2.4 (disabled v3.0.2.5)
   #update-webmin
   
@@ -688,9 +691,20 @@ function regen_certs() {
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
-# Function to generate new certs
+# Function to update DCC Servers
 #----------------------------------------------------------------#
-function update_certs() {
+function dcc_servers() {
+/usr/local/bin/cdcc "delete dcc1.dcc-servers.net"
+/usr/local/bin/cdcc "delete dcc2.dcc-servers.net"
+/usr/local/bin/cdcc "delete dcc3.dcc-servers.net"
+/usr/local/bin/cdcc "delete dcc4.dcc-servers.net"
+/usr/local/bin/cdcc "delete dcc5.dcc-servers.net"
+/usr/local/bin/cdcc "delete dcc.nova53.net"
+
+/usr/local/bin/cdcc "add dcc1.nova53.net"
+/usr/local/bin/cdcc "add dcc2.nova53.net"
+/usr/local/bin/cdcc "add dcc3.nova53.net"
+/usr/local/bin/cdcc "add dcc4.nova53.net"
 
 }
 #----------------------------------------------------------------#
