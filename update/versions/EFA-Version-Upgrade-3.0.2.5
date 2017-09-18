@@ -113,8 +113,11 @@ function run_update() {
   # Harden apache
   harden_apache
   
-  #Update Quarantine
+  # Update Quarantine
   update_quarantine
+  
+  # Install certbot
+  func_install-certbot
 
   # Issue #378 Disable mod_security for 3.0.2.4
   sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
@@ -814,6 +817,18 @@ function update_quarantine() {
 local POSTMASTEREMAIL
 POSTMASTEREMAIL="`grep POSTMASTEREMAIL /etc/EFA-Config | sed 's/^.*://'`"
 echo -e "$POSTMASTEREMAIL"
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# function to install certbot
+# +---------------------------------------------------+
+func_install-certbot () {
+mkdir /opt/certbot
+cd /opt/certbot
+wget https://dl.eff.org/certbot-auto --no-check-certificate
+chmod a+x ./certbot-auto
+
 }
 # +---------------------------------------------------+
 
