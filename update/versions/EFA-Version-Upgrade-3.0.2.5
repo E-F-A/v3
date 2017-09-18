@@ -107,8 +107,11 @@ function run_update() {
   # Regen new certs
   regen_certs
   
-  #Harden postfix
+  # Harden postfix
   harden_postfix
+  
+  # Harden apache
+  harden_apache
 
   # Issue #378 Disable mod_security for 3.0.2.4
   sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
@@ -700,6 +703,15 @@ function harden_postfix() {
 postconf -e "tls_preempt_cipherlist = yes"
 postconf -e "tls_high_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
 sed -i "/^smtpd_tls_ciphers = /c\smtpd_tls_ciphers = high" /etc/postfix/main.cf
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Function to harden apache
+#----------------------------------------------------------------#
+function harden_apache() {
+sed -i "/^SSLCipherSuite/ c\SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP" /etc/httpd/conf.d/ssl.conf
+sed -i '/^SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP/a SSLHonorCipherOrder on'  /etc/httpd/conf.d/ssl.conf
 }
 #----------------------------------------------------------------#
 
