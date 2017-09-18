@@ -227,6 +227,9 @@ func_postfix () {
     postconf -e "smtpd_client_restrictions = permit_sasl_authenticated, reject_rbl_client zen.spamhaus.org, reject_unknown_reverse_client_hostname"
     postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_non_fqdn_recipient, reject_unknown_recipient_domain, check_recipient_access hash:/etc/postfix/recipient_access, check_policy_service inet:127.0.0.1:2501"
     postconf -e "masquerade_domains = \$mydomain"
+    # harden postfix
+    postconf -e "tls_preempt_cipherlist = yes"
+    postconf -e "tls_high_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
     #other configuration files
     newaliases
     touch /etc/postfix/transport
@@ -245,10 +248,10 @@ func_postfix () {
     # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600
     chmod 0600 /etc/postfix/sasl_passwd
 
-    # Logjam Vulnerability #188
+    # Logjam Vulnerability #188 - #update for v3.0.2.5 for new cipher suite
     openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
     postconf -e "smtpd_tls_dh1024_param_file = /etc/postfix/ssl/dhparam.pem"
-    postconf -e "smtpd_tls_ciphers = low"
+    postconf -e "smtpd_tls_ciphers = high"
 
     echo "pwcheck_method: auxprop">/usr/lib64/sasl2/smtpd.conf
     echo "auxprop_plugin: sasldb">>/usr/lib64/sasl2/smtpd.conf
