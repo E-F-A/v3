@@ -1191,8 +1191,7 @@ func_imagecerberus () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# imageCerberus to replace fuzzyocr
-# http://sourceforge.net/projects/imagecerberus/
+# function to install certbot
 # +---------------------------------------------------+
 func_install-certbot () {
 mkdir /opt/certbot
