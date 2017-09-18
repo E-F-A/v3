@@ -112,6 +112,9 @@ function run_update() {
   
   # Harden apache
   harden_apache
+  
+  #Update Quarantine
+  update_quarantine
 
   # Issue #378 Disable mod_security for 3.0.2.4
   sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
@@ -801,6 +804,16 @@ function randompw()
 {
   PASSWD=""
   PASSWD=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Update quarantine email options
+# +---------------------------------------------------+
+function update_quarantine() {
+local POSTMASTEREMAIL
+POSTMASTEREMAIL="`grep POSTMASTEREMAIL /etc/EFA-Config | sed 's/^.*://'`"
+echo -e "$POSTMASTEREMAIL"
 }
 # +---------------------------------------------------+
 
