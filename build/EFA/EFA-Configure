@@ -63,6 +63,14 @@ shopt -s extglob
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Get version
+# +---------------------------------------------------+
+EFAVERSION="`cat /etc/EFA-Config | grep EFAVERSION | sed 's/.*://'`"
+# +---------------------------------------------------+
+
+
+
+# +---------------------------------------------------+
 # Display menus
 # +---------------------------------------------------+
 show_menu() {
@@ -70,6 +78,9 @@ show_menu() {
   while [ $menu == "1" ]
     do
       func_echo-header
+      echo -e ""
+      echo -e "You are currently running EFA $green$EFAVERSION$clean."
+      echo -e ""
       echo -e "Please choose an option:"
       echo -e " "
       echo -e "0) Logout from ssh                    9)  Spam Settings"
