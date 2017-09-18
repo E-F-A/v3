@@ -1,4 +1,20 @@
 ############################################################
+EFA Version 3.0.2.5 Changes
+############################################################
+
+Feature - Let's Encrypt
+Security - Regenerate self signed certs for Postfix/Apache
+Bug - Left the mod secuirty mod enabled, as new builds of 3.0.2.4 still have it enabled by default
+Bug - Updated menu options for "Apache Settings" menu
+Feature - Hypervisor detection during init
+Feature - Updated MariaDB recovery script
+
+TODO - quarantine report to flip from HTTP/HTTPS based if https is enabled or not
+TODO - update quarantine FROM_ADDR to use POSTMASTER address in /etc/EFA-Config
+TODO - enable EC certs for postfix while not using lets encrypt
+
+
+############################################################
 EFA Version 3.0.2.4 Changes
 ############################################################
 
