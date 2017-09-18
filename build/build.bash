@@ -1407,6 +1407,16 @@ EOF
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Update quarantine email options
+# +---------------------------------------------------+
+function update_quarantine() {
+local POSTMASTEREMAIL
+POSTMASTEREMAIL="`grep POSTMASTEREMAIL /etc/EFA-Config | sed 's/^.*://'`"
+echo -e "$POSTMASTEREMAIL"
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # Cron settings
 # +---------------------------------------------------+
 func_cron () {
@@ -1559,6 +1569,7 @@ function main() {
     func_kernsettings
     func_services
     func_efarequirements
+    update_quarantine
     func_cron
     func_cleanup
   elif [[ "$action" == "--frontend" ]]; then
@@ -1578,6 +1589,7 @@ function main() {
     func_kernsettings
     func_services
     func_efarequirements
+    update_quarantine
     func_cron
     func_cleanup
   fi
