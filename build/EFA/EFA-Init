@@ -1006,7 +1006,7 @@ function func_end() {
   echo -e "$green[EFA]$clean for postfix, please answer all answers."
   pause
   cd /etc/postfix/ssl
-  openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650
+  openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256
   # Regenerate DH key
   rm -f /etc/postfix/ssl/dhparam.pem
   openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
