@@ -8,13 +8,11 @@ Bug - Left the mod secuirty mod enabled, as new builds of 3.0.2.4 still have it 
 Bug - Updated menu options for "Apache Settings" menu
 Feature - Hypervisor detection during init
 Feature - Updated MariaDB recovery script
-Feature - Removed public DCC servers and added EFA sponsored DCC servers
+Feature - Removed public DCC servers and add EFA sponsored DCC servers
+Security - Enabled strong cipher preference in in postfix
 
 TODO - quarantine report to flip from HTTP/HTTPS based if https is enabled or not
 TODO - update quarantine FROM_ADDR to use POSTMASTER address in /etc/EFA-Config
-TODO - enable EC certs for postfix while not using lets encrypt
-TODO - Check ciphers allowed in Postfix
-TODO - Enable cipher prefernce postfix
 TODO - Enable cipher preference Apache
 
 
