@@ -11,9 +11,8 @@ Feature - Updated MariaDB recovery script
 Feature - Removed public DCC servers and add EFA sponsored DCC servers
 Security - Enabled strong cipher preference in Postfix
 Security - Enabled strong cipher preference in Apache
-
-TODO - quarantine report to flip from HTTP/HTTPS based if https is enabled or not
-TODO - update quarantine FROM_ADDR to use POSTMASTER address in /etc/EFA-Config
+Bug - Quarantine report to flip from HTTP to HTTPS
+Bug - Update quarantine FROM_ADDR to use POSTMASTER address in /etc/EFA-Config
 
 
 ############################################################
