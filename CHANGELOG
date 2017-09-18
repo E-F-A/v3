@@ -8,6 +8,7 @@ Bug - Left the mod secuirty mod enabled, as new builds of 3.0.2.4 still have it 
 Bug - Updated menu options for "Apache Settings" menu
 Feature - Hypervisor detection during init
 Feature - Updated MariaDB recovery script
+Feature - Removed public DCC servers and added EFA sponsored DCC servers
 
 TODO - quarantine report to flip from HTTP/HTTPS based if https is enabled or not
 TODO - update quarantine FROM_ADDR to use POSTMASTER address in /etc/EFA-Config
