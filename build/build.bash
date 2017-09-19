@@ -32,7 +32,7 @@ password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
-yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
+yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools* qemu-guest-agent*"
 MAILWATCHVERSION="c08ef03"
 MAILWATCHRELEASE="1.2.7-dev"
 MAILWATCHBRANCH="develop"
@@ -1354,7 +1354,7 @@ func_efarequirements () {
     echo "------------------------------" >> /etc/issue
     echo "--- Welcome to EFA-$version ---" >> /etc/issue
     echo "------------------------------" >> /etc/issue
-    echo "  http://www.efa-project.org  " >> /etc/issue
+    echo "  https://www.efa-project.org  " >> /etc/issue
     echo "------------------------------" >> /etc/issue
     echo "" >> /etc/issue
     echo "First time login: root/EfaPr0j3ct" >> /etc/issue
