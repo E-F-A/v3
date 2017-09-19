@@ -816,7 +816,8 @@ function randompw()
 function update_quarantine() {
 local POSTMASTEREMAIL
 POSTMASTEREMAIL="`grep POSTMASTEREMAIL /etc/EFA-Config | sed 's/^.*://'`"
-echo -e "$POSTMASTEREMAIL"
+sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$POSTMASTEREMAIL');" /var/www/html/mailscanner/conf.php
+sed -i "/^define('MAILWATCH_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'https:\/\/' . rtrim(gethostname()) . '\/mailscanner');" /var/www/html/mailscanner/conf.php
 }
 # +---------------------------------------------------+
 
