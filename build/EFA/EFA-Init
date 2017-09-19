@@ -439,9 +439,11 @@ function func_detect-virtual() {
     if [[ $VMwareInstallChoice == "" || $VMwareInstallChoice == "Y" || $VMwareInstallChoice == "y" ]]; then
       InstallVmwareTools="1"
       InstallQEMUAgent="0"
+      InstallHyperVTools="0"
     else
       InstallVmwareTools="0"
       InstallQEMUAgent="0"
+      InstallHyperVTools="0"
     fi
   elif [[ $virtplatform == "kvm" ]]; then
     echo -e "$green[EFA]$clean You seem to be running on a KVM based hypervisor"
@@ -451,12 +453,17 @@ function func_detect-virtual() {
     if [[ $KVMInstallChoice == "" || $KVMInstallChoice == "Y" || $KVMInstallChoice == "y" ]]; then
       InstallQEMUAgent="1"
       InstallVmwareTools="0"
+      InstallHyperVTools="0"
     else
       InstallQEMUAgent="0"
       InstallVmwareTools="0"
+      InstallHyperVTools="0"
     fi
   elif [[ $virtplatform == "hyperv" ]]; then
-    echo -e "$green[EFA]$clean I am running on Hyper-V, please go to the eFa wiki for more info."
+    echo -e "$green[EFA]$clean I am running on Hyper-V, please go to the EFA wiki for more information."
+    InstallQEMUAgent="0"
+    InstallVMwareTools="0"
+    InstallHyperVTools="1"
   else
     echo -e "$green[EFA]$clean I was not able to determine the hypervisor technology that I am running on."
     echo -e "$green[EFA]$clean If this is a physical machine, please ignore."
@@ -613,7 +620,7 @@ function func_verify-settings() {
     echo -e "11) User           : $USERNAME"
     echo -e "12) User PWD       : <hidden>"
     echo -e "13) Admin PWD      : <hidden>"
-    echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallVMwareTools" -eq 1 ]]; then echo "Installing Open-VM-Tools for VMware"; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "Installing QEMU Agent for KVM"; echo "Not needed"; fi
+    echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallVMwareTools" -eq 1 ]]; then echo "VMware: Installing Open-VM-Tools."; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "KVM: Installing the QEMU Guest Agent."; elif [[ "$InstallHyperVTools" -eq 1 ]]; then echo "Hyper-V: Please go to the wiki for more information."; else echo "Not needed."; fi
     echo -e -n "15) Time zone      : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
     echo -e "16) Keyboard       : $KEYBOARD"
     echo -e "17) IANA Code      : $IANACODE"
@@ -986,11 +993,11 @@ func_Install-QEMUAgent(){
   pause
   # Disable excludes
   sed -i "s/^exclude=\(.*\)$/#exclude=\1/" /etc/yum.conf
-  yum install qemu-guest-agent
+  yum -y install qemu-guest-agent
   # Restore excludes
   sed -i "s/^#exclude=\(.*\)$/exclude=\1/" /etc/yum.conf
   func_echo-header
-  echo -e "$green[EFA]$clean Installation of the QEMU Agent has completed"
+  echo -e "$green[EFA]$clean Installation of the QEMU Guest Agent has completed"
   pause
 }
 # +---------------------------------------------------+
@@ -1003,7 +1010,7 @@ function func_end() {
   # +--------------------------------------------------+
   # Postfix SSL certificate
   echo -e "$green[EFA]$clean We will now generate an new SSL Certificate"
-  echo -e "$green[EFA]$clean for postfix, please answer all answers."
+  echo -e "$green[EFA]$clean for postfix, please answer the questions when prompted."
   pause
   cd /etc/postfix/ssl
   openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256
