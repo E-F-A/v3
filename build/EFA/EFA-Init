@@ -437,11 +437,11 @@ function func_detect-virtual() {
     echo -e -n "$green[EFA]$clean [Y/n]:"
     read VMwareInstallChoice
     if [[ $VMwareInstallChoice == "" || $VMwareInstallChoice == "Y" || $VMwareInstallChoice == "y" ]]; then
-      InstallVmwareTools="1"
+      InstallVMwareTools="1"
       InstallQEMUAgent="0"
       InstallHyperVTools="0"
     else
-      InstallVmwareTools="0"
+      InstallVMwareTools="0"
       InstallQEMUAgent="0"
       InstallHyperVTools="0"
     fi
@@ -452,11 +452,11 @@ function func_detect-virtual() {
     read KVMInstallChoice
     if [[ $KVMInstallChoice == "" || $KVMInstallChoice == "Y" || $KVMInstallChoice == "y" ]]; then
       InstallQEMUAgent="1"
-      InstallVmwareTools="0"
+      InstallVMwareTools="0"
       InstallHyperVTools="0"
     else
       InstallQEMUAgent="0"
-      InstallVmwareTools="0"
+      InstallVMwareTools="0"
       InstallHyperVTools="0"
     fi
   elif [[ $virtplatform == "hyperv" ]]; then
@@ -1282,7 +1282,7 @@ if [ $CONFIGURED == "NO" ]
       func_ask-updates
       func_verify-settings
       func_configure-system
-      if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
+      if [[ "$InstallVMwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
       func_end
       if [[ "$InstallQEMUAgent" -eq 1 ]]; then func_Install-QEMUAgent; fi
       func_end
