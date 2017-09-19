@@ -14,6 +14,7 @@ Security - Enabled strong cipher preference in Apache
 Bug - Quarantine report to flip from HTTP to HTTPS
 Bug - Update quarantine FROM_ADDR to use POSTMASTER address in /etc/EFA-Config
 Bug - Fix Issue #385 - changed from reload to restart for Postfix
+Feature - Display EFA version in the CLI via EFA-Configure
 
 
 
