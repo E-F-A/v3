@@ -1441,6 +1441,9 @@ func_cron () {
     chmod 700 /etc/cron.monthly/EFA-Monthly-cron
     /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Backup-cron  $gitdlurl/EFA/EFA-Backup-cron
     chmod 700 /etc/cron.daily/EFA-Backup-cron
+    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Renew-Certs $gitdlurl/EFA/EFA-Renew-Certs
+    chmod 700 /usr/local/sbin/EFA-Renew-Certs
+    
     # Remove the raid-check util (Issue #102)
     rm -f /etc/cron.d/raid-check
     # Issue #187 EFA service Monitoring
