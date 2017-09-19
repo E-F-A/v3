@@ -125,7 +125,7 @@ function func_lets-encrypt() {
         then
           echo -e "Monthly renewal task already exists."
         else
-          ln -s /scripts/renew-certs /etc/cron.monthly/RenewLetsEncrypt
+          ln -s /usr/local/sbin/EFA-Renew-Certs /etc/cron.monthly/RenewLetsEncrypt
           echo -e "I've added a monthly renewal task."
       fi
 
