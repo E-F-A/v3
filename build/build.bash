@@ -1543,7 +1543,7 @@ func_cleanup () {
     rm -f /boot/filler
     dd if=/dev/zero of=/var/filler bs=4096
     rm -f /var/filler
-    echo "EFAVERSION:$VERSION" >> /etc/EFA-Config
+    
 
 }
 # +---------------------------------------------------+
