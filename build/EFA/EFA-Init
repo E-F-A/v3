@@ -1282,7 +1282,7 @@ if [ $CONFIGURED == "NO" ]
       func_ask-updates
       func_verify-settings
       func_configure-system
-      if [[ "$InstallVMwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
+      if [[ "$InstallVMwareTools" -eq 1 ]]; then func_Install-VMwareTools; fi
       func_end
       if [[ "$InstallQEMUAgent" -eq 1 ]]; then func_Install-QEMUAgent; fi
       func_end
