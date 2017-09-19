@@ -1,4 +1,17 @@
 ############################################################
+EFA Version 3.0.2.5 TEST PLAN
+############################################################
+
+Confirm certbot gets installed
+Confirm DCC servers get update
+Confirm postfix hardening occurs
+Confirm Apache hardening occurs
+Confrim enabling Let's Encrypt works (apache/postfix/webmin)
+Confirm disabling Let's Encrypt places self-signed certs back (apache/postfix/webmin)
+Confrim upgrade from 3.0.2.4 -> 3.0.2.5 starts new cert regen (change self-signed from SHA1 to SHA256)
+
+
+############################################################
 EFA Version 3.0.2.4 TEST PLAN
 ############################################################
 

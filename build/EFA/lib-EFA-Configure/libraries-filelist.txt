@@ -3,7 +3,7 @@ func_sethostname
 func_apachesettings
 func_mailsettings
 func_systemrestore
-func_recovermysql
+func_recovermariadb
 func_trustednetworks
 func_spamsettings
 func_virussettings
@@ -28,3 +28,4 @@ func_askrecursion
 func_retention
 func_maintenance
 func_peruser
+func_letsencrypt

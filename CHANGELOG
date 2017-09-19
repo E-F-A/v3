@@ -1,4 +1,24 @@
 ############################################################
+EFA Version 3.0.2.5 Changes
+############################################################
+
+Feature - Let's Encrypt
+Security - Regenerate self signed certs for Postfix/Apache
+Bug - Left the disabling of modsecuirty fix enabled, as new builds of 3.0.2.4 still have it enabled by default
+Bug - Updated menu options for "Apache Settings" menu
+Feature - Hypervisor detection during init
+Feature - #387 Updated MariaDB recovery script
+Feature - Removed public DCC servers and add EFA sponsored DCC servers
+Security - Enabled strong cipher preference in Postfix
+Security - Enabled strong cipher preference in Apache
+Bug - Quarantine report to flip from HTTP to HTTPS
+Bug - Update quarantine FROM_ADDR to use POSTMASTER address in /etc/EFA-Config
+Bug - Fix Issue #385 - changed from reload to restart for Postfix
+Feature - Display EFA version in the CLI via EFA-Configure
+
+
+
+############################################################
 EFA Version 3.0.2.4 Changes
 ############################################################
 

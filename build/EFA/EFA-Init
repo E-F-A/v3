@@ -1,9 +1,9 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA-Init
-# Version 20150607
+# Version 20170916
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2017 https://efa-project.org
+# Copyright (C) 2012~2017 https://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -424,29 +424,50 @@ function func_ask-rootpassword() {
 function func_detect-virtual() {
   func_echo-header
   echo -e "$green[EFA]$clean Checking host type"
-  # This is a bit tricky as there is no uniform way to see what host type is used.
-  # The VGA interface seems to be pretty unique tough so checking that for now.
-  AreWeVMware="`/sbin/lspci | grep VGA | grep VMware`"
-  if [ -n "${AreWeVMware##+([[:space:]])}"  ];then
+  virtplatform=`sudo /usr/sbin/virt-what`
+  if [[ $virtplatform == "vmware"  ]]; then
     echo -e "$green[EFA]$clean You seem to be running on VMware"
-    echo -e "$green[EFA]$clean Would you like me to install Open VM Tools?"
+    echo -e "$green[EFA]$clean Would you like to install Open VM Tools?"
     echo ""
     echo -e "$green[EFA]$clean Open VM Tools is the opensource version of VMware tools."
     echo -e "$green[EFA]$clean If you require specific components that are not in Open VM Tools"
     echo -e "$green[EFA]$clean then choose no here and install VMware tools manually later on."
     echo ""
-    echo -e "$green[EFA]$clean For most VMware users Open VM Tools should be good enough."
+    echo -e "$green[EFA]$clean For most VMware users, Open VM Tools should be good enough."
     echo -e -n "$green[EFA]$clean [Y/n]:"
     read VMwareInstallChoice
     if [[ $VMwareInstallChoice == "" || $VMwareInstallChoice == "Y" || $VMwareInstallChoice == "y" ]]; then
-      InstallVmwareTools="1"
+      InstallVMwareTools="1"
+      InstallQEMUAgent="0"
+      InstallHyperVTools="0"
     else
-      InstallVmwareTools="0"
+      InstallVMwareTools="0"
+      InstallQEMUAgent="0"
+      InstallHyperVTools="0"
     fi
+  elif [[ $virtplatform == "kvm" ]]; then
+    echo -e "$green[EFA]$clean You seem to be running on a KVM based hypervisor"
+    echo -e "$green[EFA]$clean Would you like to install the QEMU Agent?"
+    echo -e -n "$green[EFA]$clean [Y/n]:"
+    read KVMInstallChoice
+    if [[ $KVMInstallChoice == "" || $KVMInstallChoice == "Y" || $KVMInstallChoice == "y" ]]; then
+      InstallQEMUAgent="1"
+      InstallVMwareTools="0"
+      InstallHyperVTools="0"
+    else
+      InstallQEMUAgent="0"
+      InstallVMwareTools="0"
+      InstallHyperVTools="0"
+    fi
+  elif [[ $virtplatform == "hyperv" ]]; then
+    echo -e "$green[EFA]$clean I am running on Hyper-V, please go to the EFA wiki for more information."
+    InstallQEMUAgent="0"
+    InstallVMwareTools="0"
+    InstallHyperVTools="1"
   else
-    echo -e "$green[EFA]$clean You don't seem to be running VMware"
-    echo -e "$green[EFA]$clean in that case nothing to do, moving on.."
-    pause
+    echo -e "$green[EFA]$clean I was not able to determine the hypervisor technology that I am running on."
+    echo -e "$green[EFA]$clean If this is a physical machine, please ignore."
+    echo -e "$green[EFA]$clean Otherwise please consult your hypervisor documention for guest based agents."
   fi
 }
 # +---------------------------------------------------+
@@ -482,7 +503,7 @@ function func_ask-ianacode() {
   echo -e "$green[EFA]$clean I need your 2 letter IANA country code, this is used to"
   echo -e "$green[EFA]$clean determine the closest mirror to download software updates from."
   echo -e "$green[EFA]$clean If you don't know your country code please take a look at: "
-  echo -e "$green[EFA]$clean http://www.iso.org/iso/country_names_and_code_elements "
+  echo -e "$green[EFA]$clean https://www.iso.org/obp/ "
   echo ""
   echo -e -n "$green[EFA]$clean Your IANA code (lowercase): "
   read IANACODE
@@ -599,7 +620,7 @@ function func_verify-settings() {
     echo -e "11) User           : $USERNAME"
     echo -e "12) User PWD       : <hidden>"
     echo -e "13) Admin PWD      : <hidden>"
-    echo -e -n "14) VMware Tools   : "; if [[ "$InstallVmwareTools" -eq 1 ]]; then echo "Install"; else echo "Not needed"; fi
+    echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallVMwareTools" -eq 1 ]]; then echo "VMware: Installing Open-VM-Tools."; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "KVM: Installing the QEMU Guest Agent."; elif [[ "$InstallHyperVTools" -eq 1 ]]; then echo "Hyper-V: Please go to the wiki for more information."; else echo "Not needed."; fi
     echo -e -n "15) Time zone      : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
     echo -e "16) Keyboard       : $KEYBOARD"
     echo -e "17) IANA Code      : $IANACODE"
@@ -826,7 +847,7 @@ function func_configure-system() {
   echo -e "$green[EFA]$clean - Configuring MailScanner"
   sed -i "/^%org-name% =/ c\%org-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
   sed -i "/^%org-long-name% =/ c\%org-long-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
-  sed -i "/^%web-site% =/ c\%web-site% = http://www.efa-project.org" /etc/MailScanner/MailScanner.conf
+  sed -i "/^%web-site% =/ c\%web-site% = https://www.efa-project.org" /etc/MailScanner/MailScanner.conf
   sed -i "/^Use Watermarking =/ c\Use Watermarking = yes" /etc/MailScanner/MailScanner.conf
   sed -i "/^Information Header Value =/ c\Information Header Value = Please contact $ADMINEMAIL for more information" /etc/MailScanner/MailScanner.conf
   sed -i "/^Unscanned Header Value =/ c\Unscanned Header Value = Please contact $ADMINEMAIL for details" /etc/MailScanner/MailScanner.conf
@@ -844,6 +865,8 @@ function func_configure-system() {
   echo -e "$green[EFA]$clean - Configuring MailWatch"
   sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
   sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', '$TZONE');" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$POSTMASTEREMAIL');" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('MAILWATCH_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'https:\/\/' . rtrim(gethostname()) . '\/mailscanner');" /var/www/html/mailscanner/conf.php
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
@@ -940,9 +963,9 @@ function func_configure-system() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Install Vmware Tools
+# Install VMware Tools
 # +---------------------------------------------------+
-func_Install-VmwareTools(){
+func_Install-VMwareTools(){
   func_echo-header
   echo -e "$green[EFA]$clean Starting the installation of vmware tools"
   echo -e "$green[EFA]$clean Depending on the speed of your system this"
@@ -962,6 +985,26 @@ func_Install-VmwareTools(){
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Install QEMU Agent
+# +---------------------------------------------------+
+func_Install-QEMUAgent(){
+  func_echo-header
+  echo -e "$green[EFA]$clean Starting the installation of the QEMU Agent"
+  echo -e "$green[EFA]$clean Depending on the speed of your system this"
+  echo -e "$green[EFA]$clean might take a while."
+  pause
+  # Disable excludes
+  sed -i "s/^exclude=\(.*\)$/#exclude=\1/" /etc/yum.conf
+  yum -y install qemu-guest-agent
+  # Restore excludes
+  sed -i "s/^#exclude=\(.*\)$/exclude=\1/" /etc/yum.conf
+  func_echo-header
+  echo -e "$green[EFA]$clean Installation of the QEMU Guest Agent has completed"
+  pause
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # The final settings
 # +---------------------------------------------------+
 function func_end() {
@@ -969,10 +1012,10 @@ function func_end() {
   # +--------------------------------------------------+
   # Postfix SSL certificate
   echo -e "$green[EFA]$clean We will now generate an new SSL Certificate"
-  echo -e "$green[EFA]$clean for postfix, please answer all answers."
+  echo -e "$green[EFA]$clean for postfix, please answer the questions when prompted."
   pause
   cd /etc/postfix/ssl
-  openssl req -new -x509 -nodes -out smtpd.pem -keyout smtpd.pem -days 3650
+  openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256
   # Regenerate DH key
   rm -f /etc/postfix/ssl/dhparam.pem
   openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
@@ -1188,7 +1231,7 @@ func_echo-header(){
     clear
     echo -e "--------------------------------------------------------------"
     echo -e "---        Welcome to the EFA Initial Configuration        ---"
-    echo -e "---                http://www.efa-project.org              ---"
+    echo -e "---                https://www.efa-project.org              ---"
     echo -e "--------------------------------------------------------------"
     echo ""
 }
@@ -1239,7 +1282,9 @@ if [ $CONFIGURED == "NO" ]
       func_ask-updates
       func_verify-settings
       func_configure-system
-      if [[ "$InstallVmwareTools" -eq 1 ]]; then func_Install-VmwareTools; fi
+      if [[ "$InstallVMwareTools" -eq 1 ]]; then func_Install-VMwareTools; fi
+      func_end
+      if [[ "$InstallQEMUAgent" -eq 1 ]]; then func_Install-QEMUAgent; fi
       func_end
     elif [[ "$StartConf" == "N" || "$StartConf" == "n" ]]; then
     echo -e "$red"

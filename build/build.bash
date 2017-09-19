@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.4 build script version 20170906
+# EFA 3.0.2.5 build script version 20170906
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2017 https://efa-project.org
 #
@@ -25,14 +25,14 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.2.4"
+version="3.0.2.5"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
 mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
-yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools*"
+yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools* qemu-guest-agent*"
 MAILWATCHVERSION="c08ef03"
 MAILWATCHRELEASE="1.2.7-dev"
 MAILWATCHBRANCH="develop"
@@ -203,12 +203,12 @@ func_postfix () {
     # tls config
     postconf -e "smtp_use_tls = yes"
     postconf -e "smtpd_use_tls = yes"
-    postconf -e "smtp_tls_CAfile = /etc/postfix/ssl/smtpd.pem"
+    postconf -e "smtp_tls_CAfile = /etc/postfix/ssl/rsa_smtpd.pem"
     postconf -e "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache"
     postconf -e "smtp_tls_note_starttls_offer = yes"
-    postconf -e "smtpd_tls_key_file = /etc/postfix/ssl/smtpd.pem"
-    postconf -e "smtpd_tls_cert_file = /etc/postfix/ssl/smtpd.pem"
-    postconf -e "smtpd_tls_CAfile = /etc/postfix/ssl/smtpd.pem"
+    postconf -e "smtpd_tls_key_file = /etc/postfix/ssl/rsa_smtpd.pem"
+    postconf -e "smtpd_tls_cert_file = /etc/postfix/ssl/rsa_smtpd.pem"
+    postconf -e "smtpd_tls_CAfile = /etc/postfix/ssl/rsa_smtpd.pem"
     postconf -e "smtpd_tls_loglevel = 1"
     postconf -e "smtpd_tls_received_header = yes"
     postconf -e "smtpd_tls_session_cache_timeout = 3600s"
@@ -227,6 +227,9 @@ func_postfix () {
     postconf -e "smtpd_client_restrictions = permit_sasl_authenticated, reject_rbl_client zen.spamhaus.org, reject_unknown_reverse_client_hostname"
     postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_non_fqdn_recipient, reject_unknown_recipient_domain, check_recipient_access hash:/etc/postfix/recipient_access, check_policy_service inet:127.0.0.1:2501"
     postconf -e "masquerade_domains = \$mydomain"
+    # harden postfix
+    postconf -e "tls_preempt_cipherlist = yes"
+    postconf -e "tls_high_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
     #other configuration files
     newaliases
     touch /etc/postfix/transport
@@ -245,10 +248,10 @@ func_postfix () {
     # Issue #167 Change perms on /etc/postfix/sasl_passwd to 600
     chmod 0600 /etc/postfix/sasl_passwd
 
-    # Logjam Vulnerability #188
+    # Logjam Vulnerability #188 - #update for v3.0.2.5 for new cipher suite
     openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
     postconf -e "smtpd_tls_dh1024_param_file = /etc/postfix/ssl/dhparam.pem"
-    postconf -e "smtpd_tls_ciphers = low"
+    postconf -e "smtpd_tls_ciphers = high"
 
     echo "pwcheck_method: auxprop">/usr/lib64/sasl2/smtpd.conf
     echo "auxprop_plugin: sasldb">>/usr/lib64/sasl2/smtpd.conf
@@ -570,6 +573,22 @@ func_apache () {
 
     # Issue #139 SSLv3 POODLE Vulnerability
     sed -i "/^SSLProtocol/ c\SSLProtocol all -SSLv2 -SSLv3" /etc/httpd/conf.d/ssl.conf
+    
+    # Harden Apache
+    sed -i "/^SSLCipherSuite/ c\SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP" /etc/httpd/conf.d/ssl.conf
+    sed -i '/^SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP/a SSLHonorCipherOrder on'  /etc/httpd/conf.d/ssl.conf
+    
+    # move default cert to backup
+    mkdir /etc/pki/tls/backup
+    mv /etc/pki/tls/certs/localhost.crt /etc/pki/tls/backup
+    mv /etc/pki/tls/private/localhost.key /etc/pki/tls/backup
+    mv /etc/pki/tls/certs/server-chain.crt /etc/pki/tls/backup
+    
+    # use postfix cert
+    ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/localhost.crt
+    ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/private/localhost.key
+    ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/server-chain.crt
+    
 
     # Issue #179 default https
     sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
@@ -644,7 +663,7 @@ func_apache () {
 EOF
 
     # Issue #378 Disable mod_security for 3.0.2.4
-    sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/ mod_security.conf
+    sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
 
     # Remove Server Signatures
     sed -i "/^ServerSignature/ c\ServerSignature Off" /etc/httpd/conf/httpd.conf
@@ -1126,6 +1145,19 @@ func_dcc () {
 
     cp /var/dcc/libexec/rcDCC /etc/init.d/adcc
     sed -i "s/#loadplugin Mail::SpamAssassin::Plugin::DCC/loadplugin Mail::SpamAssassin::Plugin::DCC/g" /etc/mail/spamassassin/v310.pre
+    
+    #remove old servers
+    /usr/local/bin/cdcc "delete dcc1.dcc-servers.net"
+    /usr/local/bin/cdcc "delete dcc2.dcc-servers.net"
+    /usr/local/bin/cdcc "delete dcc3.dcc-servers.net"
+    /usr/local/bin/cdcc "delete dcc4.dcc-servers.net"
+    /usr/local/bin/cdcc "delete dcc5.dcc-servers.net"
+    /usr/local/bin/cdcc "delete dcc.nova53.net"
+    #add new EFA servers
+    /usr/local/bin/cdcc "add dcc1.nova53.net"
+    /usr/local/bin/cdcc "add dcc2.nova53.net"
+    /usr/local/bin/cdcc "add dcc3.nova53.net"
+    /usr/local/bin/cdcc "add dcc4.nova53.net"
 }
 # +---------------------------------------------------+
 
@@ -1169,6 +1201,19 @@ func_imagecerberus () {
     echo "IMAGECEBERUSVERSION:$IMAGECEBERUSVERSION" >> /etc/EFA-Config
 }
 # +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# function to install certbot
+# +---------------------------------------------------+
+func_install-certbot () {
+mkdir /opt/certbot
+cd /opt/certbot
+wget https://dl.eff.org/certbot-auto --no-check-certificate
+chmod a+x ./certbot-auto
+
+}
+# +---------------------------------------------------+
+
 
 # +---------------------------------------------------+
 # Webmin (http://www.webmin.com/)
@@ -1321,7 +1366,7 @@ func_efarequirements () {
     echo "------------------------------" >> /etc/issue
     echo "--- Welcome to EFA-$version ---" >> /etc/issue
     echo "------------------------------" >> /etc/issue
-    echo "  http://www.efa-project.org  " >> /etc/issue
+    echo "  https://www.efa-project.org  " >> /etc/issue
     echo "------------------------------" >> /etc/issue
     echo "" >> /etc/issue
     echo "First time login: root/EfaPr0j3ct" >> /etc/issue
@@ -1396,6 +1441,9 @@ func_cron () {
     chmod 700 /etc/cron.monthly/EFA-Monthly-cron
     /usr/bin/wget --no-check-certificate -O /etc/cron.daily/EFA-Backup-cron  $gitdlurl/EFA/EFA-Backup-cron
     chmod 700 /etc/cron.daily/EFA-Backup-cron
+    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Renew-Certs $gitdlurl/EFA/EFA-Renew-Certs
+    chmod 700 /usr/local/sbin/EFA-Renew-Certs
+    
     # Remove the raid-check util (Issue #102)
     rm -f /etc/cron.d/raid-check
     # Issue #187 EFA service Monitoring
@@ -1500,6 +1548,7 @@ func_cleanup () {
     rm -f /boot/filler
     dd if=/dev/zero of=/var/filler bs=4096
     rm -f /var/filler
+    
 
 }
 # +---------------------------------------------------+
@@ -1534,6 +1583,7 @@ function main() {
     func_dcc
     func_imagecerberus
     func_webmin
+    func_install-certbot
     func_unbound
     func_munin
     func_kernsettings
@@ -1553,6 +1603,7 @@ function main() {
     func_pyzor
     func_razor
     func_dcc
+    func_install-certbot
     func_imagecerberus
     func_unbound
     func_kernsettings
