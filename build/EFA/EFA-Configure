@@ -65,7 +65,7 @@ shopt -s extglob
 # +---------------------------------------------------+
 # Get version
 # +---------------------------------------------------+
-EFAVERSION="`cat /etc/EFA-Config | grep EFAVERSION | sed 's/.*://'`"
+EFAVERSION="`head /etc/EFA-Version`"
 # +---------------------------------------------------+
 
 
@@ -79,7 +79,7 @@ show_menu() {
     do
       func_echo-header
       echo -e ""
-      echo -e "You are currently running EFA $green$EFAVERSION$clean."
+      echo -e "You are currently running $green$EFAVERSION$clean."
       echo -e ""
       echo -e "Please choose an option:"
       echo -e " "
