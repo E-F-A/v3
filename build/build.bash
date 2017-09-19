@@ -577,6 +577,18 @@ func_apache () {
     # Harden Apache
     sed -i "/^SSLCipherSuite/ c\SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP" /etc/httpd/conf.d/ssl.conf
     sed -i '/^SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP/a SSLHonorCipherOrder on'  /etc/httpd/conf.d/ssl.conf
+    
+    # move default cert to backup
+    mkdir /etc/pki/tls/backup
+    mv /etc/pki/tls/certs/localhost.crt /etc/pki/tls/backup
+    mv /etc/pki/tls/private/localhost.key /etc/pki/tls/backup
+    mv /etc/pki/tls/certs/server-chain.crt /etc/pki/tls/backup
+    
+    # use postfix cert
+    ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/localhost.crt
+    ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/private/localhost.key
+    ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/server-chain.crt
+    
 
     # Issue #179 default https
     sed -i '/^#Listen 443/ c\Listen 443' /etc/httpd/conf.d/ssl.conf
