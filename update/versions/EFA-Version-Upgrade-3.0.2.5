@@ -698,9 +698,9 @@ function regen_certs() {
   
   local MyHost
   local MyDomain
-  Local CountryCode
-  Local OrgName
-  Local MyName
+  local CountryCode
+  local OrgName
+  local MyName
   
   MyHost="`grep HOSTNAME /etc/EFA-Config | sed 's/^.*://'`"
   MyDomain="`grep DOMAINNAME /etc/EFA-Config | sed 's/^.*://'`"
