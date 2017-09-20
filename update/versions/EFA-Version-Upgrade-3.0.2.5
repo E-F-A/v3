@@ -697,7 +697,7 @@ function regen_certs() {
   OrgName="`grep ORGNAME /etc/EFA-Config | sed 's/^.*://'`"
   MyName=$MyHost.$MyDomain
 
-  echo -e "Generating new, more secure, self-signed cert with common name $MyName, for Postfix, and Apache"
+  echo -e "Generating new, more secure, self-signed cert with common name $MyName, for use with Postfix, Apache, and Webmin"
 
   openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256 -subj "/C=$CountryCode/O=$OrgName/CN=$MyName"
 
@@ -715,6 +715,10 @@ function regen_certs() {
   ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/localhost.crt
   ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/private/localhost.key
   ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/server-chain.crt
+  
+  #Update webmin cert
+  mv /etc/webmin/miniserv.pem /etc/webmin/miniserv.pem.init
+  cat /etc/postfix/ssl/rsa_smtpd.pem > /etc/webmin/miniserv.pem
  }
 #----------------------------------------------------------------#
 
