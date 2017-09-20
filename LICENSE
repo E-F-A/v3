@@ -1204,6 +1204,12 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+-------------------------------------------------------------------------------
+Certbot ACME Client
+Copyright (c) Electronic Frontier Foundation and others
+Licensed Apache Version 2.0
+
+https://raw.githubusercontent.com/certbot/certbot/master/LICENSE.txt
 
 -------------------------------------------------------------------------------
 
