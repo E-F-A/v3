@@ -1011,11 +1011,14 @@ function func_end() {
   func_echo-header
   # +--------------------------------------------------+
   # Postfix SSL certificate
-  echo -e "$green[EFA]$clean We will now generate an new SSL Certificate"
-  echo -e "$green[EFA]$clean for postfix, please answer the questions when prompted."
+  echo -e "$green[EFA]$clean We will now generate a new SSL Certificate"
+  echo -e "$green[EFA]$clean for Postfix and Apache."
   pause
   cd /etc/postfix/ssl
-  openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256
+  
+  MyName=$HOSTNAME.$DOMAINNAME
+
+  openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256 -subj "/C=$IANACODE/O=$ORGNAME/CN=$MyName"
   # Regenerate DH key
   rm -f /etc/postfix/ssl/dhparam.pem
   openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
