@@ -74,6 +74,15 @@ function run_update() {
 
   yum clean all
   yum_update
+  
+  # Latest version of EFA-Configure with libraries
+  rm -f /usr/local/sbin/EFA-Configure
+  rm -rf /var/EFA/lib/EFA-Configure/
+  cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
+  mkdir -p /var/EFA/lib/EFA-Configure
+  cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
+  chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 600 /var/EFA/lib/EFA-Configure/*
 
   # Add init.d symlink back for compatibility
   ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
