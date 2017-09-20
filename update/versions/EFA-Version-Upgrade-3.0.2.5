@@ -79,9 +79,11 @@ function run_update() {
   rm -f /usr/local/sbin/EFA-Configure
   rm -rf /var/EFA/lib/EFA-Configure/
   cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
+  cp $STAGING/Scripts/EFA-Renew-Certs /usr/local/sbin/EFA-Renew-Certs
   mkdir -p /var/EFA/lib/EFA-Configure
   cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
   chmod 700 /usr/local/sbin/EFA-Configure
+  chmod 700 /usr/local/sbin/EFA-Renew-Certs
   chmod 600 /var/EFA/lib/EFA-Configure/*
 
   # Add init.d symlink back for compatibility
