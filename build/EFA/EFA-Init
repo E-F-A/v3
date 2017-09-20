@@ -1115,6 +1115,10 @@ function func_end() {
   chown postfix:mtagroup /var/spool/MailScanner/incoming/clamav-tmp
   chmod ug+rwx /var/spool/MailScanner/incoming/clamav-tmp
   service MailScanner stop
+  
+  #Update Webmin cert to use the one generated above
+  mv /etc/webmin/miniserv.pem /etc/webmin/miniserv.pem.init
+  cat /etc/postfix/ssl/rsa_smtpd.pem > /etc/webmin/miniserv.pem
 
   # Enable EFA Service Monitoring now
   echo "* * * * * root /usr/sbin/EFA-Monitor-cron >/dev/null 2>&1" > /etc/cron.d/EFA-Monitor.cron
