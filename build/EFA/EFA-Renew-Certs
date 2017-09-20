@@ -1,19 +1,31 @@
 #!/bin/bash
 
+#remove monitor cron so apache/ppostfix doesn't restart when not needed
 mv -f /etc/cron.d/EFA-Monitor.cron /var/EFA
 
-/opt/certbot/certbot-auto renew --quiet --force-renewal
-kill -15 httpd
-service httpd restart
-service postfix restart
+#end all httpd processes. known issues with certbot on CentOS 6
+killall -15 httpd
+service httpd start
 
+#Process to renew LE certs
+/opt/certbot/certbot-auto renew --quiet --force-renewal
+
+#restart Apache to load new certs
+killall -15 httpd
+service httpd start
+
+#restart postfix to load new certs for mail
+service postfix stop
+service postfix start
+
+#restore monitoring functions
 mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d
 
 MyHost="`grep HOSTNAME /etc/EFA-Config | sed 's/^.*://'`"
 MyDomain="`grep DOMAINNAME /etc/EFA-Config | sed 's/^.*://'`"
 MyName=$MyHost.$MyDomain
 
-
+#update webmin cert to new one as well
 rm -f /etc/webmin/miniserv.pem
 cat /etc/letsencrypt/live/$MyName/privkey.pem /etc/letsencrypt/live/$MyName/cert.pem > /etc/webmin/miniserv.pem
 
