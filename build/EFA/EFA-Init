@@ -967,7 +967,7 @@ function func_configure-system() {
 # +---------------------------------------------------+
 func_Install-VMwareTools(){
   func_echo-header
-  echo -e "$green[EFA]$clean Starting the installation of vmware tools"
+  echo -e "$green[EFA]$clean Starting the installation of VMware Tools"
   echo -e "$green[EFA]$clean Depending on the speed of your system this"
   echo -e "$green[EFA]$clean might take a while."
   pause
@@ -1284,10 +1284,16 @@ if [ $CONFIGURED == "NO" ]
       func_ask-orgname
       func_ask-updates
       func_verify-settings
-      func_configure-system
-      if [[ "$InstallVMwareTools" -eq 1 ]]; then func_Install-VMwareTools; fi
-      func_end
-      if [[ "$InstallQEMUAgent" -eq 1 ]]; then func_Install-QEMUAgent; fi
+      func_configure-system      
+      if [[ "$InstallVMwareTools" -eq 1 ]]
+        then
+          func_Install-VMwareTools
+        elif [[ "$InstallQEMUAgent" -eq 1 ]]
+          then
+            func_Install-QEMUAgent
+        else
+          echo -e "Hypervisor tools are not needed."
+      fi
       func_end
     elif [[ "$StartConf" == "N" || "$StartConf" == "n" ]]; then
     echo -e "$red"
