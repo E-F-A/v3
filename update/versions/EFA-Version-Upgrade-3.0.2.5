@@ -684,7 +684,23 @@ function update_dcc() {
 function regen_certs() {
   cd /etc/postfix/ssl
   rm -f smtpd.pem
-  openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256
+  
+  local MyHost
+  local MyDomain
+  Local CountryCode
+  Local OrgName
+  Local MyName
+  
+  MyHost="`grep HOSTNAME /etc/EFA-Config | sed 's/^.*://'`"
+  MyDomain="`grep DOMAINNAME /etc/EFA-Config | sed 's/^.*://'`"
+  CountryCode="`grep IANA /etc/EFA-Config | sed 's/^.*://'`"
+  OrgName="`grep ORGNAME /etc/EFA-Config | sed 's/^.*://'`"
+  MyName=$MyHost.$MyDomain
+
+  echo -e "Generating new, more secure, self-signed cert with common name $MyName, for Postfix, and Apache"
+
+  openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256 -subj "/C=$CountryCode/O=$OrgName/CN=$MyName"
+
   
   sed -i "/^smtp_tls_CAfile/ c\smtp_tls_CAfile = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
   sed -i "/^smtpd_tls_key_file/ c\smtpd_tls_key_file = \/etc\/postfix\/ssl\/rsa_smtpd.pem" /etc/postfix/main.cf
