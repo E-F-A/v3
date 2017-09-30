@@ -5,13 +5,14 @@ EFA Version 3.0.2.5 Changes
 Issue #324 Enhancement - Import external backup to new EFA device
 Issue #361 Enhancement - Display EFA version in the CLI via EFA-Configure
 Issue #385 Bug         - Changed from reload to restart for Postfix
+Issue #386 Bug         - Admin cannot modify domain admin accounts
 Issue #387 Enhancement - Updated MariaDB recovery script
 
 Enhancement - Let's Encrypt
 Enhancement - Add EFA sponsored DCC servers
 Enhancement - Hypervisor detection during init
 Enhancement - MailScanner update to 5.0.6-5
-Enhancement - MailWatch to latest develop
+Enhancement - MailWatch updated to latest develop
 Security - Regenerate self signed certs for Postfix/Apache/Webmin
 Security - Enabled strong cipher preference in Postfix
 Security - Enabled strong cipher preference in Apache
