@@ -37,7 +37,7 @@ function func_ask-dccservers() {
                     /usr/local/bin/cdcc "add dcc3.dcc-servers.net"
                     /usr/local/bin/cdcc "add dcc4.dcc-servers.net"
                     /usr/local/bin/cdcc "add dcc5.dcc-servers.net"
-                    sed -i '/^DCCPOOL:/ c\DCCPOOL:default" /etc/EFA-Config
+                    sed -i '/^DCCPOOL:/ c\DCCPOOL:default' /etc/EFA-Config
                     echo -e "$green[EFA]$clean DCC Pool set to default"
                     sleep 2
                     return ;;
@@ -51,7 +51,7 @@ function func_ask-dccservers() {
                     /usr/local/bin/cdcc "add dcc2.nova53.net"
                     /usr/local/bin/cdcc "add dcc3.nova53.net"
                     /usr/local/bin/cdcc "add dcc4.nova53.net"
-                    sed -i '/^DCCPOOL:/ c\DCCPOOL:nova53.net" /etc/EFA-Config
+                    sed -i '/^DCCPOOL:/ c\DCCPOOL:nova53.net' /etc/EFA-Config
                     echo -e "$green[EFA]$clean DCC Pool set to nova53.net"
                     sleep 2
                     return ;;
