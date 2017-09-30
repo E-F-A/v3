@@ -59,6 +59,7 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_maintenance
 . /var/EFA/lib/EFA-Configure/func_peruser
 . /var/EFA/lib/EFA-Configure/func_letsencrypt
+. /var/EFA/lib/EFA-Configure/func_askdccservers
 
 # +---------------------------------------------------+
 

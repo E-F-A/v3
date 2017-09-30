@@ -3,7 +3,7 @@ EFA Version 3.0.2.5 TEST PLAN
 ############################################################
 
 Confirm certbot gets installed PASSED
-Confirm DCC servers get update FAILED -- too many dcc servers
+Confirm DCC servers get update 
 Confirm postfix hardening occurs PASSED
 Confirm Apache hardening occurs PASSED
 Confrim enabling Let's Encrypt works (apache/postfix/webmin) PASSED

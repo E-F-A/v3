@@ -113,11 +113,13 @@ function run_update() {
   # Update DCC v3.0.2.4 (disabled v3.0.2.5)
   #update_dcc
 
-  # Use new DCC servers
-  dcc_servers
-
   # Post rpm Update Webmin v3.0.2.4 (disabled v3.0.2.5)
   #update-webmin
+  
+  # For DCC EFA-Configure option
+  echo "DCCPOOL:default" >> /etc/EFA-Config
+  # Dump this server if present
+  /usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2>&1
   
   # Regen new certs
   regen_certs
@@ -753,20 +755,6 @@ sed -i "/^smtpd_tls_ciphers = /c\smtpd_tls_ciphers = medium" /etc/postfix/main.c
 function harden_apache() {
 sed -i "/^SSLCipherSuite/ c\SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP" /etc/httpd/conf.d/ssl.conf
 sed -i '/^SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP/a SSLHonorCipherOrder on'  /etc/httpd/conf.d/ssl.conf
-}
-#----------------------------------------------------------------#
-
-#----------------------------------------------------------------#
-# Function to update DCC Servers
-#----------------------------------------------------------------#
-function dcc_servers() {
-/usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2>&1
-
-/usr/local/bin/cdcc "add dcc1.nova53.net"
-/usr/local/bin/cdcc "add dcc2.nova53.net"
-/usr/local/bin/cdcc "add dcc3.nova53.net"
-/usr/local/bin/cdcc "add dcc4.nova53.net"
-
 }
 #----------------------------------------------------------------#
 

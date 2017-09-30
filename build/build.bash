@@ -1146,14 +1146,6 @@ func_dcc () {
 
     cp /var/dcc/libexec/rcDCC /etc/init.d/adcc
     sed -i "s/#loadplugin Mail::SpamAssassin::Plugin::DCC/loadplugin Mail::SpamAssassin::Plugin::DCC/g" /etc/mail/spamassassin/v310.pre
-    
-    #remove old servers
-    /usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2>&1
-    #add new EFA servers
-    /usr/local/bin/cdcc "add dcc1.nova53.net"
-    /usr/local/bin/cdcc "add dcc2.nova53.net"
-    /usr/local/bin/cdcc "add dcc3.nova53.net"
-    /usr/local/bin/cdcc "add dcc4.nova53.net"
 }
 # +---------------------------------------------------+
 

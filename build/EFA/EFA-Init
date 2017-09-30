@@ -1072,6 +1072,7 @@ function func_end() {
   else
     echo "AUTOUPDATES:DISABLED" >> /etc/EFA-Config
   fi
+  echo "DCCPOOL:default" >> /etc/EFA-Config
 
   sed -i "/CONFIGURED:/ c\CONFIGURED:YES" /etc/EFA-Config
 
