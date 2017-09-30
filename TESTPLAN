@@ -3,7 +3,7 @@ EFA Version 3.0.2.5 TEST PLAN
 ############################################################
 
 Confirm certbot gets installed PASSED
-Confirm DCC servers get update 
+Confirm EFA-Configure DCC Server option PASSED
 Confirm postfix hardening occurs PASSED
 Confirm Apache hardening occurs PASSED
 Confrim enabling Let's Encrypt works (apache/postfix/webmin) PASSED
@@ -13,6 +13,9 @@ Confirm new buils detect hypervisor and installs agent accordingly PASSED
 Confirm successful update to latest MailWatch PASSED
 Confirm successful update to latest MailScanner PASSED
 Confirm successful update to latest clamav-unofficial-sigs PASSED
+Confirm msre_reload cron symlinked properly 
+
+Todo:  build testing
 
 ############################################################
 EFA Version 3.0.2.4 TEST PLAN
