@@ -143,7 +143,7 @@ function run_update() {
   #/usr/bin/mysql -u root -p"$dbpwd" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
 
   # Post MailScanner upgrade 5.0.6-4 (https://github.com/MailScanner/v5/issues/88)
-  chown postfix:mtagroup /var/spool/MailScanner/quarantine
+  #chown postfix:mtagroup /var/spool/MailScanner/quarantine
   
   # Enable restart on ms_cron update
   MSCRONPRESENT=$(grep ^ms_cron_ps_restart /etc/MailScanner/defaults)
