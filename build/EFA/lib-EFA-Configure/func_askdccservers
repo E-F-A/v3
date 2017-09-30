@@ -9,6 +9,7 @@ function func_ask-dccservers() {
   echo -e "$green[EFA]$clean pools that you want to use."
   echo -e "$green[EFA]$clean The default pool is free for limited use."
   echo -e "$green[EFA]$clean The nova53.net pool is free for unlimited use for EFA users."
+  echo -e "$green[EFA]$clean Choice of pool may affect performance, depending on your location"
   echo -e ""
   DCCPOOL=$(grep DCCPOOL /etc/EFA-Config | sed -e 's/.*://')
   echo -e "Current DCC Pool: $DCCPOOL"
@@ -37,7 +38,8 @@ function func_ask-dccservers() {
                     /usr/local/bin/cdcc "add dcc4.dcc-servers.net"
                     /usr/local/bin/cdcc "add dcc5.dcc-servers.net"
                     sed -i '/^DCCPOOL:/ c\DCCPOOL:default" /etc/EFA-Config
-                    
+                    sleep 2
+                    return ;;
                 2)
                     /usr/local/bin/cdcc "delete dcc1.dcc-servers.net"
                     /usr/local/bin/cdcc "delete dcc2.dcc-servers.net"
