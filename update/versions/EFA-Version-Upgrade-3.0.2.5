@@ -59,7 +59,7 @@ function run_update() {
 
   ####### Preflight ######
   checkspace
-  
+
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
@@ -72,9 +72,13 @@ function run_update() {
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
 
+  # Add EFA testing repo
+  rm -f /etc/yum.repos.d/EFA.repo
+  cp -f $STAGING/Files/EFA-beta.repo /etc/yum.repos.d/
+
   yum clean all
   yum_update
-  
+
   # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -rf /var/EFA/lib/EFA-Configure/
