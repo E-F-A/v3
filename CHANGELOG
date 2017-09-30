@@ -13,6 +13,7 @@ Enhancement - Add EFA sponsored DCC servers
 Enhancement - Hypervisor detection during init
 Enhancement - MailScanner update to 5.0.6-5
 Enhancement - MailWatch updated to latest develop
+Enhancement - clamav-unofficial-sigs updated to 5.6.2
 Security - Regenerate self signed certs for Postfix/Apache/Webmin
 Security - Enabled strong cipher preference in Postfix
 Security - Enabled strong cipher preference in Apache
