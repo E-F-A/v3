@@ -738,8 +738,8 @@ function regen_certs() {
 #----------------------------------------------------------------#
 function harden_postfix() {
 postconf -e "tls_preempt_cipherlist = yes"
-postconf -e "tls_high_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
-sed -i "/^smtpd_tls_ciphers = /c\smtpd_tls_ciphers = high" /etc/postfix/main.cf
+postconf -e "tls_medium_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
+sed -i "/^smtpd_tls_ciphers = /c\smtpd_tls_ciphers = medium" /etc/postfix/main.cf
 }
 #----------------------------------------------------------------#
 
@@ -756,12 +756,7 @@ sed -i '/^SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:
 # Function to update DCC Servers
 #----------------------------------------------------------------#
 function dcc_servers() {
-/usr/local/bin/cdcc "delete dcc1.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc2.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc3.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc4.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc5.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc.nova53.net"
+/usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2>&1
 
 /usr/local/bin/cdcc "add dcc1.nova53.net"
 /usr/local/bin/cdcc "add dcc2.nova53.net"
