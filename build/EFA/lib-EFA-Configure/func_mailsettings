@@ -363,7 +363,8 @@ func_outbound-relay(){
             echo ""
             read -p "> " RELAYS
             postconf -e mynetworks="127.0.0.0/8 $RELAYS"
-            /etc/init.d/postfix reload >>/dev/null
+            /etc/init.d/postfix stop
+            /etc/init.d/postfix start
             obmrmenu=1
             ;;
             e) mailmenu=1 && return ;;
@@ -406,7 +407,8 @@ func_outbound-smarthost(){
                 echo ""
                 read -p "Enter your new smart host: " OBSH
                 postconf -e relayhost=$OBSH
-                /etc/init.d/postfix reload >>/dev/null
+                /etc/init.d/postfix stop
+                /etc/init.d/postfix start
                 echo "Smarthost configured"
                 pause
                 obshmenu=1
@@ -415,7 +417,8 @@ func_outbound-smarthost(){
                 echo ""
                 echo "Disabling SmartHost"
                 postconf -e relayhost=
-                /etc/init.d/postfix reload >>/dev/null
+                /etc/init.d/postfix stop
+                /etc/init.d/postfix start
                 obshmenu=1
                 ;;
             e) mailmenu=1 && return ;;
