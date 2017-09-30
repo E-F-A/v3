@@ -10,6 +10,8 @@ Issue #387 Enhancement - Updated MariaDB recovery script
 Enhancement - Let's Encrypt
 Enhancement - Add EFA sponsored DCC servers
 Enhancement - Hypervisor detection during init
+Enhancement - MailScanner update to 5.0.6-5
+Enhancement - MailWatch to latest develop
 Security - Regenerate self signed certs for Postfix/Apache/Webmin
 Security - Enabled strong cipher preference in Postfix
 Security - Enabled strong cipher preference in Apache
