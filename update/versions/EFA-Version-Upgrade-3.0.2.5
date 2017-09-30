@@ -95,10 +95,10 @@ function run_update() {
 
   # Issue #388 MailWatch database schema upgrade causing /tmp to fill up
   # Cannot increase tmp size here, so relocate to /var
-  mkdir /var/lib/mysql/temp
-  chown mysql:mysql /var/lib/mysql/temp
-  sed -i "/^\[mysqld\]/ a\tmpdir = /var/lib/mysql/temp" /etc/my.cnf.d/server.cnf
-  service mysql reload
+  # mkdir /var/lib/mysql/temp
+  # chown mysql:mysql /var/lib/mysql/temp
+  # sed -i "/^\[mysqld\]/ a\tmpdir = /var/lib/mysql/temp" /etc/my.cnf.d/server.cnf
+  # service mysql reload
 
   # Update MailWatch
   update-mailwatch
