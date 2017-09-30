@@ -229,7 +229,7 @@ func_postfix () {
     postconf -e "masquerade_domains = \$mydomain"
     # harden postfix
     postconf -e "tls_preempt_cipherlist = yes"
-    postconf -e "tls_high_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
+    postconf -e "tls_medium_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
     #other configuration files
     newaliases
     touch /etc/postfix/transport
@@ -251,7 +251,8 @@ func_postfix () {
     # Logjam Vulnerability #188 - #update for v3.0.2.5 for new cipher suite
     openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
     postconf -e "smtpd_tls_dh1024_param_file = /etc/postfix/ssl/dhparam.pem"
-    postconf -e "smtpd_tls_ciphers = high"
+    # Set to medium (default) not high for tls compatibility
+    postconf -e "smtpd_tls_ciphers = medium"
 
     echo "pwcheck_method: auxprop">/usr/lib64/sasl2/smtpd.conf
     echo "auxprop_plugin: sasldb">>/usr/lib64/sasl2/smtpd.conf
@@ -1147,12 +1148,7 @@ func_dcc () {
     sed -i "s/#loadplugin Mail::SpamAssassin::Plugin::DCC/loadplugin Mail::SpamAssassin::Plugin::DCC/g" /etc/mail/spamassassin/v310.pre
     
     #remove old servers
-    /usr/local/bin/cdcc "delete dcc1.dcc-servers.net"
-    /usr/local/bin/cdcc "delete dcc2.dcc-servers.net"
-    /usr/local/bin/cdcc "delete dcc3.dcc-servers.net"
-    /usr/local/bin/cdcc "delete dcc4.dcc-servers.net"
-    /usr/local/bin/cdcc "delete dcc5.dcc-servers.net"
-    /usr/local/bin/cdcc "delete dcc.nova53.net"
+    /usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2>&1
     #add new EFA servers
     /usr/local/bin/cdcc "add dcc1.nova53.net"
     /usr/local/bin/cdcc "add dcc2.nova53.net"
