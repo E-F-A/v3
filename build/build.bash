@@ -908,7 +908,8 @@ EOF
     chgrp -R apache /etc/MailScanner/rules
     chmod g+rwxs /etc/MailScanner/rules
     chmod g+rw /etc/MailScanner/rules/*.rules
-    ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.crond /etc/cron.d/msre_reload.crond
+    # Issue #393 fix msre_reload.sh symlink to new location
+    ln -s /etc/cron.d/msre_reload.crond /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.crontab
     ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
     chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
 

@@ -218,6 +218,12 @@ function update-mailwatch() {
       mv -f SQLBlackWhiteList.pm /usr/share/MailScanner/perl/custom
       mv -f SQLSpamSettings.pm /usr/share/MailScanner/perl/custom/
 
+      # Issue #393 fix msre_reload.sh symlink to new location
+      rm -f /etc/cron.d/msre_reload.crond
+      ln -s /etc/cron.d/msre_reload.crond /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.crontab
+      ln -s /usr/local/bin/msre_reload.sh /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
+      chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
+
       # Update cron jobs to new filenames
       cat > /etc/cron.hourly/mailwatch_relay.sh << 'EOF'
 #!/bin/bash
