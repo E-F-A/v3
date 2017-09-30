@@ -18,7 +18,7 @@ function func_ask-dccservers() {
   while [ "1" == "1" ]
     do  
       echo -e "Choose an option:"
-      echo -e "1) Use default pool
+      echo -e "1) Use default pool"
       echo -e "2) Use nova53.net pool"
       echo -e ""
       echo -e "e) Return to main menu"
