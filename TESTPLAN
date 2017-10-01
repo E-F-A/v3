@@ -13,7 +13,7 @@ Confirm new buils detect hypervisor and installs agent accordingly PASSED
 Confirm successful update to latest MailWatch PASSED
 Confirm successful update to latest MailScanner PASSED
 Confirm successful update to latest clamav-unofficial-sigs PASSED
-Confirm msre_reload cron symlinked properly 
+Confirm msre_reload cron symlinked properly PASSED
 
 Todo:  build testing
 
