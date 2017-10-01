@@ -583,7 +583,7 @@ func_apache () {
     mkdir /etc/pki/tls/backup
     mv /etc/pki/tls/certs/localhost.crt /etc/pki/tls/backup
     mv /etc/pki/tls/private/localhost.key /etc/pki/tls/backup
-    mv /etc/pki/tls/certs/server-chain.crt /etc/pki/tls/backup
+    # mv /etc/pki/tls/certs/server-chain.crt /etc/pki/tls/backup
     
     # use postfix cert
     ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/localhost.crt
