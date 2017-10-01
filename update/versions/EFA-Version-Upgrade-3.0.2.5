@@ -36,7 +36,7 @@ STAGING="/tmp/EFA-Staging"
 #----------------------------------------------------------------#
 # List of current version numbers in this E.F.A. Version.
 #----------------------------------------------------------------#
-MAILWATCHVERSION="c08ef03"
+MAILWATCHVERSION="7f70aa3"
 MAILWATCHRELEASE="1.2.7-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
@@ -59,7 +59,7 @@ function run_update() {
 
   ####### Preflight ######
   checkspace
-  
+
   ##### Backup Phase #####
   /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
@@ -74,7 +74,7 @@ function run_update() {
 
   yum clean all
   yum_update
-  
+
   # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -rf /var/EFA/lib/EFA-Configure/
@@ -91,10 +91,10 @@ function run_update() {
 
   # Issue #388 MailWatch database schema upgrade causing /tmp to fill up
   # Cannot increase tmp size here, so relocate to /var
-  mkdir /var/lib/mysql/temp
-  chown mysql:mysql /var/lib/mysql/temp
-  sed -i "/^\[mysqld\]/ a\tmpdir = /var/lib/mysql/temp" /etc/my.cnf.d/server.cnf
-  service mysql reload
+  # mkdir /var/lib/mysql/temp
+  # chown mysql:mysql /var/lib/mysql/temp
+  # sed -i "/^\[mysqld\]/ a\tmpdir = /var/lib/mysql/temp" /etc/my.cnf.d/server.cnf
+  # service mysql reload
 
   # Update MailWatch
   update-mailwatch
@@ -109,11 +109,15 @@ function run_update() {
   # Update DCC v3.0.2.4 (disabled v3.0.2.5)
   #update_dcc
 
-  # Use new DCC servers
-  dcc_servers
-
   # Post rpm Update Webmin v3.0.2.4 (disabled v3.0.2.5)
   #update-webmin
+  
+  # For DCC EFA-Configure option
+  echo "DCCPOOL:default" >> /etc/EFA-Config
+  
+  # (Re)add nova53.net dcc server
+  /usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2>&1
+  /usr/local/bin/cdcc "add dcc.nova53.net" >/dev/null 2>&1
   
   # Regen new certs
   regen_certs
@@ -139,7 +143,7 @@ function run_update() {
   #/usr/bin/mysql -u root -p"$dbpwd" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
 
   # Post MailScanner upgrade 5.0.6-4 (https://github.com/MailScanner/v5/issues/88)
-  chown postfix:mtagroup /var/spool/MailScanner/quarantine
+  #chown postfix:mtagroup /var/spool/MailScanner/quarantine
   
   # Enable restart on ms_cron update
   MSCRONPRESENT=$(grep ^ms_cron_ps_restart /etc/MailScanner/defaults)
@@ -252,6 +256,12 @@ EOF
       chown root:apache temp
       chmod ug+rwx temp
       rm -rf docs
+
+      # Issue #393 fix msre_reload.sh symlink to new location
+      rm -f /etc/cron.d/msre_reload.crond
+      ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.crontab /etc/cron.d/msre_reload.crond
+      ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh >/dev/null 2>&1
+      chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
 
       # Merge conf.php and conf.php.example changes
       cp /var/EFA/backup/$VERSION/mailscanner/conf.php /var/www/html/mailscanner/conf.php
@@ -738,8 +748,8 @@ function regen_certs() {
 #----------------------------------------------------------------#
 function harden_postfix() {
 postconf -e "tls_preempt_cipherlist = yes"
-postconf -e "tls_high_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
-sed -i "/^smtpd_tls_ciphers = /c\smtpd_tls_ciphers = high" /etc/postfix/main.cf
+postconf -e "tls_medium_cipherlist = ECDSA+AESGCM:ECDH+AESGCM:DH+AESGCM:ECDSA+AES:ECDH+AES:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
+sed -i "/^smtpd_tls_ciphers = /c\smtpd_tls_ciphers = medium" /etc/postfix/main.cf
 }
 #----------------------------------------------------------------#
 
@@ -749,25 +759,6 @@ sed -i "/^smtpd_tls_ciphers = /c\smtpd_tls_ciphers = high" /etc/postfix/main.cf
 function harden_apache() {
 sed -i "/^SSLCipherSuite/ c\SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP" /etc/httpd/conf.d/ssl.conf
 sed -i '/^SSLCipherSuite ECDSA+AESGCM:ECDH+AESGCM:ECDSA+AES:ECDH+AES:RSA+AESGCM:RSA+AES:\!aNULL:\!MD5:\!DSS:\!3DES:\!EXP/a SSLHonorCipherOrder on'  /etc/httpd/conf.d/ssl.conf
-}
-#----------------------------------------------------------------#
-
-#----------------------------------------------------------------#
-# Function to update DCC Servers
-#----------------------------------------------------------------#
-function dcc_servers() {
-/usr/local/bin/cdcc "delete dcc1.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc2.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc3.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc4.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc5.dcc-servers.net"
-/usr/local/bin/cdcc "delete dcc.nova53.net"
-
-/usr/local/bin/cdcc "add dcc1.nova53.net"
-/usr/local/bin/cdcc "add dcc2.nova53.net"
-/usr/local/bin/cdcc "add dcc3.nova53.net"
-/usr/local/bin/cdcc "add dcc4.nova53.net"
-
 }
 #----------------------------------------------------------------#
 

@@ -952,6 +952,9 @@ function func_configure-system() {
   randompw
   MUNINPWD=$PASSWD
   htpasswd -b /etc/munin/munin-htpasswd munin $MUNINPWD
+  
+  # Add nova53.net dcc server
+  /usr/local/bin/cdcc "add dcc.nova53.net"
 
   # Issue 322 Geoip update during EFA-Init
   /usr/bin/php /usr/local/sbin/geoip_update_cmd.php
@@ -1072,6 +1075,7 @@ function func_end() {
   else
     echo "AUTOUPDATES:DISABLED" >> /etc/EFA-Config
   fi
+  echo "DCCPOOL:default" >> /etc/EFA-Config
 
   sed -i "/CONFIGURED:/ c\CONFIGURED:YES" /etc/EFA-Config
 

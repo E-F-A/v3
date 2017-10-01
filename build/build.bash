@@ -33,7 +33,7 @@ mirror="http://dl.efa-project.org"
 smirror="https://dl.efa-project.org"
 mirrorpath="/build/$version"
 yumexclude="kernel* MariaDB* postfix* mailscanner* MailScanner* clamav* clamd* open-vm-tools* qemu-guest-agent*"
-MAILWATCHVERSION="c08ef03"
+MAILWATCHVERSION="7f70aa3"
 MAILWATCHRELEASE="1.2.7-dev"
 MAILWATCHBRANCH="develop"
 IMAGECEBERUSVERSION="1.1"
@@ -583,7 +583,7 @@ func_apache () {
     mkdir /etc/pki/tls/backup
     mv /etc/pki/tls/certs/localhost.crt /etc/pki/tls/backup
     mv /etc/pki/tls/private/localhost.key /etc/pki/tls/backup
-    mv /etc/pki/tls/certs/server-chain.crt /etc/pki/tls/backup
+    # mv /etc/pki/tls/certs/server-chain.crt /etc/pki/tls/backup
     
     # use postfix cert
     ln -s /etc/postfix/ssl/rsa_smtpd.pem /etc/pki/tls/certs/localhost.crt
@@ -908,7 +908,8 @@ EOF
     chgrp -R apache /etc/MailScanner/rules
     chmod g+rwxs /etc/MailScanner/rules
     chmod g+rw /etc/MailScanner/rules/*.rules
-    ln -s /usr/local/bin/mailwatch/tools/Cron_jobs/msre_reload.crond /etc/cron.d/msre_reload.crond
+    # Issue #393 fix msre_reload.sh symlink to new location
+    ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.crontab /etc/cron.d/msre_reload.crond
     ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
     chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
 
@@ -1146,14 +1147,6 @@ func_dcc () {
 
     cp /var/dcc/libexec/rcDCC /etc/init.d/adcc
     sed -i "s/#loadplugin Mail::SpamAssassin::Plugin::DCC/loadplugin Mail::SpamAssassin::Plugin::DCC/g" /etc/mail/spamassassin/v310.pre
-    
-    #remove old servers
-    /usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2>&1
-    #add new EFA servers
-    /usr/local/bin/cdcc "add dcc1.nova53.net"
-    /usr/local/bin/cdcc "add dcc2.nova53.net"
-    /usr/local/bin/cdcc "add dcc3.nova53.net"
-    /usr/local/bin/cdcc "add dcc4.nova53.net"
 }
 # +---------------------------------------------------+
 

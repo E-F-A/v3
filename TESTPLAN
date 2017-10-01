@@ -3,14 +3,19 @@ EFA Version 3.0.2.5 TEST PLAN
 ############################################################
 
 Confirm certbot gets installed PASSED
-Confirm DCC servers get update PASSED
+Confirm EFA-Configure DCC Server option PASSED
 Confirm postfix hardening occurs PASSED
 Confirm Apache hardening occurs PASSED
 Confrim enabling Let's Encrypt works (apache/postfix/webmin) PASSED
 Confirm disabling Let's Encrypt places self-signed certs back (apache/postfix/webmin) PASSED
 Confrim upgrade from 3.0.2.4 -> 3.0.2.5 starts new cert regen (change self-signed from SHA1 to SHA256) PASSED
 Confirm new buils detect hypervisor and installs agent accordingly PASSED
+Confirm successful update to latest MailWatch PASSED
+Confirm successful update to latest MailScanner PASSED
+Confirm successful update to latest clamav-unofficial-sigs PASSED
+Confirm msre_reload cron symlinked properly PASSED
 
+Todo:  build testing
 
 ############################################################
 EFA Version 3.0.2.4 TEST PLAN
