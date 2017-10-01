@@ -264,7 +264,7 @@ EOF
       # Issue #393 fix msre_reload.sh symlink to new location
       rm -f /etc/cron.d/msre_reload.crond
       ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.crontab /etc/cron.d/msre_reload.crond
-      ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh
+      ln -s /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh /usr/local/bin/msre_reload.sh >/dev/null 2>&1
       chmod ugo+x /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
 
       # Merge conf.php and conf.php.example changes
