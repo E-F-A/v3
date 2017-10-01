@@ -954,7 +954,6 @@ function func_configure-system() {
   htpasswd -b /etc/munin/munin-htpasswd munin $MUNINPWD
   
   # Add nova53.net dcc server
-  service adcc start
   /usr/local/bin/cdcc "add dcc.nova53.net"
 
   # Issue 322 Geoip update during EFA-Init
