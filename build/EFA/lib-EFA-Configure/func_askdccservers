@@ -1,6 +1,7 @@
 # +---------------------------------------------------+
 # Function to ask and set DCC Server Pool
 # +---------------------------------------------------+
+
 function func_ask-dccservers() {
   func_echo-header
   echo -e "$green[EFA]$clean - Set DCC Server Pools"
@@ -59,7 +60,7 @@ function func_ask-dccservers() {
                     /usr/local/bin/cdcc "add dcc4.dcc-servers.net"
                     /usr/local/bin/cdcc "add dcc5.dcc-servers.net"
                     sed -i '/^DCCPOOL:/ c\DCCPOOL:dcc-servers.net' /etc/EFA-Config
-                    echo -e "$green[EFA]$clean DCC Pool set to nova53.net"
+                    echo -e "$green[EFA]$clean DCC Pool set to dcc-servers.net"
                     sleep 2
                     return ;;
                 e) return ;;
@@ -68,8 +69,9 @@ function func_ask-dccservers() {
     done
 }
 
+
 function cleardcc() {
-    /usr/local/bin/cdcc "delete dcc.nova53.net >/dev/null 2&>1
+    /usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2&>1
     /usr/local/bin/cdcc "delete dcc1.nova53.net" >/dev/null 2&>1
     /usr/local/bin/cdcc "delete dcc2.nova53.net" >/dev/null 2&>1
     /usr/local/bin/cdcc "delete dcc3.nova53.net" >/dev/null 2&>1
