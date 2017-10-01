@@ -118,8 +118,10 @@ function run_update() {
   
   # For DCC EFA-Configure option
   echo "DCCPOOL:default" >> /etc/EFA-Config
-  # Dump this server if present
+  
+  # (Re)add nova53.net dcc server
   /usr/local/bin/cdcc "delete dcc.nova53.net" >/dev/null 2>&1
+  /usr/local/bin/cdcc "add dcc.nova53.net" >/dev/null 2>&1
   
   # Regen new certs
   regen_certs
