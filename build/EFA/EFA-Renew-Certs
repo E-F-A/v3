@@ -18,14 +18,19 @@ service httpd start
 service postfix stop
 service postfix start
 
+#restart webmin
+service webmin stop
+service webmin start
+
 #restore monitoring functions
 mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d
 
 MyHost="`grep HOSTNAME /etc/EFA-Config | sed 's/^.*://'`"
 MyDomain="`grep DOMAINNAME /etc/EFA-Config | sed 's/^.*://'`"
 MyName=$MyHost.$MyDomain
+MyNameLower=${MyName,,}
 
 #update webmin cert to new one as well
 rm -f /etc/webmin/miniserv.pem
-cat /etc/letsencrypt/live/$MyName/privkey.pem /etc/letsencrypt/live/$MyName/cert.pem > /etc/webmin/miniserv.pem
+cat /etc/letsencrypt/live/$MyNameLower/privkey.pem /etc/letsencrypt/live/$MyNameLower/cert.pem > /etc/webmin/miniserv.pem
 
