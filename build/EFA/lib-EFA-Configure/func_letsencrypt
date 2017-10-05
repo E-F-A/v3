@@ -16,15 +16,15 @@ function func_lets-encrypt() {
   CBRegEmail="`grep ADMINEMAIL /etc/EFA-Config | sed 's/^.*://'`"
 
   echo -e ""
-  echo -e "$green[EFA]$clean This is the current FQDN that will be used for all cert functions:"
+  echo -e "$green[eFa]$clean This is the current FQDN that will be used for all cert functions:"
   echo -e ""
-  echo -e "$green[EFA]$clean $MyNameLower"
+  echo -e "$green[eFa]$clean $MyNameLower"
   echo -e ""
-  echo -e "$green[EFA]$clean If this is not correct, please update your Hostname and Domain Name within main menu #4."
+  echo -e "$green[eFa]$clean If this is not correct, please update your Hostname and Domain Name within main menu #4."
   echo -e ""
-  echo -e "$green[EFA]$clean Please also make sure the name above is externally resolvabe before continuing."
-  echo -e "$green[EFA]$clean Please also make sure that TCP 443 is opened from the WAN to EFA." 
-  echo -e "$green[EFA]$clean By continuing, you agree to the Terms Of Service for Let's Encrypt and EFF."
+  echo -e "$green[eFa]$clean Please also make sure the name above is externally resolvabe before continuing."
+  echo -e "$green[eFa]$clean Please also make sure that TCP 443 is opened from the WAN to EFA." 
+  echo -e "$green[eFa]$clean By continuing, you agree to the Terms Of Service for Let's Encrypt and EFF."
   echo -e ""
   echo -e ""
 
@@ -99,7 +99,7 @@ function func_lets-encrypt() {
     else
       echo -e "Choice $green\"$TMPLE\"$clean is not a valid choice."
       echo -e ""
-      echo -e -n "$green[EFA]$clean Disable Let's Encrypt? (y/n/c): "
+      echo -e -n "$green[eFa]$clean Disable Let's Encrypt? (y/n/c): "
       read TMPLE
     fi
 
@@ -159,7 +159,7 @@ function func_lets-encrypt() {
         else
           echo -e "Choice $green\"$TMPLE\"$clean is not a valid choice."
           echo -e ""
-          echo -e -n "$green[EFA]$clean Enable Let's Encrypt? (y/n/c): "
+          echo -e -n "$green[eFa]$clean Enable Let's Encrypt? (y/n/c): "
           read TMPLE
       fi
 fi

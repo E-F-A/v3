@@ -3,26 +3,26 @@
 # +---------------------------------------------------+
 func_peruser(){
   func_echo-header
-  echo -e "$green[EFA]$clean Enable/Disable per user spam scoring"
+  echo -e "$green[eFa]$clean Enable/Disable per user spam scoring"
   echo -e ""
-  echo -e "$green[EFA]$clean By default this feature is off." 
-  echo -e "$green[EFA]$clean Per user spam scores allow you to specify differing scores based"
-  echo -e "$green[EFA]$clean on user in the MailWatch GUI."
+  echo -e "$green[eFa]$clean By default this feature is off." 
+  echo -e "$green[eFa]$clean Per user spam scores allow you to specify differing scores based"
+  echo -e "$green[eFa]$clean on user in the MailWatch GUI."
   echo ""
-  echo -e "$green[EFA]$clean Caution: users that do not have an account in MailWatch will not"
-  echo -e "$green[EFA]$clean be scanned! This is a current limitation in MailWatch per user"
-  echo -e "$green[EFA]$clean handling of spam scores."
+  echo -e "$green[eFa]$clean Caution: users that do not have an account in MailWatch will not"
+  echo -e "$green[eFa]$clean be scanned! This is a current limitation in MailWatch per user"
+  echo -e "$green[eFa]$clean handling of spam scores."
   echo ""
   if [[ $(grep -e "^Required SpamAssassin Score" /etc/MailScanner/MailScanner.conf | awk -F'=' {'print $2'} | tr -d ' ') == "&SQLSpamScores" ]]
     then
-      echo -e "$green[EFA]$clean Per user scoring is $green ENABLED $clean"
-      echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean per user scoring? [y/N/c]: "
+      echo -e "$green[eFa]$clean Per user scoring is $green ENABLED $clean"
+      echo -e -n "$green[eFa]$clean Would you like to $red DISABLE $clean per user scoring? [y/N/c]: "
       read TMPUSER
       FLAG=1
       while [ $FLAG != "0" ]
         do
           if [[ "$TMPUSER" == "Y" || "$TMPUSER" == "y" ]]; then
-            echo -e -n "$green[EFA]$clean Please enter your new global Spam Score [1-100, default 4]: "
+            echo -e -n "$green[eFa]$clean Please enter your new global Spam Score [1-100, default 4]: "
             read SPAMSCORE
             FLAG2=1
             while [ $FLAG2 != "0" ]; do
@@ -34,12 +34,12 @@ func_peruser(){
                 FLAG2=0
               else
                 echo -e "       $red ERROR: Invalid entry.$clean"
-                echo -e -n "$green[EFA]$clean Please enter your new global Spam Score [1-100, default 4]: "
+                echo -e -n "$green[eFa]$clean Please enter your new global Spam Score [1-100, default 4]: "
                 read SPAMSCORE
               fi
             done
 
-            echo -e -n "$green[EFA]$clean Please enter your new global High Spam Score [1-100, default 7]: "
+            echo -e -n "$green[eFa]$clean Please enter your new global High Spam Score [1-100, default 7]: "
             read HIGHSPAMSCORE
             FLAG3=1
             while [ $FLAG3 != "0" ]; do
@@ -51,39 +51,39 @@ func_peruser(){
                 FLAG3=0
               else
                 echo -e "       $red ERROR: Invalid entry.$clean"
-                echo -e -n "$green[EFA]$clean Please enter your new global High Spam Score [1-100, default 7]: "
+                echo -e -n "$green[eFa]$clean Please enter your new global High Spam Score [1-100, default 7]: "
                 read HIGHSPAMSCORE
               fi
             done
 
           service MailScanner restart
           FLAG=0
-          echo -e "$green[EFA]$clean Per user spam scoring $red DISABLED $clean"
+          echo -e "$green[eFa]$clean Per user spam scoring $red DISABLED $clean"
           pause
         elif [[ "$TMPUSER" == "n" || "$TMPUSER" == "N" || -z "$TMPUSER" ]]; then 
-          echo -e "$green[EFA]$clean No changes made"
+          echo -e "$green[eFa]$clean No changes made"
           echo ""
           FLAG=0
           pause
         elif [[ "$TMPUSER" == "C" || "$TMPUSER" == "c" ]]; then
-          echo "$green[EFA]$clean No changes made"
+          echo "$green[eFa]$clean No changes made"
           FLAG=0
           pause
         else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Would you like to $red DISABLE $clean per user scoring? [y/N/c]: "
+          echo -e -n "$green[eFa]$clean Would you like to $red DISABLE $clean per user scoring? [y/N/c]: "
           read TMPUSER
         fi
       done
     else
-      echo -e "$green[EFA]$clean Per user scoring is $red DISABLED $clean"
-      echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean per user scoring? [y/N/c]: "
+      echo -e "$green[eFa]$clean Per user scoring is $red DISABLED $clean"
+      echo -e -n "$green[eFa]$clean Would you like to $green ENABLE $clean per user scoring? [y/N/c]: "
       read TMPUSER
       FLAG=1
       while [ $FLAG != "0" ]
         do
           if [[ "$TMPUSER" == "Y" || "$TMPUSER" == "y" ]]; then
-            echo -e -n "$green[EFA]$clean Please enter your new default per user Spam Score [1-100, default 4]: "
+            echo -e -n "$green[eFa]$clean Please enter your new default per user Spam Score [1-100, default 4]: "
             read SPAMSCORE
             FLAG2=1
             while [ $FLAG2 != "0" ]; do
@@ -101,12 +101,12 @@ func_peruser(){
                 FLAG2=0
               else
                 echo -e "       $red ERROR: Invalid entry.$clean"
-                echo -e -n "$green[EFA]$clean Please enter your new default per user Spam Score [1-100, default 4]: "
+                echo -e -n "$green[eFa]$clean Please enter your new default per user Spam Score [1-100, default 4]: "
                 read SPAMSCORE
               fi
             done
 
-            echo -e -n "$green[EFA]$clean Please enter your new per user High Spam Score [1-100, default 7]: "
+            echo -e -n "$green[eFa]$clean Please enter your new per user High Spam Score [1-100, default 7]: "
             read HIGHSPAMSCORE
             FLAG3=1
             while [ $FLAG3 != "0" ]; do
@@ -124,27 +124,27 @@ func_peruser(){
                 FLAG3=0
               else
                 echo -e "       $red ERROR: Invalid entry.$clean"
-                echo -e -n "$green[EFA]$clean Please enter your new global High Spam Score [1-100, default 7]: "
+                echo -e -n "$green[eFa]$clean Please enter your new global High Spam Score [1-100, default 7]: "
                 read HIGHSPAMSCORE
               fi
             done
 
           service MailScanner restart
           FLAG=0
-          echo -e "$green[EFA]$clean Per user spam scoring $green ENABLED $clean"
+          echo -e "$green[eFa]$clean Per user spam scoring $green ENABLED $clean"
           pause
         elif [[ "$TMPUSER" == "n" || "$TMPUSER" == "N" || -z "$TMPUSER" ]]; then 
-          echo -e "$green[EFA]$clean No changes made"
+          echo -e "$green[eFa]$clean No changes made"
           echo ""
           FLAG=0
           pause
         elif [[ "$TMPUSER" == "C" || "$TMPUSER" == "c" ]]; then
-          echo -e "$green[EFA]$clean No changes made"
+          echo -e "$green[eFa]$clean No changes made"
           FLAG=0
           pause
         else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean per user scoring? [y/N/c]: "
+          echo -e -n "$green[eFa]$clean Would you like to $green ENABLE $clean per user scoring? [y/N/c]: "
           read TMPUSER
         fi
       done

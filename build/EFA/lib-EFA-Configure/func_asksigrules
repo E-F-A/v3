@@ -28,7 +28,7 @@ function func_ask-sigrules() {
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in
@@ -112,7 +112,7 @@ function func_ask-sigrules() {
                     return
                     ;;
                 *)  echo -e "Error \"$choice\" is not an option..." && sleep 2
-                    echo -e -n "$green[EFA]$clean : "
+                    echo -e -n "$green[eFa]$clean : "
                     ;;
           esac
   done

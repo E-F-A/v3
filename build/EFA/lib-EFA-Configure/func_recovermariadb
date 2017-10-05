@@ -14,7 +14,7 @@ function func_recover-mariadb() {
   echo -e "you restore your MariaDB database from a"
   echo -e "recent backup."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Do you wish to continue? (y/n): "
+  echo -e -n "$green[eFa]$clean Do you wish to continue? (y/n): "
   read MARIADBQ
     
   flag=0
@@ -55,7 +55,7 @@ function func_recover-mariadb() {
       else
         echo -e "Choice $green\"$MARIADBQ\"$clean is not a valid choice."
         echo -e ""
-        echo -e -n "$green[EFA]$clean: "
+        echo -e -n "$green[eFa]$clean: "
         read MARIADBQ
       fi
     done

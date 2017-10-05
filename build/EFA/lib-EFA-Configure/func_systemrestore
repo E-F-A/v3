@@ -13,7 +13,7 @@ function func_system-restore() {
   echo -e "to a recent backup can have consequences, such as the need to"
   echo -e "clean up MySQL databases and loss of recent configuration changes."
   echo -e ""
-  echo -en "$green[EFA]$clean Are you sure you want to continue? (y/N):"
+  echo -en "$green[eFa]$clean Are you sure you want to continue? (y/N):"
   local TMPRECOVER
   read TMPRECOVER
   local flag=0
@@ -139,7 +139,7 @@ function func_system-restore() {
         flag=1
       else
         echo -e "An invalid option $red $TMPRECOVER $clean was entered."
-        echo -en "$green[EFA]$clean Are you sure you want to continue? (y/N):"
+        echo -en "$green[eFa]$clean Are you sure you want to continue? (y/N):"
         read TMPRECOVER
       fi
     done

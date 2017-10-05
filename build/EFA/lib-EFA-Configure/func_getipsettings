@@ -18,7 +18,7 @@ function func_getipsettings(){
       echo -e ""
       echo -e "Enter the primary interface name:"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       choice_check=0

@@ -5,14 +5,14 @@ function func_ask-cleandeliver() {
   func_echo-header
 
   echo -e ""
-  echo -e "$green[EFA]$clean Cleaned Messages Delivery Settings:"
+  echo -e "$green[eFa]$clean Cleaned Messages Delivery Settings:"
   echo -e ""
-  echo -e "$green[EFA]$clean By default, messages that are cleaned of viruses"
-  echo -e "$green[EFA]$clean are not delivered, as they do not undergo spam"
-  echo -e "$green[EFA]$clean checks.  When this option is enabled, cleaned"
-  echo -e "$green[EFA]$clean messages are automatically delivered."
+  echo -e "$green[eFa]$clean By default, messages that are cleaned of viruses"
+  echo -e "$green[eFa]$clean are not delivered, as they do not undergo spam"
+  echo -e "$green[eFa]$clean checks.  When this option is enabled, cleaned"
+  echo -e "$green[eFa]$clean messages are automatically delivered."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean cleaned message delivery ? [y/N/c]: "
+  echo -e -n "$green[eFa]$clean Do you want to $green DISABLE $clean cleaned message delivery ? [y/N/c]: "
 
   local TMPDELIVER
   read TMPDELIVER
@@ -22,23 +22,23 @@ function func_ask-cleandeliver() {
     do 
       if [[ "$TMPDELIVER" == "Y" || "$TMPDELIVER" == "y" ]]; then 
         sed -i '/Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No' /etc/MailScanner/MailScanner.conf
-        echo -e "$green[EFA]$clean Cleaned Message Delivery $green DISABLED $clean"
+        echo -e "$green[eFa]$clean Cleaned Message Delivery $green DISABLED $clean"
         sleep 2
         flag=0
         service MailScanner reload
       elif [[ "$TMPDELIVER" == "" || "$TMPDELIVER" == "N" || "$TMPDELIVER" == "n" ]]; then 
         sed -i '/Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = Yes' /etc/MailScanner/MailScanner.conf
-        echo -e "$green[EFA]$clean Cleaned Message Delivery $green ENABLED $clean"
+        echo -e "$green[eFa]$clean Cleaned Message Delivery $green ENABLED $clean"
         flag=0
         sleep 2
         service MailScanner reload
       elif [[ "$TMPDELIVER" == "C" || "$TMPDELIVER" == "c" ]]; then 
-        echo -e "$green[EFA]$clean No action taken, exiting."
+        echo -e "$green[eFa]$clean No action taken, exiting."
         sleep 2
         flag=0
       else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Do you want to $green DISABLE $clean cleaned message delivery? [y/N/c]: "
+          echo -e -n "$green[eFa]$clean Do you want to $green DISABLE $clean cleaned message delivery? [y/N/c]: "
           read TMPDELIVER
       fi
   done

@@ -14,8 +14,8 @@ function func_sethostname() {
       else
         echo -e "       $red ERROR: The hostname $HOSTNAME seems to be invalid"
         echo -e "        ERROR: please re-enter the hostname$clean"
-        echo -e "$green[EFA]$clean What is the hostname of this machine: $cyan(single Word)$clean"
-        echo -e -n "$green[EFA]$clean : "
+        echo -e "$green[eFa]$clean What is the hostname of this machine: $cyan(single Word)$clean"
+        echo -e -n "$green[eFa]$clean : "
         read HOSTNAME
      fi
     done
@@ -30,8 +30,8 @@ function func_sethostname() {
       else
         echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
         echo -e "        ERROR: please re-enter the domain$clean"
-        echo -e "$green[EFA]$clean Please enter the domain name for this machine"
-        echo -e -n "$green[EFA]$clean : "
+        echo -e "$green[eFa]$clean Please enter the domain name for this machine"
+        echo -e -n "$green[eFa]$clean : "
         read DOMAINNAME
      fi
     done
@@ -40,7 +40,7 @@ function func_sethostname() {
   echo -e "$red Changing your hostname will reboot your server. $clean"
   echo -e ""
   echo -e "Are you sure you want to change the hostname of this machine"
-  echo -e -n "$green[EFA]$clean to $HOSTNAME.$DOMAINNAME? (y/N): "
+  echo -e -n "$green[eFa]$clean to $HOSTNAME.$DOMAINNAME? (y/N): "
   local TMPYN
   read TMPYN
   if [[ $TMPYN == "y" || $TMPYN == "Y" ]]; then

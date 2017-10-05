@@ -16,7 +16,7 @@ func_mailwatch-settings() {
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in

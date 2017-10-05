@@ -7,12 +7,12 @@ function func_ask-trustednets() {
     do
       func_echo-header
       echo -e ""
-      echo -e "$green[EFA]$clean Trusted Network Settings:"
+      echo -e "$green[eFa]$clean Trusted Network Settings:"
       echo -e ""
-      echo -e "$green[EFA]$clean Trusted networks are networks from which you want to accept"
-      echo -e "$green[EFA]$clean spam submissions via the \"Click here to report this message as spam\""
-      echo -e "$green[EFA]$clean link. All other networks will receive a message indicating that"
-      echo -e "$green[EFA]$clean submission is being attempted from an untrusted network."
+      echo -e "$green[eFa]$clean Trusted networks are networks from which you want to accept"
+      echo -e "$green[eFa]$clean spam submissions via the \"Click here to report this message as spam\""
+      echo -e "$green[eFa]$clean link. All other networks will receive a message indicating that"
+      echo -e "$green[eFa]$clean submission is being attempted from an untrusted network."
       echo -e ""
 
       local RULES
@@ -35,7 +35,7 @@ function func_ask-trustednets() {
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in
@@ -156,7 +156,7 @@ function func_ask-trustednets() {
                 ;;
                 *)  
                 echo -e "Error \"$choice\" is not an option..." && sleep 2
-                echo -e -n "$green[EFA]$clean : "
+                echo -e -n "$green[eFa]$clean : "
                 ;;
       esac
     done
