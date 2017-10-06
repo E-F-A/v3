@@ -25,9 +25,12 @@
 VERSION="3.0.2.6"
 logdir="/var/log/EFA"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
+MyHost="`grep HOSTNAME /etc/EFA-Config | sed 's/^.*://'`"
+MyDomain="`grep DOMAINNAME /etc/EFA-Config | sed 's/^.*://'`"
+MyName=$MyHost.$MyDomain
 MAILFROM="$ADMINEMAIL"
 MAILTO="$ADMINEMAIL"
-MAILSUBJECT="EFA Update Complete For: `hostname`"
+MAILSUBJECT="EFA Update Complete For: $MyName"
 SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
 STAGING="/tmp/EFA-Staging"
@@ -176,7 +179,7 @@ EOF
   echo "$VERSION update is complete"
   echo ""
   echo "" >> $TMPMAIL
-  echo "Update to $VERSION complete." >> $TMPMAIL
+  echo "Update to $VERSION complete for $MyName." >> $TMPMAIL
 }
 #----------------------------------------------------------------#
 
@@ -671,13 +674,13 @@ function abort() {
   [[ -n $STAGING ]] && rm -rf $STAGING
 
   echo "" >> $TMPMAIL
-  echo "Update to Version $VERSION FAILED.  Updates cancelled." >> $TMPMAIL
-  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED.  Updates cancelled for $MyName." >> $TMPMAIL
+  echo "Please visit https://www.efa-project.org for more information." >> $TMPMAIL
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
 
   echo "Update to Version $VERSION FAILED.  Updates cancelled."
-  echo "Please visit http://www.efa-project.org for more information."
+  echo "Please visit https://www.efa-project.org for more information."
   exit 1
 }
 #----------------------------------------------------------------#
