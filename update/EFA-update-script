@@ -27,12 +27,16 @@ gitdlurl="https://raw.githubusercontent.com/E-F-A/v3"
 MIRROR="https://dl.efa-project.org"
 mirrorpath="update"
 ADMINEMAIL="`cat /etc/EFA-Config | grep ADMINEMAIL | sed 's/.*://'`"
+MyHost="`grep HOSTNAME /etc/EFA-Config | sed 's/^.*://'`"
+MyDomain="`grep DOMAINNAME /etc/EFA-Config | sed 's/^.*://'`"
+MyName=$MyHost.$MyDomain
 MAILFROM="$ADMINEMAIL"
 MAILTO="$ADMINEMAIL"
-MAILSUBJECT="EFA Update Complete For: `hostname`"
+MAILSUBJECT="EFA Update Complete For: $MyName"
 SENDMAIL="/usr/lib/sendmail"
 TMPMAIL="/tmp/tempmail"
 STAGING="/tmp/EFA-Staging"
+
 #----------------------------------------------------------------#
 
 
@@ -1079,11 +1083,11 @@ function finalize() {
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
 
-  echo "All done"
+  echo "All done."
   echo "Please restart your system as soon as possible."
   echo "If your system does not return to a command prompt"
   echo "you can now safely press ctrl-c to abort logsave"
-  echo "Thank you for using E.F.A."
+  echo "Thank you for using eFa!"
   exit 0
   exit 0
 }
@@ -1096,13 +1100,13 @@ function abort() {
   rm -rf $STAGING
 
   echo "" >> $TMPMAIL
-  echo "Update to Version $VERSION FAILED. Updates cancelled." >> $TMPMAIL
-  echo "Please visit http://www.efa-project.org for more information." >> $TMPMAIL
+  echo "Update to Version $VERSION FAILED for $MyName. Updates cancelled." >> $TMPMAIL
+  echo "Please visit https://www.efa-project.org for more information." >> $TMPMAIL
   cat $TMPMAIL | $SENDMAIL -t
   rm $TMPMAIL
 
   echo "Update to Version $VERSION FAILED. Updates cancelled."
-  echo "Please visit http://www.efa-project.org for more information."
+  echo "Please visit https://www.efa-project.org for more information."
   exit 1
 }
 #----------------------------------------------------------------#
@@ -1150,7 +1154,7 @@ function check_disk_space() {
     if [[ $i -ge $THRESHOLD ]]; then
 
       echo "FATAL: Update aborted. Low disk space <=5% detected on one" >> $TMPMAIL
-      echo "or more local ext4 filesystems!" >> $TMPMAIL
+      echo "or more local ext4 filesystems, for $MyName!" >> $TMPMAIL
       echo "Free up disk space before continuing."  >> $TMPMAIL
       echo "Please visit https://forum.efa-project.org for assistance." >> $TMPMAIL
 
@@ -1198,9 +1202,9 @@ function update-kernel(){
     echo "From: $MAILFROM" > $TMPMAIL
     echo "To: $MAILTO" >> $TMPMAIL
     echo "Reply-To: $MAILFROM" >> $TMPMAIL
-    echo "Subject: Restart needed to update to $VERSION" >> $TMPMAIL
+    echo "Subject: Restart needed to update to $VERSION on $MyName" >> $TMPMAIL
     echo "" >> $TMPMAIL
-    echo "Update to $VERSION is pending." >> $TMPMAIL
+    echo "Update to $VERSION is pending on $MyName." >> $TMPMAIL
     echo "Your system has an updated kernel, but you are not running" >> $TMPMAIL
     echo "on the latest kernel. Please restart your system and run" >> $TMPMAIL
     echo "EFA-Update after restart." >> $TMPMAIL
