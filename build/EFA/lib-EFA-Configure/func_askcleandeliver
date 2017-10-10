@@ -23,18 +23,18 @@ function func_ask-cleandeliver() {
       if [[ "$TMPDELIVER" == "Y" || "$TMPDELIVER" == "y" ]]; then 
         sed -i '/Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = No' /etc/MailScanner/MailScanner.conf
         echo -e "$green[eFa]$clean Cleaned Message Delivery $green DISABLED $clean"
-        sleep 2
+        pause
         flag=0
         service MailScanner reload
       elif [[ "$TMPDELIVER" == "" || "$TMPDELIVER" == "N" || "$TMPDELIVER" == "n" ]]; then 
         sed -i '/Deliver Cleaned Messages =/ c\Deliver Cleaned Messages = Yes' /etc/MailScanner/MailScanner.conf
         echo -e "$green[eFa]$clean Cleaned Message Delivery $green ENABLED $clean"
         flag=0
-        sleep 2
+        pause
         service MailScanner reload
       elif [[ "$TMPDELIVER" == "C" || "$TMPDELIVER" == "c" ]]; then 
         echo -e "$green[eFa]$clean No action taken, exiting."
-        sleep 2
+        pause
         flag=0
       else
           echo -e "       $red ERROR: please make an selection.$clean"

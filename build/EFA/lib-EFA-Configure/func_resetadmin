@@ -30,7 +30,7 @@ func_resetadmin() {
             /usr/bin/mysql -u mailwatch -p`cat /etc/EFA-Config | grep MAILWATCHSQLPWD | sed 's/.*://'` mailscanner -e "INSERT into users (username,fullname,type) VALUES('$ADMINUSER','$ADMINUSER','A')"
             if [[ $? -ne 0 ]]; then
               echo -e "$red[ERROR]$cleanError creating new user, exiting..."
-              sleep 2
+              pause
               return 0
             else
               echo -e "$green[eFa]$cleanNew user created, proceeding..."
@@ -45,7 +45,7 @@ func_resetadmin() {
              /usr/bin/mysql -u mailwatch -p`cat /etc/EFA-Config | grep MAILWATCHSQLPWD | sed 's/.*://'` mailscanner -e "UPDATE users SET type = 'A' WHERE username='$ADMINUSER'"
             if [[ $? -ne 0 ]]; then
               echo -e "$red[ERROR]$cleanError promoting new user, exiting..."
-              sleep 2
+              pause
               return 0
             else
                 echo -e "$green[eFa]$cleanNew user promoted, proceeding..."
@@ -54,7 +54,7 @@ func_resetadmin() {
               fi
             else
               echo -e "No user promoted, exiting..."
-              sleep 2
+              pause
               return 0
             fi
           fi
@@ -65,7 +65,7 @@ func_resetadmin() {
       done
     else
       echo -e "$green[eFa]$clean No admin account created.  Exiting..."
-      sleep 2
+      pause
       return 0
     fi
   fi

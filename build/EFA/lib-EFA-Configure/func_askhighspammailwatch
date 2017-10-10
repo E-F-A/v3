@@ -36,6 +36,6 @@ function func_ask-highspammailwatch() {
       fi
   done
 
-  sleep 2
+  pause
 }
 # +---------------------------------------------------+

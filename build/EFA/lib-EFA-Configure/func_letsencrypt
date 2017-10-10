@@ -91,11 +91,11 @@ function func_lets-encrypt() {
       echo -e ""
       echo -e "Let's Encrypt has been disabled."
       echo -e ""
-      sleep 5
+      pause
     elif [[ $TMPLE == "n" || $TMPLE == "N" || $TMPLE == "c" || $TMPLE == "C" ]]
       then
         echo -e "No action taken. Exiting."
-        sleep 5
+        pause
     else
       echo -e "Choice $green\"$TMPLE\"$clean is not a valid choice."
       echo -e ""
@@ -155,7 +155,7 @@ function func_lets-encrypt() {
       elif [[ $TMPLE == "n" || $TMPLE == "N" || $TMPLE == "c" || $TMPLE == "C" ]]
 	    then
           echo -e "No action taken. Exiting."
-          sleep 5
+          pause
         else
           echo -e "Choice $green\"$TMPLE\"$clean is not a valid choice."
           echo -e ""

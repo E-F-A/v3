@@ -25,7 +25,7 @@ func_mailwatch-settings() {
                 3) func_retention;;
                 4) func_peruser;;
                 e) menu=1 && return ;;
-                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+                *) echo -e "Error \"$choice\" is not an option..." && pause
       esac
     done
 }

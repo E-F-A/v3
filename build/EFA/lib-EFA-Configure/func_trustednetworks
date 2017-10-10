@@ -96,16 +96,16 @@ function func_ask-trustednets() {
                         flag=1
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
                         sed -i "/$ENTIP[[:space:]]\+$ENTNET/d" /etc/sysconfig/EFA_trusted_networks
-                        echo -e "Entry deleted from trusted networks." && sleep 2
+                        echo -e "Entry deleted from trusted networks." && pause
                         flag=1
                       elif [[ $TMPOPTION == "c" || $TMPOPTION == "C" ]]; then
                         flag=1
                       else 
-                        echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
+                        echo -e "Error \"$TMPOPTION\" is not an option..." && pause
                       fi
                    done
                 else
-                  echo -e "Error \"$choice\" is not an option..." && sleep 2
+                  echo -e "Error \"$choice\" is not an option..." && pause
                 fi
                 ;;
                 n)
@@ -155,7 +155,7 @@ function func_ask-trustednets() {
                 spammenu=1 && return 
                 ;;
                 *)  
-                echo -e "Error \"$choice\" is not an option..." && sleep 2
+                echo -e "Error \"$choice\" is not an option..." && pause
                 echo -e -n "$green[eFa]$clean : "
                 ;;
       esac

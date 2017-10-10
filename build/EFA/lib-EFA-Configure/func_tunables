@@ -21,7 +21,7 @@ func_tunables() {
                 1) func_tunables_children;;
                 2) func_tunables_procdb;;
                 e) menu=1 && return ;;
-                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+                *) echo -e "Error \"$choice\" is not an option..." && pause
       esac
     done
 }

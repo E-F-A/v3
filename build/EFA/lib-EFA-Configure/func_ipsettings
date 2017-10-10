@@ -98,7 +98,7 @@ func_ip-settings(){
                     fi
                     ;;
                 e) menu=1 && return ;;
-                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+                *) echo -e "Error \"$choice\" is not an option..." && pause
             esac
         done
 }

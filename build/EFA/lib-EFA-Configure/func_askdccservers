@@ -40,7 +40,7 @@ function func_ask-dccservers() {
                     /usr/local/bin/cdcc "add dcc.nova53.net"
                     sed -i '/^DCCPOOL:/ c\DCCPOOL:default' /etc/EFA-Config
                     echo -e "$green[eFa]$clean DCC Pool set to default"
-                    sleep 5
+                    pause
                     return ;;
                  2)
                     cleardcc
@@ -50,7 +50,7 @@ function func_ask-dccservers() {
                     /usr/local/bin/cdcc "add dcc4.nova53.net"
                     sed -i '/^DCCPOOL:/ c\DCCPOOL:nova53.net' /etc/EFA-Config
                     echo -e "$green[eFa]$clean DCC Pool set to nova53.net"
-                    sleep 2
+                    pause
                     return ;;
                  3)
                     cleardcc
@@ -61,10 +61,10 @@ function func_ask-dccservers() {
                     /usr/local/bin/cdcc "add dcc5.dcc-servers.net"
                     sed -i '/^DCCPOOL:/ c\DCCPOOL:dcc-servers.net' /etc/EFA-Config
                     echo -e "$green[eFa]$clean DCC Pool set to dcc-servers.net"
-                    sleep 2
+                    pause
                     return ;;
                 e) return ;;
-                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+                *) echo -e "Error \"$choice\" is not an option..." && pause
       esac
     done
 }

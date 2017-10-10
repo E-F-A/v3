@@ -1386,7 +1386,7 @@ func_efarequirements () {
     # Write SSH banner
     sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config
     cat > /etc/banner << 'EOF'
-       Welcome to E.F.A. (http://www.efa-project.org)
+       Welcome to eFa (https://www.efa-project.org)
 
  Warning!
 

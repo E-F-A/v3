@@ -40,7 +40,7 @@ func_greylisting(){
           pause
         elif [[ "$TMPGREY" == "C" || "$TMPGREY" == "c" ]]; then
           echo -e "$green[eFa]$clean No action taken, exiting."
-          sleep 2
+          pause
         else
           echo -e "       $red ERROR: please make an selection.$clean"
           echo -e -n "$green[eFa]$clean Would you like to $red DISABLE $clean greylisting? [y/N/c]: "
@@ -69,7 +69,7 @@ func_greylisting(){
           pause
         elif [[ "$TMPGREY" == "C" || "$TMPGREY" == "c" ]]; then
           echo -e "$green[eFa]$clean No action taken, exiting."
-          sleep 2
+          pause
         else
           echo -e "       $red ERROR: please make an selection.$clean"
           echo -e -n "$green[eFa]$clean Would you like to $green ENABLE $clean greylisting? [y/N/c]: "

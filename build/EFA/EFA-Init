@@ -78,7 +78,7 @@ function func_ask-domainname() {
 function func_ask-adminemail() {
   func_echo-header
   echo -e "$green[eFa]$clean Please enter the email address of an admin "
-  echo -e "$green[eFa]$clean This user will receive E.F.A. related notifications"
+  echo -e "$green[eFa]$clean This user will receive eFa related notifications"
   echo -e -n "$green[eFa]$clean : "
   read ADMINEMAIL
   adminemailcheck=1
@@ -570,7 +570,7 @@ function func_ask-updates() {
   echo -e "$green[eFa]$clean If you choose to keep auto updates DISABLED you will receive mails on your"
   echo -e "$green[eFa]$clean admin e-mail account if an update is available"
   echo ""
-  echo -e "$green[eFa]$clean Here you can $green ENABLE $clean auto updates for this E.F.A. system."
+  echo -e "$green[eFa]$clean Here you can $green ENABLE $clean auto updates for this eFa system."
   echo -e "$green[eFa]$clean This will check every month if there is an update available and if so"
   echo -e "$green[eFa]$clean it will automatically install the update."
   echo ""

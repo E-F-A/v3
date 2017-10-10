@@ -21,7 +21,7 @@ function func_apache-settings() {
                 1) func_https;;
                 2) func_modsecurity;;
                 e) menu=1 && return ;;
-                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+                *) echo -e "Error \"$choice\" is not an option..." && pause
             esac
     done
 }
@@ -58,7 +58,7 @@ function func_https() {
         echo -e "and copy the private key to:"
         echo -e "/etc/pki/tls/private/localhost.key"
         echo -e ""
-        sleep 2
+        pause
         flag=1
       elif [[ $TMPSECURE == "n" || $TMPSECURE == "N" ]]; then
 
@@ -69,17 +69,17 @@ function func_https() {
 
         echo -e ""
         echo -e "Port 443 $green[Disabled]$clean"
-        sleep 2
+        pause
 
         # Issue #74 EFA-Configure Disable SSL does not disable redirect
         rm -f /etc/httpd/conf.d/redirectssl.conf >/dev/null 2>&1
         echo -e "Port 443 Redirection $green[Disabled]$clean"
-        sleep 2
+        pause
 
         flag=1
       elif [[ $TMPSECURE == "c" || $TMPSECURE == "C" ]]; then
         echo -e "$green[EFA]$clean No action taken, exiting."
-        sleep 2
+        pause
         flag=1
       else
         echo -e "Choice $green\"$TMPSECURE\"$clean is not a valid choice."
@@ -108,13 +108,13 @@ function func_https() {
         
         echo -e ""
         echo -e "Port 80 to 443 redirection $green[Enabled]$clean"
-        sleep 2
+        pause
         flag=1
       elif [[ $TMPREDIRECT == "n" || $TMPREDIRECT == "N" ]]; then
         rm -f /etc/httpd/conf.d/redirectssl.conf >/dev/null 2>&1
         echo -e ""
         echo -e "Port 80 to 443 redirection $green[Disabled]$clean"
-        sleep 2
+        pause
         flag=1
       else
         echo -e "Choice $green\"$TMPREDIRECT\"$clean is not a valid choice."
@@ -128,7 +128,7 @@ function func_https() {
   if [[ $TMPSECURE != "c" && $TMPSECURE != "C" ]]; then
     service iptables reload
     service httpd reload
-    sleep 2
+    pause
   fi
 
 }
@@ -161,19 +161,19 @@ function func_modsecurity()
         echo -e ""
         echo -e "Modsecurity $red[Disabled]$clean"
         echo -e ""
-        sleep 2
+        pause
         flag=1
       elif [[ $TMPMODSECURITY == "y" || $TMPMODSECURITY == "Y" || -z $TMPMODSECURITY ]]; then
         sed -i "/^#LoadModule security2_module modules\/mod_security2.so/ c\LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
         service httpd restart
 
         echo -e "Modsecurity $green[Enabled]$clean"
-        sleep 2
+        pause
 
         flag=1
       elif [[ $TMPMODSECURITY == "c" || $TMPMODSECURITY == "C" ]]; then
         echo -e "$green[eFa]$clean No action taken, exiting."
-        sleep 2
+        pause
         flag=1
       else
         echo -e "Choice $green\"$TMPMODSECURITY\"$clean is not a valid choice."

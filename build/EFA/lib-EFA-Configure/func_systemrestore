@@ -120,7 +120,7 @@ function func_system-restore() {
                  fi
                  ;;
                      e)
-                 sleep 2
+                 pause
                  flag3=1
                  flag2=1  
                  flag=1
@@ -144,7 +144,7 @@ function func_system-restore() {
       fi
     done
 
-  sleep 2
+  pause
 
 }
 # +---------------------------------------------------+

@@ -81,6 +81,6 @@ function func_ask-spam() {
     service MailScanner reload
   fi
 
-  sleep 2
+  pause
 }
 # +---------------------------------------------------+

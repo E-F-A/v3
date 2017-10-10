@@ -42,7 +42,7 @@ function func_ask-nonspam() {
         spamcheck=0
       elif [[ "$TMPSTORENSPAM" == "C" || "$TMPSTORENSPAM" == "c" ]]; then
         echo -e "$green[eFa]$clean No action taken."
-        sleep 2
+        pause
         return
       else
           echo -e "       $red ERROR: please make an selection.$clean"
@@ -75,18 +75,18 @@ function func_ask-nonspam() {
         spamcheck=0
         sed -i "/Non Spam Actions =/ c\Non Spam Actions = $STORENSPAM $NSPAMSIG" /etc/MailScanner/MailScanner.conf
         service MailScanner reload
-        sleep 2
+        pause
       elif [[ "$TMPNSPAMSIG" == "" || "$TMPNSPAMSIG" == "N" || "$TMPNSPAMSIG" == "n" ]]; then 
         NSPAMSIG="custom(nonspam)"
         echo -e "$green[eFa]$clean Non spam signatures $green ENABLED $clean"
         spamcheck=0
         sed -i "/Non Spam Actions =/ c\Non Spam Actions = $STORENSPAM $NSPAMSIG" /etc/MailScanner/MailScanner.conf
         service MailScanner reload
-        sleep 2
+        pause
       elif [[ "$TMPNSPAMSIG" == "C" || "$TMPNSPAMSIG" == "c" ]]; then
         echo -e "$green[eFa]$clean No action taken, exiting."
         spamcheck=0
-        sleep 2
+        pause
       else
           echo -e "       $red ERROR: please make an selection.$clean"
           echo -e -n "$green[eFa]$clean Do you want to $green DISABLE $clean non spam signatures? [y/N/c]: "

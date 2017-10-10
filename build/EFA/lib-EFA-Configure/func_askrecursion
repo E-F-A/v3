@@ -42,6 +42,6 @@ function func_ask-recursion() {
       fi
     done
 
-  sleep 2
+  pause
 }
 # +---------------------------------------------------+

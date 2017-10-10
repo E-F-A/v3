@@ -50,7 +50,7 @@ function func_recover-mariadb() {
       elif [[ $MARIADBQ == "n" || $MARIADBQ == "N" ]]; then
         echo -e ""
         echo -e "Exiting..."
-        sleep 2
+        pause
         flag=1
       else
         echo -e "Choice $green\"$MARIADBQ\"$clean is not a valid choice."

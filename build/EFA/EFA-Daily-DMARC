@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+
+# Database and History File Info
+DBHOST='localhost'
+DBUSER='opendmarc'
+DBPASS="`grep OPENDMARCSQLPWD /etc/EFA-Config | sed 's/^.*://'`"
+DBNAME='opendmarc'
+HISTDIR='/var/opendmarc'
+HISTFILE='dmarc_msg_history'
+DMARCRepEmail="`grep DMARCREPEMAIL /etc/EFA-Config | sed 's/^.*://'`"
+DMARCRepDomain="`grep DMARCREPDOMAIN /etc/EFA-Config | sed 's/^.*://'`"
+
+# Make sure history file exists
+touch ${HISTDIR}/${HISTFILE}.dat
+
+# Move history file temp dir for processing
+mv ${HISTDIR}/${HISTFILE}.dat /tmp/${HISTFILE}.$$
+
+# Import temp history file data and send reports
+/usr/sbin/opendmarc-import -dbhost=${DBHOST} -dbuser=${DBUSER} -dbpasswd=${DBPASS} -dbname=${DBNAME} -verbose < /tmp/${HISTFILE}.$$
+/usr/sbin/opendmarc-reports -dbhost=${DBHOST} -dbuser=${DBUSER} -dbpasswd=${DBPASS} -dbname=${DBNAME} -verbose -interval=86400 -report-email $DMARCRepEmail -report-org $DMARCRepDomain -smtp-server=127.0.0.1
+/usr/sbin/opendmarc-expire -dbhost=${DBHOST} -dbuser=${DBUSER} -dbpasswd=${DBPASS} -dbname=${DBNAME} -verbose
+
+# Delete temp history file
+rm -rf *.$$

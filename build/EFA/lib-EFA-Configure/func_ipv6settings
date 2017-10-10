@@ -66,7 +66,7 @@ func_ipv6-settings(){
 					fi
                     ;;
                 e) menu=1 && return ;;
-                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+                *) echo -e "Error \"$choice\" is not an option..." && pause
             esac
         done
 }
@@ -108,7 +108,7 @@ function func_getipv6settings(){
       if [ $choice_check -eq 0 ]
         then
           echo -e "$red [EFA] ERROR, That interface does not exist. $clean"
-          sleep 2
+          pause
           func_getipsettings
           return
       fi
@@ -251,8 +251,8 @@ INTERFACE=eth0
   /etc/init.d/network restart
   
   # ----------
-  # Enable postfix ipv6
-  sed -i "/^inet_protocols/ c\inet_protocols = ipv4 ipv6" /etc/postfix/main.cf
+  # Enable postfix for ipv4 and ipv6
+  sed -i "/^inet_protocols/ c\inet_protocols = all" /etc/postfix/main.cf
   service postfix restart
     
   # Issues
