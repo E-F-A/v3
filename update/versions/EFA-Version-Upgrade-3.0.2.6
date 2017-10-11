@@ -136,6 +136,10 @@ function run_update() {
   
   # Install certbot v3.0.2.5 (disabled v3.0.2.6)
   #func_install-certbot
+  
+  #update URLs in SSH/Console v3.0.2.6 (TODO disable 3.0.2.7)
+  sed -i "/Welcome to E.F.A. (http:\/\/www.efa-project.org)/ c\       Welcome to eFa (https:\/\/www.efa-project.org)" /etc/banner
+  sed -i "/http:\/\/www.efa-project.org/ c\  https:\/\/www.efa-project.org" /etc/issue
 
   # Issue #378 Disable mod_security for 3.0.2.4 (disabled v3.0.2.6)
   #sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
@@ -288,7 +292,7 @@ EOF
       sed -i "s/^define('QUARANTINE_MAIL_HOST'/define('MAILWATCH_MAIL_HOST'/" /var/www/html/mailscanner/conf.php
       sed -i "s/^define('QUARANTINE_MAIL_PORT'/define('MAILWATCH_MAIL_PORT'/" /var/www/html/mailscanner/conf.php
       sed -i "s/^define('QUARANTINE_FROM_ADDR'/define('MAILWATCH_FROM_ADDR'/" /var/www/html/mailscanner/conf.php
-      sed -i "/^define('QUARANTINE_REPORT_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'http://' . rtrim(gethostname()) . '/mailscanner');" /var/www/html/mailscanner/conf.php
+      sed -i "/^define('QUARANTINE_REPORT_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'https://' . rtrim(gethostname()) . '/mailscanner');" /var/www/html/mailscanner/conf.php
 
       # Dump MS_LOGO no longer used
       sed -i "/^define('MS_LOGO'/d" /var/www/html/mailscanner/conf.php
