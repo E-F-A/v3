@@ -1203,6 +1203,22 @@ chmod a+x ./certbot-auto
 }
 # +---------------------------------------------------+
 
+#----------------------------------------------------------------#
+# Function to add additional pyzor servers
+#----------------------------------------------------------------#
+function update_pyzor-servers() {
+
+# Update Pyzor Servers, will look at ALL servers at same time
+touch /var/spool/postfix/.pyzor/servers
+echo "public.pyzor.org:24441" > /var/spool/postfix/.pyzor/servers
+echo "pyzor.scrolloutf1.com:24441" > /var/spool/postfix/.pyzor/servers
+
+chown -R postfix:apache /var/spool/postfix/.pyzor
+chmod -R ug+rwx /var/spool/postfix/.pyzor
+  
+}
+#----------------------------------------------------------------#
+
 
 # +---------------------------------------------------+
 # Webmin (http://www.webmin.com/)
@@ -1568,6 +1584,7 @@ function main() {
     func_sgwi
     func_mailgraph
     func_pyzor
+	update_pyzor-servers
     func_razor
     func_dcc
     func_imagecerberus
@@ -1590,6 +1607,7 @@ function main() {
     func_mailscanner
     func_spam_clamav
     func_pyzor
+	update_pyzor-servers
     func_razor
     func_dcc
     func_install-certbot

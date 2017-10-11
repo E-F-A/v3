@@ -80,9 +80,13 @@ function run_update() {
 
   # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
+  rm -f /usr/local/sbin/EFA-Renew-Certs
   rm -rf /var/EFA/lib/EFA-Configure/
   cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
   cp $STAGING/Scripts/EFA-Renew-Certs /usr/local/sbin/EFA-Renew-Certs
+  cp $STAGING/Scripts/EFA-Daily-DMARC /usr/local/sbin/EFA-Daily-DMARC
+  cp $STAGING/Scripts/EFA-Weekly-DMARC /usr/local/sbin/EFA-Weekly-DMARC
+  cp $STAGING/Scripts/DMARC-Schema.sql /usr/local/sbin/DMARC-Schema.sql
   mkdir -p /var/EFA/lib/EFA-Configure
   cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
   chmod 700 /usr/local/sbin/EFA-Configure
@@ -794,12 +798,28 @@ function update_pyzor() {
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
+# Function to add additional pyzor servers
+#----------------------------------------------------------------#
+function update_pyzor-servers() {
+
+# Update Pyzor Servers, will look at ALL servers at same time
+touch /var/spool/postfix/.pyzor/servers
+echo "public.pyzor.org:24441" > /var/spool/postfix/.pyzor/servers
+echo "pyzor.scrolloutf1.com:24441" > /var/spool/postfix/.pyzor/servers
+
+chown -R postfix:apache /var/spool/postfix/.pyzor
+chmod -R ug+rwx /var/spool/postfix/.pyzor
+  
+}
+#----------------------------------------------------------------#
+
+#----------------------------------------------------------------#
 # Finalize
 #----------------------------------------------------------------#
 function finalize() {
   # Write the latest version number
-  echo "eFa-$VERSION" > /etc/EFA-Version
-  sed -i "/--- Welcome to eFa-/ c\--- Welcome to eFa-$VERSION ---" /etc/issue
+  echo "EFA-$VERSION" > /etc/EFA-Version
+  sed -i "/--- Welcome to eFa-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
 
   # Finalize the mail
   echo "" >> $TMPMAIL
