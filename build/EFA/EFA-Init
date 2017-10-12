@@ -686,6 +686,9 @@ function func_verify-settings() {
     echo -e "18) Mail Server         : $MAILSERVER"
     echo -e "19) Org. name           : $ORGNAME"
     echo -e -n "20) Auto update         : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
+	echo -e "21) MailWatch Email     : $MAILWATCHEMAIL"
+	echo -e "22) PostMaster Email    : $POSTMASTEREMAIL"
+	echo -e "23) Cron Email          : $CRONSOURCEEMAIL"
     echo -e "--------------------------------------------------------------"
     echo -e ""
     echo -e "$green[eFa]$clean If these settings are correct type 'OK' to continue."
@@ -733,6 +736,12 @@ function func_verify-settings() {
                 19)       func_ask-orgname
                         ;;
                 20)       func_ask-updates
+                        ;;
+				21)       func_ask-mailwatchemail
+                        ;;
+				22)       func_ask-postmasteremail
+                        ;;
+				23)       func_ask-cronsourceemail
                         ;;
                 OK)       verifymenu=0
                         ;;
