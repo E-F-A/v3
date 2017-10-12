@@ -1448,6 +1448,13 @@ func_cron () {
     chmod 700 /etc/cron.daily/EFA-Backup-cron
     /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Renew-Certs $gitdlurl/EFA/EFA-Renew-Certs
     chmod 700 /usr/local/sbin/EFA-Renew-Certs
+	
+	/usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Daily-DMARC $gitdlurl/EFA/EFA-Daily-DMARC
+	chmod 700 /usr/local/sbin/EFA-Daily-DMARC
+	/usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Weekly-DMARC $gitdlurl/EFA/EFA-Weekly-DMARC
+	chmod 700 /usr/local/sbin/EFA-Weekly-DMARC
+	/usr/bin/wget --no-check-certificate -O /usr/local/sbin/DMARC-Schema.sql $gitdlurl/EFA/DMARC-Schema.sql
+    
     
     # Remove the raid-check util (Issue #102)
     rm -f /etc/cron.d/raid-check

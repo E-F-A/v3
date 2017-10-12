@@ -100,6 +100,31 @@ function func_ask-adminemail() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+function func_ask-mailwatchemail() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the email address to be used within MailWatch to send reports "
+  echo -e "$green[eFa]$clean This address will be the source of all related notifications from MailWatch"
+  echo -e -n "$green[eFa]$clean : "
+  read MAILWATCHEMAIL
+  mailwatchemailcheck=1
+  while [ $mailwatchemailcheck != 0 ]
+   do
+     if [[ $MAILWATCHEMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        mailwatchemailcheck=0
+      else
+        echo -e "       $red ERROR: The address $MAILWATCHEMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the MailWatch email address$clean"
+        echo -e "$green[eFa]$clean Please enter the email address to be used within MailWatch to send reports "
+        echo -e "$green[eFa]$clean This address will be the source of all related notifications from MailWatch"
+        echo -e -n "$green[eFa]$clean : "
+        read MAILWATCHEMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 function func_ask-postmasteremail() {
   func_echo-header
   echo -e "$green[eFa]$clean Please enter the email address of the postmaster "
@@ -112,13 +137,47 @@ function func_ask-postmasteremail() {
      if [[ $POSTMASTEREMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
       then
         postmasteremailcheck=0
+		     # Change postfix configuration
+             postconf -e notify_classes="resource, software, delay, bounce"
+             postconf -e 2bounce_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e bounce_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e delay_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e error_notice_recipient="$POSTMASTEREMAIL"
       else
         echo -e "       $red ERROR: The address $POSTMASTEREMAIL seems to be invalid"
         echo -e "        ERROR: please re-enter the admin email address$clean"
         echo -e "$green[eFa]$clean Please enter the email address of an admin "
-        echo -e "$green[eFa]$clean This user will receive eFa related notifications"
+        echo -e "$green[eFa]$clean This user will receive eFa related postfix notifications"
         echo -e -n "$green[eFa]$clean : "
         read POSTMASTEREMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+
+
+
+# +---------------------------------------------------+
+function func_ask-cronsourceemail() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the email address to be used when sending system alerts "
+  echo -e "$green[eFa]$clean This address will be the source of all related notifications from local system alerts"
+  echo -e -n "$green[eFa]$clean : "
+  read CRONSOURCEEMAIL
+  cronsourceemailcheck=1
+  while [ $cronsourceemailcheck != 0 ]
+   do
+     if [[ $CRONSOURCEEMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        cronsourceemailcheck=0
+      else
+        echo -e "       $red ERROR: The address $CRONSOURCEEMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the Cron Source email address$clean"
+        echo -e "$green[eFa]$clean Please enter the email address to be used when sending system alerts "
+        echo -e "$green[eFa]$clean This address will be the source of all related notifications from local system alerts"
+        echo -e -n "$green[eFa]$clean : "
+        read CRONSOURCEEMAIL
      fi
    done
 }
@@ -863,9 +922,9 @@ function func_configure-system() {
 
   # +--------------------------------------------------+
   echo -e "$green[eFa]$clean - Configuring MailWatch"
-  sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
+  #sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
   sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', '$TZONE');" /var/www/html/mailscanner/conf.php
-  sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$POSTMASTEREMAIL');" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$MAILWATCHEMAIL');" /var/www/html/mailscanner/conf.php
   sed -i "/^define('MAILWATCH_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'https:\/\/' . rtrim(gethostname()) . '\/mailscanner');" /var/www/html/mailscanner/conf.php
   # +--------------------------------------------------+
 
@@ -1070,6 +1129,8 @@ function func_end() {
   echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
   echo "MUNINPWD:$MUNINPWD" >> /etc/EFA-Config
   echo "POSTMASTEREMAIL:$POSTMASTEREMAIL" >> /etc/EFA-Config
+  echo "MAILWATCHEMAIL:$MAILWATCHEMAIL" >> /etc/EFA-Config
+  echo "CRONSOURCEEMAIL:$CRONSOURCEEMAIL" >> /etc/EFA-Config
   if [[ "$enableupdates" -eq 1 ]]; then
     echo "AUTOUPDATES:ENABLED" >> /etc/EFA-Config
   else
@@ -1277,7 +1338,9 @@ if [ $CONFIGURED == "NO" ]
       func_ask-hostname
       func_ask-domainname
       func_ask-adminemail
-      func_ask-postmasteremail
+	  func_ask-postmasteremail
+      func_ask-mailwatchemail
+	  func_ask-cronsourceemail
       func_ask-ipaddress
       func_ask-netmask
       func_ask-gateway

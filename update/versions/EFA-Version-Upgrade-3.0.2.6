@@ -135,7 +135,7 @@ function run_update() {
   # Harden apache v3.0.2.5 (disabled v3.0.2.6)
   #harden_apache
   
-  # Update Quarantine v3.0.2.5 (disabled v3.0.2.6)
+  # Update Quarantine introduced in v3.0.2.5, disabled v3.0.2.6
   #update_quarantine
   
   # Install certbot v3.0.2.5 (disabled v3.0.2.6)
@@ -144,7 +144,15 @@ function run_update() {
   #update URLs in SSH/Console v3.0.2.6 (TODO disable 3.0.2.7)
   sed -i "/Welcome to E.F.A. (http:\/\/www.efa-project.org)/ c\       Welcome to eFa (https:\/\/www.efa-project.org)" /etc/banner
   sed -i "/http:\/\/www.efa-project.org/ c\  https:\/\/www.efa-project.org" /etc/issue
-
+  
+  #POSTMASTEREMAIL is not used and not defined in very old instances
+  #defining it as ADMINEMAIL, deleting exisitng value, and writing new vlaue
+  #users can then change it 
+  POSTMASTEREMAIL="`grep ADMINEMAIL /etc/EFA-Config | sed 's/^.*://'`"
+  sed -i "/^POSTMASTEREMAIL/d" /etc/EFA-Config
+  echo "POSTMASTEREMAIL:$POSTMASTEREMAIL" >> /etc/EFA-Config
+  
+  
   # Issue #378 Disable mod_security for 3.0.2.4 (disabled v3.0.2.6)
   #sed -i "/^LoadModule security2_module modules\/mod_security2.so/ c\#LoadModule security2_module modules/mod_security2.so" /etc/httpd/conf.d/mod_security.conf
   #service httpd restart
@@ -863,9 +871,9 @@ function randompw()
 # Update quarantine email options
 # +---------------------------------------------------+
 function update_quarantine() {
-local POSTMASTEREMAIL
-POSTMASTEREMAIL="`grep POSTMASTEREMAIL /etc/EFA-Config | sed 's/^.*://'`"
-sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$POSTMASTEREMAIL');" /var/www/html/mailscanner/conf.php
+local MAILWATCHEMAIL
+MAILWATCHEMAIL="`grep MAILWATCHEMAIL /etc/EFA-Config | sed 's/^.*://'`"
+sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$MAILWATCHEMAIL');" /var/www/html/mailscanner/conf.php
 sed -i "/^define('MAILWATCH_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'https:\/\/' . rtrim(gethostname()) . '\/mailscanner');" /var/www/html/mailscanner/conf.php
 }
 # +---------------------------------------------------+

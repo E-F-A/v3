@@ -49,6 +49,10 @@ func_echo-header
 		  
 
 		  #Remove Apps and saved files
+		  service opendmarc stop
+		  chkconfig opendmarc off
+		  service opendkim stop
+		  chkconfig opendkim off
 		  yum remove -y opendkim opendmarc
 		  rm -rf /etc/opendmarc.conf.rpmsave
 		  rm -rf /etc/opendkim.conf.rpmsave
@@ -139,6 +143,7 @@ func_echo-header
 				echo -e -n "$green[eFa]$clean : "
 				read DMARCRepDomain
 			fi
+			done
 		  
 		  
 		  echo -e "$green[eFa]$clean $DMARCRepDomain will be the organization used to to send reports."
@@ -160,12 +165,15 @@ func_echo-header
               echo -e -n "$green[eFa]$clean : "
               read DMARCRepEmail
            fi
+		   done
 		  echo -e "$green[eFa]$clean $DMARCRepEmail will be the address used to to send reports."
 		  echo "DMARCREPEMAIL:$DMARCRepEmail" >> /etc/EFA-Config
 
 		  echo -e "Starting services..."
 		  service opendmarc start
+		  chkconfig opendmarc on
 		  service opendkim start
+		  chkconfig opendkim on
 		  service postfix stop
 		  service postfix start
 		  echo -e "System is ready to use OpenDKIM and OpenDMARC"
