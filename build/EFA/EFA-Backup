@@ -53,7 +53,7 @@ function start_purge()
 function start_backup()
 {
   # Get current date and time
-  CDATE=`date +%m%d%Y`
+  CDATE=`date +%Y%m%d`
   CTIME=`date +%H%M%S`
 
   echo "Beginning System Backup at $CDATE $CTIME"
