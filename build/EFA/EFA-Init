@@ -31,8 +31,8 @@ initpassword="EfaPr0j3ct"
 # +---------------------------------------------------+
 function func_ask-hostname() {
   func_echo-header
-  echo -e "$green[EFA]$clean What is the hostname of this machine? $cyan(Single Word)$clean"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean What is the hostname of this machine? $cyan(Single Word)$clean"
+  echo -e -n "$green[eFa]$clean : "
   read HOSTNAME
   hncheck=1
   while [ $hncheck != 0 ]
@@ -43,8 +43,8 @@ function func_ask-hostname() {
       else
         echo -e "       $red ERROR: The hostname $HOSTNAME seems to be invalid"
         echo -e "        ERROR: please re-enter the hostname$clean"
-        echo -e "$green[EFA]$clean What is the hostname of this machine: $cyan(single Word)$clean"
-        echo -e -n "$green[EFA]$clean : "
+        echo -e "$green[eFa]$clean What is the hostname of this machine: $cyan(single Word)$clean"
+        echo -e -n "$green[eFa]$clean : "
         read HOSTNAME
      fi
     done
@@ -54,8 +54,8 @@ function func_ask-hostname() {
 # +---------------------------------------------------+
 function func_ask-domainname() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the domain name for this machine"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the domain name for this machine"
+  echo -e -n "$green[eFa]$clean : "
   read DOMAINNAME
   dncheck=1
   while [ $dncheck != 0 ]
@@ -66,8 +66,8 @@ function func_ask-domainname() {
       else
         echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
         echo -e "        ERROR: please re-enter the domain$clean"
-        echo -e "$green[EFA]$clean Please enter the domain name for this machine"
-        echo -e -n "$green[EFA]$clean : "
+        echo -e "$green[eFa]$clean Please enter the domain name for this machine"
+        echo -e -n "$green[eFa]$clean : "
         read DOMAINNAME
      fi
     done
@@ -77,9 +77,9 @@ function func_ask-domainname() {
 # +---------------------------------------------------+
 function func_ask-adminemail() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the email address of an admin "
-  echo -e "$green[EFA]$clean This user will receive E.F.A. related notifications"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the email address of an admin "
+  echo -e "$green[eFa]$clean This user will receive eFa related notifications"
+  echo -e -n "$green[eFa]$clean : "
   read ADMINEMAIL
   adminemailcheck=1
   while [ $adminemailcheck != 0 ]
@@ -90,10 +90,35 @@ function func_ask-adminemail() {
       else
         echo -e "       $red ERROR: The address $ADMINEMAIL seems to be invalid"
         echo -e "        ERROR: please re-enter the admin email address$clean"
-        echo -e "$green[EFA]$clean Please enter the email address of an admin "
-        echo -e "$green[EFA]$clean This user will receive EFA related notifications"
-        echo -e -n "$green[EFA]$clean : "
+        echo -e "$green[eFa]$clean Please enter the email address of an admin "
+        echo -e "$green[eFa]$clean This user will receive eFa related notifications"
+        echo -e -n "$green[eFa]$clean : "
         read ADMINEMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-mailwatchemail() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the email address to be used within MailWatch to send reports "
+  echo -e "$green[eFa]$clean This address will be the source of all related notifications from MailWatch"
+  echo -e -n "$green[eFa]$clean : "
+  read MAILWATCHEMAIL
+  mailwatchemailcheck=1
+  while [ $mailwatchemailcheck != 0 ]
+   do
+     if [[ $MAILWATCHEMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        mailwatchemailcheck=0
+      else
+        echo -e "       $red ERROR: The address $MAILWATCHEMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the MailWatch email address$clean"
+        echo -e "$green[eFa]$clean Please enter the email address to be used within MailWatch to send reports "
+        echo -e "$green[eFa]$clean This address will be the source of all related notifications from MailWatch"
+        echo -e -n "$green[eFa]$clean : "
+        read MAILWATCHEMAIL
      fi
    done
 }
@@ -102,9 +127,9 @@ function func_ask-adminemail() {
 # +---------------------------------------------------+
 function func_ask-postmasteremail() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the email address of the postmaster "
-  echo -e "$green[EFA]$clean This user will receive postfix related notifications"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the email address of the postmaster "
+  echo -e "$green[eFa]$clean This user will receive postfix related notifications"
+  echo -e -n "$green[eFa]$clean : "
   read POSTMASTEREMAIL
   postmasteremailcheck=1
   while [ $postmasteremailcheck != 0 ]
@@ -112,13 +137,47 @@ function func_ask-postmasteremail() {
      if [[ $POSTMASTEREMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
       then
         postmasteremailcheck=0
+		     # Change postfix configuration
+             postconf -e notify_classes="resource, software, delay, bounce"
+             postconf -e 2bounce_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e bounce_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e delay_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e error_notice_recipient="$POSTMASTEREMAIL"
       else
         echo -e "       $red ERROR: The address $POSTMASTEREMAIL seems to be invalid"
         echo -e "        ERROR: please re-enter the admin email address$clean"
-        echo -e "$green[EFA]$clean Please enter the email address of an admin "
-        echo -e "$green[EFA]$clean This user will receive EFA related notifications"
-        echo -e -n "$green[EFA]$clean : "
+        echo -e "$green[eFa]$clean Please enter the email address of an admin "
+        echo -e "$green[eFa]$clean This user will receive eFa related postfix notifications"
+        echo -e -n "$green[eFa]$clean : "
         read POSTMASTEREMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+
+
+
+# +---------------------------------------------------+
+function func_ask-cronsourceemail() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the email address to be used when sending system alerts "
+  echo -e "$green[eFa]$clean This address will be the source of all related notifications from local system alerts"
+  echo -e -n "$green[eFa]$clean : "
+  read CRONSOURCEEMAIL
+  cronsourceemailcheck=1
+  while [ $cronsourceemailcheck != 0 ]
+   do
+     if [[ $CRONSOURCEEMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        cronsourceemailcheck=0
+      else
+        echo -e "       $red ERROR: The address $CRONSOURCEEMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the Cron Source email address$clean"
+        echo -e "$green[eFa]$clean Please enter the email address to be used when sending system alerts "
+        echo -e "$green[eFa]$clean This address will be the source of all related notifications from local system alerts"
+        echo -e -n "$green[eFa]$clean : "
+        read CRONSOURCEEMAIL
      fi
    done
 }
@@ -133,10 +192,10 @@ function func_ask-ipaddress() {
   # Display current IP and ask for new, then validate the IP.
   CIPADDRESS=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $2}' | awk -F':' '{print $2}'`
   echo -e ""
-  echo -e "$green[EFA]$clean Your current IP address is: $CIPADDRESS"
+  echo -e "$green[eFa]$clean Your current IP address is: $CIPADDRESS"
   echo -e ""
-  echo -e "$green[EFA]$clean Please enter the IP address"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the IP address"
+  echo -e -n "$green[eFa]$clean : "
   read -i "$CIPADDRESS" -e IPADDRESS
   ipcheck=1
   while [ $ipcheck != 0 ]
@@ -147,8 +206,8 @@ function func_ask-ipaddress() {
      else
        echo -e "       $red ERROR: The IP $IPADDRESS seems to be invalid"
        echo -e "        ERROR: Please re-enter the IP$clean"
-       echo -e "$green[EFA]$clean Please enter the IP address"
-       echo -e -n "$green[EFA]$clean : "
+       echo -e "$green[eFa]$clean Please enter the IP address"
+       echo -e -n "$green[eFa]$clean : "
        read IPADDRESS
     fi
    done
@@ -162,10 +221,10 @@ function func_ask-netmask() {
   # Display current netmask and ask for new, then validate the netmask
   CNETMASK=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $4}' | awk -F':' '{print $2}'`
   echo -e ""
-  echo -e "$green[EFA]$clean Your current netmask is: $CNETMASK"
+  echo -e "$green[eFa]$clean Your current netmask is: $CNETMASK"
   echo -e ""
-  echo -e "$green[EFA]$clean Please enter the NETMASK"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the NETMASK"
+  echo -e -n "$green[eFa]$clean : "
   read -i "$CNETMASK" -e NETMASK
   nmcheck=1
   while [ $nmcheck != 0 ]
@@ -176,8 +235,8 @@ function func_ask-netmask() {
      else
        echo -e "       $red ERROR: The NETMASK $NETMASK seems to be invalid"
        echo -e "        ERROR: Please re-enter the NETMASK$clean"
-       echo -e "$green[EFA]$clean Please enter the NETMASK"
-       echo -e -n "$green[EFA]$clean : "
+       echo -e "$green[eFa]$clean Please enter the NETMASK"
+       echo -e -n "$green[eFa]$clean : "
        read NETMASK
     fi
    done
@@ -191,10 +250,10 @@ function func_ask-gateway() {
   # Display current gateway
   CGATEWAY=`route -n | grep 0.0.0.0 | awk '{print $2}' | grep -v 0.0.0.0`
   echo -e ""
-  echo -e "$green[EFA]$clean Your current default gateway is: $CGATEWAY"
+  echo -e "$green[eFa]$clean Your current default gateway is: $CGATEWAY"
   echo -e ""
-  echo -e "$green[EFA]$clean Please enter the default gateway address"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the default gateway address"
+  echo -e -n "$green[eFa]$clean : "
   read -i "$CGATEWAY" -e GATEWAY
   gwcheck=1
   while [ $gwcheck != 0 ]
@@ -205,8 +264,8 @@ function func_ask-gateway() {
      else
        echo -e "       $red ERROR: The GATEWAY $GATEWAY seems to be invalid"
        echo -e "        ERROR: Please re-enter the GATEWAY$clean"
-       echo -e "$green[EFA]$clean Please enter the default gateway address"
-       echo -e -n "$green[EFA]$clean : "
+       echo -e "$green[eFa]$clean Please enter the default gateway address"
+       echo -e -n "$green[eFa]$clean : "
        read GATEWAY
     fi
    done
@@ -219,13 +278,13 @@ function func_ask-recursion() {
 
   # Prompt on whether to recurse or to forward
   echo -e ""
-  echo -e "$green[EFA]$clean EFA supports full DNS recursion."
-  echo -e "$green[EFA]$clean Doing so prevents common problems using DNS blocklists."
-  echo -e "$green[EFA]$clean Alternatively, you can choose to forward DNS to your"
-  echo -e "$green[EFA]$clean DNS servers or your ISP's DNS servers."
-  echo -e "$green[EFA]$clean Port 53 outbound must be allowed for recursion to function."
+  echo -e "$green[eFa]$clean eFa supports full DNS recursion."
+  echo -e "$green[eFa]$clean Doing so prevents common problems using DNS blocklists."
+  echo -e "$green[eFa]$clean Alternatively, you can choose to forward DNS to your"
+  echo -e "$green[eFa]$clean DNS servers or your ISP's DNS servers."
+  echo -e "$green[eFa]$clean Port 53 outbound must be allowed for recursion to function."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Enable full recursive DNS? (Y/n): "
+  echo -e -n "$green[eFa]$clean Enable full recursive DNS? (Y/n): "
   read RECURSE
   recursecheck=0
   while [ $recursecheck -eq 0 ]
@@ -243,7 +302,7 @@ function func_ask-recursion() {
       else
         echo -e "       $red ERROR: Invalid choice$clean"
         echo -e ""
-        echo -e -n "$green[EFA]$clean Enable full recursive DNS? (Y/n): "
+        echo -e -n "$green[eFa]$clean Enable full recursive DNS? (Y/n): "
         read RECURSE
       fi
     done
@@ -254,17 +313,17 @@ function func_ask-recursion() {
 function func_ask-dns1() {
   func_echo-header
   if [[ "$enablerecursion" -eq 1 ]]; then
-    echo -e "$red[EFA] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
+    echo -e "$red[eFa] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
     pause
     return
   fi
   # Display current primary dns
   CDNS1=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p`
   echo -e ""
-  echo -e "$green[EFA]$clean Your current primary dns is: $CDNS1"
+  echo -e "$green[eFa]$clean Your current primary DNS is: $CDNS1"
   echo -e ""
-  echo -e "$green[EFA]$clean Please enter the primary DNS server address"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the primary DNS server address"
+  echo -e -n "$green[eFa]$clean : "
   read -i "$CDNS1" -e DNS1
   dns1check=1
   while [ $dns1check != 0 ]
@@ -275,8 +334,8 @@ function func_ask-dns1() {
      else
        echo -e "       $red ERROR: The DNS server $DNS1 seems to be invalid"
        echo -e "        ERROR: Please re-enter the primary DNS$clean"
-       echo -e "$green[EFA]$clean Please enter the primary DNS server address"
-       echo -e -n "$green[EFA]$clean : "
+       echo -e "$green[eFa]$clean Please enter the primary DNS server address"
+       echo -e -n "$green[eFa]$clean : "
        read DNS1
     fi
    done
@@ -288,7 +347,7 @@ function func_ask-dns2() {
   func_echo-header
 
   if [[ "$enablerecursion" -eq 1 ]]; then
-    echo -e "$red[EFA] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
+    echo -e "$red[eFa] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
     pause
     return
   fi
@@ -296,10 +355,10 @@ function func_ask-dns2() {
   # Display current secondary dns
   CDNS2=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p`
   echo -e ""
-  echo -e "$green[EFA]$clean Your current secondary dns is: $CDNS2"
+  echo -e "$green[eFa]$clean Your current secondary DNS is: $CDNS2"
   echo -e ""
-  echo -e "$green[EFA]$clean Please enter the secondary DNS server address"
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the secondary DNS server address"
+  echo -e -n "$green[eFa]$clean : "
   read -i "$CDNS2" -e DNS2
   dns2check=1
   while [ $dns2check != 0 ]
@@ -310,8 +369,8 @@ function func_ask-dns2() {
      else
        echo -e "       $red ERROR: The DNS server $DNS2 seems to be invalid"
        echo -e "        ERROR: Please re-enter the secondary DNS$clean"
-       echo -e "$green[EFA]$clean Please enter the secondary DNS server address"
-       echo -e -n "$green[EFA]$clean : "
+       echo -e "$green[eFa]$clean Please enter the secondary DNS server address"
+       echo -e -n "$green[eFa]$clean : "
        read DNS2
     fi
    done
@@ -321,10 +380,10 @@ function func_ask-dns2() {
 # +---------------------------------------------------+
 function func_ask-username() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the user-name you would like to have."
-  echo -e "$green[EFA]$clean This user will be granted SSH access to the system."
-  echo -e "$green[EFA]$clean This user will also be used to logon to the webinterface."
-  echo -e -n "$green[EFA]$clean : "
+  echo -e "$green[eFa]$clean Please enter the user-name you would like to have."
+  echo -e "$green[eFa]$clean This user will be granted SSH access to the system."
+  echo -e "$green[eFa]$clean This user will also be used to logon to the webinterface."
+  echo -e -n "$green[eFa]$clean : "
   read USERNAME
   uncheck=1
   while [ $uncheck != 0 ]
@@ -337,15 +396,15 @@ function func_ask-username() {
           else
             echo -e "       $red ERROR: The user-name $USERNAME already exists"
             echo -e "        ERROR: please re-enter the user-name$clean"
-            echo -e "$green[EFA]$clean Please enter the user-name you would like to have."
-            echo -e -n "$green[EFA]$clean : "
+            echo -e "$green[eFa]$clean Please enter the user-name you would like to have."
+            echo -e -n "$green[eFa]$clean : "
             read USERNAME
         fi
       else
         echo -e "       $red ERROR: The user-name $USERNAME seems to be invalid"
         echo -e "        ERROR: please re-enter the user-name$clean"
-        echo -e "$green[EFA]$clean Please enter the user-name you would like to have."
-        echo -e -n "$green[EFA]$clean : "
+        echo -e "$green[eFa]$clean Please enter the user-name you would like to have."
+        echo -e -n "$green[eFa]$clean : "
         read USERNAME
      fi
     done
@@ -355,12 +414,12 @@ function func_ask-username() {
 # +---------------------------------------------------+
 function func_ask-userpassword() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the password for the local user."
-  echo -e "$green[EFA]$clean This password will also be used to logon to the webinterface"
-  echo -e -n "$green[EFA]$clean Password: "
+  echo -e "$green[eFa]$clean Please enter the password for the local user."
+  echo -e "$green[eFa]$clean This password will also be used to logon to the webinterface"
+  echo -e -n "$green[eFa]$clean Password: "
   read -s efauserpwd
   echo -e ""
-  echo -e -n "$green[EFA]$clean Password Again: "
+  echo -e -n "$green[eFa]$clean Password Again: "
   read -s efauserpwd2
   efauserpwdcheck=1
   while [ $efauserpwdcheck != 0 ]
@@ -372,11 +431,11 @@ function func_ask-userpassword() {
             echo -e ""
             echo -e "       $red ERROR: The passwords do not seem to match"
             echo -e "        ERROR: Please try again$clean"
-            echo -e "$green[EFA]$clean Please enter the password for the local user."
-            echo -e -n "$green[EFA]$clean Password: "
+            echo -e "$green[eFa]$clean Please enter the password for the local user."
+            echo -e -n "$green[eFa]$clean Password: "
             read -s efauserpwd
             echo -e ""
-            echo -e -n "$green[EFA]$clean Password Again: "
+            echo -e -n "$green[eFa]$clean Password Again: "
             read -s efauserpwd2
      fi
   done
@@ -386,16 +445,16 @@ function func_ask-userpassword() {
 # +---------------------------------------------------+
 function func_ask-rootpassword() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the password for the root user."
-  echo -e "$green[EFA]$clean This password is needed in case something goes"
-  echo -e "$green[EFA]$clean wrong and you need to recover the system."
+  echo -e "$green[eFa]$clean Please enter the password for the root user."
+  echo -e "$green[eFa]$clean This password is needed in case something goes"
+  echo -e "$green[eFa]$clean wrong and you need to recover the system."
   echo -e ""
-  echo -e "$green[EFA]$clean Please make this password long, strong and"
-  echo -e "$green[EFA]$clean different from the user password."
-  echo -e -n "$green[EFA]$clean Password: "
+  echo -e "$green[eFa]$clean Please make this password long, strong and"
+  echo -e "$green[eFa]$clean different from the user password."
+  echo -e -n "$green[eFa]$clean Password: "
   read -s efarootpwd
   echo -e ""
-  echo -e -n "$green[EFA]$clean Password Again: "
+  echo -e -n "$green[eFa]$clean Password Again: "
   read -s efarootpwd2
   efarootpwdcheck=1
   while [ $efarootpwdcheck != 0 ]
@@ -407,11 +466,11 @@ function func_ask-rootpassword() {
             echo -e ""
             echo -e "       $red ERROR: The passwords do not seem to match"
             echo -e "        ERROR: Please try again$clean"
-            echo -e "$green[EFA]$clean Please enter the password for the root user."
-            echo -e -n "$green[EFA]$clean Password: "
+            echo -e "$green[eFa]$clean Please enter the password for the root user."
+            echo -e -n "$green[eFa]$clean Password: "
             read -s efarootpwd
             echo -e ""
-            echo -e -n "$green[EFA]$clean Password Again: "
+            echo -e -n "$green[eFa]$clean Password Again: "
             read -s efarootpwd2
      fi
   done
@@ -423,51 +482,51 @@ function func_ask-rootpassword() {
 # +---------------------------------------------------+
 function func_detect-virtual() {
   func_echo-header
-  echo -e "$green[EFA]$clean Checking host type"
+  echo -e "$green[eFa]$clean Checking host type"
   virtplatform=`sudo /usr/sbin/virt-what`
   if [[ $virtplatform == "vmware"  ]]; then
-    echo -e "$green[EFA]$clean You seem to be running on VMware"
-    echo -e "$green[EFA]$clean Would you like to install Open VM Tools?"
+    echo -e "$green[eFa]$clean You seem to be running on VMware"
+    echo -e "$green[eFa]$clean Would you like to install Open VM Tools?"
     echo ""
-    echo -e "$green[EFA]$clean Open VM Tools is the opensource version of VMware tools."
-    echo -e "$green[EFA]$clean If you require specific components that are not in Open VM Tools"
-    echo -e "$green[EFA]$clean then choose no here and install VMware tools manually later on."
+    echo -e "$green[eFa]$clean Open VM Tools is the opensource version of VMware tools."
+    echo -e "$green[eFa]$clean If you require specific components that are not in Open VM Tools"
+    echo -e "$green[eFa]$clean then choose no here and install VMware tools manually later on."
     echo ""
-    echo -e "$green[EFA]$clean For most VMware users, Open VM Tools should be good enough."
-    echo -e -n "$green[EFA]$clean [Y/n]:"
+    echo -e "$green[eFa]$clean For most VMware users, Open VM Tools should be good enough."
+    echo -e -n "$green[eFa]$clean [Y/n]:"
     read VMwareInstallChoice
     if [[ $VMwareInstallChoice == "" || $VMwareInstallChoice == "Y" || $VMwareInstallChoice == "y" ]]; then
-      InstallVMwareTools="1"
+      InstallOpenVMTools="1"
       InstallQEMUAgent="0"
       InstallHyperVTools="0"
     else
-      InstallVMwareTools="0"
+      InstallOpenVMTools="0"
       InstallQEMUAgent="0"
       InstallHyperVTools="0"
     fi
   elif [[ $virtplatform == "kvm" ]]; then
-    echo -e "$green[EFA]$clean You seem to be running on a KVM based hypervisor"
-    echo -e "$green[EFA]$clean Would you like to install the QEMU Agent?"
-    echo -e -n "$green[EFA]$clean [Y/n]:"
+    echo -e "$green[eFa]$clean You seem to be running on a KVM based hypervisor"
+    echo -e "$green[eFa]$clean Would you like to install the QEMU Agent?"
+    echo -e -n "$green[eFa]$clean [Y/n]:"
     read KVMInstallChoice
     if [[ $KVMInstallChoice == "" || $KVMInstallChoice == "Y" || $KVMInstallChoice == "y" ]]; then
       InstallQEMUAgent="1"
-      InstallVMwareTools="0"
+      InstallOpenVMTools="0"
       InstallHyperVTools="0"
     else
       InstallQEMUAgent="0"
-      InstallVMwareTools="0"
+      InstallOpenVMTools="0"
       InstallHyperVTools="0"
     fi
   elif [[ $virtplatform == "hyperv" ]]; then
-    echo -e "$green[EFA]$clean I am running on Hyper-V, please go to the EFA wiki for more information."
+    echo -e "$green[eFa]$clean I am running on Hyper-V, please go to the eFa wiki for more information."
     InstallQEMUAgent="0"
-    InstallVMwareTools="0"
+    InstallOpenVMTools="0"
     InstallHyperVTools="1"
   else
-    echo -e "$green[EFA]$clean I was not able to determine the hypervisor technology that I am running on."
-    echo -e "$green[EFA]$clean If this is a physical machine, please ignore."
-    echo -e "$green[EFA]$clean Otherwise please consult your hypervisor documention for guest based agents."
+    echo -e "$green[eFa]$clean I was not able to determine the hypervisor technology that I am running on."
+    echo -e "$green[eFa]$clean If this is a physical machine, please ignore."
+    echo -e "$green[eFa]$clean Otherwise please consult your hypervisor documention for guest based agents."
   fi
 }
 # +---------------------------------------------------+
@@ -475,14 +534,14 @@ function func_detect-virtual() {
 # +---------------------------------------------------+
 function func_ask-timezone() {
   func_echo-header
-  echo -e -n "$green[EFA]$clean Is the host set to UTC time? [Y/n]: "
+  echo -e -n "$green[eFa]$clean Is the host set to UTC time? [Y/n]: "
   read TMPUTC
   if [[ "$TMPUTC" == "" || "$TMPUTC" == "Y" || "$TMPUTC" == "y" ]]; then
     ISUTC=true
   else
     ISUTC=false
   fi
-  echo -e "$green[EFA]$clean Please select the time zone this system is located in."
+  echo -e "$green[eFa]$clean Please select the time zone this system is located in."
   TZONE=`/usr/bin/tzselect`
 }
 # +---------------------------------------------------+
@@ -490,7 +549,7 @@ function func_ask-timezone() {
 # +---------------------------------------------------+
 function func_ask-keyboard() {
   func_echo-header
-  echo -e "$green[EFA]$clean We will now launch the build in Keyboard layout selector"
+  echo -e "$green[eFa]$clean We will now launch the build in Keyboard layout selector"
   pause
   /usr/sbin/system-config-keyboard --text
   KEYBOARD=`cat /etc/sysconfig/keyboard  | grep KEYTABLE | sed 's/KEYTABLE=//;s/"//g'`
@@ -500,12 +559,12 @@ function func_ask-keyboard() {
 # +---------------------------------------------------+
 function func_ask-ianacode() {
   func_echo-header
-  echo -e "$green[EFA]$clean I need your 2 letter IANA country code, this is used to"
-  echo -e "$green[EFA]$clean determine the closest mirror to download software updates from."
-  echo -e "$green[EFA]$clean If you don't know your country code please take a look at: "
-  echo -e "$green[EFA]$clean https://www.iso.org/obp/ "
+  echo -e "$green[eFa]$clean I need your 2 letter IANA country code, this is used to"
+  echo -e "$green[eFa]$clean determine the closest mirror to download software updates from."
+  echo -e "$green[eFa]$clean If you don't know your country code please take a look at: "
+  echo -e "$green[eFa]$clean https://www.iso.org/obp/ "
   echo ""
-  echo -e -n "$green[EFA]$clean Your IANA code (lowercase): "
+  echo -e -n "$green[eFa]$clean Your IANA code (lowercase): "
   read IANACODE
   ianacodecheck=1
   while [ $ianacodecheck != 0 ]
@@ -516,7 +575,7 @@ function func_ask-ianacode() {
       else
         echo -e "       $red ERROR: The code $IANACODE seems to be invalid"
         echo -e "        ERROR: please re-enter the IANA code$clean"
-        echo -e -n "$green[EFA]$clean Your IANA code (lowercase): "
+        echo -e -n "$green[eFa]$clean Your IANA code (lowercase): "
         read IANACODE
      fi
    done
@@ -526,11 +585,11 @@ function func_ask-ianacode() {
 # +---------------------------------------------------+
 function func_ask-mailserver() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the IP or hostname of your local mail server."
-  echo -e "$green[EFA]$clean This will be your server that actually receives the mail."
-  echo -e "$green[EFA]$clean For example your local Microsoft Exchange or Zimbra server."
+  echo -e "$green[eFa]$clean Please enter the IP or hostname of your local mail server."
+  echo -e "$green[eFa]$clean This will be your server that actually receives the mail."
+  echo -e "$green[eFa]$clean For example your local Microsoft Exchange or Zimbra server."
   echo ""
-  echo -e -n "$green[EFA]$clean Your mail server: "
+  echo -e -n "$green[eFa]$clean Your mail server: "
   read MAILSERVER
 }
 # +---------------------------------------------------+
@@ -538,11 +597,11 @@ function func_ask-mailserver() {
 # +---------------------------------------------------+
 function func_ask-orgname() {
   func_echo-header
-  echo -e "$green[EFA]$clean Please enter the name of your organization."
-  echo -e "$green[EFA]$clean This needs to be a single word and is used in your mail headers."
-  echo -e "$green[EFA]$clean (No spaces, dots or underscores allowed)."
+  echo -e "$green[eFa]$clean Please enter the name of your organization."
+  echo -e "$green[eFa]$clean This needs to be a single word and is used in your mail headers."
+  echo -e "$green[eFa]$clean (No spaces, dots or underscores allowed)."
   echo ""
-  echo -e -n "$green[EFA]$clean Your organization's name: "
+  echo -e -n "$green[eFa]$clean Your organization's name: "
   read ORGNAME
   orgnamecheck=1
   while [ $orgnamecheck != 0 ]
@@ -553,7 +612,7 @@ function func_ask-orgname() {
       else
         echo -e "       $red ERROR: The name $ORGNAME seems to be invalid"
         echo -e "        ERROR: please re-enter the name.$clean"
-        echo -e -n "$green[EFA]$clean Your organization's name: "
+        echo -e -n "$green[eFa]$clean Your organization's name: "
         read ORGNAME
      fi
    done
@@ -563,20 +622,20 @@ function func_ask-orgname() {
 # +---------------------------------------------------+
 function func_ask-updates() {
   func_echo-header
-  echo -e "$green[EFA]$clean Auto Updates:"
-  echo -e "$green[EFA]$clean With auto updates you can make sure this system is always up to date."
-  echo -e "$green[EFA]$clean by default we $red DISABLE $clean auto updates as it might not match your"
-  echo -e "$green[EFA]$clean company update policy."
-  echo -e "$green[EFA]$clean If you choose to keep auto updates DISABLED you will receive mails on your"
-  echo -e "$green[EFA]$clean admin e-mail account if an update is available"
+  echo -e "$green[eFa]$clean Auto Updates:"
+  echo -e "$green[eFa]$clean With auto updates you can make sure this system is always up to date."
+  echo -e "$green[eFa]$clean by default we $red DISABLE $clean auto updates as it might not match your"
+  echo -e "$green[eFa]$clean company update policy."
+  echo -e "$green[eFa]$clean If you choose to keep auto updates DISABLED you will receive mails on your"
+  echo -e "$green[eFa]$clean admin e-mail account if an update is available"
   echo ""
-  echo -e "$green[EFA]$clean Here you can $green ENABLE $clean auto updates for this E.F.A. system."
-  echo -e "$green[EFA]$clean This will check every month if there is an update available and if so"
-  echo -e "$green[EFA]$clean it will automatically install the update."
+  echo -e "$green[eFa]$clean Here you can $green ENABLE $clean auto updates for this eFa system."
+  echo -e "$green[eFa]$clean This will check every month if there is an update available and if so"
+  echo -e "$green[eFa]$clean it will automatically install the update."
   echo ""
-  echo -e "$green[EFA]$clean Note: your system might reboot automatically during auto updates."
+  echo -e "$green[eFa]$clean Note: your system might reboot automatically during auto updates."
   echo ""
-  echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
+  echo -e -n "$green[eFa]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
   read TMPUPDATES
   updatescheck=1
   while [ $updatescheck != 0 ]
@@ -589,7 +648,7 @@ function func_ask-updates() {
         updatescheck=0
       else
           echo -e "       $red ERROR: please make an selection.$clean"
-          echo -e -n "$green[EFA]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
+          echo -e -n "$green[eFa]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
           read TMPUPDATES
       fi
   done
@@ -605,33 +664,36 @@ function func_verify-settings() {
    do
     func_echo-header
     echo -e "--------------------------------------------------------------"
-    echo -e "$green[EFA]$clean Thank you, the following settings have been gathered:"
+    echo -e "$green[eFa]$clean Thank you, the following settings have been gathered:"
     echo -e " "
-    echo -e "1)  Hostname       : $HOSTNAME"
-    echo -e "2)  Domainname     : $DOMAINNAME"
-    echo -e "3)  Admin Email    : $ADMINEMAIL"
-    echo -e "4)  Interface      : $INTERFACE"
-    echo -e "5)  IP address     : $IPADDRESS"
-    echo -e "6)  Netmask        : $NETMASK"
-    echo -e "7)  Gateway        : $GATEWAY"
-    echo -e -n "8)  Use Recursion  : "; [[ "$enablerecursion" -eq 1 ]] && echo "Enabled" || echo "Disabled"
-    echo -e "9)  Primary DNS    : $DNS1"
-    echo -e "10) Secondary DNS  : $DNS2"
-    echo -e "11) User           : $USERNAME"
-    echo -e "12) User PWD       : <hidden>"
-    echo -e "13) Admin PWD      : <hidden>"
-    echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallVMwareTools" -eq 1 ]]; then echo "VMware: Installing Open-VM-Tools."; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "KVM: Installing the QEMU Guest Agent."; elif [[ "$InstallHyperVTools" -eq 1 ]]; then echo "Hyper-V: Please go to the wiki for more information."; else echo "Not needed."; fi
-    echo -e -n "15) Time zone      : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
-    echo -e "16) Keyboard       : $KEYBOARD"
-    echo -e "17) IANA Code      : $IANACODE"
-    echo -e "18) Mail Server    : $MAILSERVER"
-    echo -e "19) Org. name      : $ORGNAME"
-    echo -e -n "20) Auto update    : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
+    echo -e "1)  Hostname            : $HOSTNAME"
+    echo -e "2)  Domainname          : $DOMAINNAME"
+    echo -e "3)  Admin Email         : $ADMINEMAIL"
+    echo -e "4)  Interface           : $INTERFACE"
+    echo -e "5)  IP Address          : $IPADDRESS"
+    echo -e "6)  Netmask             : $NETMASK"
+    echo -e "7)  Gateway             : $GATEWAY"
+    echo -e -n "8)  Use Recursion       : "; [[ "$enablerecursion" -eq 1 ]] && echo "Enabled" || echo "Disabled"
+    echo -e "9)  Primary DNS         : $DNS1"
+    echo -e "10) Secondary DNS       : $DNS2"
+    echo -e "11) User                : $USERNAME"
+    echo -e "12) User PWD            : <hidden>"
+    echo -e "13) Admin PWD           : <hidden>"
+    echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallOpenVMTools" -eq 1 ]]; then echo "VMware: Installing Open-VM-Tools."; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "KVM: Installing the QEMU Guest Agent."; elif [[ "$InstallHyperVTools" -eq 1 ]]; then echo "Hyper-V: Please go to the wiki for more information."; else echo "Not needed."; fi
+    echo -e -n "15) Time zone           : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
+    echo -e "16) Keyboard            : $KEYBOARD"
+    echo -e "17) IANA Code           : $IANACODE"
+    echo -e "18) Mail Server         : $MAILSERVER"
+    echo -e "19) Org. name           : $ORGNAME"
+    echo -e -n "20) Auto update         : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
+	echo -e "21) MailWatch Email     : $MAILWATCHEMAIL"
+	echo -e "22) PostMaster Email    : $POSTMASTEREMAIL"
+	echo -e "23) Cron Email          : $CRONSOURCEEMAIL"
     echo -e "--------------------------------------------------------------"
     echo -e ""
-    echo -e "$green[EFA]$clean If these settings are correct type 'OK' to continue."
-    echo -e "$green[EFA]$clean if there is an error enter the number you want to change."
-    echo -e -n "$green[EFA]$clean : "
+    echo -e "$green[eFa]$clean If these settings are correct type 'OK' to continue."
+    echo -e "$green[eFa]$clean if there is an error enter the number you want to change."
+    echo -e -n "$green[eFa]$clean : "
     local choice
     read choice
     case $choice in
@@ -675,6 +737,12 @@ function func_verify-settings() {
                         ;;
                 20)       func_ask-updates
                         ;;
+				21)       func_ask-mailwatchemail
+                        ;;
+				22)       func_ask-postmasteremail
+                        ;;
+				23)       func_ask-cronsourceemail
+                        ;;
                 OK)       verifymenu=0
                         ;;
                 ok)       verifymenu=0
@@ -689,7 +757,7 @@ function func_verify-settings() {
 # +---------------------------------------------------+
 function func_configure-system() {
   func_echo-header
-  echo -e "$green[EFA]$clean Configuring system"
+  echo -e "$green[eFa]$clean Configuring system"
 
   # +--------------------------------------------------+
   # Start mysql Daemon
@@ -697,13 +765,13 @@ function func_configure-system() {
 
   # +--------------------------------------------------+
   # Network settings
-  echo -e "$green[EFA]$clean - Setting new hostname"
+  echo -e "$green[eFa]$clean - Setting new hostname"
   sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
   echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
   echo "$IPADDRESS   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
   hostname $HOSTNAME
 
-  echo -e "$green[EFA]$clean - Setting DNS Servers"
+  echo -e "$green[eFa]$clean - Setting DNS Servers"
   # old dnsmasq stuff...
   #echo "nameserver $DNS1" > /etc/resolv.dnsmasq
   #echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
@@ -716,7 +784,7 @@ function func_configure-system() {
     echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
     echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
   fi
-  echo -e "$green[EFA]$clean - Setting IP settings"
+  echo -e "$green[eFa]$clean - Setting IP settings"
   ifdown $INTERFACE
   # Use ipcalc to get the broadcast & network id's
   BROADCAST="`/bin/ipcalc -b $IPADDRESS $NETMASK`"
@@ -757,16 +825,16 @@ function func_configure-system() {
   
   # +--------------------------------------------------+
   # User settings
-  echo -e "$green[EFA]$clean - Creating user"
+  echo -e "$green[eFa]$clean - Creating user"
   useradd -m -d /home/$USERNAME -s /bin/bash $USERNAME
   echo "$USERNAME:$efauserpwd" | chpasswd --md5 $USERNAME
 
-  echo -e "$green[EFA]$clean - Changing root password"
+  echo -e "$green[eFa]$clean - Changing root password"
   echo "root:$efarootpwd" | chpasswd --md5 root
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
-  echo -e "$green[EFA]$clean - Generating SSH Host keys"
+  echo -e "$green[eFa]$clean - Generating SSH Host keys"
   rm -f /etc/ssh/ssh_host_rsa_key
   rm -f /etc/ssh/ssh_host_dsa_key
   ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
@@ -774,7 +842,7 @@ function func_configure-system() {
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
-  echo -e "$green[EFA]$clean - Configure timezone"
+  echo -e "$green[eFa]$clean - Configure timezone"
   rm -f /etc/localtime
   ln -s /usr/share/zoneinfo/$TZONE /etc/localtime
   echo "UTC=$ISUTC">/etc/sysconfig/clock
@@ -788,7 +856,7 @@ function func_configure-system() {
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
-  echo -e "$green[EFA]$clean - Configuring razor"
+  echo -e "$green[eFa]$clean - Configuring razor"
   su postfix -s /bin/bash -c 'razor-admin -create'
   su postfix -s /bin/bash -c 'razor-admin -register'
   sed -i '/^debuglevel/ c\debuglevel             = 0' /var/spool/postfix/.razor/razor-agent.conf
@@ -804,7 +872,7 @@ function func_configure-system() {
 
   # +--------------------------------------------------+
   # Update clamav and spamassassin rules
-  echo -e "$green[EFA]$clean - Updating AV and SA rules"
+  echo -e "$green[eFa]$clean - Updating AV and SA rules"
   service unbound start
   sleep 5
 
@@ -820,7 +888,7 @@ function func_configure-system() {
 
   # +--------------------------------------------------+
   # Add the domain of this system to transports
-  echo -e "$green[EFA]$clean - Allow the current to receive mails"
+  echo -e "$green[eFa]$clean - Allow the current to receive mails"
   echo "" >> /etc/postfix/transport
   echo "###### START E.F.A ADDED DOMAINS ######" >> /etc/postfix/transport
   echo "$DOMAINNAME  smtp:[$MAILSERVER]" >> /etc/postfix/transport
@@ -834,7 +902,7 @@ function func_configure-system() {
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
-  echo -e "$green[EFA]$clean - Configuring spamassassin"
+  echo -e "$green[eFa]$clean - Configuring spamassassin"
   sed -i '/bayes_ignore_header/d' /etc/MailScanner/spamassassin.conf
   echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA">>/etc/MailScanner/spamassassin.conf
   echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamCheck">>/etc/MailScanner/spamassassin.conf
@@ -844,7 +912,7 @@ function func_configure-system() {
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
-  echo -e "$green[EFA]$clean - Configuring MailScanner"
+  echo -e "$green[eFa]$clean - Configuring MailScanner"
   sed -i "/^%org-name% =/ c\%org-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
   sed -i "/^%org-long-name% =/ c\%org-long-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
   sed -i "/^%web-site% =/ c\%web-site% = https://www.efa-project.org" /etc/MailScanner/MailScanner.conf
@@ -862,10 +930,10 @@ function func_configure-system() {
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
-  echo -e "$green[EFA]$clean - Configuring MailWatch"
+  echo -e "$green[eFa]$clean - Configuring MailWatch"
   #sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
   sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', '$TZONE');" /var/www/html/mailscanner/conf.php
-  sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$POSTMASTEREMAIL');" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$MAILWATCHEMAIL');" /var/www/html/mailscanner/conf.php
   sed -i "/^define('MAILWATCH_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'https:\/\/' . rtrim(gethostname()) . '\/mailscanner');" /var/www/html/mailscanner/conf.php
   # +--------------------------------------------------+
 
@@ -966,13 +1034,13 @@ function func_configure-system() {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
-# Install VMware Tools
+# Install Open VM Tools
 # +---------------------------------------------------+
-func_Install-VMwareTools(){
+func_Install-OpenVMTools(){
   func_echo-header
-  echo -e "$green[EFA]$clean Starting the installation of VMware Tools"
-  echo -e "$green[EFA]$clean Depending on the speed of your system this"
-  echo -e "$green[EFA]$clean might take a while."
+  echo -e "$green[eFa]$clean Starting the installation of Open VM Tools"
+  echo -e "$green[eFa]$clean Depending on the speed of your system this"
+  echo -e "$green[eFa]$clean might take a while."
   pause
   # Disable excludes
   sed -i "s/^exclude=\(.*\)$/#exclude=\1/" /etc/yum.conf
@@ -982,7 +1050,7 @@ func_Install-VMwareTools(){
   chkconfig vmtoolsd on
   service vmtoolsd start
   func_echo-header
-  echo -e "$green[EFA]$clean Installation of VMware tools completed"
+  echo -e "$green[eFa]$clean Installation of Open VM tools completed"
   pause
 }
 # +---------------------------------------------------+
@@ -992,9 +1060,9 @@ func_Install-VMwareTools(){
 # +---------------------------------------------------+
 func_Install-QEMUAgent(){
   func_echo-header
-  echo -e "$green[EFA]$clean Starting the installation of the QEMU Agent"
-  echo -e "$green[EFA]$clean Depending on the speed of your system this"
-  echo -e "$green[EFA]$clean might take a while."
+  echo -e "$green[eFa]$clean Starting the installation of the QEMU Agent"
+  echo -e "$green[eFa]$clean Depending on the speed of your system this"
+  echo -e "$green[eFa]$clean might take a while."
   pause
   # Disable excludes
   sed -i "s/^exclude=\(.*\)$/#exclude=\1/" /etc/yum.conf
@@ -1002,7 +1070,7 @@ func_Install-QEMUAgent(){
   # Restore excludes
   sed -i "s/^#exclude=\(.*\)$/exclude=\1/" /etc/yum.conf
   func_echo-header
-  echo -e "$green[EFA]$clean Installation of the QEMU Guest Agent has completed"
+  echo -e "$green[eFa]$clean Installation of the QEMU Guest Agent has completed"
   pause
 }
 # +---------------------------------------------------+
@@ -1014,8 +1082,8 @@ function func_end() {
   func_echo-header
   # +--------------------------------------------------+
   # Postfix SSL certificate
-  echo -e "$green[EFA]$clean We will now generate a new SSL Certificate"
-  echo -e "$green[EFA]$clean for Postfix and Apache."
+  echo -e "$green[eFa]$clean We will now generate a new SSL Certificate"
+  echo -e "$green[eFa]$clean for Postfix and Apache."
   pause
   cd /etc/postfix/ssl
   
@@ -1070,6 +1138,8 @@ function func_end() {
   echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
   echo "MUNINPWD:$MUNINPWD" >> /etc/EFA-Config
   echo "POSTMASTEREMAIL:$POSTMASTEREMAIL" >> /etc/EFA-Config
+  echo "MAILWATCHEMAIL:$MAILWATCHEMAIL" >> /etc/EFA-Config
+  echo "CRONSOURCEEMAIL:$CRONSOURCEEMAIL" >> /etc/EFA-Config
   if [[ "$enableupdates" -eq 1 ]]; then
     echo "AUTOUPDATES:ENABLED" >> /etc/EFA-Config
   else
@@ -1129,7 +1199,7 @@ function func_end() {
 
   # And the end.. we are done.. whooo!
   func_echo-header
-  echo -e "$green[EFA]$clean All settings applied rebooting when you press enter."
+  echo -e "$green[eFa]$clean All settings applied rebooting when you press enter."
   pause
   reboot
   # +--------------------------------------------------+
@@ -1145,16 +1215,16 @@ func_interfaces(){
 
   if [ $nrintf -gt 1 ]
         then
-          echo -e "$green[EFA]$clean You seem to have multiple network interfaces"
-          echo -e "$green[EFA]$clean The interface names on your machine are:"
+          echo -e "$green[eFa]$clean You seem to have multiple network interfaces"
+          echo -e "$green[eFa]$clean The interface names on your machine are:"
           for int in $interf
             do
                   echo " - $int"
           done
 
           local choice
-          echo -e "$green[EFA]$clean Enter the primary interface name"
-          echo -e -n "$green[EFA]$clean : "
+          echo -e "$green[eFa]$clean Enter the primary interface name"
+          echo -e -n "$green[eFa]$clean : "
       read choice
           choice_check=0
 
@@ -1169,8 +1239,8 @@ func_interfaces(){
       # Check if the user typed a interface that exists.
       if [ $choice_check -eq 0 ]
         then
-          echo -e "$green[EFA]$clean ERROR, That interface does not exist."
-          echo -e "$green[EFA]$clean Staring over."
+          echo -e "$green[eFa]$clean ERROR, That interface does not exist."
+          echo -e "$green[eFa]$clean Staring over."
           sleep 2
           func_interfaces
           return
@@ -1178,11 +1248,11 @@ func_interfaces(){
 
       if [ $choice_check -eq 1 ]
         then
-          echo -e "$green[EFA]$clean Thank you, using $choice as the primary interface"
+          echo -e "$green[eFa]$clean Thank you, using $choice as the primary interface"
           INTERFACE=$choice
       fi
   else
-    echo -e "$green[EFA]$clean Your interface seems to be '$interf', using $interf as primary interface"
+    echo -e "$green[eFa]$clean Your interface seems to be '$interf', using $interf as primary interface"
     INTERFACE=$interf
 fi
 }
@@ -1230,7 +1300,7 @@ fi
 # Pause
 # +---------------------------------------------------+
 pause(){
-    echo -e "$green[EFA]$clean Press [Enter] key to continue..."
+    echo -e "$green[eFa]$clean Press [Enter] key to continue..."
     read fackEnterKey
 }
 # +---------------------------------------------------+
@@ -1241,8 +1311,8 @@ pause(){
 func_echo-header(){
     clear
     echo -e "--------------------------------------------------------------"
-    echo -e "---        Welcome to the EFA Initial Configuration        ---"
-    echo -e "---                https://www.efa-project.org              ---"
+    echo -e "---        Welcome to the eFa Initial Configuration        ---"
+    echo -e "---               https://www.efa-project.org              ---"
     echo -e "--------------------------------------------------------------"
     echo ""
 }
@@ -1265,10 +1335,10 @@ CONFIGURED="`grep CONFIGURED /etc/EFA-Config | sed 's/^.*://'`"
 if [ $CONFIGURED == "NO" ]
  then
     echo -e "--------------------------------------------------------------"
-    echo -e "$green[EFA]$clean We will ask you a few questions to setup this system."
-    echo -e "$green[EFA]$clean Please make sure the system is connected to the internet."
+    echo -e "$green[eFa]$clean We will ask you a few questions to setup this system."
+    echo -e "$green[eFa]$clean Please make sure the system is connected to the internet."
     echo -e "--------------------------------------------------------------"
-  echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
+  echo -e -n "$green[eFa]$clean Start eFa first-time configure (Y/n) -> "
   read StartConf
 
   if [[ "$StartConf" == "Y" || "$StartConf" == "y" || "$StartConf" == "" ]]; then
@@ -1277,7 +1347,9 @@ if [ $CONFIGURED == "NO" ]
       func_ask-hostname
       func_ask-domainname
       func_ask-adminemail
-      func_ask-postmasteremail
+	  func_ask-postmasteremail
+      func_ask-mailwatchemail
+	  func_ask-cronsourceemail
       func_ask-ipaddress
       func_ask-netmask
       func_ask-gateway
@@ -1292,10 +1364,10 @@ if [ $CONFIGURED == "NO" ]
       func_ask-orgname
       func_ask-updates
       func_verify-settings
-      func_configure-system
-      if [[ "$InstallVMwareTools" -eq 1 ]]
+      func_configure-system      
+      if [[ "$InstallOpenTools" -eq 1 ]]
         then
-          func_Install-VMwareTools
+          func_Install-OpenVMTools
         elif [[ "$InstallQEMUAgent" -eq 1 ]]
           then
             func_Install-QEMUAgent
@@ -1312,11 +1384,11 @@ if [ $CONFIGURED == "NO" ]
     exit 0
   else
     echo -e "       $red ERROR: please make an selection.$clean"
-    echo -e -n "$green[EFA]$clean Start EFA first-time configure (Y/n) -> "
+    echo -e -n "$green[eFa]$clean Start eFa first-time configure (Y/n) -> "
     read StartConf
     fi
  else
-    echo -e "$red         ERROR: EFA is already configured $clean"
+    echo -e "$red         ERROR: eFa is already configured $clean"
     echo -e "$red         Please use EFA-Configure $clean"
     echo -e ""
     exit 0

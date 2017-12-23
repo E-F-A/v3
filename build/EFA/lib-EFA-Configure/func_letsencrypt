@@ -7,22 +7,24 @@ function func_lets-encrypt() {
   local MyHost
   local MyDomain
   local MyName
+  local MyNameLower
   local CBRegEmail
   MyHost="`grep HOSTNAME /etc/EFA-Config | sed 's/^.*://'`"
   MyDomain="`grep DOMAINNAME /etc/EFA-Config | sed 's/^.*://'`"
   MyName=$MyHost.$MyDomain
+  MyNameLower=${MyName,,}
   CBRegEmail="`grep ADMINEMAIL /etc/EFA-Config | sed 's/^.*://'`"
 
   echo -e ""
-  echo -e "$green[EFA]$clean This is the current FQDN that will be used for all cert functions:"
+  echo -e "$green[eFa]$clean This is the current FQDN that will be used for all cert functions:"
   echo -e ""
-  echo -e "$green[EFA]$clean $MyName"
+  echo -e "$green[eFa]$clean $MyNameLower"
   echo -e ""
-  echo -e "$green[EFA]$clean If this is not correct, please update your Hostname and Domain Name within main menu #4."
+  echo -e "$green[eFa]$clean If this is not correct, please update your Hostname and Domain Name within main menu #4."
   echo -e ""
-  echo -e "$green[EFA]$clean Please also make sure the name above is externally resolvabe before continuing."
-  echo -e "$green[EFA]$clean Please also make sure that TCP 443 is opened from the WAN to EFA." 
-  echo -e "$green[EFA]$clean By continuing, you agree to the Terms Of Service for Let's Encrypt and EFF."
+  echo -e "$green[eFa]$clean Please also make sure the name above is externally resolvabe before continuing."
+  echo -e "$green[eFa]$clean Please also make sure that TCP 443 is opened from the WAN to EFA." 
+  echo -e "$green[eFa]$clean By continuing, you agree to the Terms Of Service for Let's Encrypt and EFF."
   echo -e ""
   echo -e ""
 
@@ -64,7 +66,7 @@ function func_lets-encrypt() {
           mv /etc/webmin/miniserv.pem.orig /etc/webmin/miniserv.pem
           sed -i "/extracas=/d" /etc/webmin/miniserv.conf
           echo -e ""
-          echo -e "I've restored the oriignal self-signed cert to Webmin."
+          echo -e "I've restored the original self-signed cert to Webmin."
           echo -e ""
         else
           echo -e "Webmin was previously cleaned up."
@@ -89,15 +91,15 @@ function func_lets-encrypt() {
       echo -e ""
       echo -e "Let's Encrypt has been disabled."
       echo -e ""
-      sleep 5
+      pause
     elif [[ $TMPLE == "n" || $TMPLE == "N" || $TMPLE == "c" || $TMPLE == "C" ]]
       then
         echo -e "No action taken. Exiting."
-        sleep 5
+        pause
     else
       echo -e "Choice $green\"$TMPLE\"$clean is not a valid choice."
       echo -e ""
-      echo -e -n "$green[EFA]$clean Disable Let's Encrypt? (y/n/c): "
+      echo -e -n "$green[eFa]$clean Disable Let's Encrypt? (y/n/c): "
       read TMPLE
     fi
 
@@ -108,17 +110,19 @@ function func_lets-encrypt() {
     read TMPLE
     if [[ $TMPLE == "y" || $TMPLE == "Y" ]]; then
       #change SSL.CONF to hostname
-      sed -i "/^#ServerName/ c\ServerName $MyName:443" /etc/httpd/conf.d/ssl.conf
+      sed -i "/^#ServerName/ c\ServerName $MyNameLower:443" /etc/httpd/conf.d/ssl.conf
       #call the certbot
-      /opt/certbot/certbot-auto --domains $MyName --non-interactive --no-redirect --apache --agree-tos -m $CBRegEmail --rsa-key-size 4096 --hsts
+      /opt/certbot/certbot-auto --domains $MyNameLower --non-interactive --no-redirect --apache --agree-tos -m $CBRegEmail --rsa-key-size 4096 --hsts
       killall -15 httpd
       service httpd start
       #update webmin cert (add logic to detect if cert is here before)
       echo -e ""
       echo -e "Applying new cert to webmin!"        
       mv /etc/webmin/miniserv.pem /etc/webmin/miniserv.pem.orig
-      cat /etc/letsencrypt/live/$MyName/privkey.pem /etc/letsencrypt/live/$MyName/cert.pem > /etc/webmin/miniserv.pem
-      echo 'extracas=/etc/letsencrypt/live/$MyName/chain.pem' >> /etc/webmin/miniserv.conf
+      cat /etc/letsencrypt/live/$MyNameLower/privkey.pem /etc/letsencrypt/live/$MyNameLower/cert.pem > /etc/webmin/miniserv.pem
+      echo "extracas=/etc/letsencrypt/live/$MyNameLower/chain.pem" >> /etc/webmin/miniserv.conf
+      service webmin stop
+      service webmin start
       echo -e "I've updated the Webmin cert"    
       #add a cron job to renew cert
       if [ -e /etc/cron.monthly/RenewLetsEncrypt ]
@@ -131,10 +135,10 @@ function func_lets-encrypt() {
 
       #update postfix
       echo -e "I'm updating Postfix to use the new cert!"
-      sed -i "/^smtp_tls_CAfile/ c\smtp_tls_CAfile = \/etc\/letsencrypt\/live\/$MyName\/chain.pem" /etc/postfix/main.cf
-      sed -i "/^smtpd_tls_key_file/ c\smtpd_tls_key_file = \/etc\/letsencrypt\/live\/$MyName\/privkey.pem" /etc/postfix/main.cf
-      sed -i "/^smtpd_tls_cert_file/ c\smtpd_tls_cert_file = \/etc\/letsencrypt\/live\/$MyName\/cert.pem" /etc/postfix/main.cf
-      sed -i "/^smtpd_tls_CAfile/ c\smtpd_tls_CAfile = \/etc\/letsencrypt\/live\/$MyName\/chain.pem" /etc/postfix/main.cf
+      sed -i "/^smtp_tls_CAfile/ c\smtp_tls_CAfile = \/etc\/letsencrypt\/live\/$MyNameLower\/chain.pem" /etc/postfix/main.cf
+      sed -i "/^smtpd_tls_key_file/ c\smtpd_tls_key_file = \/etc\/letsencrypt\/live\/$MyNameLower\/privkey.pem" /etc/postfix/main.cf
+      sed -i "/^smtpd_tls_cert_file/ c\smtpd_tls_cert_file = \/etc\/letsencrypt\/live\/$MyNameLower\/cert.pem" /etc/postfix/main.cf
+      sed -i "/^smtpd_tls_CAfile/ c\smtpd_tls_CAfile = \/etc\/letsencrypt\/live\/$MyNameLower\/chain.pem" /etc/postfix/main.cf
       #sed -i "/^smtpd_tls_eckey_file/ c\#smtpd_tls_eckey_file = \/etc\/postfix\/ssl\/ec_smtpd.pem" /etc/postfix/main.cf
       #sed -i "/^smtpd_tls_eccert_file/ c\#smtpd_tls_eccert_file = \/etc\/postfix\/ssl\/ec_smtpd.pem" /etc/postfix/main.cf
 
@@ -151,11 +155,11 @@ function func_lets-encrypt() {
       elif [[ $TMPLE == "n" || $TMPLE == "N" || $TMPLE == "c" || $TMPLE == "C" ]]
 	    then
           echo -e "No action taken. Exiting."
-          sleep 5
+          pause
         else
           echo -e "Choice $green\"$TMPLE\"$clean is not a valid choice."
           echo -e ""
-          echo -e -n "$green[EFA]$clean Enable Let's Encrypt? (y/n/c): "
+          echo -e -n "$green[eFa]$clean Enable Let's Encrypt? (y/n/c): "
           read TMPLE
       fi
 fi

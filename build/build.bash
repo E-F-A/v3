@@ -25,7 +25,7 @@ action=$1
 # +---------------------------------------------------+
 # Variables
 # +---------------------------------------------------+
-version="3.0.2.5"
+version="3.0.2.6"
 logdir="/var/log/EFA"
 gitdlurl="https://raw.githubusercontent.com/E-F-A/v3/$version/build"
 password="EfaPr0j3ct"
@@ -1203,6 +1203,22 @@ chmod a+x ./certbot-auto
 }
 # +---------------------------------------------------+
 
+#----------------------------------------------------------------#
+# Function to add additional pyzor servers
+#----------------------------------------------------------------#
+function update_pyzor-servers() {
+
+# Update Pyzor Servers, will look at ALL servers at same time
+touch /var/spool/postfix/.pyzor/servers
+echo "public.pyzor.org:24441" >> /var/spool/postfix/.pyzor/servers
+echo "pyzor.nova53.net:24441" >> /var/spool/postfix/.pyzor/servers
+
+chown -R postfix:apache /var/spool/postfix/.pyzor
+chmod -R ug+rwx /var/spool/postfix/.pyzor
+  
+}
+#----------------------------------------------------------------#
+
 
 # +---------------------------------------------------+
 # Webmin (http://www.webmin.com/)
@@ -1386,7 +1402,7 @@ func_efarequirements () {
     # Write SSH banner
     sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config
     cat > /etc/banner << 'EOF'
-       Welcome to E.F.A. (http://www.efa-project.org)
+       Welcome to eFa (https://www.efa-project.org)
 
  Warning!
 
@@ -1432,6 +1448,13 @@ func_cron () {
     chmod 700 /etc/cron.daily/EFA-Backup-cron
     /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Renew-Certs $gitdlurl/EFA/EFA-Renew-Certs
     chmod 700 /usr/local/sbin/EFA-Renew-Certs
+	
+	/usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Daily-DMARC $gitdlurl/EFA/EFA-Daily-DMARC
+	chmod 700 /usr/local/sbin/EFA-Daily-DMARC
+	/usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Weekly-DMARC $gitdlurl/EFA/EFA-Weekly-DMARC
+	chmod 700 /usr/local/sbin/EFA-Weekly-DMARC
+	/usr/bin/wget --no-check-certificate -O /usr/local/sbin/DMARC-Schema.sql $gitdlurl/EFA/DMARC-Schema.sql
+    
     
     # Remove the raid-check util (Issue #102)
     rm -f /etc/cron.d/raid-check
@@ -1568,6 +1591,7 @@ function main() {
     func_sgwi
     func_mailgraph
     func_pyzor
+	update_pyzor-servers
     func_razor
     func_dcc
     func_imagecerberus
@@ -1590,6 +1614,7 @@ function main() {
     func_mailscanner
     func_spam_clamav
     func_pyzor
+	update_pyzor-servers
     func_razor
     func_dcc
     func_install-certbot

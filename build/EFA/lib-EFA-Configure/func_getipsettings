@@ -18,7 +18,7 @@ function func_getipsettings(){
       echo -e ""
       echo -e "Enter the primary interface name:"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       choice_check=0
@@ -33,8 +33,8 @@ function func_getipsettings(){
       # Check if the user typed a interface that exists.
       if [ $choice_check -eq 0 ]
         then
-          echo -e "$red [EFA] ERROR, That interface does not exist. $clean"
-          sleep 2
+          echo -e "$red [eFa] ERROR, That interface does not exist. $clean"
+          pause
           func_getipsettings
           return
       fi

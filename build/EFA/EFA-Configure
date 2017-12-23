@@ -1,9 +1,9 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
 # EFA-Configure
-# Version 20170518
+# Version 20171004
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2017  http://www.efa-project.org
+# Copyright (C) 2012~2017  https://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # +--------------------------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -60,13 +60,14 @@ shopt -s extglob
 . /var/EFA/lib/EFA-Configure/func_peruser
 . /var/EFA/lib/EFA-Configure/func_letsencrypt
 . /var/EFA/lib/EFA-Configure/func_askdccservers
+. /var/EFA/lib/EFA-Configure/func_dkim_dmarc
 
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
 # Get version
 # +---------------------------------------------------+
-EFAVERSION="`head /etc/EFA-Version`"
+eFaVERSION="`head /etc/EFA-Version`"
 # +---------------------------------------------------+
 
 
@@ -80,7 +81,7 @@ show_menu() {
     do
       func_echo-header
       echo -e ""
-      echo -e "You are currently running $green$EFAVERSION$clean."
+      echo -e "You are currently running $green$eFaVERSION$clean."
       echo -e ""
       echo -e "Please choose an option:"
       echo -e " "
@@ -92,9 +93,9 @@ show_menu() {
       echo -e "5) Tunables                           14) Update Now"
       echo -e "6) MailWatch Settings                 15) Maintenance Mode"
       echo -e "7) Auto Update                        16) Let's Encrypt"
-      echo -e "8) Mail Settings"
+      echo -e "8) Mail Settings                      17) DKIM and DMARC"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in
@@ -115,6 +116,7 @@ show_menu() {
                    14) func_update-now ;;
                    15) func_maintenance-mode ;;
                    16) func_lets-encrypt ;;
+				   17) func_dkim-dmarc ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
@@ -135,7 +137,7 @@ func_reboot() {
       echo -e "Y)  Yes I am sure"
       echo -e "N)  No no no take me back!"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in
@@ -162,7 +164,7 @@ func_halt() {
       echo -e "Y)  Yes I am sure"
       echo -e "N)  No no no take me back!"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in
@@ -224,7 +226,7 @@ func_echo-header(){
   clear
   echo -e "--------------------------------------------------------------"
   echo -e "---        Welcome to the EFA Configuration program        ---"
-  echo -e "---                https://www.efa-project.org              ---"
+  echo -e "---               https://www.efa-project.org              ---"
   echo -e "--------------------------------------------------------------"
   echo ""
 }
@@ -250,7 +252,7 @@ if [ `whoami` == root ]
             show_menu
         done
     else
-        echo -e "$red [EFA] ERROR: Please become root.$clean"
+        echo -e "$red [eFa] ERROR: Please become root.$clean"
         exit 0
     fi
 # +---------------------------------------------------+

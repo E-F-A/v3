@@ -5,14 +5,14 @@ function func_ask-highspammailwatch() {
   func_echo-header
 
   echo -e ""
-  echo -e "$green[EFA]$clean Hide High Spam/High MCP in MailWatch:"
+  echo -e "$green[eFa]$clean Hide High Spam/High MCP in MailWatch:"
   echo -e ""
-  echo -e "$green[EFA]$clean This feature hides High Spam/High MCP from"
-  echo -e "$green[EFA]$clean users while allowing access for admins."
-  echo -e "$green[EFA]$clean Very useful to hide suggestive and offensive spam"
-  echo -e "$green[EFA]$clean common in the high category."
+  echo -e "$green[eFa]$clean This feature hides High Spam/High MCP from"
+  echo -e "$green[eFa]$clean users while allowing access for admins."
+  echo -e "$green[eFa]$clean Very useful to hide suggestive and offensive spam"
+  echo -e "$green[eFa]$clean common in the high category."
   echo -e ""
-  echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N/c]: "
+  echo -e -n "$green[eFa]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N/c]: "
   read TMPHIDESPAM
   hidecheck=1
   while [ $hidecheck != "0" ]
@@ -20,22 +20,22 @@ function func_ask-highspammailwatch() {
       if [[ "$TMPHIDESPAM" == "Y" || "$TMPHIDESPAM" == "y" ]]; then 
         # Set spam hiding behavior
         sed -i "/^define('HIDE_HIGH_SPAM'/ c\define('HIDE_HIGH_SPAM', true);" /var/www/html/mailscanner/conf.php
-        echo -e "$green[EFA]$clean Hide High Spam (and High MCP) $green ENABLED $clean"
+        echo -e "$green[eFa]$clean Hide High Spam (and High MCP) $green ENABLED $clean"
         hidecheck=0
       elif [[ "x$TMPHIDESPAM" == "x" || "$TMPHIDESPAM" == "N" || "$TMPHIDESPAM" == "n" ]]; then 
         sed -i "/^define('HIDE_HIGH_SPAM'/ c\define('HIDE_HIGH_SPAM', false);" /var/www/html/mailscanner/conf.php
-        echo -e "$green[EFA]$clean Hide High Spam (and High MCP) $green DISABLE $clean"
+        echo -e "$green[eFa]$clean Hide High Spam (and High MCP) $green DISABLE $clean"
         hidecheck=0
       elif [[ "$TMPHIDESPAM" == "C" || "$TMPHIDESPAM" == "c" ]]; then 
-        echo -e "$green[EFA]$clean No action taken, exiting."
+        echo -e "$green[eFa]$clean No action taken, exiting."
         hidecheck=0
       else
         echo -e "       $red ERROR: please make an selection.$clean"
-        echo -e -n "$green[EFA]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N/c]: "
+        echo -e -n "$green[eFa]$clean Do you want to $green ENABLE $clean Hide High Spam? [y/N/c]: "
         read TMPHIDESPAM
       fi
   done
 
-  sleep 2
+  pause
 }
 # +---------------------------------------------------+

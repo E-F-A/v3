@@ -28,7 +28,7 @@ function func_ask-sigrules() {
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in
@@ -69,16 +69,16 @@ function func_ask-sigrules() {
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
                         sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/d" /etc/MailScanner/rules/sig.html.rules
                         sed -i "/^To:[[:space:]]\+\*\@$ENTDOMAIN/d" /etc/MailScanner/rules/sig.text.rules
-                        echo -e "Entry deleted from signature rules." && sleep 2
+                        echo -e "Entry deleted from signature rules." && pause
                         flag=1
                       elif [[ $TMPOPTION == "c" || $TMPOPTION == "C" ]]; then
                         flag=1
                       else 
-                        echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
+                        echo -e "Error \"$TMPOPTION\" is not an option..." && pause
                       fi
                     done
                   else
-                        echo -e "Error \"$choice\" is not an option..." && sleep 2
+                        echo -e "Error \"$choice\" is not an option..." && pause
                   fi  
                     ;;
                 n)  echo -e ""
@@ -111,8 +111,8 @@ function func_ask-sigrules() {
                     service MailScanner reload
                     return
                     ;;
-                *)  echo -e "Error \"$choice\" is not an option..." && sleep 2
-                    echo -e -n "$green[EFA]$clean : "
+                *)  echo -e "Error \"$choice\" is not an option..." && pause
+                    echo -e -n "$green[eFa]$clean : "
                     ;;
           esac
   done

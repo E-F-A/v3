@@ -14,10 +14,13 @@ func_mail-settings(){
       echo -e "3) Admin Email"
       echo -e "4) Transport settings"
       echo -e "5) Postmaster Email"
+	  echo -e "6) MailWatch Email"
+	  echo -e "7) Cron Source Email"
+	  echo -e "8) DMARC Reporter Email"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in
@@ -26,8 +29,11 @@ func_mail-settings(){
                 3) func_adminemail;;
                 4) func_transport-settings;;
                 5) func_postmasteremail;;
+				6) func_mailwatchemail;;
+				7) func_cronsourceemail;;
+				8) func_dmarcrepemail;;
                 e) menu=1 && return ;;
-                *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+                *) echo -e "Error \"$choice\" is not an option..." && pause
             esac
     done
 }
@@ -63,7 +69,7 @@ func_transport-settings(){
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
-      echo -e -n "$green[EFA]$clean : "
+      echo -e -n "$green[eFa]$clean : "
       local choice
       read choice
       case $choice in
@@ -146,16 +152,16 @@ func_transport-settings(){
                       elif [[ $TMPOPTION == "d" || $TMPOPTION == "D" ]]; then
                         sed -i "/$ENTDOMAIN[[:space:]]\+smtp:\[$ENTDEST\]/d" /etc/postfix/transport
                         postmap /etc/postfix/transport
-                        echo -e "Entry deleted from transports." && sleep 2
+                        echo -e "Entry deleted from transports." && pause
                         flag=1
                       elif [[ $TMPOPTION == "c" || $TMPOPTION == "C" ]]; then
                         flag=1
                       else 
-                        echo -e "Error \"$TMPOPTION\" is not an option..." && sleep 2
+                        echo -e "Error \"$TMPOPTION\" is not an option..." && pause
                       fi
                     done
                   else
-                        echo -e "Error \"$choice\" is not an option..." && sleep 2
+                        echo -e "Error \"$choice\" is not an option..." && pause
                   fi
                     ;;
                 n)  echo -e ""
@@ -225,8 +231,8 @@ func_transport-settings(){
                     entry=1
                     ;;
                 e)  mailmenu=1 && return ;;
-                *)  echo -e "Error \"$choice\" is not an option..." && sleep 2
-                    echo -e -n "$green[EFA]$clean : "
+                *)  echo -e "Error \"$choice\" is not an option..." && pause
+                    echo -e -n "$green[eFa]$clean : "
                     ;;
           esac
   done 
@@ -244,7 +250,7 @@ func_adminemail(){
       func_echo-header
       echo -e ""
       echo -e "Description:"
-      echo -e "With this option you can change the E.F.A. admin email address."
+      echo -e "With this option you can change the eFa admin email address."
       echo -e "This address is used for various system alerts and notifications."
       echo -e ""
       echo -e "Current settings are:"
@@ -269,7 +275,7 @@ func_adminemail(){
            aemenu=1
            ;;
         e) mailmenu=1 && return ;;
-        *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+        *) echo -e "Error \"$choice\" is not an option..." && pause
       esac
     done
 }
@@ -286,7 +292,7 @@ func_postmasteremail(){
       func_echo-header
       echo -e ""
       echo -e "Description:"
-      echo -e "With this option you can change the E.F.A. postmaster email address."
+      echo -e "With this option you can change the eFa postmaster email address."
       echo -e "This address is used for various postfix alerts and notifications."
       echo -e ""
       echo -e "Current settings are:"
@@ -324,7 +330,118 @@ func_postmasteremail(){
            pemenu=1
            ;;
         e) mailmenu=1 && return ;;
-        *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+        *) echo -e "Error \"$choice\" is not an option..." && pause
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Configure MailWatch email
+# +---------------------------------------------------+
+func_mailwatchemail(){
+  mwemenu=1
+  MAILWATCHEMAIL="`cat /etc/EFA-Config | grep MAILWATCHEMAIL | sed 's/.*://'`"
+  while [ $mwemenu == "1" ]
+    do
+      func_echo-header
+      echo -e ""
+      echo -e "Description:"
+      echo -e "With this option you can change MailWatch email address."
+      echo -e "This address is used for sending MailWatch reports and notifications."
+      echo -e ""
+      echo -e "Current settings are:"
+      echo -e "1) MailWatch email:        $MAILWATCHEMAIL"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      local choice
+      read -p "Enter setting you want to change: " choice
+      case $choice in
+        1) mwemenu=0
+           echo -e ""
+           echo -e "Enter your new admin email address"
+           echo -e ""
+           read -p "> " MAILWATCHEMAIL
+           sed -i "/MAILWATCHEMAIL\:/ c\MAILWATCHEMAIL\:$MAILWATCHEMAIL" /etc/EFA-Config
+		   sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$MAILWATCHEMAIL');" /var/www/html/mailscanner/conf.php
+
+           mwemenu=1
+           ;;
+        e) mailmenu=1 && return ;;
+        *) echo -e "Error \"$choice\" is not an option..." && pause
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Configure Cron Source email
+# +---------------------------------------------------+
+func_cronsourceemail(){
+  csemenu=1
+  CRONSOURCEEMAIL="`cat /etc/EFA-Config | grep CRONSOURCEEMAIL | sed 's/.*://'`"
+  while [ $csemenu == "1" ]
+    do
+      func_echo-header
+      echo -e ""
+      echo -e "Description:"
+      echo -e "With this option you can change the eFa cron email address."
+      echo -e "This address is used for various system alerts and notifications."
+      echo -e ""
+      echo -e "Current settings are:"
+      echo -e "1) Cron Source email:        $CRONSOURCEEMAIL"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      local choice
+      read -p "Enter setting you want to change: " choice
+      case $choice in
+        1) csemenu=0
+           echo -e ""
+           echo -e "Enter your new admin email address"
+           echo -e ""
+           read -p "> " CRONSOURCEEMAIL
+           sed -i "/CRONSOURCEEMAIL\:/ c\CRONSOURCEEMAIL\:$CRONSOURCEEMAIL" /etc/EFA-Config
+           csemenu=1
+           ;;
+        e) mailmenu=1 && return ;;
+        *) echo -e "Error \"$choice\" is not an option..." && pause
+      esac
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Configure DMARC Rep email
+# +---------------------------------------------------+
+func_dmarcrepemail(){
+  dremenu=1
+  DMARCREPEMAIL="`cat /etc/EFA-Config | grep DMARCREPEMAIL | sed 's/.*://'`"
+  while [ $dremenu == "1" ]
+    do
+      func_echo-header
+      echo -e ""
+      echo -e "Description:"
+      echo -e "With this option you can change DMARC Reporter email address."
+      echo -e "This address is used for sending DMARC reports and notifications."
+      echo -e ""
+      echo -e "Current settings are:"
+      echo -e "1) DMARC Reporter Email:        $DMARCREPEMAIL"
+      echo -e ""
+      echo -e "e) Return to main menu"
+      local choice
+      read -p "Enter setting you want to change: " choice
+      case $choice in
+        1) dremenu=0
+           echo -e ""
+           echo -e "Enter your new admin email address"
+           echo -e ""
+           read -p "> " DMARCREPEMAIL
+           sed -i "/DMARCREPEMAIL\:/ c\DMARCREPEMAIL\:$DMARCREPEMAIL" /etc/EFA-Config
+
+           dremenu=1
+           ;;
+        e) mailmenu=1 && return ;;
+        *) echo -e "Error \"$choice\" is not an option..." && pause
       esac
     done
 }
@@ -341,7 +458,7 @@ func_outbound-relay(){
       func_echo-header
       echo " "
       echo "Description:"
-      echo "With this option you can configure E.F.A."
+      echo "With this option you can configure eFa"
       echo "to relay outgoing message for your local"
       echo "mail-server or clients."
       echo ""
@@ -368,7 +485,7 @@ func_outbound-relay(){
             obmrmenu=1
             ;;
             e) mailmenu=1 && return ;;
-        *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+        *) echo -e "Error \"$choice\" is not an option..." && pause
       esac
     done
 }
@@ -422,7 +539,7 @@ func_outbound-smarthost(){
                 obshmenu=1
                 ;;
             e) mailmenu=1 && return ;;
-            *) echo -e "Error \"$choice\" is not an option..." && sleep 2
+            *) echo -e "Error \"$choice\" is not an option..." && pause
       esac
     done
 }

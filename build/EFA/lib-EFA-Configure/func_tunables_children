@@ -3,12 +3,12 @@
 # +---------------------------------------------------+
 func_tunables_children(){
   func_echo-header
-  echo -e "$green[EFA]$clean - Configuring System Tunables"
+  echo -e "$green[eFa]$clean - Configuring System Tunables"
   echo -e ""
   mschildren="`cat /etc/MailScanner/MailScanner.conf | grep -e '^Max Children' | awk -F'=' '{print $2}' | tr -d '[:blank:]'`"
-  echo -e "$green[EFA]$clean Mailscanner is currently set to use $mschildren children."
+  echo -e "$green[eFa]$clean Mailscanner is currently set to use $mschildren children."
   echo -e "" 
-  echo -e -n "$green[EFA]$clean : Mailscanner children (default/min 2, max 30):"
+  echo -e -n "$green[eFa]$clean : Mailscanner children (default/min 2, max 30):"
   read MSTHREADS
   mstuning=1
   while [ $mstuning != "0" ]
@@ -23,7 +23,7 @@ func_tunables_children(){
       else
         echo -e "       $red ERROR: The number of threads $MSTHREADS appears to be invalid."
         echo -e "        ERROR: please re-enter the number of threads.$clean"
-        echo -e -n "$green[EFA]$clean Mailscanner children (default/min 2, max 30):"
+        echo -e -n "$green[eFa]$clean Mailscanner children (default/min 2, max 30):"
         read MSTHREADS
      fi
    done

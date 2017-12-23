@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#Stop OpenDMARC Service
+service opendmarc stop
+
+#Remove old tld names file
+rm -rf /etc/opendmarc/effective_tld_names.dat
+
+
+#Get latest effective_tld_names for OpenDMARC
+/usr/bin/wget --no-check-certificate -q -N -P /etc/opendmarc https://publicsuffix.org/list/effective_tld_names.dat
+
+#Start OpenDMARC Server
+service opendmarc start
