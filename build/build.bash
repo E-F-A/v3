@@ -1211,7 +1211,6 @@ function update_pyzor-servers() {
 # Update Pyzor Servers, will look at ALL servers at same time
 touch /var/spool/postfix/.pyzor/servers
 echo "public.pyzor.org:24441" >> /var/spool/postfix/.pyzor/servers
-echo "pyzor.nova53.net:24441" >> /var/spool/postfix/.pyzor/servers
 
 chown -R postfix:apache /var/spool/postfix/.pyzor
 chmod -R ug+rwx /var/spool/postfix/.pyzor
