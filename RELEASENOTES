@@ -78,6 +78,14 @@ location:
 
 (Other versions may be present if updating from an older version)
 
+Users who had prior 3rd party certs in-place on eFa 3.0.2.4 or lower
+are overridden by the upgrade to eFa 3.0.2.5. This is due to the 
+regeneration of the self-signed cert. After the upgrade, and if you
+were using a 3rd party cert, please make sure to update your paths 
+accordingly for Postfix and Apache to reflect the original paths.
+Future updates beyond 3.0.2.5 will leave exisitng cert paths alone,
+pending no major security tweaks required to secure systems. 
+
 ########################## Known Issues ###############################
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
