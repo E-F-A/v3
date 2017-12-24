@@ -95,6 +95,9 @@ function run_update() {
 
   # Add init.d symlink back for compatibility
   ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
+  
+  #Update pyzor servers
+  update_pyzor-servers
 
   # Issue #388 MailWatch database schema upgrade causing /tmp to fill up v3.0.2.4 (disabled v3.0.2.5)
   # Cannot increase tmp size here, so relocate to /var
@@ -104,7 +107,7 @@ function run_update() {
   # service mysql reload
 
   # Update MailWatch
-  update-mailwatch
+  # update-mailwatch
 
   # Update SGWI v3.0.2.4 (disabled v3.0.2.5)
   #update_sgwi
@@ -826,7 +829,7 @@ chmod -R ug+rwx /var/spool/postfix/.pyzor
 function finalize() {
   # Write the latest version number
   echo "EFA-$VERSION" > /etc/EFA-Version
-  sed -i "/--- Welcome to eFa-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
 
   # Finalize the mail
   echo "" >> $TMPMAIL
