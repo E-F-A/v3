@@ -94,10 +94,13 @@ function run_update() {
   chmod 600 /var/EFA/lib/EFA-Configure/*
 
   # Add init.d symlink back for compatibility
-  ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
+  # ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
   
   #Update pyzor servers
   update_pyzor-servers
+  
+  # Issue #403 Remove gif in mailgraph footer
+  sed -i '/^<a href="http:\/\/oss.oetiker.ch\/rrdtool\/">/d' /var/www/cgi-bin/mailgraph.cgi
 
   # Issue #388 MailWatch database schema upgrade causing /tmp to fill up v3.0.2.4 (disabled v3.0.2.5)
   # Cannot increase tmp size here, so relocate to /var
