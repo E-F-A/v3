@@ -74,6 +74,15 @@ function func_system-restore() {
                         cp -f /var/EFA/backup/backup/etc/pki/tls/certs/localhost.crt /etc/pki/tls/certs/localhost.crt
                         cp -f /var/EFA/backup/backup/etc/pki/tls/private/localhost.key /etc/pki/tls/private/localhost.key
                         cp -rf /var/EFA/backup/backup/etc/postfix/* /etc/postfix
+                        
+                        # Postmaps
+                        postmap /etc/postfix/helo_access.db
+                        postmap /etc/postfix/recipient_access.db
+                        postmap /etc/postfix/sasl_passwd.db
+                        postmap /etc/postfix/sender_access.db
+                        postmap /etc/postfix/transport.db
+                        postmap /etc/postfix/virtual.db
+                        
                         cp -rf /var/EFA/backup/backup/etc/sqlgrey/* /etc/sqlgrey
                         cp -rf /var/EFA/backup/backup/etc/unbound/conf.d/* /etc/unbound/conf.d
                         cp -f /var/EFA/backup/backup/var/www/html/mailscanner/conf.php /var/www/html/mailscanner/conf.php
@@ -95,6 +104,9 @@ function func_system-restore() {
                         sed -i "/^SQLGREYSQLPWD:/ c\SQLGREYSQLPWD:$RESTORESQLGREYSQLPWD" /etc/EFA-Config
                         sed -i "/^EFASQLPWD:/ c\EFASQLPWD:$RESTOREEFASQLPWD" /etc/EFA-Config
                         sed -i "/^MYSQLROOTPWD:/ c\MYSQLROOTPWD:$RESTOREMYSQLROOTPWD" /etc/EFA-Config
+                        
+                        # Restore trim-awl
+                        cp -f /var/EFA/backup/backup/usr/sbin/trim-awl /usr/local/sbin
                       else
                         cp -rf /var/EFA/backup/backup/etc/* /etc
                         cp -rf /var/EFA/backup/backup/var/* /var

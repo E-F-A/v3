@@ -134,6 +134,10 @@ function start_backup()
   # Issue #227 Include local.cf in EFA-Backup
   mkdir -p $WORKINGDIR/etc/mail/spamassassin
   cp -a /etc/mail/spamassassin/local.cf $WORKINGDIR/etc/mail/spamassassin
+  
+  # Issue #395
+  mkdir -p $WORKINGDIR/usr/sbin
+  cp -a /usr/sbin/trim-awk $WORKINGDIR/usr/sbin
 
   # Gzip tarball the collection
   tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz -C $TMPDIR/$CDATE$CTIME .
