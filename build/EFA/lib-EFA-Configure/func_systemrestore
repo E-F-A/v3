@@ -106,7 +106,7 @@ function func_system-restore() {
                         sed -i "/^MYSQLROOTPWD:/ c\MYSQLROOTPWD:$RESTOREMYSQLROOTPWD" /etc/EFA-Config
                         
                         # Restore trim-awl
-                        cp -f /var/EFA/backup/backup/usr/sbin/trim-awl /usr/local/sbin
+                        cp -f /var/EFA/backup/backup/usr/sbin/trim-awl /usr/sbin
                       else
                         cp -rf /var/EFA/backup/backup/etc/* /etc
                         cp -rf /var/EFA/backup/backup/var/* /var
