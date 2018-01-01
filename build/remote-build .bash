@@ -1,10 +1,14 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.6-dev build without ks version 20170930
+# EFA 3.0.2.6 remote build without ks version 20180101
+#
 # Purpose:
 #       This script will 'baseline' an existing CentOS installation
 #       to start the build.bash script ONLY use this script if you
 #       are unable to use the kickstart methode.
+#
+#       This remote version will leave existing OS password and
+#       networking intact.  Useful for remote building over ssh.
 #
 # Prerequirements:
 #       A minimal installation of CentOS.
@@ -78,7 +82,7 @@ while [ $flag != "0" ]
       if [[ "$YN" == "Y" || "$YN" == "y" ]]; then
         flag=0
       elif [[ "$YN" == "" || "$YN" == "N" || "$YN" == "n" ]]; then
-		echo "Aborting this setup"
+        echo "Aborting this setup"
         exit 1
       else
           echo -n "Are you sure you want to continue? (y/N):"
@@ -122,7 +126,7 @@ EOF
 #----------------------------------------------------------------#
 # Set root password to EfaPr0j3ct
 #----------------------------------------------------------------#
-echo "root:EfaPr0j3ct" | chpasswd --md5 root
+# echo "root:EfaPr0j3ct" | chpasswd --md5 root
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -286,7 +290,7 @@ flag=1
 while [ $flag != "0" ]
     do
       if [[ "$YN" == "Y" || "$YN" == "y" ]]; then
-        logsave /var/log/EFA/build.log /usr/src/EFA/build.bash
+        logsave /var/log/EFA/build.log /usr/src/EFA/build.bash --remote
         flag=0
       elif [[ "$YN" == "" || "$YN" == "N" || "$YN" == "n" ]]; then
         echo ""

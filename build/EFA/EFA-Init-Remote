@@ -1,0 +1,1219 @@
+#!/bin/bash
+# +--------------------------------------------------------------------+
+# EFA-Init-Remote
+# Version 20180101           ------------------------------------------+
+# Copyright (C) 2012~2017 https://www.efa-project.org
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# +--------------------------------------------------------------------+
+
+# +---------------------------------------------------+
+# Variables
+# +---------------------------------------------------+
+debug="0"
+# initpassword="EfaPr0j3ct"
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Lets start asking questions.
+# +---------------------------------------------------+
+function func_ask-hostname() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Grabbing current hostname (remote mode)"
+  HOSTNAME=$(hostname -s)
+  echo -e "Your current hostname is: $HOSTNAME"
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-domainname() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Grabbing domain name domain name (remote mode)"
+  DOMAINNAME=$(hostname -d)
+  echo -e "Your current domainname is: $DOMAINNAME"
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-adminemail() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the email address of an admin "
+  echo -e "$green[eFa]$clean This user will receive eFa related notifications"
+  echo -e -n "$green[eFa]$clean : "
+  read ADMINEMAIL
+  adminemailcheck=1
+  while [ $adminemailcheck != 0 ]
+   do
+     if [[ $ADMINEMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        adminemailcheck=0
+      else
+        echo -e "       $red ERROR: The address $ADMINEMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the admin email address$clean"
+        echo -e "$green[eFa]$clean Please enter the email address of an admin "
+        echo -e "$green[eFa]$clean This user will receive eFa related notifications"
+        echo -e -n "$green[eFa]$clean : "
+        read ADMINEMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-mailwatchemail() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the email address to be used within MailWatch to send reports "
+  echo -e "$green[eFa]$clean This address will be the source of all related notifications from MailWatch"
+  echo -e -n "$green[eFa]$clean : "
+  read MAILWATCHEMAIL
+  mailwatchemailcheck=1
+  while [ $mailwatchemailcheck != 0 ]
+   do
+     if [[ $MAILWATCHEMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        mailwatchemailcheck=0
+      else
+        echo -e "       $red ERROR: The address $MAILWATCHEMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the MailWatch email address$clean"
+        echo -e "$green[eFa]$clean Please enter the email address to be used within MailWatch to send reports "
+        echo -e "$green[eFa]$clean This address will be the source of all related notifications from MailWatch"
+        echo -e -n "$green[eFa]$clean : "
+        read MAILWATCHEMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-postmasteremail() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the email address of the postmaster "
+  echo -e "$green[eFa]$clean This user will receive postfix related notifications"
+  echo -e -n "$green[eFa]$clean : "
+  read POSTMASTEREMAIL
+  postmasteremailcheck=1
+  while [ $postmasteremailcheck != 0 ]
+   do
+     if [[ $POSTMASTEREMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        postmasteremailcheck=0
+            # Change postfix configuration
+             postconf -e notify_classes="resource, software, delay, bounce"
+             postconf -e 2bounce_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e bounce_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e delay_notice_recipient="$POSTMASTEREMAIL"
+             postconf -e error_notice_recipient="$POSTMASTEREMAIL"
+      else
+        echo -e "       $red ERROR: The address $POSTMASTEREMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the admin email address$clean"
+        echo -e "$green[eFa]$clean Please enter the email address of an admin "
+        echo -e "$green[eFa]$clean This user will receive eFa related postfix notifications"
+        echo -e -n "$green[eFa]$clean : "
+        read POSTMASTEREMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+
+
+
+# +---------------------------------------------------+
+function func_ask-cronsourceemail() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the email address to be used when sending system alerts "
+  echo -e "$green[eFa]$clean This address will be the source of all related notifications from local system alerts"
+  echo -e -n "$green[eFa]$clean : "
+  read CRONSOURCEEMAIL
+  cronsourceemailcheck=1
+  while [ $cronsourceemailcheck != 0 ]
+   do
+     if [[ $CRONSOURCEEMAIL =~ ^[-_.@Aa-zA-Z0-9]{2,256}+[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,6}$ ]]
+      then
+        cronsourceemailcheck=0
+      else
+        echo -e "       $red ERROR: The address $CRONSOURCEEMAIL seems to be invalid"
+        echo -e "        ERROR: please re-enter the Cron Source email address$clean"
+        echo -e "$green[eFa]$clean Please enter the email address to be used when sending system alerts "
+        echo -e "$green[eFa]$clean This address will be the source of all related notifications from local system alerts"
+        echo -e -n "$green[eFa]$clean : "
+        read CRONSOURCEEMAIL
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-ipaddress() {
+  func_echo-header
+  # Get the primary interface
+  func_interfaces
+
+  # Display current IP and ask for new, then validate the IP.
+  IPADDRESS=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $2}' | awk -F':' '{print $2}'`
+  echo -e ""
+  echo -e "$green[eFa]$clean Your current IP address is: $IPADDRESS"
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-netmask() {
+  func_echo-header
+
+  # Display current netmask and ask for new, then validate the netmask
+  NETMASK=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $4}' | awk -F':' '{print $2}'`
+  echo -e ""
+  echo -e "$green[eFa]$clean Your current netmask is: $NETMASK"
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-gateway() {
+  func_echo-header
+
+  # Display current gateway
+  GATEWAY=`route -n | grep 0.0.0.0 | awk '{print $2}' | grep -v 0.0.0.0`
+  echo -e ""
+  echo -e "$green[eFa]$clean Your current default gateway is: $GATEWAY"
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-recursion() {
+  func_echo-header
+
+  # Prompt on whether to recurse or to forward
+  echo -e ""
+  echo -e "$green[eFa]$clean eFa supports full DNS recursion."
+  echo -e "$green[eFa]$clean Doing so prevents common problems using DNS blocklists."
+  echo -e "$green[eFa]$clean Alternatively, you can choose to forward DNS to your"
+  echo -e "$green[eFa]$clean DNS servers or your ISP's DNS servers."
+  echo -e "$green[eFa]$clean Port 53 outbound must be allowed for recursion to function."
+  echo -e ""
+  echo -e -n "$green[eFa]$clean Enable full recursive DNS? (Y/n): "
+  read RECURSE
+  recursecheck=0
+  while [ $recursecheck -eq 0 ]
+    do
+      if [[ $RECURSE =~ ^[Yy]$ || -z $RECURSE ]]; then
+        recursecheck=1
+        enablerecursion=1
+        DNS1=""
+        DNS2=""
+      elif [[ $RECURSE =~ ^[Nn]$ ]]; then
+        recursecheck=1
+        enablerecursion=0
+        func_ask-dns1
+        func_ask-dns2
+      else
+        echo -e "       $red ERROR: Invalid choice$clean"
+        echo -e ""
+        echo -e -n "$green[eFa]$clean Enable full recursive DNS? (Y/n): "
+        read RECURSE
+      fi
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-dns1() {
+  func_echo-header
+  if [[ "$enablerecursion" -eq 1 ]]; then
+    echo -e "$red[eFa] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
+    pause
+    return
+  fi
+  # Display current primary dns
+  DNS1=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p`
+  echo -e ""
+  echo -e "$green[eFa]$clean Your current primary DNS is: $DNS1"
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-dns2() {
+  func_echo-header
+
+  if [[ "$enablerecursion" -eq 1 ]]; then
+    echo -e "$red[eFa] Recursion is enabled.  Disable recursion to use DNS forwarders.$clean"
+    pause
+    return
+  fi
+
+  # Display current secondary dns
+  DNS2=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p`
+  echo -e ""
+  echo -e "$green[eFa]$clean Your current secondary DNS is: $DNS2"
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-username() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the user-name you would like to have."
+  echo -e "$green[eFa]$clean This user will be used to logon to the webinterface."
+  echo -e -n "$green[eFa]$clean : "
+  read USERNAME
+  uncheck=1
+  while [ $uncheck != 0 ]
+   do
+     if [[ $USERNAME =~ ^[a-z_][a-z0-9_-]{1,30}+$ ]]
+      then
+        if [[ ! $USERNAME =~ ^root|apache|halt|mail|uucp|operator|games|gopher|ftp|nobody|dbus|vcsa|abrt|haldaemon|ntp|saslauth|postfix|sshd|mysql|tcpdump|clamav|sqlgrey|unbound$ ]]
+          then
+            uncheck=0
+          else
+            echo -e "       $red ERROR: The user-name $USERNAME already exists"
+            echo -e "        ERROR: please re-enter the user-name$clean"
+            echo -e "$green[eFa]$clean Please enter the user-name you would like to have."
+            echo -e -n "$green[eFa]$clean : "
+            read USERNAME
+        fi
+      else
+        echo -e "       $red ERROR: The user-name $USERNAME seems to be invalid"
+        echo -e "        ERROR: please re-enter the user-name$clean"
+        echo -e "$green[eFa]$clean Please enter the user-name you would like to have."
+        echo -e -n "$green[eFa]$clean : "
+        read USERNAME
+     fi
+    done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-userpassword() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the password for the new user."
+  echo -e "$green[eFa]$clean This password will be used to logon to the webinterface"
+  echo -e -n "$green[eFa]$clean Password: "
+  read -s efauserpwd
+  echo -e ""
+  echo -e -n "$green[eFa]$clean Password Again: "
+  read -s efauserpwd2
+  efauserpwdcheck=1
+  while [ $efauserpwdcheck != 0 ]
+   do
+     if [[ $efauserpwd = "$efauserpwd2" ]]
+          then
+            efauserpwdcheck=0
+         else
+            echo -e ""
+            echo -e "       $red ERROR: The passwords do not seem to match"
+            echo -e "        ERROR: Please try again$clean"
+            echo -e "$green[eFa]$clean Please enter the password for the local user."
+            echo -e -n "$green[eFa]$clean Password: "
+            read -s efauserpwd
+            echo -e ""
+            echo -e -n "$green[eFa]$clean Password Again: "
+            read -s efauserpwd2
+     fi
+  done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-rootpassword() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Skipping root user password setup."
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# detect virtual system
+# +---------------------------------------------------+
+function func_detect-virtual() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Checking host type"
+  virtplatform=`sudo /usr/sbin/virt-what`
+  if [[ $virtplatform == "vmware"  ]]; then
+    echo -e "$green[eFa]$clean You seem to be running on VMware"
+    echo -e "$green[eFa]$clean Would you like to install Open VM Tools?"
+    echo ""
+    echo -e "$green[eFa]$clean Open VM Tools is the opensource version of VMware tools."
+    echo -e "$green[eFa]$clean If you require specific components that are not in Open VM Tools"
+    echo -e "$green[eFa]$clean then choose no here and install VMware tools manually later on."
+    echo ""
+    echo -e "$green[eFa]$clean For most VMware users, Open VM Tools should be good enough."
+    echo -e -n "$green[eFa]$clean [Y/n]:"
+    read VMwareInstallChoice
+    if [[ $VMwareInstallChoice == "" || $VMwareInstallChoice == "Y" || $VMwareInstallChoice == "y" ]]; then
+      InstallOpenVMTools="1"
+      InstallQEMUAgent="0"
+      InstallHyperVTools="0"
+    else
+      InstallOpenVMTools="0"
+      InstallQEMUAgent="0"
+      InstallHyperVTools="0"
+    fi
+  elif [[ $virtplatform == "kvm" ]]; then
+    echo -e "$green[eFa]$clean You seem to be running on a KVM based hypervisor"
+    echo -e "$green[eFa]$clean Would you like to install the QEMU Agent?"
+    echo -e -n "$green[eFa]$clean [Y/n]:"
+    read KVMInstallChoice
+    if [[ $KVMInstallChoice == "" || $KVMInstallChoice == "Y" || $KVMInstallChoice == "y" ]]; then
+      InstallQEMUAgent="1"
+      InstallOpenVMTools="0"
+      InstallHyperVTools="0"
+    else
+      InstallQEMUAgent="0"
+      InstallOpenVMTools="0"
+      InstallHyperVTools="0"
+    fi
+  elif [[ $virtplatform == "hyperv" ]]; then
+    echo -e "$green[eFa]$clean I am running on Hyper-V, please go to the eFa wiki for more information."
+    InstallQEMUAgent="0"
+    InstallOpenVMTools="0"
+    InstallHyperVTools="1"
+  else
+    echo -e "$green[eFa]$clean I was not able to determine the hypervisor technology that I am running on."
+    echo -e "$green[eFa]$clean If this is a physical machine, please ignore."
+    echo -e "$green[eFa]$clean Otherwise please consult your hypervisor documention for guest based agents."
+  fi
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-timezone() {
+  func_echo-header
+  echo -e -n "$green[eFa]$clean Skipping timezone setup. "
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-keyboard() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Skipping keyboard layout selection"
+  sleep 2
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-ianacode() {
+  func_echo-header
+  echo -e "$green[eFa]$clean I need your 2 letter IANA country code, this is used to"
+  echo -e "$green[eFa]$clean determine the closest mirror to download software updates from."
+  echo -e "$green[eFa]$clean If you don't know your country code please take a look at: "
+  echo -e "$green[eFa]$clean https://www.iso.org/obp/ "
+  echo ""
+  echo -e -n "$green[eFa]$clean Your IANA code (lowercase): "
+  read IANACODE
+  ianacodecheck=1
+  while [ $ianacodecheck != 0 ]
+   do
+     if [[ $IANACODE =~ ^[a-z]{1,2}$ ]]
+      then
+        ianacodecheck=0
+      else
+        echo -e "       $red ERROR: The code $IANACODE seems to be invalid"
+        echo -e "        ERROR: please re-enter the IANA code$clean"
+        echo -e -n "$green[eFa]$clean Your IANA code (lowercase): "
+        read IANACODE
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-mailserver() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the IP or hostname of your local mail server."
+  echo -e "$green[eFa]$clean This will be your server that actually receives the mail."
+  echo -e "$green[eFa]$clean For example your local Microsoft Exchange or Zimbra server."
+  echo ""
+  echo -e -n "$green[eFa]$clean Your mail server: "
+  read MAILSERVER
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-orgname() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Please enter the name of your organization."
+  echo -e "$green[eFa]$clean This needs to be a single word and is used in your mail headers."
+  echo -e "$green[eFa]$clean (No spaces, dots or underscores allowed)."
+  echo ""
+  echo -e -n "$green[eFa]$clean Your organization's name: "
+  read ORGNAME
+  orgnamecheck=1
+  while [ $orgnamecheck != 0 ]
+   do
+     if [[ $ORGNAME =~ ^[a-zA-Z1-9]{2,253}$ ]]
+      then
+        orgnamecheck=0
+      else
+        echo -e "       $red ERROR: The name $ORGNAME seems to be invalid"
+        echo -e "        ERROR: please re-enter the name.$clean"
+        echo -e -n "$green[eFa]$clean Your organization's name: "
+        read ORGNAME
+     fi
+   done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+function func_ask-updates() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Auto Updates:"
+  echo -e "$green[eFa]$clean With auto updates you can make sure this system is always up to date."
+  echo -e "$green[eFa]$clean by default we $red DISABLE $clean auto updates as it might not match your"
+  echo -e "$green[eFa]$clean company update policy."
+  echo -e "$green[eFa]$clean If you choose to keep auto updates DISABLED you will receive mails on your"
+  echo -e "$green[eFa]$clean admin e-mail account if an update is available"
+  echo ""
+  echo -e "$green[eFa]$clean Here you can $green ENABLE $clean auto updates for this eFa system."
+  echo -e "$green[eFa]$clean This will check every month if there is an update available and if so"
+  echo -e "$green[eFa]$clean it will automatically install the update."
+  echo ""
+  echo -e "$green[eFa]$clean Note: your system might reboot automatically during auto updates."
+  echo ""
+  echo -e -n "$green[eFa]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
+  read TMPUPDATES
+  updatescheck=1
+  while [ $updatescheck != 0 ]
+    do
+      if [[ "$TMPUPDATES" == "Y" || "$TMPUPDATES" == "y" ]]; then
+        enableupdates=1
+        updatescheck=0
+      elif [[ "$TMPUPDATES" == "" || "$TMPUPDATES" == "N" || "$TMPUPDATES" == "n" ]]; then
+        enableupdates=0
+        updatescheck=0
+      else
+          echo -e "       $red ERROR: please make an selection.$clean"
+          echo -e -n "$green[eFa]$clean Would you like to $green ENABLE $clean auto updates? [y/N]: "
+          read TMPUPDATES
+      fi
+  done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Verify the settings
+# +---------------------------------------------------+
+function func_verify-settings() {
+  verifymenu=1
+  while [ $verifymenu == "1" ]
+   do
+    func_echo-header
+    echo -e "--------------------------------------------------------------"
+    echo -e "$green[eFa]$clean Thank you, the following settings have been gathered:"
+    echo -e " "
+    echo -e "1)  Hostname            : $HOSTNAME"
+    echo -e "2)  Domainname          : $DOMAINNAME"
+    echo -e "3)  Admin Email         : $ADMINEMAIL"
+    echo -e "4)  Interface           : $INTERFACE"
+    echo -e "5)  IP Address          : $IPADDRESS"
+    echo -e "6)  Netmask             : $NETMASK"
+    echo -e "7)  Gateway             : $GATEWAY"
+    echo -e -n "8)  Use Recursion       : "; [[ "$enablerecursion" -eq 1 ]] && echo "Enabled" || echo "Disabled"
+    echo -e "9)  Primary DNS         : $DNS1"
+    echo -e "10) Secondary DNS       : $DNS2"
+    echo -e "11) User                : $USERNAME"
+    echo -e "12) User PWD            : <hidden>"
+    echo -e "13) Admin PWD           : N/A"
+    echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallOpenVMTools" -eq 1 ]]; then echo "VMware: Installing Open-VM-Tools."; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "KVM: Installing the QEMU Guest Agent."; elif [[ "$InstallHyperVTools" -eq 1 ]]; then echo "Hyper-V: Please go to the wiki for more information."; else echo "Not needed."; fi
+    echo -e -n "15) Time zone           : N/A"
+    echo -e "16) Keyboard            : N/A"
+    echo -e "17) IANA Code           : $IANACODE"
+    echo -e "18) Mail Server         : $MAILSERVER"
+    echo -e "19) Org. name           : $ORGNAME"
+    echo -e -n "20) Auto update         : "; if [[ "$enableupdates" -eq 1 ]]; then echo "Enabled"; else echo "Disabled"; fi
+	echo -e "21) MailWatch Email     : $MAILWATCHEMAIL"
+	echo -e "22) PostMaster Email    : $POSTMASTEREMAIL"
+	echo -e "23) Cron Email          : $CRONSOURCEEMAIL"
+    echo -e "--------------------------------------------------------------"
+    echo -e ""
+    echo -e "$green[eFa]$clean If these settings are correct type 'OK' to continue."
+    echo -e "$green[eFa]$clean if there is an error enter the number you want to change."
+    echo -e -n "$green[eFa]$clean : "
+    local choice
+    read choice
+    case $choice in
+                1)        func_ask-hostname
+                        ;;
+                2)        func_ask-domainname
+                        ;;
+                3)        func_ask-adminemail
+                        ;;
+                4)        func_ask-ipaddress
+                        ;;
+                5)        func_ask-ipaddress
+                        ;;
+                6)        func_ask-netmask
+                        ;;
+                7)        func_ask-gateway
+                        ;;
+                8)        func_ask-recursion
+                        ;;
+                9)        func_ask-dns1
+                        ;;
+                10)        func_ask-dns2
+                        ;;
+                11)       func_ask-username
+                        ;;
+                12)       func_ask-userpassword
+                        ;;
+                13)       func_ask-rootpassword
+                        ;;
+                14)       func_detect-virtual
+                        ;;
+                15)       func_ask-timezone
+                        ;;
+                16)       func_ask-keyboard
+                        ;;
+                17)       func_ask-ianacode
+                        ;;
+                18)       func_ask-mailserver
+                        ;;
+                19)       func_ask-orgname
+                        ;;
+                20)       func_ask-updates
+                        ;;
+                21)       func_ask-mailwatchemail
+                        ;;
+                22)       func_ask-postmasteremail
+                        ;;
+                23)       func_ask-cronsourceemail
+                        ;;
+                OK)       verifymenu=0
+                        ;;
+                ok)       verifymenu=0
+                        ;;
+    esac
+  done
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Configure system
+# +---------------------------------------------------+
+function func_configure-system() {
+  func_echo-header
+  echo -e "$green[eFa]$clean Configuring system"
+
+  # +--------------------------------------------------+
+  # Start mysql Daemon
+  service mysqld start
+
+  # +--------------------------------------------------+
+  # Network settings
+  #echo -e "$green[eFa]$clean - Setting new hostname"
+  #sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
+  #echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+  #echo "$IPADDRESS   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
+  #hostname $HOSTNAME
+
+  echo -e "$green[eFa]$clean - Setting DNS Servers"
+  # old dnsmasq stuff...
+  #echo "nameserver $DNS1" > /etc/resolv.dnsmasq
+  #echo "nameserver $DNS2" >> /etc/resolv.dnsmasq
+  # new unbound stuff...
+  echo "forward-zone:" > /etc/unbound/conf.d/forwarders.conf
+  echo '  name: "."' >> /etc/unbound/conf.d/forwarders.conf
+  if [[ "$enablerecursion" -eq 1 ]]; then
+    echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf
+  else
+    echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
+    echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
+  fi
+  # Skip interface setup
+  # +--------------------------------------------------+
+  
+  # Issue #268 EFA-Link test without DHCP dependency
+  # +--------------------------------------------------+
+  # set nameserver to local unbound
+  echo "nameserver 127.0.0.1" > /etc/resolv.conf
+  # +--------------------------------------------------+
+  
+  service unbound start
+  
+  # +--------------------------------------------------+
+  # Issue #190 EFA-Init Link test
+  
+  # Test Link with a DNS lookup
+  LINKTEST=$(dig efa-project.org | grep "^efa-project\.org")
+  if [[ -z $LINKTEST ]]; then 
+    echo -e "$red[ERROR]$clean Unable to resolve efa-project.org."
+    echo "Check your connectivity to the Internet and"
+    echo "ensure that DNS is functional."
+    echo "Then try to run EFA-Init again."
+    exit 1
+  fi
+  
+  # +--------------------------------------------------+
+  
+  # +--------------------------------------------------+
+  # User settings
+  # Skip creating user
+  
+
+  # Skip setting root password
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Skip regenerating host keys
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Skip setting clock
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Write ianacode to freshclam config.
+  sed -i "/^#DatabaseMirror / c\DatabaseMirror db.$IANACODE.clamav.net" /etc/freshclam.conf
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  echo -e "$green[eFa]$clean - Configuring razor"
+  su postfix -s /bin/bash -c 'razor-admin -create'
+  su postfix -s /bin/bash -c 'razor-admin -register'
+  sed -i '/^debuglevel/ c\debuglevel             = 0' /var/spool/postfix/.razor/razor-agent.conf
+
+  # Issue #157 Razor failing after registration of service
+  chown -R postfix:apache /var/spool/postfix/.razor
+  chmod ug+rwx /var/spool/postfix/.razor
+  # setgid to lock in apache group for new files
+  chmod ug+s /var/spool/postfix/.razor
+  chmod ug+rw /var/spool/postfix/.razor/*
+
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Update clamav and spamassassin rules
+  echo -e "$green[eFa]$clean - Updating AV and SA rules"
+  service unbound start
+  sleep 5
+
+  service clamd start
+  freshclam
+
+  # Issue #323 clamav-unofficial-sigs not running
+  /usr/bin/clamav-unofficial-sigs.sh
+
+  sa-update
+
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Add the domain of this system to transports
+  echo -e "$green[eFa]$clean - Allow the current to receive mails"
+  echo "" >> /etc/postfix/transport
+  echo "###### START E.F.A ADDED DOMAINS ######" >> /etc/postfix/transport
+  echo "$DOMAINNAME  smtp:[$MAILSERVER]" >> /etc/postfix/transport
+  rm -f /etc/postfix/transport.db
+  postmap /etc/postfix/transport
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Add admin email to receive root mails
+  echo "root: $ADMINEMAIL" >> /etc/aliases
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  echo -e "$green[eFa]$clean - Configuring spamassassin"
+  sed -i '/bayes_ignore_header/d' /etc/MailScanner/spamassassin.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA">>/etc/MailScanner/spamassassin.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamCheck">>/etc/MailScanner/spamassassin.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-SpamScore">>/etc/MailScanner/spamassassin.conf
+  echo "bayes_ignore_header X-$ORGNAME-MailScanner-EFA-Information">>/etc/MailScanner/spamassassin.conf
+  sed -i "/^envelope_sender_header / c\envelope_sender_header X-$ORGNAME-MailScanner-EFA-From" /etc/MailScanner/spamassassin.conf
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  echo -e "$green[eFa]$clean - Configuring MailScanner"
+  sed -i "/^%org-name% =/ c\%org-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
+  sed -i "/^%org-long-name% =/ c\%org-long-name% = $ORGNAME" /etc/MailScanner/MailScanner.conf
+  sed -i "/^%web-site% =/ c\%web-site% = https://www.efa-project.org" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Use Watermarking =/ c\Use Watermarking = yes" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Information Header Value =/ c\Information Header Value = Please contact $ADMINEMAIL for more information" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Unscanned Header Value =/ c\Unscanned Header Value = Please contact $ADMINEMAIL for details" /etc/MailScanner/MailScanner.conf
+  sed -i "/^Hostname =/ c\Hostname = $HOSTNAME.$DOMAINNAME" /etc/MailScanner/MailScanner.conf
+
+  # Configure inline sigs
+  echo -e "To: *@$DOMAINNAME /etc/MailScanner/reports/en/inline.sig.in.html" > /etc/MailScanner/rules/sig.html.rules
+  echo -e "To: default /etc/MailScanner/reports/en/inline.sig.out.html" >> /etc/MailScanner/rules/sig.html.rules
+  echo -e "To: *@$DOMAINNAME /etc/MailScanner/reports/en/inline.sig.in.txt" > /etc/MailScanner/rules/sig.text.rules
+  echo -e "To: default /etc/MailScanner/reports/en/inline.sig.out.txt" >> /etc/MailScanner/rules/sig.text.rules
+
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  echo -e "$green[eFa]$clean - Configuring MailWatch"
+  #sed -i "/^define('QUARANTINE_FROM_ADDR',/ c\define('QUARANTINE_FROM_ADDR', 'postmaster@$DOMAINNAME');" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('TIME_ZONE',/ c\define('TIME_ZONE', '$TZONE');" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$MAILWATCHEMAIL');" /var/www/html/mailscanner/conf.php
+  sed -i "/^define('MAILWATCH_HOSTURL'/ c\define('MAILWATCH_HOSTURL', 'https:\/\/' . rtrim(gethostname()) . '\/mailscanner');" /var/www/html/mailscanner/conf.php
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Give user sudo permissions
+  # Skip sudo stuff
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # create the mailwatch user
+  /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO users SET username = '$USERNAME', password = md5('$efauserpwd'), fullname = 'Administrator', type ='A'"
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Whitelist localhost in mysql for mail releasing etc..
+  /usr/bin/mysql -u root -p"$initpassword" mailscanner -e "INSERT INTO whitelist SET to_address = 'default', to_domain = '', from_address = '127.0.0.1'"
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Set timezone in php.ini
+  # Skip setting timezone
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Set the random passwords
+  # sa_user SQL password
+  randompw
+  SAUSERSQLPWD=$PASSWD
+  /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SAUSERSQLPWD') WHERE User='sa_user';"
+  /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
+  sed -i "/bayes_sql_password/ c\bayes_sql_password              $SAUSERSQLPWD" /etc/MailScanner/spamassassin.conf
+  sed -i "/user_awl_sql_password/ c\user_awl_sql_password           $SAUSERSQLPWD" /etc/MailScanner/spamassassin.conf
+  sed -i "/\usr\/bin\/mysql -usa_user / c\\/usr\/bin\/mysql -usa_user -p$SAUSERSQLPWD < \/etc\/trim-awl.sql" /usr/sbin/trim-awl
+
+  # mailwatch SQL password
+  randompw
+  MAILWATCHSQLPWD=$PASSWD
+  /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$MAILWATCHSQLPWD') WHERE User='mailwatch';"
+  /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
+  # Issue #66 grab all passwords from /etc/EFA-Config
+  #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/MailWatch.pm
+  #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLBlackWhiteList.pm
+  #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$MAILWATCHSQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/SQLSpamSettings.pm
+  #sed -i "/^define('DB_PASS',/ c\define('DB_PASS', '$MAILWATCHSQLPWD');" /var/www/html/mailscanner/conf.php
+
+  # sqlgrey SQL password
+  randompw
+  SQLGREYSQLPWD=$PASSWD
+  /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$SQLGREYSQLPWD') WHERE User='sqlgrey';"
+  /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
+  sed -i "/db_pass =/ c\db_pass = $SQLGREYSQLPWD" /etc/sqlgrey/sqlgrey.conf
+  #sed -i "/^\$db_pass/ c\$db_pass  = \"$SQLGREYSQLPWD\";" /var/www/html/sgwi/includes/config.inc.php
+
+  # efa token SQL password
+  randompw
+  EFASQLPWD=$PASSWD
+  /usr/bin/mysql -u root -p"$initpassword" -e "UPDATE mysql.user SET Password=PASSWORD('$EFASQLPWD') WHERE User='efa';"
+  /usr/bin/mysql -u root -p"$initpassword" -e "FLUSH PRIVILEGES;"
+  # Issue #66 grab all passwords from /etc/EFA-Config
+  #sed -i "/^  my(\$db_pass) =/ c\  my(\$db_pass) = '$EFASQLPWD';" /usr/lib/MailScanner/MailScanner/CustomFunctions/CustomAction.pm
+  #sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/release-msg.cgi
+  #sed -i "/^\$db_pass =/ c\\\$db_pass = \"$EFASQLPWD\";" /var/www/cgi-bin/learn-msg.cgi
+  #sed -i "/^my(\$db_pass) =/ c\my(\$db_pass) = '$EFASQLPWD';" /etc/cron.daily/EFA-Tokens-Cron
+
+  # Issue #95 SASL AUthentication database not found
+  # We just create a dummy sasldb2 with a random pwd
+  randompw
+  RANDOMSASLPWD=$PASSWD
+  echo $RANDOMSASLPWD | saslpasswd2 -p -c /etc/sasldb2
+  chgrp postfix /etc/sasldb2
+
+  # And finally we change the MYSQL root password.
+  randompw
+  MYSQLROOTPWD=$PASSWD
+  /usr/bin/mysqladmin -u root -p$initpassword password "$MYSQLROOTPWD"
+
+  # Change watermark secret
+  randompw
+  WATERMARK=$PASSWD
+  sed -i "/^Watermark Secret =/ c\Watermark Secret = %org-name%-$WATERMARK" /etc/MailScanner/MailScanner.conf
+
+  # munin
+  randompw
+  MUNINPWD=$PASSWD
+  htpasswd -b /etc/munin/munin-htpasswd munin $MUNINPWD
+
+  # Add nova53.net dcc server
+  /usr/local/bin/cdcc "add dcc.nova53.net"
+
+  # Issue 322 Geoip update during EFA-Init
+  /usr/bin/php /usr/local/sbin/geoip_update_cmd.php
+
+  # Reset ownership on geoip dat files
+  chown apache:apache /var/www/html/mailscanner/temp/*dat
+
+   }
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Install Open VM Tools
+# +---------------------------------------------------+
+func_Install-OpenVMTools(){
+  func_echo-header
+  echo -e "$green[eFa]$clean Starting the installation of Open VM Tools"
+  echo -e "$green[eFa]$clean Depending on the speed of your system this"
+  echo -e "$green[eFa]$clean might take a while."
+  pause
+  # Disable excludes
+  sed -i "s/^exclude=\(.*\)$/#exclude=\1/" /etc/yum.conf
+  yum -y install glib2-devel pam-devel libdnet-devel gcc-c++ libicu-devel open-vm-tools
+  # Restore excludes
+  sed -i "s/^#exclude=\(.*\)$/exclude=\1/" /etc/yum.conf
+  chkconfig vmtoolsd on
+  service vmtoolsd start
+  func_echo-header
+  echo -e "$green[eFa]$clean Installation of Open VM tools completed"
+  pause
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Install QEMU Agent
+# +---------------------------------------------------+
+func_Install-QEMUAgent(){
+  func_echo-header
+  echo -e "$green[eFa]$clean Starting the installation of the QEMU Agent"
+  echo -e "$green[eFa]$clean Depending on the speed of your system this"
+  echo -e "$green[eFa]$clean might take a while."
+  pause
+  # Disable excludes
+  sed -i "s/^exclude=\(.*\)$/#exclude=\1/" /etc/yum.conf
+  yum -y install qemu-guest-agent
+  # Restore excludes
+  sed -i "s/^#exclude=\(.*\)$/exclude=\1/" /etc/yum.conf
+  func_echo-header
+  echo -e "$green[eFa]$clean Installation of the QEMU Guest Agent has completed"
+  pause
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# The final settings
+# +---------------------------------------------------+
+function func_end() {
+  func_echo-header
+  # +--------------------------------------------------+
+  # Postfix SSL certificate
+  echo -e "$green[eFa]$clean We will now generate a new SSL Certificate"
+  echo -e "$green[eFa]$clean for Postfix and Apache."
+  pause
+  cd /etc/postfix/ssl
+  
+  MyName=$HOSTNAME.$DOMAINNAME
+
+  openssl req -new -x509 -newkey rsa:4096 -nodes -out rsa_smtpd.pem -keyout rsa_smtpd.pem -days 3650 -sha256 -subj "/C=$IANACODE/O=$ORGNAME/CN=$MyName"
+  # Regenerate DH key
+  rm -f /etc/postfix/ssl/dhparam.pem
+  openssl dhparam -out /etc/postfix/ssl/dhparam.pem 2048
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Remove the first time login message from console.
+  sed -i "/^First time login: /d" /etc/issue
+
+  # Remove EFA-Init from console
+  sed -i "/^\/usr\/local\/sbin\/EFA-Init/d" /root/.bashrc
+
+  # Skip user config
+
+  # Add EFA-Configure to root logon
+  # Issue #6: adcc hanging system on start after latest build
+  # sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /root/.bashrc
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Write all settings to EFA-Config
+  echo "HOSTNAME:$HOSTNAME" >> /etc/EFA-Config
+  echo "DOMAINNAME:$DOMAINNAME" >> /etc/EFA-Config
+  echo "ADMINEMAIL:$ADMINEMAIL" >> /etc/EFA-Config
+  echo "INTERFACE:$INTERFACE" >> /etc/EFA-Config
+  echo "IPADDRESS:$IPADDRESS" >> /etc/EFA-Config
+  echo "NETMASK:$NETMASK" >> /etc/EFA-Config
+  echo "GATEWAY:$GATEWAY" >> /etc/EFA-Config
+  if [[ "$enablerecursion" -eq 1 ]]; then
+    echo "RECURSION:ENABLED" >> /etc/EFA-Config
+  else
+    echo "RECURSION:DISABLED" >> /etc/EFA-Config
+  fi
+  echo "DNS1:$DNS1" >> /etc/EFA-Config
+  echo "DNS2:$DNS2" >> /etc/EFA-Config
+  echo "IANA:$IANACODE" >> /etc/EFA-Config
+  echo "MAILSERVER:$MAILSERVER" >> /etc/EFA-Config
+  echo "ORGNAME:$ORGNAME" >> /etc/EFA-Config
+  echo "SAUSERSQLPWD:$SAUSERSQLPWD" >> /etc/EFA-Config
+  echo "MAILWATCHSQLPWD:$MAILWATCHSQLPWD" >> /etc/EFA-Config
+  echo "SQLGREYSQLPWD:$SQLGREYSQLPWD" >> /etc/EFA-Config
+  echo "EFASQLPWD:$EFASQLPWD" >> /etc/EFA-Config
+  echo "MYSQLROOTPWD:$MYSQLROOTPWD" >> /etc/EFA-Config
+  echo "MUNINPWD:$MUNINPWD" >> /etc/EFA-Config
+  echo "POSTMASTEREMAIL:$POSTMASTEREMAIL" >> /etc/EFA-Config
+  echo "MAILWATCHEMAIL:$MAILWATCHEMAIL" >> /etc/EFA-Config
+  echo "CRONSOURCEEMAIL:$CRONSOURCEEMAIL" >> /etc/EFA-Config
+  if [[ "$enableupdates" -eq 1 ]]; then
+    echo "AUTOUPDATES:ENABLED" >> /etc/EFA-Config
+  else
+    echo "AUTOUPDATES:DISABLED" >> /etc/EFA-Config
+  fi
+  echo "DCCPOOL:default" >> /etc/EFA-Config
+
+  sed -i "/CONFIGURED:/ c\CONFIGURED:YES" /etc/EFA-Config
+
+  # Issue #312 MailSCanner access to EFA-Config denied
+  chown root:mtagroup /etc/EFA-Config
+  chmod 640 /etc/EFA-Config
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Enable services at boot
+  chkconfig mailscanner on
+  chkconfig postfix on
+  chkconfig httpd on
+  chkconfig mysqld on
+  chkconfig unbound on
+  chkconfig saslauthd on
+  chkconfig crond on
+  chkconfig clamd on
+  chkconfig sqlgrey on
+  chkconfig mailgraph-init on
+  chkconfig adcc on
+  chkconfig webmin on
+  chkconfig ntpd on
+  chkconfig munin-node on
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Synchronize time
+  ntpdate 0.centos.pool.ntp.org
+  hwclock --systohc
+  # +--------------------------------------------------+
+
+  # Cleanup /var/log/EFA
+  rm -f /var/log/EFA/*
+
+  # Issue 135 Lots of legit mails blocked on SpamAssassin KAM_BODY_URIBL_PCCC
+  # aka update kam.cf early
+  service MailScanner start >/dev/null 2>&1
+  /usr/local/sbin/EFA-SA-Update -update
+  mkdir -p /var/spool/MailScanner/incoming/clamav-tmp
+  chown postfix:mtagroup /var/spool/MailScanner/incoming/clamav-tmp
+  chmod ug+rwx /var/spool/MailScanner/incoming/clamav-tmp
+  service MailScanner stop
+  
+  #Update Webmin cert to use the one generated above
+  mv /etc/webmin/miniserv.pem /etc/webmin/miniserv.pem.init
+  cat /etc/postfix/ssl/rsa_smtpd.pem > /etc/webmin/miniserv.pem
+
+  # Enable EFA Service Monitoring now
+  echo "* * * * * root /usr/sbin/EFA-Monitor-cron >/dev/null 2>&1" > /etc/cron.d/EFA-Monitor.cron
+
+  # And the end.. we are done.. whooo!
+  func_echo-header
+  echo -e "$green[eFa]$clean All settings applied rebooting when you press enter."
+  pause
+  reboot
+  # +--------------------------------------------------+
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to determine the available interfaces.
+# +---------------------------------------------------+
+func_interfaces(){
+  nrintf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '} | wc -l`
+  interf=`cat /proc/net/dev | grep eth | sed 's/:/ /g' | awk {'print $1 '}`
+
+  if [ $nrintf -gt 1 ]
+        then
+          echo -e "$green[eFa]$clean You seem to have multiple network interfaces"
+          echo -e "$green[eFa]$clean The interface names on your machine are:"
+          for int in $interf
+            do
+                  echo " - $int"
+          done
+
+          local choice
+          echo -e "$green[eFa]$clean Enter the primary interface name"
+          echo -e -n "$green[eFa]$clean : "
+      read choice
+          choice_check=0
+
+      for int in $interf
+        do
+          if [ $int == $choice ]
+            then
+              choice_check=1
+          fi
+        done
+
+      # Check if the user typed a interface that exists.
+      if [ $choice_check -eq 0 ]
+        then
+          echo -e "$green[eFa]$clean ERROR, That interface does not exist."
+          echo -e "$green[eFa]$clean Staring over."
+          sleep 2
+          func_interfaces
+          return
+      fi
+
+      if [ $choice_check -eq 1 ]
+        then
+          echo -e "$green[eFa]$clean Thank you, using $choice as the primary interface"
+          INTERFACE=$choice
+      fi
+  else
+    echo -e "$green[eFa]$clean Your interface seems to be '$interf', using $interf as primary interface"
+    INTERFACE=$interf
+fi
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to test IP addresses
+# +---------------------------------------------------+
+function checkip()
+{
+  local  ip=$1
+  local  stat=1
+
+  if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+    OIFS=$IFS
+    IFS='.'
+    ip=($ip)
+    IFS=$OIFS
+    [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+    stat=$?
+  fi
+  return $stat
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Function to create a random password
+# +---------------------------------------------------+
+function randompw()
+{
+  PASSWD=""
+  PASSWD=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Trap CTRL+C, CTRL+Z and quit singles
+# +---------------------------------------------------+
+if [ $debug == "0" ]; then
+    trap '' SIGINT SIGQUIT SIGTSTP
+fi
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Pause
+# +---------------------------------------------------+
+pause(){
+    echo -e "$green[eFa]$clean Press [Enter] key to continue..."
+    read fackEnterKey
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# The header above all menu's
+# +---------------------------------------------------+
+func_echo-header(){
+    clear
+    echo -e "--------------------------------------------------------------"
+    echo -e "---        Welcome to the eFa Initial Configuration        ---"
+    echo -e "---               https://www.efa-project.org              ---"
+    echo -e "--------------------------------------------------------------"
+    echo ""
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Where to start
+# +---------------------------------------------------+
+clear
+red='\E[00;31m'
+green='\E[00;32m'
+yellow='\E[00;33m'
+blue='\E[00;34m'
+magenta='\E[00;35'
+cyan='\E[00;36m'
+clean='\e[00m'
+
+func_echo-header
+CONFIGURED="`grep CONFIGURED /etc/EFA-Config | sed 's/^.*://'`"
+if [ $CONFIGURED == "NO" ]
+ then
+    echo -e "--------------------------------------------------------------"
+    echo -e "$green[eFa]$clean We will ask you a few questions to setup this system."
+    echo -e "$green[eFa]$clean Please make sure the system is connected to the internet."
+    echo -e "--------------------------------------------------------------"
+  echo -e -n "$green[eFa]$clean Start eFa first-time configure (Y/n) -> "
+  read StartConf
+
+  if [[ "$StartConf" == "Y" || "$StartConf" == "y" || "$StartConf" == "" ]]; then
+      pause
+      func_ask-keyboard
+      func_ask-hostname
+      func_ask-domainname
+      func_ask-adminemail
+      func_ask-postmasteremail
+      func_ask-mailwatchemail
+      func_ask-cronsourceemail
+      func_ask-ipaddress
+      func_ask-netmask
+      func_ask-gateway
+      func_ask-recursion
+      func_ask-username
+      func_ask-userpassword
+      func_ask-rootpassword
+      func_detect-virtual
+      func_ask-timezone
+      func_ask-ianacode
+      func_ask-mailserver
+      func_ask-orgname
+      func_ask-updates
+      func_verify-settings
+      func_configure-system      
+      if [[ "$InstallOpenTools" -eq 1 ]]
+        then
+          func_Install-OpenVMTools
+        elif [[ "$InstallQEMUAgent" -eq 1 ]]
+          then
+            func_Install-QEMUAgent
+        else
+          echo -e "Hypervisor tools are not needed."
+      fi
+      func_end
+    elif [[ "$StartConf" == "N" || "$StartConf" == "n" ]]; then
+    echo -e "$red"
+    echo -e "You are now aborting EFA-Init, your system will not function properly."
+    echo -e "Please run /usr/local/sbin/EFA-Init to start the first-time configuration again."
+    echo -e ""
+    echo -e "Aborting EFA-Init now. $clean"
+    exit 0
+  else
+    echo -e "       $red ERROR: please make an selection.$clean"
+    echo -e -n "$green[eFa]$clean Start eFa first-time configure (Y/n) -> "
+    read StartConf
+    fi
+ else
+    echo -e "$red         ERROR: eFa is already configured $clean"
+    echo -e "$red         Please use EFA-Configure $clean"
+    echo -e ""
+    exit 0
+fi
+# EOF

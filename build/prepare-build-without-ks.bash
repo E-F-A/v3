@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.5 build without ks version 20170930
+# EFA 3.0.2.6 build without ks version 20170930
 #
 # Purpose:
 #       This script will 'baseline' an existing CentOS installation
@@ -79,7 +79,7 @@ while [ $flag != "0" ]
       if [[ "$YN" == "Y" || "$YN" == "y" ]]; then
         flag=0
       elif [[ "$YN" == "" || "$YN" == "N" || "$YN" == "n" ]]; then
-		echo "Aborting this setup"
+        echo "Aborting this setup"
         exit 1
       else
           echo -n "Are you sure you want to continue? (y/N):"
@@ -266,7 +266,7 @@ alsa-lib
 #----------------------------------------------------------------#
 mkdir /var/log/EFA
 mkdir /usr/src/EFA
-/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.2.5/build/build.bash --no-check-certificate
+/usr/bin/wget -q -O /usr/src/EFA/build.bash -o /var/log/EFA/wget.log https://raw.githubusercontent.com/E-F-A/v3/3.0.2.6/build/build.bash --no-check-certificate
 chmod 700 /usr/src/EFA/build.bash
 #----------------------------------------------------------------#
 

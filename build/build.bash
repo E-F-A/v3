@@ -1,7 +1,7 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.5 build script version 20170906
+# EFA 3.0.2.6 build script version 20180101
 # +--------------------------------------------------------------------+
 # Copyright (C) 2013~2017 https://efa-project.org
 #
@@ -1053,9 +1053,9 @@ func_mailgraph () {
 
     sed -i "/^my \$VERSION = \"1.14\";/ a\# Begin EFA\nuse PHP::Session;\nuse CGI::Lite;\n\neval {\n  my \$session_name='PHPSESSID';\n  my \$cgi=new CGI::Lite;\n  my \$cookies = \$cgi->parse_cookies;\n  if (\$cookies->{\$session_name}) {\n    my \$session = PHP::Session->new(\$cookies->{\$session_name},{save_path => '/var/lib/php/session/'});\n    if (\$session->get('user_type') ne 'A') {\n      print \"Access Denied\";\n      exit;\n    }\n  } else {\n    print\"Access Denied\";\n    exit;\n  }\n};\nif (\$@) {\n  die(\"Access Denied\");\n}\n# End EFA" /var/www/cgi-bin/mailgraph.cgi
 
-	# Issue #403 Remove gif in mailgraph footer
-	sed -i '/^<a href="http:\/\/oss.oetiker.ch\/rrdtool\/">/d' /var/www/cgi-bin/mailgraph.cgi
-	
+    # Issue #403 Remove gif in mailgraph footer
+    sed -i '/^<a href="http:\/\/oss.oetiker.ch\/rrdtool\/">/d' /var/www/cgi-bin/mailgraph.cgi
+
     # Create wrapper
     touch /var/www/html/mailscanner/mailgraph.php
     echo "<?php" > /var/www/html/mailscanner/mailgraph.php
@@ -1374,17 +1374,24 @@ func_efarequirements () {
     touch /etc/sysconfig/EFA_trusted_networks
 
     # write issue file
-    echo "" > /etc/issue
-    echo "------------------------------" >> /etc/issue
-    echo "--- Welcome to EFA-$version ---" >> /etc/issue
-    echo "------------------------------" >> /etc/issue
-    echo "  https://www.efa-project.org  " >> /etc/issue
-    echo "------------------------------" >> /etc/issue
-    echo "" >> /etc/issue
-    echo "First time login: root/EfaPr0j3ct" >> /etc/issue
+    if [[ "$action" != "--remote" ]]; then
+        echo "" > /etc/issue
+        echo "------------------------------" >> /etc/issue
+        echo "--- Welcome to EFA-$version ---" >> /etc/issue
+        echo "------------------------------" >> /etc/issue
+        echo "  https://www.efa-project.org  " >> /etc/issue
+        echo "------------------------------" >> /etc/issue
+        echo "" >> /etc/issue
+        echo "First time login: root/EfaPr0j3ct" >> /etc/issue
+    fi
 
     # Grab EFA specific scripts/programs
-    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
+    if [[ "$action" == "--remote" ]]; then
+        /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init-Remote
+    else    
+        /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
+    fi
+    
     chmod 700 /usr/local/sbin/EFA-Init
     /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Configure $gitdlurl/EFA/EFA-Configure
     chmod 700 /usr/local/sbin/EFA-Configure
@@ -1476,18 +1483,20 @@ func_cron () {
 # +---------------------------------------------------+
 func_cleanup () {
     # Clean SSH keys (generate at first boot)
-    /bin/rm -f /etc/ssh/ssh_host_*
+    if [[ "$action" != "--remote" ]]; then
+        /bin/rm -f /etc/ssh/ssh_host_*
 
-    # Secure SSH
-    sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
+        # Secure SSH
+        sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
 
-    # clear dns entries
-    echo "" > /etc/resolv.conf
+        # clear dns entries
+        echo "" > /etc/resolv.conf
 
-    # Stop running services to allow kickstart to reboot
-    service mysqld stop
-    service webmin stop
-
+        # Stop running services to allow kickstart to reboot
+        service mysqld stop
+        service webmin stop
+    fi
+        
     # clear source files
     rm -rf /usr/src/EFA/*
 
@@ -1498,76 +1507,80 @@ func_cleanup () {
     echo "exclude=$yumexclude" >> /etc/yum.conf
 
     # clear logfiles
-    rm -f /var/log/clamav/freshclam.log
-    rm -f /var/log/messages
-    touch /var/log/messages
-    chmod 600 /var/log/messages
-    rm -f /var/log/clamav-unofficial-sigs.log
-    rm -f /var/log/cron
-    touch /var/log/cron
-    chmod 600 /var/log/cron
-    rm -f /var/log/dmesg.old
-    rm -f /var/log/dracut.log
-    rm -f /var/log/httpd/*
-    rm -f /var/log/maillog
-    touch /var/log/maillog
-    chmod 600 /var/log/maillog
-    rm -f /var/log/mysqld.log
-    touch /var/log/mysqld.log
-    chown mysql:mysql /var/log/mysqld.log
-    chmod 640 /var/log/mysqld.log
-    rm -f /var/log/yum.log
-    touch /var/log/yum.log
-    chmod 600 /var/log/yum.log
-    touch /var/log/clamav/freshclam.log
-    chmod 600 /var/log/clamav/freshclam.log
-    chown clam:clam /var/log/clamav/freshclam.log
-    touch /var/log/clamav/clamd.log
-    chmod 600 /var/log/clamav/clamd.log
-    chown clam:clam /var/log/clamav/clamd.log
-
+    if [[ "$action" != "--remote" ]]; then
+        rm -f /var/log/clamav/freshclam.log
+        rm -f /var/log/messages
+        touch /var/log/messages
+        chmod 600 /var/log/messages
+        rm -f /var/log/clamav-unofficial-sigs.log
+        rm -f /var/log/cron
+        touch /var/log/cron
+        chmod 600 /var/log/cron
+        rm -f /var/log/dmesg.old
+        rm -f /var/log/dracut.log
+        rm -f /var/log/httpd/*
+        rm -f /var/log/maillog
+        touch /var/log/maillog
+        chmod 600 /var/log/maillog
+        rm -f /var/log/mysqld.log
+        touch /var/log/mysqld.log
+        chown mysql:mysql /var/log/mysqld.log
+        chmod 640 /var/log/mysqld.log
+        rm -f /var/log/yum.log
+        touch /var/log/yum.log
+        chmod 600 /var/log/yum.log
+        touch /var/log/clamav/freshclam.log
+        chmod 600 /var/log/clamav/freshclam.log
+        chown clam:clam /var/log/clamav/freshclam.log
+        touch /var/log/clamav/clamd.log
+        chmod 600 /var/log/clamav/clamd.log
+        chown clam:clam /var/log/clamav/clamd.log
+    fi
+        
     # Clean root
-    rm -f /root/anaconda-ks.cfg
-    rm -f /root/install.log
-    rm -f /root/install.log.syslog
+    if [[ "$action" != "--remote" ]]; then
+        rm -f /root/anaconda-ks.cfg
+        rm -f /root/install.log
+        rm -f /root/install.log.syslog
 
-    # Clean tmp
-    rm -rf /tmp/*
+        # Clean tmp
+        rm -rf /tmp/*
+    fi
 
     # Clean networking in preparation for creating VM Images
-    # TODO don't clean if we run from a VPS install where a static IP is needed.
-    rm -f /etc/udev/rules.d/70-persistent-net.rules
-    echo -e "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0
-    echo -e "BOOTPROTO=dhcp" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-    
-    # Disable dhclient DHCP Naming
-    echo -e "DHCP_HOSTNAME=eFa" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+    if [[ "$action" != "--remote" ]]; then
+        rm -f /etc/udev/rules.d/70-persistent-net.rules
+        echo -e "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0
+        echo -e "BOOTPROTO=dhcp" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 
-    # SELinux is giving me headaches disabling until everything works correctly
-    # When everything works we should enable SELinux and try to fix all permissions..
-    sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/selinux/config
-    # Fix SE-Linux security issues
-    #restorecon -r /var/www
-    #chcon -v --type=httpd_sys_content_t /var/lib/mailgraph*
-    # todo: figure out which se-linux items needs to be changed to allow clamd access to /var/spool/MailScanner/incoming/*..
-    #       Currently se-linux blocks clamd.
-    #       (denied  { read } for  pid=4083 comm="clamd" name="3899" dev=tmpfs ino=23882 scontext=unconfined_u:system_r:antivirus_t:s0 tcontext=unconfined_u:object_r:var_spool_t:s0 tclass=dir
+        # Disable dhclient DHCP Naming
+        echo -e "DHCP_HOSTNAME=eFa" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 
-    # Remove boot splash so we can see whats going on while booting and set console reso to 800x600
-    sed -i 's/\<rhgb quiet\>/ vga=771/g' /boot/grub/grub.conf
+        # SELinux is giving me headaches disabling until everything works correctly
+        # When everything works we should enable SELinux and try to fix all permissions..
+        sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/selinux/config
+        # Fix SE-Linux security issues
+        #restorecon -r /var/www
+        #chcon -v --type=httpd_sys_content_t /var/lib/mailgraph*
+        # todo: figure out which se-linux items needs to be changed to allow clamd access to /var/spool/MailScanner/incoming/*..
+        #       Currently se-linux blocks clamd.
+        #       (denied  { read } for  pid=4083 comm="clamd" name="3899" dev=tmpfs ino=23882 scontext=unconfined_u:system_r:antivirus_t:s0 tcontext=unconfined_u:object_r:var_spool_t:s0 tclass=dir
 
-    # zero disks for better compression (when creating VM images)
-    # this can take a while so disabled for now until we start creating images.
-    # TODO make this not happen if we run the script from a VPS install
-    dd if=/dev/zero of=/filler bs=4096
-    rm -f /filler
-    dd if=/dev/zero of=/tmp/filler bs=4096
-    rm -f /tmp/filler
-    dd if=/dev/zero of=/boot/filler bs=4096
-    rm -f /boot/filler
-    dd if=/dev/zero of=/var/filler bs=4096
-    rm -f /var/filler
-    
+        # Remove boot splash so we can see whats going on while booting and set console reso to 800x600
+        sed -i 's/\<rhgb quiet\>/ vga=771/g' /boot/grub/grub.conf
+
+        # zero disks for better compression (when creating VM images)
+        # this can take a while so disabled for now until we start creating images.
+        dd if=/dev/zero of=/filler bs=4096
+        rm -f /filler
+        dd if=/dev/zero of=/tmp/filler bs=4096
+        rm -f /tmp/filler
+        dd if=/dev/zero of=/boot/filler bs=4096
+        rm -f /boot/filler
+        dd if=/dev/zero of=/var/filler bs=4096
+        rm -f /var/filler
+    fi
+    echo "eFa Build Completed"
 
 }
 # +---------------------------------------------------+
@@ -1582,7 +1595,7 @@ func_cleanup () {
 #-----------------------------------------------------------------------------#
 function main() {
   # If $action is empty we run the normal setup
-  if [[ -z "$action" ]]; then
+  if [[ -z "$action" || "$action" == "--remote" ]]; then
     func_prebuild
     func_upgradeOS
     func_epelrepo
@@ -1598,7 +1611,7 @@ function main() {
     func_sgwi
     func_mailgraph
     func_pyzor
-	update_pyzor-servers
+    update_pyzor-servers
     func_razor
     func_dcc
     func_imagecerberus
@@ -1621,7 +1634,7 @@ function main() {
     func_mailscanner
     func_spam_clamav
     func_pyzor
-	update_pyzor-servers
+    update_pyzor-servers
     func_razor
     func_dcc
     func_install-certbot
