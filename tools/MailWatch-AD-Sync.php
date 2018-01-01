@@ -4,7 +4,7 @@
 /*-----------------------------------------------------------------------------
  * eFa v3 MailWatch AD/LDAP Sync Script version 20170812
  *-----------------------------------------------------------------------------
- * Copyright (C) 2013~2017 https://efa-project.org
+ * Copyright (C) 2013~2018 https://efa-project.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
