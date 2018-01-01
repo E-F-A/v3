@@ -137,7 +137,7 @@ function start_backup()
   
   # Issue #395
   mkdir -p $WORKINGDIR/usr/sbin
-  cp -a /usr/sbin/trim-awk $WORKINGDIR/usr/sbin
+  cp -a /usr/sbin/trim-awl $WORKINGDIR/usr/sbin
 
   # Gzip tarball the collection
   tar -cpzf $TMPDIR/backup-$CDATE-$CTIME.tar.gz -C $TMPDIR/$CDATE$CTIME .
