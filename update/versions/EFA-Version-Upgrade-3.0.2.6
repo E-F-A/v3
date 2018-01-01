@@ -85,8 +85,10 @@ function run_update() {
   # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /usr/local/sbin/EFA-Renew-Certs
+  rm -f /usr/local/sbin/EFA-Backup
   rm -rf /var/EFA/lib/EFA-Configure/
   cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
+  cp $STAGING/Scripts/EFA-Backup /usr/local/sbin/EFA-Backup
   cp $STAGING/Scripts/EFA-Renew-Certs /usr/local/sbin/EFA-Renew-Certs
   cp $STAGING/Scripts/EFA-Daily-DMARC /usr/local/sbin/EFA-Daily-DMARC
   cp $STAGING/Scripts/EFA-Weekly-DMARC /usr/local/sbin/EFA-Weekly-DMARC
