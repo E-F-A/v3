@@ -737,11 +737,11 @@ function func_verify-settings() {
                         ;;
                 20)       func_ask-updates
                         ;;
-				21)       func_ask-mailwatchemail
+                21)       func_ask-mailwatchemail
                         ;;
-				22)       func_ask-postmasteremail
+                22)       func_ask-postmasteremail
                         ;;
-				23)       func_ask-cronsourceemail
+                23)       func_ask-cronsourceemail
                         ;;
                 OK)       verifymenu=0
                         ;;

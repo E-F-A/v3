@@ -22,7 +22,7 @@
 # Variables
 # +---------------------------------------------------+
 debug="0"
-# initpassword="EfaPr0j3ct"
+initpassword="EfaPr0j3ct"
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
@@ -663,7 +663,9 @@ function func_configure-system() {
   
   # +--------------------------------------------------+
   # User settings
-  # Skip creating user
+  echo -e "$green[eFa]$clean - Creating user"
+  useradd -m -d /home/$USERNAME -s /bin/bash $USERNAME
+  echo "$USERNAME:$efauserpwd" | chpasswd --md5 $USERNAME
   
 
   # Skip setting root password
@@ -766,7 +768,8 @@ function func_configure-system() {
 
   # +--------------------------------------------------+
   # Give user sudo permissions
-  # Skip sudo stuff
+  echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers.d/EFA-users
+  echo "$USERNAME ALL=(ALL) NOPASSWD: /usr/local/sbin/EFA-Configure" >> /etc/sudoers.d/EFA-users
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
