@@ -64,7 +64,7 @@ function run_update() {
   checkspace
 
   ##### Backup Phase #####
-  /usr/local/sbin/EFA-Backup -backup
+  [[ -z $NOBACKUP ]] && /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
 
   ##### Commit Phase #####
