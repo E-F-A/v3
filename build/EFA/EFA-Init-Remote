@@ -532,7 +532,7 @@ function func_verify-settings() {
     echo -e "12) User PWD            : <hidden>"
     echo -e "13) Admin PWD           : N/A"
     echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallOpenVMTools" -eq 1 ]]; then echo "VMware: Installing Open-VM-Tools."; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "KVM: Installing the QEMU Guest Agent."; elif [[ "$InstallHyperVTools" -eq 1 ]]; then echo "Hyper-V: Please go to the wiki for more information."; else echo "Not needed."; fi
-    echo -e -n "15) Time zone           : N/A"
+    echo -e "15) Time zone           : N/A"
     echo -e "16) Keyboard            : N/A"
     echo -e "17) IANA Code           : $IANACODE"
     echo -e "18) Mail Server         : $MAILSERVER"
@@ -1191,7 +1191,7 @@ if [ $CONFIGURED == "NO" ]
       func_ask-orgname
       func_ask-updates
       func_verify-settings
-      func_configure-system      
+      func_configure-system
       if [[ "$InstallOpenTools" -eq 1 ]]
         then
           func_Install-OpenVMTools

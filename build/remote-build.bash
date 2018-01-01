@@ -285,6 +285,7 @@ echo ""
 echo "logsave /var/log/EFA/build.log /usr/src/EFA/build.bash --remote"
 echo ""
 echo -n "Do you want to start the build script? (y/N):"
+YN=""
 read YN
 flag=1
 while [ $flag != "0" ]
