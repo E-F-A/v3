@@ -133,6 +133,8 @@ func_transport-settings(){
                           if checkip $DEST
                             then
                               # If $DEST looks to be an valid IP we are ok.
+                              # Strip brackets
+                              DEST=$(echo $DEST | sed -e "s/^\[//" -e "s/\]$//")
                               DESTCHECK=0
                             elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,63}$ ]]; then
                               # If $DEST looks like an valid domain name we are ok.
@@ -206,6 +208,8 @@ func_transport-settings(){
                     read DEST
                     # Simple check if destination contains any data.
                     DESTCHECK=1
+                    # Strip brackets
+                    DEST=$(echo $DEST | sed -e "s/^\[//" -e "s/\]$//")
                     while [ $DESTCHECK != 0 ]
                       do
                         if checkip $DEST
