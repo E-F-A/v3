@@ -282,7 +282,7 @@ echo "We can now launch the build script."
 echo "If you do not want to launch the build script now then"
 echo "you will need to start this your self with the command:"
 echo ""
-echo "logsave /var/log/EFA/build.log /usr/src/EFA/build.bash"
+echo "logsave /var/log/EFA/build.log /usr/src/EFA/build.bash --remote"
 echo ""
 echo -n "Do you want to start the build script? (y/N):"
 read YN
