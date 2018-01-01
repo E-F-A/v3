@@ -3,20 +3,20 @@ EFA Version 3.0.2.6 TEST PLAN
 ############################################################
 
 Confirm EFA-Configure Functionality
-    Edit transport destinations
+    Edit transport destinations PASSED
     Are you sure for Update Now PASSED
     Brackets accepted in transport edits PASSED
-    Option to add to hosts file during Outbound Relay setup
+    Option to add to hosts file during Outbound Relay setup PASSED
     DKIM menus and settings function PASSED
 Confirm EFA-Backup
-    Backs up trim-awl
-    Date ordering sort friendly
+    Backs up trim-awl PASSED
+    Date ordering sort friendly PASSED
 Confirm EFA-Restore
     Executes postmaps PASSED
 Confirm NOBACKUP env set skips backup on update PASSED
 Confirm MailScanner
     Update successful PASSED
-    Numeric Phishing ruleset
+    Numeric Phishing ruleset PASSED
 Confirm MailGraph
     Footer GIF Removed PASSED
 Confirm EFA-Init
