@@ -23,6 +23,7 @@ Confirm EFA-Init
     New Email Options
 Confirm Update reports FQDN on completion notice
 Confirm Let's encrypt upper case ok
+Confirm remote-build.bash
 
 ############################################################
 EFA Version 3.0.2.5 TEST PLAN

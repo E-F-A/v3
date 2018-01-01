@@ -18,6 +18,7 @@ Issue #403 Bug         - MailGraph image in footer causing mixed content message
 Issue #405 Enhancement - Update hosts file when Outbound Relay is added
 
 Enhancement -- sort friendly backup names
+Enhancement -- remote-build.bash script for vps/remote builds
 MailScanner updated to 5.0.7-1
 
 ############################################################
