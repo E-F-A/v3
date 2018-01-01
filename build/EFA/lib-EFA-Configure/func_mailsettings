@@ -82,10 +82,40 @@ func_transport-settings(){
                  while [ $flag == "0" ]
                    do
                      echo -e ""
-                     echo -e "Do you want to $green[r]$clean replace, $green[d]$clean delete this entry, or $green[c]$clean cancel? : "
+                     echo -e "Do you want to $green[e]$clean edit, $green[r]$clean replace, $green[d]$clean delete this entry, or $green[c]$clean cancel? : "
                      local TMPOPTION
                      read TMPOPTION
-                     if [[ $TMPOPTION == "r" || $TMPOPTION == "R" ]]; then
+                     if [ $TMPOPTION == "e" || $TMPOPTION == "E" ]]; then
+                        echo -e "Enter the new destination server"
+                        echo -e -n "$green[Destination]$clean : "
+                        local DEST
+                        read DEST
+                        # Strip brackets
+                        DEST=$(echo $DEST | sed -e "s/^\[//" -e "s/\]$//")
+                        # Simple check if destination contains any data.
+                        DESTCHECK=1
+                        while [ $DESTCHECK != 0 ]
+                        do
+                          if checkip $DEST
+                            then
+                              # If $DEST looks to be an valid IP we are ok.
+                              
+                              DESTCHECK=0
+                            elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,63}$ ]]; then
+                              # If $DEST looks like an valid domain name we are ok.
+                              DESTCHECK=0
+                            else
+                              echo -e "       $red ERROR: The value $DEST seems to be invalid"
+                              echo -e "        ERROR: please re-enter the destination$clean"
+                              echo -e ""
+                              echo -e -n "$green[Destination]$clean : "
+                              read DEST
+                          fi
+                        done
+                        sed -i "/$ENTDOMAIN[[:space:]]\+smtp:\[$ENTDEST\]/ c\\$ENTDOMAIN  smtp:[$DEST]" /etc/postfix/transport
+                        postmap /etc/postfix/transport
+                        flag=1
+                     elif [[ $TMPOPTION == "r" || $TMPOPTION == "R" ]]; then
                         echo -e ""
                         echo -e "Please enter the domain you want use:"
                         echo -e -n "$green[Domain]$clean : "
@@ -128,13 +158,13 @@ func_transport-settings(){
                         read DEST
                         # Simple check if destination contains any data.
                         DESTCHECK=1
+                        # Strip brackets
+                        DEST=$(echo $DEST | sed -e "s/^\[//" -e "s/\]$//")
                         while [ $DESTCHECK != 0 ]
                         do
                           if checkip $DEST
                             then
                               # If $DEST looks to be an valid IP we are ok.
-                              # Strip brackets
-                              DEST=$(echo $DEST | sed -e "s/^\[//" -e "s/\]$//")
                               DESTCHECK=0
                             elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,63}$ ]]; then
                               # If $DEST looks like an valid domain name we are ok.
