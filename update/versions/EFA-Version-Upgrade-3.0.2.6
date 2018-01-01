@@ -74,7 +74,11 @@ function run_update() {
 
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
-
+  
+  # Beta testing 3.0.2.6
+  rm -f /etc/yum.repos.d/EFA.repo
+  cp -f $STAGING/Files/EFA-beta.repo /etc/yum.repos.d/
+  
   yum clean all
   yum_update
 
