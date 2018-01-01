@@ -395,7 +395,10 @@ function func_detect-virtual() {
 # +---------------------------------------------------+
 function func_ask-timezone() {
   func_echo-header
-  echo -e -n "$green[eFa]$clean Skipping timezone setup. "
+  echo -e "$green[eFa]$clean Using current timezone "
+  echo ""
+  TZONE=$(grep ZONE /etc/sysconfig/clock)
+  echo -e "Current Timezone:"
   sleep 2
 }
 # +---------------------------------------------------+
@@ -532,7 +535,7 @@ function func_verify-settings() {
     echo -e "12) User PWD            : <hidden>"
     echo -e "13) Admin PWD           : N/A"
     echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallOpenVMTools" -eq 1 ]]; then echo "VMware: Installing Open-VM-Tools."; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "KVM: Installing the QEMU Guest Agent."; elif [[ "$InstallHyperVTools" -eq 1 ]]; then echo "Hyper-V: Please go to the wiki for more information."; else echo "Not needed."; fi
-    echo -e "15) Time zone           : N/A"
+    echo -e "15) Time zone           : $TZONE"
     echo -e "16) Keyboard            : N/A"
     echo -e "17) IANA Code           : $IANACODE"
     echo -e "18) Mail Server         : $MAILSERVER"
@@ -634,7 +637,7 @@ function func_configure-system() {
     echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf
   else
     echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
-    echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
+    [[ -n $DNS2 ]] && echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
   fi
   # Skip interface setup
   # +--------------------------------------------------+
@@ -785,7 +788,7 @@ function func_configure-system() {
 
   # +--------------------------------------------------+
   # Set timezone in php.ini
-  # Skip setting timezone
+  sed -i "/^;date.timezone =/ c\date.timezone = $TZONE" /etc/php.ini
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
