@@ -15,14 +15,14 @@ Confirm EFA-Restore
     Executes postmaps PASSED
 Confirm NOBACKUP env set skips backup on update PASSED
 Confirm MailScanner
-    Update successful
+    Update successful PASSED
     Numeric Phishing ruleset
 Confirm MailGraph
-    Footer GIF Removed
+    Footer GIF Removed PASSED
 Confirm EFA-Init
     New Email Options
-Confirm Update reports FQDN on completion notice
-Confirm Let's encrypt upper case ok
+Confirm Update reports FQDN on completion notice PASSED
+Confirm Let's encrypt upper case ok PASSED
 Confirm remote-build.bash
 
 ############################################################
