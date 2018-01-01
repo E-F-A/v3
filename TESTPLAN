@@ -12,8 +12,8 @@ Confirm EFA-Backup
     Backs up trim-awl
     Date ordering sort friendly
 Confirm EFA-Restore
-    Executes postmaps
-Confirm NOBACKUP env set skips backup on update
+    Executes postmaps PASSED
+Confirm NOBACKUP env set skips backup on update PASSED
 Confirm MailScanner
     Update successful
     Numeric Phishing ruleset
