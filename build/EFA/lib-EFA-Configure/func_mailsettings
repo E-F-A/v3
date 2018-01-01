@@ -85,7 +85,7 @@ func_transport-settings(){
                      echo -e "Do you want to $green[e]$clean edit, $green[r]$clean replace, $green[d]$clean delete this entry, or $green[c]$clean cancel? : "
                      local TMPOPTION
                      read TMPOPTION
-                     if [ $TMPOPTION == "e" || $TMPOPTION == "E" ]]; then
+                     if [[ $TMPOPTION == "e" || $TMPOPTION == "E" ]]; then
                         echo -e "Enter the new destination server"
                         echo -e -n "$green[Destination]$clean : "
                         local DEST
