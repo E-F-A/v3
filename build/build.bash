@@ -410,8 +410,8 @@ func_mailscanner () {
     echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
 
     # Issue #345 Numeric Phishing Default Ruleset
-    echo "From:\t127.0.0.1\tno" > /etc/MailScanner/numeric.phishing.rules
-    echo "FromOrTo:\tDefault\tyes" >> /etc/MailScanner/numeric.phishing.rules
+    echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/numeric.phishing.rules
+    echo -e "FromOrTo:\tDefault\tyes" >> /etc/MailScanner/numeric.phishing.rules
     sed -i '/^Also Find Numeric Phishing =/ c\Also Find Numeric Phishing = %etc-dir%/numeric.phishing.ruiles' /etc/MailScanner/MailScanner.conf
 
     # Issue #309 Anacron daily notifications from mailscanner

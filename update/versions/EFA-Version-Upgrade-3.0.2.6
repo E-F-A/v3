@@ -201,8 +201,8 @@ EOF
   # Issue #345 Numeric Phishing Default Ruleset
   NUMERICPHISHING=$(grep "^Also Find Numeric Phishing =" /etc/MailScanner/MailScanner.conf | sed -e "s/^.*=\ //")
   if [[ "$NUMERICPHISHING" == "yes" ]]; then
-    echo "From:\t127.0.0.1\tno" > /etc/MailScanner/numeric.phishing.rules
-    echo "FromOrTo:\tDefault\tyes" >> /etc/MailScanner/numeric.phishing.rules
+    echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/numeric.phishing.rules
+    echo -e "FromOrTo:\tDefault\tyes" >> /etc/MailScanner/numeric.phishing.rules
     sed -i '/^Also Find Numeric Phishing =/ c\Also Find Numeric Phishing = %etc-dir%/numeric.phishing.ruiles' /etc/MailScanner/MailScanner.conf
   fi
 
