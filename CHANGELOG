@@ -2,8 +2,23 @@
 EFA Version 3.0.2.6 Changes
 ############################################################
 
-Issue #396 Bug - Fix case-sensitive strings in Let's Encrypt
+Issue #345 Bug         - Numeric phishing default ruleset needed
+Issue #360 Enhancement - Update option -- Are you Sure?
+Issue #364 Enhancement - Edit transport destinations
+Issue #374 Enhancement - Option to bypass db backup during update
+Issue #382 Bug         - Allow square brackets in EFA-Configure
+Issue #395 Bug         - postmap postfix configs during system restore
+Issue #396 Bug         - Fix case-sensitive strings in Let's Encrypt
+Issue #397 Enhancement - Include hostname in upgrade email notices
+Issue #399 Bug         - POSTMASTEREMAIL undefined on some instances
+Issue #400 Bug         - Identical files scanning bug in multiple attached archives
+Issue #401 Enhancement - Better kernel update detection
+Issue #402 Bug         - /usr/bin/clamav-unofficial-sigs.sh config version not updated to required version
+Issue #403 Bug         - MailGraph image in footer causing mixed content messages
+Issue #405 Enhancement - Update hosts file when Outbound Relay is added
 
+Enhancement -- sort friendly backup names
+MailScanner updated to 5.0.7-1
 
 ############################################################
 EFA Version 3.0.2.5 Changes

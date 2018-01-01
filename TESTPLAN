@@ -1,4 +1,30 @@
 ############################################################
+EFA Version 3.0.2.6 TEST PLAN
+############################################################
+
+Confirm EFA-Configure Functionality
+    Edit transport destinations
+    Are you sure for Update Now
+    Brackets accepted in transport edits
+    Option to add to hosts file during Outbound Relay setup
+    DKIM menus and settings function
+Confirm EFA-Backup
+    Backs up trim-awl
+    Date ordering sort friendly
+Confirm EFA-Restore
+    Executes postmaps
+Confirm NOBACKUP env set skips backup on update
+Confirm MailScanner
+    Update successful
+    Numeric Phishing ruleset
+Confirm MailGraph
+    Footer GIF Removed
+Confirm EFA-Init
+    New Email Options
+Confirm Update reports FQDN on completion notice
+Confirm Let's encrypt upper case ok
+
+############################################################
 EFA Version 3.0.2.5 TEST PLAN
 ############################################################
 
