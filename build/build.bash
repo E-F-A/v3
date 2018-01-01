@@ -1413,9 +1413,10 @@ func_efarequirements () {
     done
     chmod 600 /var/EFA/lib/EFA-Configure/*
 
-    # Write SSH banner
-    sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config
-    cat > /etc/banner << 'EOF'
+    if [[ "$action" != "--remote" ]]; then
+        # Write SSH banner
+        sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config
+        cat > /etc/banner << 'EOF'
        Welcome to eFa (https://www.efa-project.org)
 
  Warning!
@@ -1438,7 +1439,7 @@ func_efarequirements () {
  consent to these terms and conditions of use.   LOG OFF IMMEDIATELY
  if you do not agree to the conditions stated in this warning.
 EOF
-
+    fi
     # Compress logs from logrotate
     sed -i "s/#compress/compress/g" /etc/logrotate.conf
 
