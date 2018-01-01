@@ -25,16 +25,16 @@ func_mail-settings(){
       read choice
       case $choice in
                 1) func_outbound-relay;;
-                2) func_outbound-smarthost;;  
+                2) func_outbound-smarthost;;
                 3) func_adminemail;;
                 4) func_transport-settings;;
                 5) func_postmasteremail;;
-    6) func_mailwatchemail;;
-    7) func_cronsourceemail;;
-    8) func_dmarcrepemail;;
+                6) func_mailwatchemail;;
+                7) func_cronsourceemail;;
+                8) func_dmarcrepemail;;
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && pause
-            esac
+       esac
     done
 }
 # +---------------------------------------------------+
@@ -534,7 +534,7 @@ func_outbound-relay(){
                   echo ""
                   echo "Hosts entry added"
                   pause
-                elif [ $yesno =~ ^[Nn]$ ] then
+                elif [[ $yesno =~ ^[Nn]$ ]]; then
                   hostsoption=0
                 else
                   echo -e "Error \"$yesno\" is not an option..." && pause
