@@ -20,7 +20,7 @@ Confirm MailScanner
 Confirm MailGraph
     Footer GIF Removed PASSED
 Confirm EFA-Init
-    New Email Options
+    New Email Options PASSED
 Confirm Update reports FQDN on completion notice PASSED
 Confirm Let's encrypt upper case ok PASSED
 Confirm remote-build.bash
