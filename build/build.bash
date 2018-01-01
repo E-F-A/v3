@@ -1556,16 +1556,6 @@ func_cleanup () {
         # Disable dhclient DHCP Naming
         echo -e "DHCP_HOSTNAME=eFa" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 
-        # SELinux is giving me headaches disabling until everything works correctly
-        # When everything works we should enable SELinux and try to fix all permissions..
-        sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/selinux/config
-        # Fix SE-Linux security issues
-        #restorecon -r /var/www
-        #chcon -v --type=httpd_sys_content_t /var/lib/mailgraph*
-        # todo: figure out which se-linux items needs to be changed to allow clamd access to /var/spool/MailScanner/incoming/*..
-        #       Currently se-linux blocks clamd.
-        #       (denied  { read } for  pid=4083 comm="clamd" name="3899" dev=tmpfs ino=23882 scontext=unconfined_u:system_r:antivirus_t:s0 tcontext=unconfined_u:object_r:var_spool_t:s0 tclass=dir
-
         # Remove boot splash so we can see whats going on while booting and set console reso to 800x600
         sed -i 's/\<rhgb quiet\>/ vga=771/g' /boot/grub/grub.conf
 
@@ -1580,6 +1570,16 @@ func_cleanup () {
         dd if=/dev/zero of=/var/filler bs=4096
         rm -f /var/filler
     fi
+    
+    # SELinux is giving me headaches disabling until everything works correctly
+    # When everything works we should enable SELinux and try to fix all permissions..
+    sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/selinux/config
+    # Fix SE-Linux security issues
+    #restorecon -r /var/www
+    #chcon -v --type=httpd_sys_content_t /var/lib/mailgraph*
+    # todo: figure out which se-linux items needs to be changed to allow clamd access to /var/spool/MailScanner/incoming/*..
+    #       Currently se-linux blocks clamd.
+    #       (denied  { read } for  pid=4083 comm="clamd" name="3899" dev=tmpfs ino=23882 scontext=unconfined_u:system_r:antivirus_t:s0 tcontext=unconfined_u:object_r:var_spool_t:s0 tclass=dir
     echo "eFa Build Completed"
 
 }
