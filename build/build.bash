@@ -65,7 +65,7 @@ func_upgradeOS () {
 func_efarepo () {
    rpm --import $smirror/rpm/RPM-GPG-KEY-E.F.A.Project
    cd /etc/yum.repos.d/
-   /usr/bin/wget $smirror/rpm/EFA-beta.repo
+   /usr/bin/wget $smirror/rpm/EFA.repo
    yum install -y MariaDB-server MariaDB-client unrar perl-IP-Country perl-Mail-SPF-Query perl-Net-Ident perl-Mail-ClamAV webmin perl-NetAddr-IP \
    re2c postfix perl-Digest-SHA perl-Mail-SPF perl-Digest-HMAC perl-Net-DNS perl-Net-DNS-Resolver-Programmable \
    perl-Digest perl-Digest-MD5 perl-DB_File perl-ExtUtils-Constant perl-Geo-IP perl-IO-Socket-INET6 perl-Socket \
