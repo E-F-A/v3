@@ -74,13 +74,19 @@ function run_update() {
 
   YUM_EXCLUDES=$(grep "^exclude=" /etc/yum.conf | awk -F'=' '{print $2}')
   sed -i "/^exclude=/ c\exclude=" /etc/yum.conf
-  
+
   # Beta testing 3.0.2.6
   rm -f /etc/yum.repos.d/EFA.repo
   cp -f $STAGING/Files/EFA-beta.repo /etc/yum.repos.d/
-  
+
   yum clean all
   yum_update
+
+  # Remi Rep for PHP 7.2
+  yum -y install http://rpms.remirepo.net/enterprise/remi-release-6.rpm
+  yum -y install yum-utils
+  yum-config-manager --enable remi-php72
+  yum -y install php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo php-xml
 
   # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
@@ -101,10 +107,10 @@ function run_update() {
 
   # Add init.d symlink back for compatibility
   # ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
-  
+
   #Update pyzor servers
   update_pyzor-servers
-  
+
   # Issue #403 Remove gif in mailgraph footer
   sed -i '/^<a href="http:\/\/oss.oetiker.ch\/rrdtool\/">/d' /var/www/cgi-bin/mailgraph.cgi
 

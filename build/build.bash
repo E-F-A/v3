@@ -98,6 +98,17 @@ func_mariadbrepo () {
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
+# Add Remi Repo for PHP 7.2
+# +---------------------------------------------------+
+func_remirepo () {
+  yum -y install http://rpms.remirepo.net/enterprise/remi-release-6.rpm
+  yum -y install yum-utils
+  yum-config-manager --enable remi-php72
+  yum -y install php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo php-xml
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
 # configure MariaDB
 # +---------------------------------------------------+
 func_mariadb () {
@@ -1600,6 +1611,7 @@ function main() {
     func_prebuild
     func_upgradeOS
     func_epelrepo
+    func_remirepo
     func_mariadbrepo
     func_efarepo
     func_mariadb
