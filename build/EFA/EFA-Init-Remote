@@ -397,8 +397,8 @@ function func_ask-timezone() {
   func_echo-header
   echo -e "$green[eFa]$clean Using current timezone "
   echo ""
-  TZONE=$(grep ZONE /etc/sysconfig/clock)
-  echo -e "Current Timezone:"
+  TZONE=$(grep ZONE /etc/sysconfig/clock | sed -e "s/^.*=//" -e "s/\"//g")
+  echo -e "Current Timezone: $TZONE"
   sleep 2
 }
 # +---------------------------------------------------+
