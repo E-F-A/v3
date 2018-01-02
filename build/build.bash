@@ -1,9 +1,9 @@
 #!/bin/bash
 action=$1
 # +--------------------------------------------------------------------+
-# EFA 3.0.2.5 build script version 20170906
+# EFA 3.0.2.6 build script version 20180101
 # +--------------------------------------------------------------------+
-# Copyright (C) 2013~2017 https://efa-project.org
+# Copyright (C) 2013~2018 https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -94,6 +94,17 @@ func_epelrepo () {
 func_mariadbrepo () {
   cd /etc/yum.repos.d/
   /usr/bin/wget $smirror/build/$version/mariadb.repo
+}
+# +---------------------------------------------------+
+
+# +---------------------------------------------------+
+# Add Remi Repo for PHP 7.2
+# +---------------------------------------------------+
+func_remirepo () {
+  yum -y install http://rpms.remirepo.net/enterprise/remi-release-6.rpm
+  yum -y install yum-utils
+  yum-config-manager --enable remi-php72
+  yum -y install php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo php-xml
 }
 # +---------------------------------------------------+
 
@@ -408,6 +419,11 @@ func_mailscanner () {
 
     echo -e "allow\t.*\t-\t-" > /etc/MailScanner/filename.rules.allowall.conf
     echo -e "allow\t.*\t-\t-" >> /etc/MailScanner/filetype.rules.allowall.conf
+
+    # Issue #345 Numeric Phishing Default Ruleset
+    echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/numeric.phishing.rules
+    echo -e "FromOrTo:\tDefault\tyes" >> /etc/MailScanner/numeric.phishing.rules
+    sed -i '/^Also Find Numeric Phishing =/ c\Also Find Numeric Phishing = %etc-dir%/numeric.phishing.rules' /etc/MailScanner/MailScanner.conf
 
     # Issue #309 Anacron daily notifications from mailscanner
     sed -i '/^\/usr\/sbin\/ms-cron DAILY/ c\/usr/sbin/ms-cron DAILY >/dev/null 2>&1' /etc/cron.daily/mailscanner
@@ -1048,6 +1064,9 @@ func_mailgraph () {
 
     sed -i "/^my \$VERSION = \"1.14\";/ a\# Begin EFA\nuse PHP::Session;\nuse CGI::Lite;\n\neval {\n  my \$session_name='PHPSESSID';\n  my \$cgi=new CGI::Lite;\n  my \$cookies = \$cgi->parse_cookies;\n  if (\$cookies->{\$session_name}) {\n    my \$session = PHP::Session->new(\$cookies->{\$session_name},{save_path => '/var/lib/php/session/'});\n    if (\$session->get('user_type') ne 'A') {\n      print \"Access Denied\";\n      exit;\n    }\n  } else {\n    print\"Access Denied\";\n    exit;\n  }\n};\nif (\$@) {\n  die(\"Access Denied\");\n}\n# End EFA" /var/www/cgi-bin/mailgraph.cgi
 
+    # Issue #403 Remove gif in mailgraph footer
+    sed -i '/^<a href="http:\/\/oss.oetiker.ch\/rrdtool\/">/d' /var/www/cgi-bin/mailgraph.cgi
+
     # Create wrapper
     touch /var/www/html/mailscanner/mailgraph.php
     echo "<?php" > /var/www/html/mailscanner/mailgraph.php
@@ -1211,7 +1230,6 @@ function update_pyzor-servers() {
 # Update Pyzor Servers, will look at ALL servers at same time
 touch /var/spool/postfix/.pyzor/servers
 echo "public.pyzor.org:24441" >> /var/spool/postfix/.pyzor/servers
-echo "pyzor.nova53.net:24441" >> /var/spool/postfix/.pyzor/servers
 
 chown -R postfix:apache /var/spool/postfix/.pyzor
 chmod -R ug+rwx /var/spool/postfix/.pyzor
@@ -1367,17 +1385,24 @@ func_efarequirements () {
     touch /etc/sysconfig/EFA_trusted_networks
 
     # write issue file
-    echo "" > /etc/issue
-    echo "------------------------------" >> /etc/issue
-    echo "--- Welcome to EFA-$version ---" >> /etc/issue
-    echo "------------------------------" >> /etc/issue
-    echo "  https://www.efa-project.org  " >> /etc/issue
-    echo "------------------------------" >> /etc/issue
-    echo "" >> /etc/issue
-    echo "First time login: root/EfaPr0j3ct" >> /etc/issue
+    if [[ "$action" != "--remote" ]]; then
+        echo "" > /etc/issue
+        echo "------------------------------" >> /etc/issue
+        echo "--- Welcome to EFA-$version ---" >> /etc/issue
+        echo "------------------------------" >> /etc/issue
+        echo "  https://www.efa-project.org  " >> /etc/issue
+        echo "------------------------------" >> /etc/issue
+        echo "" >> /etc/issue
+        echo "First time login: root/EfaPr0j3ct" >> /etc/issue
+    fi
 
     # Grab EFA specific scripts/programs
-    /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
+    if [[ "$action" == "--remote" ]]; then
+        /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init-Remote
+    else    
+        /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Init $gitdlurl/EFA/EFA-Init
+    fi
+    
     chmod 700 /usr/local/sbin/EFA-Init
     /usr/bin/wget --no-check-certificate -O /usr/local/sbin/EFA-Configure $gitdlurl/EFA/EFA-Configure
     chmod 700 /usr/local/sbin/EFA-Configure
@@ -1399,9 +1424,10 @@ func_efarequirements () {
     done
     chmod 600 /var/EFA/lib/EFA-Configure/*
 
-    # Write SSH banner
-    sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config
-    cat > /etc/banner << 'EOF'
+    if [[ "$action" != "--remote" ]]; then
+        # Write SSH banner
+        sed -i "/^#Banner / c\Banner /etc/banner"  /etc/ssh/sshd_config
+        cat > /etc/banner << 'EOF'
        Welcome to eFa (https://www.efa-project.org)
 
  Warning!
@@ -1424,7 +1450,7 @@ func_efarequirements () {
  consent to these terms and conditions of use.   LOG OFF IMMEDIATELY
  if you do not agree to the conditions stated in this warning.
 EOF
-
+    fi
     # Compress logs from logrotate
     sed -i "s/#compress/compress/g" /etc/logrotate.conf
 
@@ -1469,18 +1495,20 @@ func_cron () {
 # +---------------------------------------------------+
 func_cleanup () {
     # Clean SSH keys (generate at first boot)
-    /bin/rm -f /etc/ssh/ssh_host_*
+    if [[ "$action" != "--remote" ]]; then
+        /bin/rm -f /etc/ssh/ssh_host_*
 
-    # Secure SSH
-    sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
+        # Secure SSH
+        sed -i '/^#PermitRootLogin/ c\PermitRootLogin no' /etc/ssh/sshd_config
 
-    # clear dns entries
-    echo "" > /etc/resolv.conf
+        # clear dns entries
+        echo "" > /etc/resolv.conf
 
-    # Stop running services to allow kickstart to reboot
-    service mysqld stop
-    service webmin stop
-
+        # Stop running services to allow kickstart to reboot
+        service mysqld stop
+        service webmin stop
+    fi
+        
     # clear source files
     rm -rf /usr/src/EFA/*
 
@@ -1491,51 +1519,70 @@ func_cleanup () {
     echo "exclude=$yumexclude" >> /etc/yum.conf
 
     # clear logfiles
-    rm -f /var/log/clamav/freshclam.log
-    rm -f /var/log/messages
-    touch /var/log/messages
-    chmod 600 /var/log/messages
-    rm -f /var/log/clamav-unofficial-sigs.log
-    rm -f /var/log/cron
-    touch /var/log/cron
-    chmod 600 /var/log/cron
-    rm -f /var/log/dmesg.old
-    rm -f /var/log/dracut.log
-    rm -f /var/log/httpd/*
-    rm -f /var/log/maillog
-    touch /var/log/maillog
-    chmod 600 /var/log/maillog
-    rm -f /var/log/mysqld.log
-    touch /var/log/mysqld.log
-    chown mysql:mysql /var/log/mysqld.log
-    chmod 640 /var/log/mysqld.log
-    rm -f /var/log/yum.log
-    touch /var/log/yum.log
-    chmod 600 /var/log/yum.log
-    touch /var/log/clamav/freshclam.log
-    chmod 600 /var/log/clamav/freshclam.log
-    chown clam:clam /var/log/clamav/freshclam.log
-    touch /var/log/clamav/clamd.log
-    chmod 600 /var/log/clamav/clamd.log
-    chown clam:clam /var/log/clamav/clamd.log
-
+    if [[ "$action" != "--remote" ]]; then
+        rm -f /var/log/clamav/freshclam.log
+        rm -f /var/log/messages
+        touch /var/log/messages
+        chmod 600 /var/log/messages
+        rm -f /var/log/clamav-unofficial-sigs.log
+        rm -f /var/log/cron
+        touch /var/log/cron
+        chmod 600 /var/log/cron
+        rm -f /var/log/dmesg.old
+        rm -f /var/log/dracut.log
+        rm -f /var/log/httpd/*
+        rm -f /var/log/maillog
+        touch /var/log/maillog
+        chmod 600 /var/log/maillog
+        rm -f /var/log/mysqld.log
+        touch /var/log/mysqld.log
+        chown mysql:mysql /var/log/mysqld.log
+        chmod 640 /var/log/mysqld.log
+        rm -f /var/log/yum.log
+        touch /var/log/yum.log
+        chmod 600 /var/log/yum.log
+        touch /var/log/clamav/freshclam.log
+        chmod 600 /var/log/clamav/freshclam.log
+        chown clam:clam /var/log/clamav/freshclam.log
+        touch /var/log/clamav/clamd.log
+        chmod 600 /var/log/clamav/clamd.log
+        chown clam:clam /var/log/clamav/clamd.log
+    fi
+        
     # Clean root
-    rm -f /root/anaconda-ks.cfg
-    rm -f /root/install.log
-    rm -f /root/install.log.syslog
+    if [[ "$action" != "--remote" ]]; then
+        rm -f /root/anaconda-ks.cfg
+        rm -f /root/install.log
+        rm -f /root/install.log.syslog
 
-    # Clean tmp
-    rm -rf /tmp/*
+        # Clean tmp
+        rm -rf /tmp/*
+    fi
 
     # Clean networking in preparation for creating VM Images
-    # TODO don't clean if we run from a VPS install where a static IP is needed.
-    rm -f /etc/udev/rules.d/70-persistent-net.rules
-    echo -e "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0
-    echo -e "BOOTPROTO=dhcp" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-    
-    # Disable dhclient DHCP Naming
-    echo -e "DHCP_HOSTNAME=eFa" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+    if [[ "$action" != "--remote" ]]; then
+        rm -f /etc/udev/rules.d/70-persistent-net.rules
+        echo -e "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0
+        echo -e "BOOTPROTO=dhcp" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 
+        # Disable dhclient DHCP Naming
+        echo -e "DHCP_HOSTNAME=eFa" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+
+        # Remove boot splash so we can see whats going on while booting and set console reso to 800x600
+        sed -i 's/\<rhgb quiet\>/ vga=771/g' /boot/grub/grub.conf
+
+        # zero disks for better compression (when creating VM images)
+        # this can take a while so disabled for now until we start creating images.
+        dd if=/dev/zero of=/filler bs=4096
+        rm -f /filler
+        dd if=/dev/zero of=/tmp/filler bs=4096
+        rm -f /tmp/filler
+        dd if=/dev/zero of=/boot/filler bs=4096
+        rm -f /boot/filler
+        dd if=/dev/zero of=/var/filler bs=4096
+        rm -f /var/filler
+    fi
+    
     # SELinux is giving me headaches disabling until everything works correctly
     # When everything works we should enable SELinux and try to fix all permissions..
     sed -i '/SELINUX=enforcing/ c\SELINUX=disabled' /etc/selinux/config
@@ -1545,22 +1592,7 @@ func_cleanup () {
     # todo: figure out which se-linux items needs to be changed to allow clamd access to /var/spool/MailScanner/incoming/*..
     #       Currently se-linux blocks clamd.
     #       (denied  { read } for  pid=4083 comm="clamd" name="3899" dev=tmpfs ino=23882 scontext=unconfined_u:system_r:antivirus_t:s0 tcontext=unconfined_u:object_r:var_spool_t:s0 tclass=dir
-
-    # Remove boot splash so we can see whats going on while booting and set console reso to 800x600
-    sed -i 's/\<rhgb quiet\>/ vga=771/g' /boot/grub/grub.conf
-
-    # zero disks for better compression (when creating VM images)
-    # this can take a while so disabled for now until we start creating images.
-    # TODO make this not happen if we run the script from a VPS install
-    dd if=/dev/zero of=/filler bs=4096
-    rm -f /filler
-    dd if=/dev/zero of=/tmp/filler bs=4096
-    rm -f /tmp/filler
-    dd if=/dev/zero of=/boot/filler bs=4096
-    rm -f /boot/filler
-    dd if=/dev/zero of=/var/filler bs=4096
-    rm -f /var/filler
-    
+    echo "eFa Build Completed"
 
 }
 # +---------------------------------------------------+
@@ -1575,10 +1607,11 @@ func_cleanup () {
 #-----------------------------------------------------------------------------#
 function main() {
   # If $action is empty we run the normal setup
-  if [[ -z "$action" ]]; then
+  if [[ -z "$action" || "$action" == "--remote" ]]; then
     func_prebuild
     func_upgradeOS
     func_epelrepo
+    func_remirepo
     func_mariadbrepo
     func_efarepo
     func_mariadb
@@ -1591,7 +1624,7 @@ function main() {
     func_sgwi
     func_mailgraph
     func_pyzor
-	update_pyzor-servers
+    update_pyzor-servers
     func_razor
     func_dcc
     func_imagecerberus
@@ -1614,7 +1647,7 @@ function main() {
     func_mailscanner
     func_spam_clamav
     func_pyzor
-	update_pyzor-servers
+    update_pyzor-servers
     func_razor
     func_dcc
     func_install-certbot

@@ -1,7 +1,7 @@
 ######################################################################
-# EFA 3.0.2.5 RELEASE NOTES
+# EFA 3.0.2.6 RELEASE NOTES
 ######################################################################
-# Copyright (C) 2015-2017  https://efa-project.org
+# Copyright (C) 2015-2018  https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
 
-Welcome to EFA Version 3.0.2.5!
+Welcome to EFA Version 3.0.2.6!
 
 Many thanks goes to the developers of EFA and maintainers of all
 3rd party packages!
 
-These release notes will help guide you through the 3.0.2.5 update.
+These release notes will help guide you through the 3.0.2.6 update.
 
 Many fixes and enhancements have been made to EFA.  Please review the
 CHANGELOG for further information.
 
-https://raw.githubusercontent.com/E-F-A/v3/3.0.2.5/CHANGELOG
+https://raw.githubusercontent.com/E-F-A/v3/3.0.2.6/CHANGELOG
 
 ###################### How To Update ##################################
 
@@ -49,7 +49,7 @@ Choose option 14) Update Now
 The first time you run this update, the kernel may update. If this
 happens, the script will halt to give you an opportunity to restart.
 After restarting and booting to the new kernel, rerun EFA-Update to
-continue the update process to 3.0.2.5.
+continue the update process to 3.0.2.6.
 
 EFA-Update will not proceed until you are running on the latest
 kernel.  This is to ensure that open-vm-tools updates appropriately
@@ -69,7 +69,7 @@ elevate and downgrade privileges of other admins and domain admins.
 ################ Important Info -- Custom Tweaks ######################
 
 Many EFA users have modified their EFA installations and made tweaks
-that may "disappear" after an update to 3.0.2.5.
+that may "disappear" after an update to 3.0.2.6.
 
 Updated files have been automatically backed up to the following
 location:
@@ -79,21 +79,30 @@ location:
 (Other versions may be present if updating from an older version)
 
 Users who had prior 3rd party certs in-place on eFa 3.0.2.4 or lower
-are overridden by the upgrade to eFa 3.0.2.5. This is due to the 
+are overridden by the upgrade to eFa 3.0.2.6. This is due to the 
 regeneration of the self-signed cert. After the upgrade, and if you
 were using a 3rd party cert, please make sure to update your paths 
 accordingly for Postfix and Apache to reflect the original paths.
-Future updates beyond 3.0.2.5 will leave exisitng cert paths alone,
+Future updates beyond 3.0.2.6 will leave exisitng cert paths alone,
 pending no major security tweaks required to secure systems. 
 
 ########################## Known Issues ###############################
 
 1)  If you are running commercial VMware-Tools, open-vm-tools may
-install itself after updating to 3.0.2.5.  Reapply VMware-Tools
-after updating to 3.0.2.5.  Run the following command to remove
+install itself after updating to 3.0.2.6.  Reapply VMware-Tools
+after updating to 3.0.2.6.  Run the following command to remove
 open-vm-tools:
 
 sudo rpm -e open-vm-tools
+
+2) If you updated from versions prior to 3.0.2.5, manual intervention
+for clamav-unofficial-sigs may be necessary. Examine 
+/etc/clamav-unofficial-sigs and update conf files.
+If rpmnew files are present, move your customizations (if any) to them.
+and replace the old conf files.  For example:
+
+mv /etc/clamav-unofficial-sigs/master.conf /etc/clamav-unofficial-sigs/master.conf.old
+mv /etc/clamav-unofficial-sigs/master.conf.rpmnew /etc/clamav-unofficial-sigs/master.conf
 
 #######################################################################
 

@@ -3,7 +3,7 @@
 # EFA update script
 # Version 20171004
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2017 https://efa-project.org
+# Copyright (C) 2012~2018 https://efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ function run_update() {
   checkspace
 
   ##### Backup Phase #####
-  /usr/local/sbin/EFA-Backup -backup
+  [[ -z $NOBACKUP ]] && /usr/local/sbin/EFA-Backup -backup
   [[ $? -ne 0 ]] && abort
 
   ##### Commit Phase #####
@@ -78,11 +78,19 @@ function run_update() {
   yum clean all
   yum_update
 
+  # Remi Rep for PHP 7.2
+  yum -y install http://rpms.remirepo.net/enterprise/remi-release-6.rpm
+  yum -y install yum-utils
+  yum-config-manager --enable remi-php72
+  yum -y install php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo php-xml
+
   # Latest version of EFA-Configure with libraries
   rm -f /usr/local/sbin/EFA-Configure
   rm -f /usr/local/sbin/EFA-Renew-Certs
+  rm -f /usr/local/sbin/EFA-Backup
   rm -rf /var/EFA/lib/EFA-Configure/
   cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
+  cp $STAGING/Scripts/EFA-Backup /usr/local/sbin/EFA-Backup
   cp $STAGING/Scripts/EFA-Renew-Certs /usr/local/sbin/EFA-Renew-Certs
   cp $STAGING/Scripts/EFA-Daily-DMARC /usr/local/sbin/EFA-Daily-DMARC
   cp $STAGING/Scripts/EFA-Weekly-DMARC /usr/local/sbin/EFA-Weekly-DMARC
@@ -94,7 +102,13 @@ function run_update() {
   chmod 600 /var/EFA/lib/EFA-Configure/*
 
   # Add init.d symlink back for compatibility
-  ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
+  # ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
+
+  #Update pyzor servers
+  update_pyzor-servers
+
+  # Issue #403 Remove gif in mailgraph footer
+  sed -i '/^<a href="http:\/\/oss.oetiker.ch\/rrdtool\/">/d' /var/www/cgi-bin/mailgraph.cgi
 
   # Issue #388 MailWatch database schema upgrade causing /tmp to fill up v3.0.2.4 (disabled v3.0.2.5)
   # Cannot increase tmp size here, so relocate to /var
@@ -104,7 +118,7 @@ function run_update() {
   # service mysql reload
 
   # Update MailWatch
-  update-mailwatch
+  # update-mailwatch
 
   # Update SGWI v3.0.2.4 (disabled v3.0.2.5)
   #update_sgwi
@@ -185,6 +199,14 @@ EOF
 
   # Reset Web Bug 1x1 spacer
   sed -i "/^Web Bug Replacement =/ c\Web Bug Replacement = http://dl.efa-project.org/static/1x1spacer.gif" /etc/MailScanner/MailScanner.conf
+  
+  # Issue #345 Numeric Phishing Default Ruleset
+  NUMERICPHISHING=$(grep "^Also Find Numeric Phishing =" /etc/MailScanner/MailScanner.conf | sed -e "s/^.*=\ //")
+  if [[ "$NUMERICPHISHING" == "yes" ]]; then
+    echo -e "From:\t127.0.0.1\tno" > /etc/MailScanner/numeric.phishing.rules
+    echo -e "FromOrTo:\tDefault\tyes" >> /etc/MailScanner/numeric.phishing.rules
+    sed -i '/^Also Find Numeric Phishing =/ c\Also Find Numeric Phishing = %etc-dir%/numeric.phishing.rules' /etc/MailScanner/MailScanner.conf
+  fi
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d/ > /dev/null 2>&1
@@ -813,7 +835,6 @@ function update_pyzor-servers() {
 # Update Pyzor Servers, will look at ALL servers at same time
 touch /var/spool/postfix/.pyzor/servers
 echo "public.pyzor.org:24441" >> /var/spool/postfix/.pyzor/servers
-echo "pyzor.nova53.net:24441" >> /var/spool/postfix/.pyzor/servers
 
 chown -R postfix:apache /var/spool/postfix/.pyzor
 chmod -R ug+rwx /var/spool/postfix/.pyzor
@@ -827,7 +848,7 @@ chmod -R ug+rwx /var/spool/postfix/.pyzor
 function finalize() {
   # Write the latest version number
   echo "EFA-$VERSION" > /etc/EFA-Version
-  sed -i "/--- Welcome to eFa-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
+  sed -i "/--- Welcome to EFA-/ c\--- Welcome to EFA-$VERSION ---" /etc/issue
 
   # Finalize the mail
   echo "" >> $TMPMAIL

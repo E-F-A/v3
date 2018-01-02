@@ -3,7 +3,7 @@
 # EFA-Configure
 # Version 20171004
 # +--------------------------------------------------------------------+
-# Copyright (C) 2012~2017  https://www.efa-project.org
+# Copyright (C) 2012~2018  https://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ show_menu() {
                    14) func_update-now ;;
                    15) func_maintenance-mode ;;
                    16) func_lets-encrypt ;;
-				   17) func_dkim-dmarc ;;
+                   17) func_dkim-dmarc ;;
                     *) echo -e "Error \"$choice\" is not an option..." && sleep 2
       esac
     done
@@ -181,7 +181,12 @@ func_halt() {
 # Update Now function
 # +---------------------------------------------------+
 func_update-now() {
-  /usr/local/sbin/EFA-Update -update
+  echo ""
+  local yesno
+  read -p "Update now, are you sure? (y/N): " yesno
+  if [[ $yesno =~ ^[Yy] ]]; then
+    /usr/local/sbin/EFA-Update -update
+  fi
   pause
 }
 # +---------------------------------------------------+

@@ -14,9 +14,9 @@ func_mail-settings(){
       echo -e "3) Admin Email"
       echo -e "4) Transport settings"
       echo -e "5) Postmaster Email"
-	  echo -e "6) MailWatch Email"
-	  echo -e "7) Cron Source Email"
-	  echo -e "8) DMARC Reporter Email"
+      echo -e "6) MailWatch Email"
+      echo -e "7) Cron Source Email"
+      echo -e "8) DMARC Reporter Email"
       echo -e ""
       echo -e "e) Return to main menu"
       echo -e ""
@@ -25,16 +25,16 @@ func_mail-settings(){
       read choice
       case $choice in
                 1) func_outbound-relay;;
-                2) func_outbound-smarthost;;  
+                2) func_outbound-smarthost;;
                 3) func_adminemail;;
                 4) func_transport-settings;;
                 5) func_postmasteremail;;
-				6) func_mailwatchemail;;
-				7) func_cronsourceemail;;
-				8) func_dmarcrepemail;;
+                6) func_mailwatchemail;;
+                7) func_cronsourceemail;;
+                8) func_dmarcrepemail;;
                 e) menu=1 && return ;;
                 *) echo -e "Error \"$choice\" is not an option..." && pause
-            esac
+       esac
     done
 }
 # +---------------------------------------------------+
@@ -82,10 +82,40 @@ func_transport-settings(){
                  while [ $flag == "0" ]
                    do
                      echo -e ""
-                     echo -e "Do you want to $green[r]$clean replace, $green[d]$clean delete this entry, or $green[c]$clean cancel? : "
+                     echo -e "Do you want to $green[e]$clean edit, $green[r]$clean replace, $green[d]$clean delete this entry, or $green[c]$clean cancel? : "
                      local TMPOPTION
                      read TMPOPTION
-                     if [[ $TMPOPTION == "r" || $TMPOPTION == "R" ]]; then
+                     if [[ $TMPOPTION == "e" || $TMPOPTION == "E" ]]; then
+                        echo -e "Enter the new destination server"
+                        echo -e -n "$green[Destination]$clean : "
+                        local DEST
+                        read DEST
+                        # Strip brackets
+                        DEST=$(echo $DEST | sed -e "s/^\[//" -e "s/\]$//")
+                        # Simple check if destination contains any data.
+                        DESTCHECK=1
+                        while [ $DESTCHECK != 0 ]
+                        do
+                          if checkip $DEST
+                            then
+                              # If $DEST looks to be an valid IP we are ok.
+                              
+                              DESTCHECK=0
+                            elif [[ $DEST =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-z]{2,63}$ ]]; then
+                              # If $DEST looks like an valid domain name we are ok.
+                              DESTCHECK=0
+                            else
+                              echo -e "       $red ERROR: The value $DEST seems to be invalid"
+                              echo -e "        ERROR: please re-enter the destination$clean"
+                              echo -e ""
+                              echo -e -n "$green[Destination]$clean : "
+                              read DEST
+                          fi
+                        done
+                        sed -i "/$ENTDOMAIN[[:space:]]\+smtp:\[$ENTDEST\]/ c\\$ENTDOMAIN  smtp:[$DEST]" /etc/postfix/transport
+                        postmap /etc/postfix/transport
+                        flag=1
+                     elif [[ $TMPOPTION == "r" || $TMPOPTION == "R" ]]; then
                         echo -e ""
                         echo -e "Please enter the domain you want use:"
                         echo -e -n "$green[Domain]$clean : "
@@ -128,6 +158,8 @@ func_transport-settings(){
                         read DEST
                         # Simple check if destination contains any data.
                         DESTCHECK=1
+                        # Strip brackets
+                        DEST=$(echo $DEST | sed -e "s/^\[//" -e "s/\]$//")
                         while [ $DESTCHECK != 0 ]
                         do
                           if checkip $DEST
@@ -206,6 +238,8 @@ func_transport-settings(){
                     read DEST
                     # Simple check if destination contains any data.
                     DESTCHECK=1
+                    # Strip brackets
+                    DEST=$(echo $DEST | sed -e "s/^\[//" -e "s/\]$//")
                     while [ $DESTCHECK != 0 ]
                       do
                         if checkip $DEST
@@ -363,7 +397,7 @@ func_mailwatchemail(){
            echo -e ""
            read -p "> " MAILWATCHEMAIL
            sed -i "/MAILWATCHEMAIL\:/ c\MAILWATCHEMAIL\:$MAILWATCHEMAIL" /etc/EFA-Config
-		   sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$MAILWATCHEMAIL');" /var/www/html/mailscanner/conf.php
+     sed -i "/^define('MAILWATCH_FROM_ADDR'/ c\define('MAILWATCH_FROM_ADDR', '$MAILWATCHEMAIL');" /var/www/html/mailscanner/conf.php
 
            mwemenu=1
            ;;
@@ -470,8 +504,7 @@ func_outbound-relay(){
       local choice
       read -p "Enter setting you want to change: " choice
       case $choice in
-        1)  obmrmenu=0
-            echo ""
+        1)  echo ""
             echo "Enter your new hosts string below."
             echo "Note: If you already have hosts defined you need to re-enter these."
             echo "      An empty line will remove all hosts."
@@ -482,6 +515,31 @@ func_outbound-relay(){
             postconf -e mynetworks="127.0.0.0/8 $RELAYS"
             /etc/init.d/postfix stop
             /etc/init.d/postfix start
+            hostsoption=1
+            while [ $hostsoption == "1" ]
+              do
+                echo ""
+                echo "It is also helpful to add this mail server to your hosts file"
+                echo "To guarantee postfix can resolve the host"
+                local yesno
+                read -p "Do you want to add a hosts entry now? (Y/n):" yesno
+                if [[ $yesno =~ ^[Yy]$ || -z $yesno ]]; then
+                  echo ""
+                  local mymailhost
+                  local mymailip
+                  read -p "Please enter the FQDN of your mail server: " mymailhost
+                  read -p "Please enter the IP address of your mail server: " mymailip
+                  echo -e "$mymailip      $mymailhost" >> /etc/hosts
+                  hostsoption=0
+                  echo ""
+                  echo "Hosts entry added"
+                  pause
+                elif [[ $yesno =~ ^[Nn]$ ]]; then
+                  hostsoption=0
+                else
+                  echo -e "Error \"$yesno\" is not an option..." && pause
+                fi
+            done
             obmrmenu=1
             ;;
             e) mailmenu=1 && return ;;

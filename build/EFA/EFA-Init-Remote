@@ -1,8 +1,7 @@
 #!/bin/bash
 # +--------------------------------------------------------------------+
-# EFA-Init
-# Version 20170916
-# +--------------------------------------------------------------------+
+# EFA-Init-Remote
+# Version 20180101           ------------------------------------------+
 # Copyright (C) 2012~2018 https://www.efa-project.org
 #
 # This program is free software: you can redistribute it and/or modify
@@ -31,46 +30,21 @@ initpassword="EfaPr0j3ct"
 # +---------------------------------------------------+
 function func_ask-hostname() {
   func_echo-header
-  echo -e "$green[eFa]$clean What is the hostname of this machine? $cyan(Single Word)$clean"
-  echo -e -n "$green[eFa]$clean : "
-  read HOSTNAME
-  hncheck=1
-  while [ $hncheck != 0 ]
-   do
-     if [[ $HOSTNAME =~ ^[-a-zA-Z0-9]{2,256}+$ ]]
-      then
-        hncheck=0
-      else
-        echo -e "       $red ERROR: The hostname $HOSTNAME seems to be invalid"
-        echo -e "        ERROR: please re-enter the hostname$clean"
-        echo -e "$green[eFa]$clean What is the hostname of this machine: $cyan(single Word)$clean"
-        echo -e -n "$green[eFa]$clean : "
-        read HOSTNAME
-     fi
-    done
+  echo -e "$green[eFa]$clean Grabbing current hostname (remote mode)"
+  HOSTNAME=$(hostname -s)
+  echo -e "Your current hostname is: $HOSTNAME"
+  sleep 2
 }
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
 function func_ask-domainname() {
   func_echo-header
-  echo -e "$green[eFa]$clean Please enter the domain name for this machine"
-  echo -e -n "$green[eFa]$clean : "
-  read DOMAINNAME
-  dncheck=1
-  while [ $dncheck != 0 ]
-   do
-     if [[ $DOMAINNAME =~ ^[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9-]+)*\.[a-z]{2,6}$ ]]
-      then
-        dncheck=0
-      else
-        echo -e "       $red ERROR: The domain $DOMAINNAME seems to be invalid"
-        echo -e "        ERROR: please re-enter the domain$clean"
-        echo -e "$green[eFa]$clean Please enter the domain name for this machine"
-        echo -e -n "$green[eFa]$clean : "
-        read DOMAINNAME
-     fi
-    done
+  echo -e "$green[eFa]$clean Grabbing domain name domain name (remote mode)"
+  DOMAINNAME=$(hostname -d)
+  [[ -z $DOMAINNAME ]] && DOMAINNAME=$(grep HOSTNAME /etc/sysconfig/network | perl -pe "s/^.*?\.//")
+  echo -e "Your current domainname is: $DOMAINNAME"
+  sleep 2
 }
 # +---------------------------------------------------+
 
@@ -190,27 +164,10 @@ function func_ask-ipaddress() {
   func_interfaces
 
   # Display current IP and ask for new, then validate the IP.
-  CIPADDRESS=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $2}' | awk -F':' '{print $2}'`
+  IPADDRESS=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $2}' | awk -F':' '{print $2}'`
   echo -e ""
-  echo -e "$green[eFa]$clean Your current IP address is: $CIPADDRESS"
-  echo -e ""
-  echo -e "$green[eFa]$clean Please enter the IP address"
-  echo -e -n "$green[eFa]$clean : "
-  read -i "$CIPADDRESS" -e IPADDRESS
-  ipcheck=1
-  while [ $ipcheck != 0 ]
-   do
-    if checkip $IPADDRESS
-     then
-       ipcheck=0
-     else
-       echo -e "       $red ERROR: The IP $IPADDRESS seems to be invalid"
-       echo -e "        ERROR: Please re-enter the IP$clean"
-       echo -e "$green[eFa]$clean Please enter the IP address"
-       echo -e -n "$green[eFa]$clean : "
-       read IPADDRESS
-    fi
-   done
+  echo -e "$green[eFa]$clean Your current IP address is: $IPADDRESS"
+  sleep 2
 }
 # +---------------------------------------------------+
 
@@ -219,27 +176,10 @@ function func_ask-netmask() {
   func_echo-header
 
   # Display current netmask and ask for new, then validate the netmask
-  CNETMASK=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $4}' | awk -F':' '{print $2}'`
+  NETMASK=`ifconfig $INTERFACE | grep inet\ addr | awk '{print $4}' | awk -F':' '{print $2}'`
   echo -e ""
-  echo -e "$green[eFa]$clean Your current netmask is: $CNETMASK"
-  echo -e ""
-  echo -e "$green[eFa]$clean Please enter the NETMASK"
-  echo -e -n "$green[eFa]$clean : "
-  read -i "$CNETMASK" -e NETMASK
-  nmcheck=1
-  while [ $nmcheck != 0 ]
-   do
-    if checkip $NETMASK
-     then
-       nmcheck=0
-     else
-       echo -e "       $red ERROR: The NETMASK $NETMASK seems to be invalid"
-       echo -e "        ERROR: Please re-enter the NETMASK$clean"
-       echo -e "$green[eFa]$clean Please enter the NETMASK"
-       echo -e -n "$green[eFa]$clean : "
-       read NETMASK
-    fi
-   done
+  echo -e "$green[eFa]$clean Your current netmask is: $NETMASK"
+  sleep 2
 }
 # +---------------------------------------------------+
 
@@ -248,27 +188,10 @@ function func_ask-gateway() {
   func_echo-header
 
   # Display current gateway
-  CGATEWAY=`route -n | grep 0.0.0.0 | awk '{print $2}' | grep -v 0.0.0.0`
+  GATEWAY=`route -n | grep 0.0.0.0 | awk '{print $2}' | grep -v 0.0.0.0`
   echo -e ""
-  echo -e "$green[eFa]$clean Your current default gateway is: $CGATEWAY"
-  echo -e ""
-  echo -e "$green[eFa]$clean Please enter the default gateway address"
-  echo -e -n "$green[eFa]$clean : "
-  read -i "$CGATEWAY" -e GATEWAY
-  gwcheck=1
-  while [ $gwcheck != 0 ]
-   do
-    if checkip $GATEWAY
-     then
-       gwcheck=0
-     else
-       echo -e "       $red ERROR: The GATEWAY $GATEWAY seems to be invalid"
-       echo -e "        ERROR: Please re-enter the GATEWAY$clean"
-       echo -e "$green[eFa]$clean Please enter the default gateway address"
-       echo -e -n "$green[eFa]$clean : "
-       read GATEWAY
-    fi
-   done
+  echo -e "$green[eFa]$clean Your current default gateway is: $GATEWAY"
+  sleep 2
 }
 # +---------------------------------------------------+
 
@@ -318,27 +241,10 @@ function func_ask-dns1() {
     return
   fi
   # Display current primary dns
-  CDNS1=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p`
+  DNS1=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 1p`
   echo -e ""
-  echo -e "$green[eFa]$clean Your current primary DNS is: $CDNS1"
-  echo -e ""
-  echo -e "$green[eFa]$clean Please enter the primary DNS server address"
-  echo -e -n "$green[eFa]$clean : "
-  read -i "$CDNS1" -e DNS1
-  dns1check=1
-  while [ $dns1check != 0 ]
-   do
-    if checkip $DNS1
-     then
-       dns1check=0
-     else
-       echo -e "       $red ERROR: The DNS server $DNS1 seems to be invalid"
-       echo -e "        ERROR: Please re-enter the primary DNS$clean"
-       echo -e "$green[eFa]$clean Please enter the primary DNS server address"
-       echo -e -n "$green[eFa]$clean : "
-       read DNS1
-    fi
-   done
+  echo -e "$green[eFa]$clean Your current primary DNS is: $DNS1"
+  sleep 2
 }
 # +---------------------------------------------------+
 
@@ -353,27 +259,10 @@ function func_ask-dns2() {
   fi
 
   # Display current secondary dns
-  CDNS2=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p`
+  DNS2=`grep nameserver /etc/resolv.conf | awk '{print $2}' | sed -n 2p`
   echo -e ""
-  echo -e "$green[eFa]$clean Your current secondary DNS is: $CDNS2"
-  echo -e ""
-  echo -e "$green[eFa]$clean Please enter the secondary DNS server address"
-  echo -e -n "$green[eFa]$clean : "
-  read -i "$CDNS2" -e DNS2
-  dns2check=1
-  while [ $dns2check != 0 ]
-   do
-    if checkip $DNS2
-     then
-       dns2check=0
-     else
-       echo -e "       $red ERROR: The DNS server $DNS2 seems to be invalid"
-       echo -e "        ERROR: Please re-enter the secondary DNS$clean"
-       echo -e "$green[eFa]$clean Please enter the secondary DNS server address"
-       echo -e -n "$green[eFa]$clean : "
-       read DNS2
-    fi
-   done
+  echo -e "$green[eFa]$clean Your current secondary DNS is: $DNS2"
+  sleep 2
 }
 # +---------------------------------------------------+
 
@@ -381,8 +270,7 @@ function func_ask-dns2() {
 function func_ask-username() {
   func_echo-header
   echo -e "$green[eFa]$clean Please enter the user-name you would like to have."
-  echo -e "$green[eFa]$clean This user will be granted SSH access to the system."
-  echo -e "$green[eFa]$clean This user will also be used to logon to the webinterface."
+  echo -e "$green[eFa]$clean This user will be used to logon to the webinterface."
   echo -e -n "$green[eFa]$clean : "
   read USERNAME
   uncheck=1
@@ -414,8 +302,8 @@ function func_ask-username() {
 # +---------------------------------------------------+
 function func_ask-userpassword() {
   func_echo-header
-  echo -e "$green[eFa]$clean Please enter the password for the local user."
-  echo -e "$green[eFa]$clean This password will also be used to logon to the webinterface"
+  echo -e "$green[eFa]$clean Please enter the password for the new user."
+  echo -e "$green[eFa]$clean This password will be used to logon to the webinterface"
   echo -e -n "$green[eFa]$clean Password: "
   read -s efauserpwd
   echo -e ""
@@ -445,35 +333,8 @@ function func_ask-userpassword() {
 # +---------------------------------------------------+
 function func_ask-rootpassword() {
   func_echo-header
-  echo -e "$green[eFa]$clean Please enter the password for the root user."
-  echo -e "$green[eFa]$clean This password is needed in case something goes"
-  echo -e "$green[eFa]$clean wrong and you need to recover the system."
-  echo -e ""
-  echo -e "$green[eFa]$clean Please make this password long, strong and"
-  echo -e "$green[eFa]$clean different from the user password."
-  echo -e -n "$green[eFa]$clean Password: "
-  read -s efarootpwd
-  echo -e ""
-  echo -e -n "$green[eFa]$clean Password Again: "
-  read -s efarootpwd2
-  efarootpwdcheck=1
-  while [ $efarootpwdcheck != 0 ]
-   do
-     if [[ $efarootpwd = "$efarootpwd2" ]]
-          then
-            efarootpwdcheck=0
-         else
-            echo -e ""
-            echo -e "       $red ERROR: The passwords do not seem to match"
-            echo -e "        ERROR: Please try again$clean"
-            echo -e "$green[eFa]$clean Please enter the password for the root user."
-            echo -e -n "$green[eFa]$clean Password: "
-            read -s efarootpwd
-            echo -e ""
-            echo -e -n "$green[eFa]$clean Password Again: "
-            read -s efarootpwd2
-     fi
-  done
+  echo -e "$green[eFa]$clean Skipping root user password setup."
+  sleep 2
 }
 # +---------------------------------------------------+
 
@@ -534,25 +395,19 @@ function func_detect-virtual() {
 # +---------------------------------------------------+
 function func_ask-timezone() {
   func_echo-header
-  echo -e -n "$green[eFa]$clean Is the host set to UTC time? [Y/n]: "
-  read TMPUTC
-  if [[ "$TMPUTC" == "" || "$TMPUTC" == "Y" || "$TMPUTC" == "y" ]]; then
-    ISUTC=true
-  else
-    ISUTC=false
-  fi
-  echo -e "$green[eFa]$clean Please select the time zone this system is located in."
-  TZONE=`/usr/bin/tzselect`
+  echo -e "$green[eFa]$clean Using current timezone "
+  echo ""
+  TZONE=$(grep ZONE /etc/sysconfig/clock | sed -e "s/^.*=//" -e "s/\"//g")
+  echo -e "Current Timezone: $TZONE"
+  sleep 2
 }
 # +---------------------------------------------------+
 
 # +---------------------------------------------------+
 function func_ask-keyboard() {
   func_echo-header
-  echo -e "$green[eFa]$clean We will now launch the build in Keyboard layout selector"
-  pause
-  /usr/sbin/system-config-keyboard --text
-  KEYBOARD=`cat /etc/sysconfig/keyboard  | grep KEYTABLE | sed 's/KEYTABLE=//;s/"//g'`
+  echo -e "$green[eFa]$clean Skipping keyboard layout selection"
+  sleep 2
 }
 # +---------------------------------------------------+
 
@@ -678,10 +533,10 @@ function func_verify-settings() {
     echo -e "10) Secondary DNS       : $DNS2"
     echo -e "11) User                : $USERNAME"
     echo -e "12) User PWD            : <hidden>"
-    echo -e "13) Admin PWD           : <hidden>"
+    echo -e "13) Admin PWD           : N/A"
     echo -e -n "14) Hypervisor Agents   : "; if [[ "$InstallOpenVMTools" -eq 1 ]]; then echo "VMware: Installing Open-VM-Tools."; elif [[ "$InstallQEMUAgent" -eq 1 ]]; then echo "KVM: Installing the QEMU Guest Agent."; elif [[ "$InstallHyperVTools" -eq 1 ]]; then echo "Hyper-V: Please go to the wiki for more information."; else echo "Not needed."; fi
-    echo -e -n "15) Time zone           : $TZONE "; if [[ "$ISUTC" == true ]]; then echo " Using UTC "; else echo " Not using UTC"; fi
-    echo -e "16) Keyboard            : $KEYBOARD"
+    echo -e "15) Time zone           : $TZONE"
+    echo -e "16) Keyboard            : N/A"
     echo -e "17) IANA Code           : $IANACODE"
     echo -e "18) Mail Server         : $MAILSERVER"
     echo -e "19) Org. name           : $ORGNAME"
@@ -765,11 +620,11 @@ function func_configure-system() {
 
   # +--------------------------------------------------+
   # Network settings
-  echo -e "$green[eFa]$clean - Setting new hostname"
-  sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
-  echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
-  echo "$IPADDRESS   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
-  hostname $HOSTNAME
+  #echo -e "$green[eFa]$clean - Setting new hostname"
+  #sed -i "/^HOSTNAME=/ c\HOSTNAME=$HOSTNAME.$DOMAINNAME" /etc/sysconfig/network
+  #echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+  #echo "$IPADDRESS   $HOSTNAME.$DOMAINNAME   $HOSTNAME" >> /etc/hosts
+  #hostname $HOSTNAME
 
   echo -e "$green[eFa]$clean - Setting DNS Servers"
   # old dnsmasq stuff...
@@ -782,22 +637,9 @@ function func_configure-system() {
     echo "  forward-first: yes" >> /etc/unbound/conf.d/forwarders.conf
   else
     echo "  forward-addr: $DNS1" >> /etc/unbound/conf.d/forwarders.conf
-    echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
+    [[ -n $DNS2 ]] && echo "  forward-addr: $DNS2" >> /etc/unbound/conf.d/forwarders.conf
   fi
-  echo -e "$green[eFa]$clean - Setting IP settings"
-  ifdown $INTERFACE
-  # Use ipcalc to get the broadcast & network id's
-  BROADCAST="`/bin/ipcalc -b $IPADDRESS $NETMASK`"
-  NETWORK="`/bin/ipcalc -n $IPADDRESS $NETMASK`"
-  echo "DEVICE=$INTERFACE" > /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "BOOTPROTO=none" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "ONBOOT=yes" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "$BROADCAST" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "$NETWORK" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "NETMASK=$NETMASK" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "IPADDR=$IPADDRESS" >> /etc/sysconfig/network-scripts/ifcfg-$INTERFACE
-  echo "GATEWAY=$GATEWAY" >> /etc/sysconfig/network
-  ifup $INTERFACE
+  # Skip interface setup
   # +--------------------------------------------------+
   
   # Issue #268 EFA-Link test without DHCP dependency
@@ -828,26 +670,17 @@ function func_configure-system() {
   echo -e "$green[eFa]$clean - Creating user"
   useradd -m -d /home/$USERNAME -s /bin/bash $USERNAME
   echo "$USERNAME:$efauserpwd" | chpasswd --md5 $USERNAME
+  
 
-  echo -e "$green[eFa]$clean - Changing root password"
-  echo "root:$efarootpwd" | chpasswd --md5 root
-  # +--------------------------------------------------+
-
-  # +--------------------------------------------------+
-  echo -e "$green[eFa]$clean - Generating SSH Host keys"
-  rm -f /etc/ssh/ssh_host_rsa_key
-  rm -f /etc/ssh/ssh_host_dsa_key
-  ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
-  ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
+  # Skip setting root password
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
-  echo -e "$green[eFa]$clean - Configure timezone"
-  rm -f /etc/localtime
-  ln -s /usr/share/zoneinfo/$TZONE /etc/localtime
-  echo "UTC=$ISUTC">/etc/sysconfig/clock
-  echo "ARC=false">>/etc/sysconfig/clock
-  echo "ZONE=$TZONE">>/etc/sysconfig/clock
+  # Skip regenerating host keys
+  # +--------------------------------------------------+
+
+  # +--------------------------------------------------+
+  # Skip setting clock
   # +--------------------------------------------------+
 
   # +--------------------------------------------------+
@@ -1020,7 +853,7 @@ function func_configure-system() {
   randompw
   MUNINPWD=$PASSWD
   htpasswd -b /etc/munin/munin-htpasswd munin $MUNINPWD
-  
+
   # Add nova53.net dcc server
   /usr/local/bin/cdcc "add dcc.nova53.net"
 
@@ -1102,10 +935,7 @@ function func_end() {
   # Remove EFA-Init from console
   sed -i "/^\/usr\/local\/sbin\/EFA-Init/d" /root/.bashrc
 
-  # Add EFA-Configure to user logon
-  #sed -i '1i\sudo \/usr\/local\/sbin\/EFA-Configure' /home/$USERNAME/.bashrc
-  #Issue #70 .bashrc EFA-Configure Launch Interactive Only
-  sed -i "1i\if ! [ -z \"\$PS1\" ]; then\n  sudo \/usr\/local\/sbin\/EFA-Configure\nfi" /home/$USERNAME/.bashrc
+  # Skip user config
 
   # Add EFA-Configure to root logon
   # Issue #6: adcc hanging system on start after latest build
@@ -1347,9 +1177,9 @@ if [ $CONFIGURED == "NO" ]
       func_ask-hostname
       func_ask-domainname
       func_ask-adminemail
-	  func_ask-postmasteremail
+      func_ask-postmasteremail
       func_ask-mailwatchemail
-	  func_ask-cronsourceemail
+      func_ask-cronsourceemail
       func_ask-ipaddress
       func_ask-netmask
       func_ask-gateway
@@ -1364,7 +1194,7 @@ if [ $CONFIGURED == "NO" ]
       func_ask-orgname
       func_ask-updates
       func_verify-settings
-      func_configure-system      
+      func_configure-system
       if [[ "$InstallOpenTools" -eq 1 ]]
         then
           func_Install-OpenVMTools
