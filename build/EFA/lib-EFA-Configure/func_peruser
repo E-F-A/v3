@@ -56,7 +56,7 @@ func_peruser(){
               fi
             done
 
-          service MailScanner restart
+          service mailscanner restart
           FLAG=0
           echo -e "$green[eFa]$clean Per user spam scoring $red DISABLED $clean"
           pause
@@ -129,7 +129,7 @@ func_peruser(){
               fi
             done
 
-          service MailScanner restart
+          service mailscanner restart
           FLAG=0
           echo -e "$green[eFa]$clean Per user spam scoring $green ENABLED $clean"
           pause

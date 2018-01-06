@@ -74,14 +74,14 @@ function func_ask-nonspam() {
         echo -e "$green[eFa]$clean Non spam signatures $green DISABLED $clean"
         spamcheck=0
         sed -i "/Non Spam Actions =/ c\Non Spam Actions = $STORENSPAM $NSPAMSIG" /etc/MailScanner/MailScanner.conf
-        service MailScanner reload
+        service mailscanner restart
         pause
       elif [[ "$TMPNSPAMSIG" == "" || "$TMPNSPAMSIG" == "N" || "$TMPNSPAMSIG" == "n" ]]; then 
         NSPAMSIG="custom(nonspam)"
         echo -e "$green[eFa]$clean Non spam signatures $green ENABLED $clean"
         spamcheck=0
         sed -i "/Non Spam Actions =/ c\Non Spam Actions = $STORENSPAM $NSPAMSIG" /etc/MailScanner/MailScanner.conf
-        service MailScanner reload
+        service mailscanner restart
         pause
       elif [[ "$TMPNSPAMSIG" == "C" || "$TMPNSPAMSIG" == "c" ]]; then
         echo -e "$green[eFa]$clean No action taken, exiting."
