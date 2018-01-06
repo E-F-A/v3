@@ -207,10 +207,14 @@ EOF
     echo -e "FromOrTo:\tDefault\tyes" >> /etc/MailScanner/numeric.phishing.rules
     sed -i '/^Also Find Numeric Phishing =/ c\Also Find Numeric Phishing = %etc-dir%/numeric.phishing.rules' /etc/MailScanner/MailScanner.conf
   fi
+
   # Fix EFA-Monitor (post 3.0.2.6 quickfix)
+  rm -f /usr/sbin/EFA-Monitor-cron
+  cp $STAGING/Scripts/EFA-Monitor-cron /usr/sbin/EFA-Monitor-cron
+  chmod 700 /usr/sbin/EFA-Monitor-cron
+
   # Exit Maintenance Mode
-  rm -f /var/EFA/EFA-Monitor.cron
-  cp $STAGING/Scripts/EFA-Monitor.cron /etc/cron.d/
+  mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d > /dev/null 2>&1
 
     # Restore excludes
   sed -i "/^exclude=/ c\exclude=$YUM_EXCLUDES" /etc/yum.conf
