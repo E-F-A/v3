@@ -30,7 +30,7 @@ func_ask-maxsize(){
 
   # Set mailscanner children 
   sed -i "/^Max Spam Check Size =/ c\Max Spam Check Size = $MSMAXSIZE\k" /etc/MailScanner/MailScanner.conf
-  service MailScanner reload 
+  service mailscanner restart
   echo -e "MailScanner reconfigured to use $MSMAXSIZE kilobytes max spam check size."
   pause
 

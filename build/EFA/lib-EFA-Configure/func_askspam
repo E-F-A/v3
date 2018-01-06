@@ -78,7 +78,7 @@ function func_ask-spam() {
 
   if [[ "$TMPDELIVERSPAM" != "C" && "$TMPDELIVERSPAM" != "c" ]]; then
     sed -i "/^Spam Actions =/ c\Spam Actions = $DELIVERSPAM $SPAMNOTIFY" /etc/MailScanner/MailScanner.conf
-    service MailScanner reload
+    service mailscanner restart
   fi
 
   pause

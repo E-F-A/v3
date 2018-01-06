@@ -1183,12 +1183,12 @@ function func_end() {
 
   # Issue 135 Lots of legit mails blocked on SpamAssassin KAM_BODY_URIBL_PCCC
   # aka update kam.cf early
-  service MailScanner start >/dev/null 2>&1
+  service mailscanner start >/dev/null 2>&1
   /usr/local/sbin/EFA-SA-Update -update
   mkdir -p /var/spool/MailScanner/incoming/clamav-tmp
   chown postfix:mtagroup /var/spool/MailScanner/incoming/clamav-tmp
   chmod ug+rwx /var/spool/MailScanner/incoming/clamav-tmp
-  service MailScanner stop
+  service mailscanner stop
   
   #Update Webmin cert to use the one generated above
   mv /etc/webmin/miniserv.pem /etc/webmin/miniserv.pem.init
