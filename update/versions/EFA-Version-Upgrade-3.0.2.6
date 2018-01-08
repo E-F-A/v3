@@ -104,6 +104,9 @@ function run_update() {
   chmod 700 /usr/local/sbin/EFA-Configure
   chmod 700 /usr/local/sbin/EFA-Renew-Certs
   chmod 600 /var/EFA/lib/EFA-Configure/*
+  chmod u+x /usr/local/sbin/EFA-Backup
+  chmod u+x /usr/local/sbin/EFA-SA-Update
+  chmod u+x /usr/local/sbin/EFA-MS-Update
 
   # Add init.d symlink back for compatibility
   # ln -s /etc/init.d/mailscanner /etc/init.d/MailScanner
