@@ -89,12 +89,16 @@ function run_update() {
   rm -f /usr/local/sbin/EFA-Renew-Certs
   rm -f /usr/local/sbin/EFA-Backup
   rm -rf /var/EFA/lib/EFA-Configure/
+  rm -f /usr/local/sbin/EFA-SA-Update
+  rm -f /usr/local/sbin/EFA-MS-Update
   cp $STAGING/Scripts/EFA-Configure /usr/local/sbin/EFA-Configure
   cp $STAGING/Scripts/EFA-Backup /usr/local/sbin/EFA-Backup
   cp $STAGING/Scripts/EFA-Renew-Certs /usr/local/sbin/EFA-Renew-Certs
   cp $STAGING/Scripts/EFA-Daily-DMARC /usr/local/sbin/EFA-Daily-DMARC
   cp $STAGING/Scripts/EFA-Weekly-DMARC /usr/local/sbin/EFA-Weekly-DMARC
   cp $STAGING/Scripts/DMARC-Schema.sql /usr/local/sbin/DMARC-Schema.sql
+  cp $STAGING/Scripts/EFA-SA-Update /usr/local/sbin/EFA-SA-Update
+  cp $STAGING/Scripts/EFA-MS-Update /usr/local/sbin/EFA-MS-Update
   mkdir -p /var/EFA/lib/EFA-Configure
   cp $STAGING/Scripts/lib-EFA-Configure/* /var/EFA/lib/EFA-Configure/
   chmod 700 /usr/local/sbin/EFA-Configure
@@ -212,6 +216,9 @@ EOF
   rm -f /usr/sbin/EFA-Monitor-cron
   cp $STAGING/Scripts/EFA-Monitor-cron /usr/sbin/EFA-Monitor-cron
   chmod 700 /usr/sbin/EFA-Monitor-cron
+
+  # msre-reload (post 3.0.2.6 quickfix)
+  sed -i "/\/etc\/init.d\/MailScanner/ c\\\t/etc/init.d/mailscanner reload >/dev/null" /usr/local/bin/mailwatch/tools/MailScanner_rule_editor/msre_reload.sh
 
   # Exit Maintenance Mode
   mv -f /var/EFA/EFA-Monitor.cron /etc/cron.d > /dev/null 2>&1

@@ -103,16 +103,16 @@ function update_kam()
         /etc/init.d/MailScanner reload #> /dev/null 2>&1
         if [ $? != 0 ] ; then
                 echo "MailScanner reload failed - Retrying..."
-            /etc/init.d/MailScanner reload
+            /etc/init.d/mailscanner reload
                 if [ $? = 0 ] ; then
                         echo "MailScanner reload succeeded."
          else
                         echo "Stopping MailScanner..."
-            /etc/init.d/MailScanner stop
+            /etc/init.d/mailscanner stop
             echo "Waiting for a minute..."
             sleep 60
             echo "Attemping to start MailScanner..."
-            /etc/init.d/MailScanner start
+            /etc/init.d/mailscanner start
         fi
         fi
   fi
