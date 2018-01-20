@@ -112,7 +112,7 @@ function func_lets-encrypt() {
       #change SSL.CONF to hostname
       sed -i "/^#ServerName/ c\ServerName $MyNameLower:443" /etc/httpd/conf.d/ssl.conf
       #call the certbot
-      /opt/certbot/certbot-auto --domains $MyNameLower --non-interactive --no-redirect --apache --agree-tos -m $CBRegEmail --rsa-key-size 4096 --hsts
+      /opt/certbot/certbot-auto --authenticator webroot --webroot-path /var/www/html  --installer apache --domains $MyNameLower --non-interactive --no-redirect --agree-tos -m $CBRegEmail --rsa-key-size 4096 --hsts
       killall -15 httpd
       service httpd start
       #update webmin cert (add logic to detect if cert is here before)
