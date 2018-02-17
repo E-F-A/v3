@@ -714,6 +714,7 @@ function func_configure-system() {
 
   # Issue #323 clamav-unofficial-sigs not running
   /usr/bin/clamav-unofficial-sigs.sh
+  chown -R clam:clam /var/lib/clamav-unofficial-sigs
 
   sa-update
 
