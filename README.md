@@ -2,6 +2,7 @@
   <img src="https://raw.github.com/E-F-A/v3/master/build/EFA/EFAlogo-79px.png" alt="EFA" title="EFA">
 </p>
 
+This repository is archived.
 
 E.F.A stands for Email Filter Appliance.
 E.F.A is born out of a need for a cost-effective email virus & spam scanning solution after the ESVA project died.
